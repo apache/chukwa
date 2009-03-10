@@ -32,6 +32,10 @@ Trunk (unreleased changes)
   OPTIMIZATIONS
 
   BUG FIXES
+ 
+    CHUKWA-8.  Remove deprecated conf files.  (eyang via asrabkin)
+
+    CHUKWA-11.  Remove non .template files from conf dir. (asrabkin)
 
     HADOOP-5409. Changed opt directory copy to a optional operation, if opt exist. (Eric Yang)
 
