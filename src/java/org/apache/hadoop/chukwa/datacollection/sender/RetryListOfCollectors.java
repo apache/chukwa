@@ -18,67 +18,71 @@
 
 package org.apache.hadoop.chukwa.datacollection.sender;
 
+
 import java.io.*;
 import java.net.URL;
 import java.util.*;
-
 import org.apache.hadoop.conf.Configuration;
 
 /***
- * An iterator returning a list of Collectors to try.
- * This class is nondeterministic, since it puts collectors back on the list after some period.
+ * An iterator returning a list of Collectors to try. This class is
+ * nondeterministic, since it puts collectors back on the list after some
+ * period.
  * 
- * No node will be polled more than once per maxRetryRateMs milliseconds. hasNext() will continue return
- * true if you have not called it recently.
- *
- *
+ * No node will be polled more than once per maxRetryRateMs milliseconds.
+ * hasNext() will continue return true if you have not called it recently.
+ * 
+ * 
  */
 public class RetryListOfCollectors implements Iterator<String> {
 
   int maxRetryRateMs;
   List<String> collectors;
   long lastLookAtFirstNode;
-  int nextCollector=0;
-  private String portNo; 
+  int nextCollector = 0;
+  private String portNo;
   Configuration conf;
-  
-  public RetryListOfCollectors(File collectorFile, int maxRetryRateMs) throws IOException {
+
+  public RetryListOfCollectors(File collectorFile, int maxRetryRateMs)
+      throws IOException {
     this.maxRetryRateMs = maxRetryRateMs;
     lastLookAtFirstNode = 0;
     collectors = new ArrayList<String>();
     conf = new Configuration();
-    portNo = conf.get("chukwaCollector.http.port","8080");
-    
-    try{
-      BufferedReader br  = new BufferedReader(new FileReader(collectorFile));
+    portNo = conf.get("chukwaCollector.http.port", "8080");
+
+    try {
+      BufferedReader br = new BufferedReader(new FileReader(collectorFile));
       String line;
-      while((line = br.readLine()) != null) {
-        if(!line.contains("://")) { 
-        	//no protocol, assume http
-        	if(line.matches(":\\d+")) {
-                collectors.add("http://" + line);
-        	} else {
-                collectors.add("http://" + line + ":" + portNo + "/");
-        	}
+      while ((line = br.readLine()) != null) {
+        if (!line.contains("://")) {
+          // no protocol, assume http
+          if (line.matches(":\\d+")) {
+            collectors.add("http://" + line);
+          } else {
+            collectors.add("http://" + line + ":" + portNo + "/");
+          }
         } else {
-        	if(line.matches(":\\d+")) {
-                collectors.add(line);
-        	} else {
-                collectors.add(line + ":" + portNo + "/");
-        	}
-        	collectors.add(line);
+          if (line.matches(":\\d+")) {
+            collectors.add(line);
+          } else {
+            collectors.add(line + ":" + portNo + "/");
+          }
+          collectors.add(line);
         }
       }
       br.close();
-    }catch(FileNotFoundException e){
-      System.err.println("Error in RetryListOfCollectors() opening file: collectors, double check that you have set the CHUKWA_CONF_DIR environment variable. Also, ensure file exists and is in classpath");
-    }catch(IOException e){
-      System.err.println("I/O error in RetryListOfcollectors instantiation in readLine() from specified collectors file");
+    } catch (FileNotFoundException e) {
+      System.err
+          .println("Error in RetryListOfCollectors() opening file: collectors, double check that you have set the CHUKWA_CONF_DIR environment variable. Also, ensure file exists and is in classpath");
+    } catch (IOException e) {
+      System.err
+          .println("I/O error in RetryListOfcollectors instantiation in readLine() from specified collectors file");
       throw e;
     }
     shuffleList();
   }
-  
+
   public RetryListOfCollectors(final List<String> collectors, int maxRetryRateMs) {
     this.maxRetryRateMs = maxRetryRateMs;
     lastLookAtFirstNode = 0;
@@ -86,54 +90,54 @@ public class RetryListOfCollectors implements Iterator<String> {
     this.collectors.addAll(collectors);
     shuffleList();
   }
-  
-  //for now, use a simple O(n^2) algorithm.
-  //safe, because we only do this once, and on smalls list
+
+  // for now, use a simple O(n^2) algorithm.
+  // safe, because we only do this once, and on smalls list
   private void shuffleList() {
-   ArrayList<String> newList = new  ArrayList<String>();
+    ArrayList<String> newList = new ArrayList<String>();
     Random r = new java.util.Random();
-    while(!collectors.isEmpty()) {
+    while (!collectors.isEmpty()) {
       int toRemove = r.nextInt(collectors.size());
       String next = collectors.remove(toRemove);
       newList.add(next);
     }
     collectors = newList;
   }
-  
+
   public boolean hasNext() {
-    return collectors.size() > 0 && 
-      ( (nextCollector  != 0)  || 
-         (System.currentTimeMillis() - lastLookAtFirstNode > maxRetryRateMs ));
-   }
+    return collectors.size() > 0
+        && ((nextCollector != 0) || (System.currentTimeMillis()
+            - lastLookAtFirstNode > maxRetryRateMs));
+  }
 
   public String next() {
-    if(hasNext())  {
+    if (hasNext()) {
       int currCollector = nextCollector;
-      nextCollector = (nextCollector +1)% collectors.size();
-      if(currCollector == 0)
+      nextCollector = (nextCollector + 1) % collectors.size();
+      if (currCollector == 0)
         lastLookAtFirstNode = System.currentTimeMillis();
       return collectors.get(currCollector);
-    }
-    else
+    } else
       return null;
   }
-  
-  public String getRandomCollector(){
-    return collectors.get( (int)java.lang.Math.random() * collectors.size());
+
+  public String getRandomCollector() {
+    return collectors.get((int) java.lang.Math.random() * collectors.size());
   }
-  
-  public void add(URL collector){
+
+  public void add(URL collector) {
     collectors.add(collector.toString());
   }
 
-  public void remove()  {
+  public void remove() {
     throw new UnsupportedOperationException();
-    //FIXME: maybe just remove a collector from our list and then 
-    //FIXME: make sure next doesn't break (i.e. reset nextCollector if necessary)
+    // FIXME: maybe just remove a collector from our list and then
+    // FIXME: make sure next doesn't break (i.e. reset nextCollector if
+    // necessary)
   }
 
   /**
-   *  
+   * 
    * @return total number of collectors in list
    */
   int total() {

@@ -18,47 +18,48 @@
 
 package org.apache.hadoop.chukwa.conf;
 
-import java.io.File;
 
+import java.io.File;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 
 public class ChukwaConfiguration extends Configuration {
-	static Logger log = Logger.getLogger(ChukwaConfiguration.class);
+  static Logger log = Logger.getLogger(ChukwaConfiguration.class);
 
-	public ChukwaConfiguration() {
-		this(true);
-	}
+  public ChukwaConfiguration() {
+    this(true);
+  }
 
-	public ChukwaConfiguration(boolean loadDefaults) {
-		super();
-		if (loadDefaults) {
+  public ChukwaConfiguration(boolean loadDefaults) {
+    super();
+    if (loadDefaults) {
 
-			String chukwaHome = System.getenv("CHUKWA_HOME");
-			if (chukwaHome == null){
-				chukwaHome = ".";
-			}
+      String chukwaHome = System.getenv("CHUKWA_HOME");
+      if (chukwaHome == null) {
+        chukwaHome = ".";
+      }
 
-			if(!chukwaHome.endsWith("/"))
-			{  chukwaHome = chukwaHome + File.separator; }	
-			String chukwaConf = System.getenv("CHUKWA_CONF_DIR");
-			if (chukwaConf == null)
-			{  chukwaConf = chukwaHome + "conf" + File.separator; }
+      if (!chukwaHome.endsWith("/")) {
+        chukwaHome = chukwaHome + File.separator;
+      }
+      String chukwaConf = System.getenv("CHUKWA_CONF_DIR");
+      if (chukwaConf == null) {
+        chukwaConf = chukwaHome + "conf" + File.separator;
+      }
 
-			log.info("chukwaConf is " + chukwaConf);
+      log.info("chukwaConf is " + chukwaConf);
 
-		  super.addResource(new Path(chukwaConf + "/chukwa-collector-conf.xml"));
-		  log.debug("added chukwa-collector-conf.xml to ChukwaConfiguration");
+      super.addResource(new Path(chukwaConf + "/chukwa-collector-conf.xml"));
+      log.debug("added chukwa-collector-conf.xml to ChukwaConfiguration");
 
-		  super.addResource(new Path(chukwaConf + "/chukwa-agent-conf.xml"));
-		  log.debug("added chukwa-agent-conf.xml to ChukwaConfiguration");
+      super.addResource(new Path(chukwaConf + "/chukwa-agent-conf.xml"));
+      log.debug("added chukwa-agent-conf.xml to ChukwaConfiguration");
 
-		  super.addResource(new Path(chukwaConf + "/hadoop-site.xml"));
-		  log.debug("added hadoop-site.xml to ChukwaConfiguration");
+      super.addResource(new Path(chukwaConf + "/hadoop-site.xml"));
+      log.debug("added hadoop-site.xml to ChukwaConfiguration");
 
-			
-		}
-	}
+    }
+  }
 
 }

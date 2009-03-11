@@ -32,6 +32,8 @@ Trunk (unreleased changes)
   OPTIMIZATIONS
 
   BUG FIXES
+
+    CHUKWA-33.  Reformat code to fit hadoop style.  (asrabkin)
  
     CHUKWA-8.  Remove deprecated conf files.  (eyang via asrabkin)
 

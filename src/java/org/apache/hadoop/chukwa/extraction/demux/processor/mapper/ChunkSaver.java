@@ -18,8 +18,8 @@
 
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
-import java.util.Calendar;
 
+import java.util.Calendar;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
@@ -30,17 +30,15 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
 
-public class ChunkSaver
-{
+public class ChunkSaver {
   static Logger log = Logger.getLogger(ChunkSaver.class);
+
   public static ChukwaRecord saveChunk(Chunk chunk, Throwable throwable,
-      OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter)
-  {
-    try
-    {
+      OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter) {
+    try {
       reporter.incrCounter("DemuxError", "count", 1);
       reporter.incrCounter("DemuxError", chunk.getDataType() + "Count", 1);
- 
+
       ChukwaRecord record = new ChukwaRecord();
       long ts = System.currentTimeMillis();
       Calendar calendar = Calendar.getInstance();
@@ -68,22 +66,15 @@ public class ChunkSaver
       output.collect(key, record);
 
       return record;
-    }
-    catch (Throwable e) 
-    {
+    } catch (Throwable e) {
       e.printStackTrace();
-      try
-      {
-        log.warn("Unable to save a chunk: tags: " 
-            + chunk.getTags()   + " - source:"
-            + chunk.getSource() + " - dataType: "
-            + chunk.getDataType() + " - Stream: " 
-            + chunk.getStreamName() + " - SeqId: "
-            + chunk.getSeqID() + " - Data: " 
-            + new String(chunk.getData()) );
-      }
-      catch (Throwable e1) 
-      {
+      try {
+        log.warn("Unable to save a chunk: tags: " + chunk.getTags()
+            + " - source:" + chunk.getSource() + " - dataType: "
+            + chunk.getDataType() + " - Stream: " + chunk.getStreamName()
+            + " - SeqId: " + chunk.getSeqID() + " - Data: "
+            + new String(chunk.getData()));
+      } catch (Throwable e1) {
         e.printStackTrace();
       }
     }

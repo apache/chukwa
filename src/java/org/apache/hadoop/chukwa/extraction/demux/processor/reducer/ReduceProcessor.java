@@ -18,17 +18,16 @@
 
 package org.apache.hadoop.chukwa.extraction.demux.processor.reducer;
 
-import java.util.Iterator;
 
+import java.util.Iterator;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
-public interface ReduceProcessor
-{
-	public String getDataType();
-	public void process(ChukwaRecordKey key,Iterator<ChukwaRecord> values,
-						OutputCollector<ChukwaRecordKey, 
-						ChukwaRecord> output, Reporter reporter);
+public interface ReduceProcessor {
+  public String getDataType();
+
+  public void process(ChukwaRecordKey key, Iterator<ChukwaRecord> values,
+      OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter);
 }

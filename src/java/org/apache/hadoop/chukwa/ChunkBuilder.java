@@ -18,46 +18,46 @@
 
 package org.apache.hadoop.chukwa;
 
-import java.util.*;
 
+import java.util.*;
 import org.apache.hadoop.io.DataOutputBuffer;
 import java.io.*;
 
 /**
  * Right now, just handles record collection.
- *
+ * 
  */
 public class ChunkBuilder {
-  
+
   ArrayList<Integer> recOffsets = new ArrayList<Integer>();
   int lastRecOffset = -1;
   DataOutputBuffer buf = new DataOutputBuffer();
+
   /**
    * Adds the data in rec to an internal buffer; rec can be reused immediately.
+   * 
    * @param rec
    */
-  public void addRecord(byte[] rec)  {
+  public void addRecord(byte[] rec) {
     lastRecOffset = lastRecOffset + rec.length;
     recOffsets.add(lastRecOffset);
     try {
-    buf.write(rec);
-    } catch(IOException e) {
+      buf.write(rec);
+    } catch (IOException e) {
       throw new RuntimeException("buffer write failed.  Out of memory?", e);
     }
   }
-  
+
   public Chunk getChunk() {
     ChunkImpl c = new ChunkImpl();
     c.setData(buf.getData());
     c.setSeqID(buf.getLength());
     int[] offsets = new int[recOffsets.size()];
-    for(int i = 0; i < offsets.length; ++i)
+    for (int i = 0; i < offsets.length; ++i)
       offsets[i] = recOffsets.get(i);
     c.setRecordOffsets(offsets);
-    
+
     return c;
   }
-  
-  
 
 }

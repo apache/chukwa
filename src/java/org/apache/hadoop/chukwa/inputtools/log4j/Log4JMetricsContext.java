@@ -17,6 +17,7 @@
  */
 package org.apache.hadoop.chukwa.inputtools.log4j;
 
+
 import java.io.*;
 import java.util.Enumeration;
 import java.util.logging.LogManager;
@@ -34,28 +35,27 @@ import org.json.JSONObject;
 
 public class Log4JMetricsContext extends AbstractMetricsContext {
 
-  Logger out = null; //Logger.getLogger(Log4JMetricsContext.class);
+  Logger out = null; // Logger.getLogger(Log4JMetricsContext.class);
   static final Object lock = new Object();
-  
+
   /* Configuration attribute names */
-//  protected static final String FILE_NAME_PROPERTY = "fileName";
+  // protected static final String FILE_NAME_PROPERTY = "fileName";
   protected static final String PERIOD_PROPERTY = "period";
-  private static final String metricsLogDir = System.getProperty("hadoop.log.dir");
+  private static final String metricsLogDir = System
+      .getProperty("hadoop.log.dir");
   private static final String user = System.getProperty("user.name");
 
-    
   /** Creates a new instance of FileContext */
-  public Log4JMetricsContext() {}
-     
+  public Log4JMetricsContext() {
+  }
+
   public void init(String contextName, ContextFactory factory) {
     super.init(contextName, factory);
-  /*      
-    String fileName = getAttribute(FILE_NAME_PROPERTY);
-    if (fileName != null) {
-      file = new File(fileName);
-    }
-    */
-    
+    /*
+     * String fileName = getAttribute(FILE_NAME_PROPERTY); if (fileName != null)
+     * { file = new File(fileName); }
+     */
+
     String periodStr = getAttribute(PERIOD_PROPERTY);
     if (periodStr != null) {
       int period = 0;
@@ -69,63 +69,82 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
       setPeriod(period);
     }
   }
-  
-  @Override
-  protected void emitRecord(String contextName, String recordName, OutputRecord outRec)
-      throws IOException {
-	  if (out == null) {
-		  synchronized(lock) {
-			  if (out == null) {
-				  java.util.Properties properties = new java.util.Properties();
-				  properties.load(this.getClass().getClassLoader().getResourceAsStream("chukwa-hadoop-metrics-log4j.properties"));
-				  Logger logger = Logger.getLogger(Log4JMetricsContext.class);
-                  logger.setAdditivity(false);
-				  PatternLayout layout = new PatternLayout(properties.getProperty("log4j.appender.chukwa."+contextName+".layout.ConversionPattern"));
-				      org.apache.hadoop.chukwa.inputtools.log4j.ChukwaDailyRollingFileAppender appender =
-				        new org.apache.hadoop.chukwa.inputtools.log4j.ChukwaDailyRollingFileAppender();
-				  appender.setName("chukwa."+contextName);
-				  appender.setLayout(layout);
-				  appender.setAppend(true);
-				  if(properties.getProperty("log4j.appender.chukwa."+contextName+".Dir")!=null) {
-				    String logName = properties.getProperty("log4j.appender.chukwa."+contextName+".Dir")
-				    +File.separator+"chukwa-"+user+"-"+contextName + "-" + System.currentTimeMillis() +".log";
 
-					  // FIXME: Hack to make the log file readable by chukwa user. 
-					  if(System.getProperty("os.name").intern()=="Linux".intern()) {
-						  Runtime.getRuntime().exec("chmod 640 "+logName);
-					  }
-				      appender.setFile(logName);					  
-				  } else {
-				    appender.setFile(metricsLogDir+File.separator+"chukwa-"+user+"-"
-				        +contextName + "-" + System.currentTimeMillis()+ ".log");
-				  }
-				  appender.activateOptions();
-				  appender.setRecordType(properties.getProperty("log4j.appender.chukwa."+contextName+".recordType"));
-				  appender.setChukwaClientHostname(properties.getProperty("log4j.appender.chukwa."+contextName+".chukwaClientHostname"));
-				  appender.setChukwaClientPortNum(Integer.parseInt(properties.getProperty("log4j.appender.chukwa."+contextName+".chukwaClientPortNum")));
-				  appender.setDatePattern(properties.getProperty("log4j.appender.chukwa."+contextName+".DatePattern"));
-				  logger.addAppender(appender);
-				  out = logger;
-			  }
-		  }
-	  }
-	  
-	  
-	JSONObject json = new JSONObject();
+  @Override
+  protected void emitRecord(String contextName, String recordName,
+      OutputRecord outRec) throws IOException {
+    if (out == null) {
+      synchronized (lock) {
+        if (out == null) {
+          java.util.Properties properties = new java.util.Properties();
+          properties.load(this.getClass().getClassLoader().getResourceAsStream(
+              "chukwa-hadoop-metrics-log4j.properties"));
+          Logger logger = Logger.getLogger(Log4JMetricsContext.class);
+          logger.setAdditivity(false);
+          PatternLayout layout = new PatternLayout(properties
+              .getProperty("log4j.appender.chukwa." + contextName
+                  + ".layout.ConversionPattern"));
+          org.apache.hadoop.chukwa.inputtools.log4j.ChukwaDailyRollingFileAppender appender = new org.apache.hadoop.chukwa.inputtools.log4j.ChukwaDailyRollingFileAppender();
+          appender.setName("chukwa." + contextName);
+          appender.setLayout(layout);
+          appender.setAppend(true);
+          if (properties.getProperty("log4j.appender.chukwa." + contextName
+              + ".Dir") != null) {
+            String logName = properties.getProperty("log4j.appender.chukwa."
+                + contextName + ".Dir")
+                + File.separator
+                + "chukwa-"
+                + user
+                + "-"
+                + contextName
+                + "-"
+                + System.currentTimeMillis() + ".log";
+
+            // FIXME: Hack to make the log file readable by chukwa user.
+            if (System.getProperty("os.name").intern() == "Linux".intern()) {
+              Runtime.getRuntime().exec("chmod 640 " + logName);
+            }
+            appender.setFile(logName);
+          } else {
+            appender
+                .setFile(metricsLogDir + File.separator + "chukwa-" + user
+                    + "-" + contextName + "-" + System.currentTimeMillis()
+                    + ".log");
+          }
+          appender.activateOptions();
+          appender.setRecordType(properties
+              .getProperty("log4j.appender.chukwa." + contextName
+                  + ".recordType"));
+          appender.setChukwaClientHostname(properties
+              .getProperty("log4j.appender.chukwa." + contextName
+                  + ".chukwaClientHostname"));
+          appender.setChukwaClientPortNum(Integer.parseInt(properties
+              .getProperty("log4j.appender.chukwa." + contextName
+                  + ".chukwaClientPortNum")));
+          appender.setDatePattern(properties
+              .getProperty("log4j.appender.chukwa." + contextName
+                  + ".DatePattern"));
+          logger.addAppender(appender);
+          out = logger;
+        }
+      }
+    }
+
+    JSONObject json = new JSONObject();
     try {
-		json.put("contextName", contextName);
-		json.put("recordName", recordName);
-		json.put("chukwa_timestamp", System.currentTimeMillis());
-	    for (String tagName : outRec.getTagNames()) {
-            json.put(tagName, outRec.getTag(tagName));
-	    }
-	    for (String metricName : outRec.getMetricNames()) {
-	    	json.put(metricName, outRec.getMetric(metricName));
-	    }
+      json.put("contextName", contextName);
+      json.put("recordName", recordName);
+      json.put("chukwa_timestamp", System.currentTimeMillis());
+      for (String tagName : outRec.getTagNames()) {
+        json.put(tagName, outRec.getTag(tagName));
+      }
+      for (String metricName : outRec.getMetricNames()) {
+        json.put(metricName, outRec.getMetric(metricName));
+      }
     } catch (JSONException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}    
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     out.info(json.toString());
   }
 

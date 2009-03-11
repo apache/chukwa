@@ -18,34 +18,28 @@
 
 package org.apache.hadoop.chukwa.extraction.engine;
 
+
 import java.util.List;
 import java.util.TreeMap;
 
+public class ChukwaSearchResult implements SearchResult {
+  private TreeMap<Long, List<Record>> records;
+  private Token token = null;
 
+  public TreeMap<Long, List<Record>> getRecords() {
+    return records;
+  }
 
-public class ChukwaSearchResult implements SearchResult
-{
-	private TreeMap<Long, List<Record>> records;
-	private Token token = null;
-	
-	public TreeMap<Long, List<Record>> getRecords()
-	{
-		return records;
-	}
+  public void setRecords(TreeMap<Long, List<Record>> records) {
+    this.records = records;
+  }
 
-	public void setRecords(TreeMap<Long, List<Record>> records)
-	{
-		this.records = records;
-	}
+  public Token getToken() {
+    return token;
+  }
 
-	public Token getToken()
-	{
-		return token;
-	}
+  public void setToken(Token token) {
+    this.token = token;
+  }
 
-	public void setToken(Token token)
-	{
-		this.token = token;
-	}
-	
 }

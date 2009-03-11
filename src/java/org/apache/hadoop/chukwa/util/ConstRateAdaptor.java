@@ -18,70 +18,72 @@
 
 package org.apache.hadoop.chukwa.util;
 
-import java.util.Random;
 
+import java.util.Random;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.*;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
 
-public class ConstRateAdaptor  extends Thread implements Adaptor {
+public class ConstRateAdaptor extends Thread implements Adaptor {
 
+  private static final int SLEEP_VARIANCE = 200;
+  private static final int MIN_SLEEP = 300;
 
-  private static final int SLEEP_VARIANCE = 200; 
-  private static final int MIN_SLEEP = 300; 
-  
   private String type;
   private long offset;
   private int bytesPerSec;
   private ChunkReceiver dest;
   private long adaptorID;
-  
+
   private volatile boolean stopping = false;
+
   public String getCurrentStatus() throws AdaptorException {
-    return type.trim()  + " " + bytesPerSec + " " + offset;
+    return type.trim() + " " + bytesPerSec + " " + offset;
   }
 
-  public void start(long adaptor, String type, String bytesPerSecParam, long offset, ChunkReceiver dest) throws AdaptorException
-  {
-    try{
+  public void start(long adaptor, String type, String bytesPerSecParam,
+      long offset, ChunkReceiver dest) throws AdaptorException {
+    try {
       bytesPerSec = Integer.parseInt(bytesPerSecParam.trim());
-    } catch(NumberFormatException e) {
-      throw new AdaptorException("bad argument to const rate adaptor: [" + bytesPerSecParam + "]");
+    } catch (NumberFormatException e) {
+      throw new AdaptorException("bad argument to const rate adaptor: ["
+          + bytesPerSecParam + "]");
     }
     this.adaptorID = adaptor;
     this.offset = offset;
     this.type = type;
     this.dest = dest;
     this.setName("ConstRate Adaptor_" + type);
-    super.start();  //this is a Thread.start
+    super.start(); // this is a Thread.start
   }
-  
+
   public String getStreamName() {
     return this.type;
   }
-  
-  public void run()
-  {
+
+  public void run() {
     Random r = new Random();
-    try{
-      while(!stopping) {
-        int MSToSleep = r.nextInt(SLEEP_VARIANCE) + MIN_SLEEP; //between 1 and 3 secs
-          //FIXME: I think there's still a risk of integer overflow here
+    try {
+      while (!stopping) {
+        int MSToSleep = r.nextInt(SLEEP_VARIANCE) + MIN_SLEEP; // between 1 and
+                                                               // 3 secs
+        // FIXME: I think there's still a risk of integer overflow here
         int arraySize = (int) (MSToSleep * (long) bytesPerSec / 1000L);
-        byte[] data = new byte[ arraySize];
+        byte[] data = new byte[arraySize];
         r.nextBytes(data);
         offset += data.length;
-        ChunkImpl evt = new ChunkImpl(type,"random data source",  offset, data , this);
+        ChunkImpl evt = new ChunkImpl(type, "random data source", offset, data,
+            this);
 
         dest.add(evt);
-        
+
         Thread.sleep(MSToSleep);
-      } //end while
-    }  catch(InterruptedException ie)
-    {} //abort silently
+      } // end while
+    } catch (InterruptedException ie) {
+    } // abort silently
   }
-  
+
   public String toString() {
     return "const rate " + type;
   }

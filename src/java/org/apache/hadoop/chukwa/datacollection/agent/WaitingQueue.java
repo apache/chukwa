@@ -18,57 +18,50 @@
 
 package org.apache.hadoop.chukwa.datacollection.agent;
 
+
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.ChunkQueue;
 import org.apache.log4j.Logger;
 
-public class WaitingQueue implements ChunkQueue
-{
+public class WaitingQueue implements ChunkQueue {
 
-	static Logger log = Logger.getLogger(WaitingQueue.class);
-	private BlockingQueue<Chunk> queue = new LinkedBlockingQueue<Chunk>(5);
-	
-	public void add(Chunk event)
-	{
-	  try
-	  {
-		this.queue.put(event);
-	  }
-	  catch(InterruptedException e)
-	  {}//return upwards
-	}
+  static Logger log = Logger.getLogger(WaitingQueue.class);
+  private BlockingQueue<Chunk> queue = new LinkedBlockingQueue<Chunk>(5);
 
-	public void add(List<Chunk> events)
-	{
-		this.queue.addAll(events);
-  
-	}
+  public void add(Chunk event) {
+    try {
+      this.queue.put(event);
+    } catch (InterruptedException e) {
+    }// return upwards
+  }
 
-	public void collect(List<Chunk> events,int maxCount)
-	{
-		// Workaround to block on the queue
-		try
-		{
-			events.add(this.queue.take());
-		} 
-		catch (InterruptedException e)
-		{}
-		this.queue.drainTo(events,maxCount-1);
+  public void add(List<Chunk> events) {
+    this.queue.addAll(events);
 
-		System.out.println("collect [" + Thread.currentThread().getName() + "] [" + events.size() + "]");
+  }
 
-		if (log.isDebugEnabled())
-		{
-			log.debug("WaitingQueue.inQueueCount:" + queue.size() + "\tWaitingQueue.collectCount:" + events.size());
-		}
-	}
-	
-	 public int size(){
-	    return queue.size();
-	  }
+  public void collect(List<Chunk> events, int maxCount) {
+    // Workaround to block on the queue
+    try {
+      events.add(this.queue.take());
+    } catch (InterruptedException e) {
+    }
+    this.queue.drainTo(events, maxCount - 1);
+
+    System.out.println("collect [" + Thread.currentThread().getName() + "] ["
+        + events.size() + "]");
+
+    if (log.isDebugEnabled()) {
+      log.debug("WaitingQueue.inQueueCount:" + queue.size()
+          + "\tWaitingQueue.collectCount:" + events.size());
+    }
+  }
+
+  public int size() {
+    return queue.size();
+  }
 
 }

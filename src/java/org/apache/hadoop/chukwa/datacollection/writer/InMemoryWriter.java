@@ -17,9 +17,9 @@
  */
 package org.apache.hadoop.chukwa.datacollection.writer;
 
+
 import java.io.*;
 import java.util.List;
-
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.conf.Configuration;
@@ -64,22 +64,22 @@ public class InMemoryWriter implements ChukwaWriter {
    * 
    * @param bytes amount to try to read
    * @param ms time to wait
-  * @return a newly read-in chunk
+   * @return a newly read-in chunk
    * @throws IOException
    */
   public Chunk readOutChunk(int bytes, int ms) throws IOException {
 
     long readStartTime = System.currentTimeMillis();
     try {
-      while(buf.size() < bytes )  {
-        synchronized(this) {
+      while (buf.size() < bytes) {
+        synchronized (this) {
           long timeLeft = ms - System.currentTimeMillis() + readStartTime;
-          if(timeLeft > 0)
-              wait(timeLeft);
+          if (timeLeft > 0)
+            wait(timeLeft);
         }
       }
-      if(dis == null)
-       dis = new DataInputStream( new ByteArrayInputStream(buf.toByteArray()));
+      if (dis == null)
+        dis = new DataInputStream(new ByteArrayInputStream(buf.toByteArray()));
       return ChunkImpl.read(dis);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();

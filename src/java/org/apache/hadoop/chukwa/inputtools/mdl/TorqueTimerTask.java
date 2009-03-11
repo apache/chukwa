@@ -17,34 +17,35 @@
  */
 package org.apache.hadoop.chukwa.inputtools.mdl;
 
+
 import java.util.TimerTask;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class TorqueTimerTask extends TimerTask{
-	private Process ps=null;
-	private String command;
-	
-	private static Log log = LogFactory.getLog(TorqueTimerTask.class);
-    //public static int timeoutInterval=300;
-    public static int timeoutInterval=180;
-    
-	public TorqueTimerTask() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	
-	public  TorqueTimerTask(Process process,String command){
-    	super();
-    	this.ps=process;
-    	this.command=command;
-    	
-    }
-	
-	public void run() {
-		ps.destroy();
-	    log.error("torque command: "+command+" timed out");
-		
-	}
+public class TorqueTimerTask extends TimerTask {
+  private Process ps = null;
+  private String command;
+
+  private static Log log = LogFactory.getLog(TorqueTimerTask.class);
+  // public static int timeoutInterval=300;
+  public static int timeoutInterval = 180;
+
+  public TorqueTimerTask() {
+    super();
+    // TODO Auto-generated constructor stub
+  }
+
+  public TorqueTimerTask(Process process, String command) {
+    super();
+    this.ps = process;
+    this.command = command;
+
+  }
+
+  public void run() {
+    ps.destroy();
+    log.error("torque command: " + command + " timed out");
+
+  }
 
 }

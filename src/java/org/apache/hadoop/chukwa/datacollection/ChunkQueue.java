@@ -18,8 +18,8 @@
 
 package org.apache.hadoop.chukwa.datacollection;
 
-import java.util.List;
 
+import java.util.List;
 import org.apache.hadoop.chukwa.Chunk;
 
 /**
@@ -27,24 +27,25 @@ import org.apache.hadoop.chukwa.Chunk;
  * 
  * Differs from a normal queue interface primarily by having collect().
  */
-public interface ChunkQueue extends ChunkReceiver
-{
+public interface ChunkQueue extends ChunkReceiver {
   /**
-   *  Add a chunk to the queue, blocking if queue is full.
+   * Add a chunk to the queue, blocking if queue is full.
+   * 
    * @param chunk
    * @throws InterruptedException if thread is interrupted while blocking
    */
-	public void add(Chunk chunk) throws InterruptedException;
-	
-	/**
-	 * Return at least one, and no more than count, Chunks into chunks.
-	 * Blocks if queue is empty.
-	 */
-	public void collect(List<Chunk> chunks,int count) throws InterruptedException;
-	
-	/**
-	 * Return an approximation of the number of chunks in the queue currently.
-	 * No guarantees are made about the accuracy of this number. 
-	 */
-	public int size();
+  public void add(Chunk chunk) throws InterruptedException;
+
+  /**
+   * Return at least one, and no more than count, Chunks into chunks. Blocks if
+   * queue is empty.
+   */
+  public void collect(List<Chunk> chunks, int count)
+      throws InterruptedException;
+
+  /**
+   * Return an approximation of the number of chunks in the queue currently. No
+   * guarantees are made about the accuracy of this number.
+   */
+  public int size();
 }

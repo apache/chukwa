@@ -18,60 +18,59 @@
 
 package org.apache.hadoop.chukwa.util;
 
-import java.util.Random;
 
+import java.util.Random;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.*;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
 
-public class MaxRateSender  extends Thread implements Adaptor {
-
+public class MaxRateSender extends Thread implements Adaptor {
 
   public static final int BUFFER_SIZE = 60 * 1024;
   public static final String ADAPTOR_NAME = "MaxRateSender";
-  
+
   private volatile boolean stopping = false;
   private long offset;
   private String type;
   ChunkReceiver dest;
   private long adaptorID;
-  
+
   public String getCurrentStatus() throws AdaptorException {
     return "";
   }
 
-  public void start(long adaptor, String type, String status, long offset, ChunkReceiver dest) throws AdaptorException
-  {
+  public void start(long adaptor, String type, String status, long offset,
+      ChunkReceiver dest) throws AdaptorException {
     this.setName("MaxRateSender adaptor");
     this.adaptorID = adaptor;
     this.offset = offset;
     this.type = type;
     this.dest = dest;
-    super.start();  //this is a Thread.start
+    super.start(); // this is a Thread.start
   }
-  
+
   public String getStreamName() {
-	  return type;
+    return type;
   }
-  
-  public void run()
-  {
+
+  public void run() {
     Random r = new Random();
-    
-    try{
-      while(!stopping) {
-        byte[] data = new byte[ BUFFER_SIZE];
+
+    try {
+      while (!stopping) {
+        byte[] data = new byte[BUFFER_SIZE];
         r.nextBytes(data);
         offset += data.length;
-        ChunkImpl evt = new ChunkImpl(type, "random data source", offset, data, this);
+        ChunkImpl evt = new ChunkImpl(type, "random data source", offset, data,
+            this);
         dest.add(evt);
-        
+
       }
-    }  catch(InterruptedException ie)
-    {}
+    } catch (InterruptedException ie) {
+    }
   }
-  
+
   public String toString() {
     return ADAPTOR_NAME;
   }
@@ -80,11 +79,10 @@ public class MaxRateSender  extends Thread implements Adaptor {
     stopping = true;
     return offset;
   }
-  
+
   public void hardStop() throws AdaptorException {
     stopping = true;
   }
-  
 
   @Override
   public String getType() {

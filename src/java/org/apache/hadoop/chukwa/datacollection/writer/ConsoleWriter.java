@@ -18,88 +18,84 @@
 
 package org.apache.hadoop.chukwa.datacollection.writer;
 
+
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.conf.Configuration;
 
 public class ConsoleWriter implements ChukwaWriter {
 
   boolean printData;
-  volatile long dataSize=0;
+  volatile long dataSize = 0;
   final Timer statTimer;
-  
-  
+
   private class StatReportingTask extends TimerTask {
-    private long lastTs=System.currentTimeMillis();
-    private long lastDataSize=0;
+    private long lastTs = System.currentTimeMillis();
+    private long lastDataSize = 0;
+
     public void run() {
-      long time =  System.currentTimeMillis();
-      long interval= time - lastTs;
+      long time = System.currentTimeMillis();
+      long interval = time - lastTs;
       lastTs = time;
-      
+
       long ds = dataSize;
-      long dataRate =  1000 * (ds - lastDataSize) / interval;  //bytes/sec
-        //refers only to data field, not including http or chukwa headers
+      long dataRate = 1000 * (ds - lastDataSize) / interval; // bytes/sec
+      // refers only to data field, not including http or chukwa headers
       lastDataSize = ds;
-      
-      System.out.println("stat=datacollection.writer.ConsoleWriter|dataRate=" + dataRate );
+
+      System.out.println("stat=datacollection.writer.ConsoleWriter|dataRate="
+          + dataRate);
     }
   };
-  
 
   public ConsoleWriter() {
     this(true);
   }
-  
+
   public ConsoleWriter(boolean printData) {
     this.printData = printData;
     statTimer = new Timer();
   }
-  
-  public void close()
-  {
+
+  public void close() {
     statTimer.cancel();
   }
 
-  public void init(Configuration conf) throws WriterException
-  {
-     System.out.println("----  DUMMY HDFS WRITER IN USE ---");
+  public void init(Configuration conf) throws WriterException {
+    System.out.println("----  DUMMY HDFS WRITER IN USE ---");
 
-     statTimer.schedule(new StatReportingTask(), 1000,10*1000);
+    statTimer.schedule(new StatReportingTask(), 1000, 10 * 1000);
   }
 
-  public void add(Chunk data) throws WriterException
-  {
+  public void add(Chunk data) throws WriterException {
     int startOffset = 0;
 
     dataSize += data.getData().length;
-    if(printData) {
+    if (printData) {
       System.out.println(data.getData().length + " bytes of data in chunk");
 
-      for(int offset: data.getRecordOffsets()) {
+      for (int offset : data.getRecordOffsets()) {
         System.out.print(data.getStreamName());
         System.out.print(" ");
         System.out.print(data.getSource());
         System.out.print(" ");
         System.out.print(data.getDataType());
         System.out.print(") ");
-        System.out.print(new String(data.getData(), startOffset, offset - startOffset + 1));
-        startOffset= offset + 1;
+        System.out.print(new String(data.getData(), startOffset, offset
+            - startOffset + 1));
+        startOffset = offset + 1;
       }
     }
   }
 
-@Override
-public void add(List<Chunk> chunks) throws WriterException
-{
-	for(Chunk chunk: chunks)
-	{
-		add(chunk);
-	}
-	
-}
+  @Override
+  public void add(List<Chunk> chunks) throws WriterException {
+    for (Chunk chunk : chunks) {
+      add(chunk);
+    }
+
+  }
 
 }

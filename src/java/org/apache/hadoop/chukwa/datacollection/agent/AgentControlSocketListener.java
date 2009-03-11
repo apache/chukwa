@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.datacollection.agent;
 
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,7 +29,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Map;
-
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
 import org.apache.log4j.Logger;
@@ -39,8 +39,8 @@ import org.apache.log4j.Logger;
  * programmatically and via telnet.
  * 
  * The port to bind to can be specified by setting option
- * chukwaAgent.agent.control.port.
- * A port of 0 creates a socket on any free port.
+ * chukwaAgent.agent.control.port. A port of 0 creates a socket on any free
+ * port.
  */
 public class AgentControlSocketListener extends Thread {
 
@@ -63,7 +63,8 @@ public class AgentControlSocketListener extends Thread {
       try {
         InputStream in = connection.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        PrintStream out = new PrintStream(new BufferedOutputStream(connection.getOutputStream()));
+        PrintStream out = new PrintStream(new BufferedOutputStream(connection
+            .getOutputStream()));
         String cmd = null;
         while ((cmd = br.readLine()) != null) {
           processCommand(cmd, out);
@@ -89,11 +90,13 @@ public class AgentControlSocketListener extends Thread {
     public void processCommand(String cmd, PrintStream out) throws IOException {
       String[] words = cmd.split("\\s+");
       if (log.isDebugEnabled()) {
-        log.debug("command from " + connection.getRemoteSocketAddress() + ":"+ cmd);
+        log.debug("command from " + connection.getRemoteSocketAddress() + ":"
+            + cmd);
       }
 
       if (words[0].equalsIgnoreCase("help")) {
-        out.println("you're talking to the Chukwa agent.  Commands available: ");
+        out
+            .println("you're talking to the Chukwa agent.  Commands available: ");
         out.println("add [adaptorname] [args] [offset] -- start an adaptor");
         out.println("shutdown [adaptornumber]  -- graceful stop");
         out.println("stop [adaptornumber]  -- abrupt stop");
@@ -177,7 +180,8 @@ public class AgentControlSocketListener extends Thread {
 
     this.setDaemon(false); // to keep the local agent alive
     this.agent = agent;
-    this.portno = agent.getConfiguration().getInt("chukwaAgent.control.port", 9093);
+    this.portno = agent.getConfiguration().getInt("chukwaAgent.control.port",
+        9093);
     log.info("AgentControlSocketListerner ask for port: " + portno);
     this.setName("control socket listener");
   }

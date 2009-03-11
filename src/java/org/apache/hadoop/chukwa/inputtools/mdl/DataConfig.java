@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.inputtools.mdl;
 
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -27,51 +28,55 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DataConfig {
-    private static Configuration config;
-    final static String DATACONFIG = "mdl.xml";
-    private Log log = LogFactory.getLog(DataConfig.class);
-    
-    public DataConfig(String path) {
-        Path fileResource = new Path(path);
+  private static Configuration config;
+  final static String DATACONFIG = "mdl.xml";
+  private Log log = LogFactory.getLog(DataConfig.class);
+
+  public DataConfig(String path) {
+    Path fileResource = new Path(path);
+    config = new Configuration();
+    config.addResource(fileResource);
+  }
+
+  public DataConfig() {
+    String dataConfig = System.getenv("DATACONFIG");
+    if (dataConfig == null) {
+      dataConfig = DATACONFIG;
+    }
+    log.debug("DATACONFIG=" + dataConfig);
+    if (config == null) {
+      try {
+        Path fileResource = new Path(dataConfig);
         config = new Configuration();
         config.addResource(fileResource);
+      } catch (Exception e) {
+        log.debug("Error reading configuration file:" + dataConfig);
+      }
     }
-    public DataConfig() {
-    	String dataConfig = System.getenv("DATACONFIG");
-    	if(dataConfig==null) {
-    		dataConfig=DATACONFIG;
-    	}
-    	log.debug("DATACONFIG="+dataConfig);
-    	if(config==null)  {
-    		try {
-                Path fileResource = new Path(dataConfig);
-                config = new Configuration();
-                config.addResource(fileResource);
-    		} catch (Exception e) {
-    			log.debug("Error reading configuration file:"+dataConfig);
-    		}
-    	}
-    }
+  }
 
-    public String get(String key) {
-        return config.get(key);
+  public String get(String key) {
+    return config.get(key);
+  }
+
+  public void put(String key, String value) {
+    config.set(key, value);
+  }
+
+  public Iterator<Map.Entry<String, String>> iterator() {
+    return config.iterator();
+  }
+
+  public HashMap<String, String> startWith(String key) {
+    HashMap<String, String> transformer = new HashMap<String, String>();
+    Iterator<Map.Entry<String, String>> entries = config.iterator();
+    while (entries.hasNext()) {
+      String entry = entries.next().toString();
+      if (entry.startsWith(key)) {
+        String[] metrics = entry.split("=");
+        transformer.put(metrics[0], metrics[1]);
+      }
     }
-    public void put(String key, String value) {
-        config.set(key, value);
-    }
-    public Iterator<Map.Entry <String, String>> iterator() {
-        return config.iterator();
-    }
-    public HashMap<String, String> startWith(String key) {
-        HashMap<String, String> transformer = new HashMap<String, String>();
-        Iterator<Map.Entry <String, String>> entries = config.iterator();
-        while(entries.hasNext()) {
-           String entry = entries.next().toString();
-           if(entry.startsWith(key)) {
-               String[] metrics = entry.split("=");
-               transformer.put(metrics[0],metrics[1]);
-           }
-        }
-        return transformer;
-    }
+    return transformer;
+  }
 }

@@ -17,6 +17,7 @@
  */
 package org.apache.hadoop.chukwa.datacollection.connector;
 
+
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.*;
 import java.util.ArrayList;
@@ -24,10 +25,11 @@ import java.util.ArrayList;
 public class ChunkCatcherConnector implements Connector {
 
   ChunkQueue eq;
-  public void start(){
+
+  public void start() {
     eq = DataFactory.getInstance().getEventQueue();
   }
-  
+
   public Chunk waitForAChunk() throws InterruptedException {
     ArrayList<Chunk> chunks = new ArrayList<Chunk>();
     eq.collect(chunks, 1);
@@ -38,9 +40,8 @@ public class ChunkCatcherConnector implements Connector {
   }
 
   @Override
-  public void reloadConfiguration()
-  {
-  	System.out.println("reloadConfiguration");
+  public void reloadConfiguration() {
+    System.out.println("reloadConfiguration");
   }
 
 }

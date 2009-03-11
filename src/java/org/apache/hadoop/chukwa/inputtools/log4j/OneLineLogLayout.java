@@ -18,21 +18,21 @@
 
 package org.apache.hadoop.chukwa.inputtools.log4j;
 
+
 import org.apache.log4j.*;
 import org.apache.log4j.spi.LoggingEvent;
 
 public class OneLineLogLayout extends PatternLayout {
-  
+
   char SEP = ' ';
-  public String format(LoggingEvent evt)
-  {
-    
+
+  public String format(LoggingEvent evt) {
+
     String initial_s = super.format(evt);
     StringBuilder sb = new StringBuilder();
-    for(int i = 0; i < initial_s.length() -1 ; ++i)
-    {
+    for (int i = 0; i < initial_s.length() - 1; ++i) {
       char c = initial_s.charAt(i);
-      if(c == '\n')
+      if (c == '\n')
         sb.append(SEP);
       else
         sb.append(c);
@@ -41,23 +41,21 @@ public class OneLineLogLayout extends PatternLayout {
     String[] s = evt.getThrowableStrRep();
     if (s != null) {
       int len = s.length;
-      for(int i = 0; i < len; i++) {
+      for (int i = 0; i < len; i++) {
         sb.append(s[i]);
         sb.append(SEP);
-        }
+      }
     }
-    
+
     sb.append('\n');
     return sb.toString();
   }
-  
-  public boolean ignoresThrowable()
-  {
+
+  public boolean ignoresThrowable() {
     return false;
   }
-  
-  public static void main(String[] args)
-  {
+
+  public static void main(String[] args) {
     System.setProperty("line.separator", " ");
     Logger l = Logger.getRootLogger();
     l.removeAllAppenders();
@@ -65,8 +63,7 @@ public class OneLineLogLayout extends PatternLayout {
     appender.setName("console");
     l.addAppender(appender);
     l.warn("testing", new java.io.IOException("just kidding!"));
-    
-    
+
   }
 
 }

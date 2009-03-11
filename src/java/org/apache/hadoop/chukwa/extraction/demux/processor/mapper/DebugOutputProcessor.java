@@ -18,39 +18,34 @@
 
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
-import java.io.IOException;
 
+import java.io.IOException;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
 
-public class DebugOutputProcessor extends AbstractProcessor
-{
-	static Logger log = Logger.getLogger(DebugOutputProcessor.class);
-	public static final String recordType = "Debug";
-		
-	@Override
-	public void parse(String line, OutputCollector<ChukwaRecordKey, ChukwaRecord> output,
-			Reporter reporter)
-	{
-		log.info("record: [" + line + "] type[" + chunk.getDataType() + "]");
-		
-		ChukwaRecord record = new ChukwaRecord();
-		buildGenericRecord(record,line, System.currentTimeMillis(),recordType);
-		key.setKey("" + chunk.getSeqID());
-		try
-		{
-			output.collect(key, record);
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
+public class DebugOutputProcessor extends AbstractProcessor {
+  static Logger log = Logger.getLogger(DebugOutputProcessor.class);
+  public static final String recordType = "Debug";
 
-	public String getDataType()
-	{
-		return DebugOutputProcessor.recordType;
-	}
+  @Override
+  public void parse(String line,
+      OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter) {
+    log.info("record: [" + line + "] type[" + chunk.getDataType() + "]");
+
+    ChukwaRecord record = new ChukwaRecord();
+    buildGenericRecord(record, line, System.currentTimeMillis(), recordType);
+    key.setKey("" + chunk.getSeqID());
+    try {
+      output.collect(key, record);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public String getDataType() {
+    return DebugOutputProcessor.recordType;
+  }
 }

@@ -18,30 +18,27 @@
 
 package org.apache.hadoop.chukwa.extraction.engine;
 
+
 import java.util.List;
 import java.util.TreeMap;
-
 import org.apache.hadoop.chukwa.extraction.engine.datasource.DataSource;
 import org.apache.hadoop.chukwa.extraction.engine.datasource.DataSourceException;
 import org.apache.hadoop.chukwa.extraction.engine.datasource.DataSourceFactory;
 
-public class ChukwaSearchService implements SearchService
-{
-	private DataSourceFactory dataSourceFactory = DataSourceFactory.getInstance();
-	
-	public SearchResult  search(String cluster,String[] dataSources,long t0,long t1,String filter,Token token)
-	throws DataSourceException
-	{
-		SearchResult result = new ChukwaSearchResult();
-		
-		TreeMap<Long, List<Record>> records = new TreeMap<Long,List<Record>> ();
-		result.setRecords(records);
-		
-		for(int i=0;i<dataSources.length;i++)
-		{
-			DataSource ds = dataSourceFactory.getDataSource(dataSources[i]);
-			ds.search(result, cluster, dataSources[i], t0, t1, filter,token);
-		}
-		return result;
-	}
+public class ChukwaSearchService implements SearchService {
+  private DataSourceFactory dataSourceFactory = DataSourceFactory.getInstance();
+
+  public SearchResult search(String cluster, String[] dataSources, long t0,
+      long t1, String filter, Token token) throws DataSourceException {
+    SearchResult result = new ChukwaSearchResult();
+
+    TreeMap<Long, List<Record>> records = new TreeMap<Long, List<Record>>();
+    result.setRecords(records);
+
+    for (int i = 0; i < dataSources.length; i++) {
+      DataSource ds = dataSourceFactory.getDataSource(dataSources[i]);
+      ds.search(result, cluster, dataSources[i], t0, t1, filter, token);
+    }
+    return result;
+  }
 }

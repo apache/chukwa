@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.hicc;
 
+
 public class Config {
 
 }

@@ -18,9 +18,9 @@
 
 package org.apache.hadoop.chukwa.extraction.demux;
 
+
 import org.apache.hadoop.chukwa.extraction.engine.Record;
 
-public interface TaggerPlugin
-{
-	public void tag(String line, Record record);
+public interface TaggerPlugin {
+  public void tag(String line, Record record);
 }

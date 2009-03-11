@@ -17,17 +17,18 @@
  */
 package org.apache.hadoop.chukwa.datacollection.protocol;
 
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-
 import org.apache.hadoop.chukwa.Chunk;
 
-public interface Protocol
-{
-	public byte[] toByteArray(List<Chunk> chunks);
-	public List<Chunk> parseFrom(byte[] bytes);
-	
-	void writeTo(OutputStream output);
-	List<Chunk> parseFrom(InputStream input);
+public interface Protocol {
+  public byte[] toByteArray(List<Chunk> chunks);
+
+  public List<Chunk> parseFrom(byte[] bytes);
+
+  void writeTo(OutputStream output);
+
+  List<Chunk> parseFrom(InputStream input);
 }

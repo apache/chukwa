@@ -18,16 +18,16 @@
 
 package org.apache.hadoop.chukwa.extraction.engine;
 
+
 import java.util.List;
 import java.util.TreeMap;
 
+public interface SearchResult {
+  public void setToken(Token token);
 
+  public Token getToken();
 
+  public TreeMap<Long, List<Record>> getRecords();
 
-public interface SearchResult
-{
-	public void setToken(Token token);
-	public Token getToken();
-	public TreeMap<Long, List<Record>> getRecords();
-	public void setRecords(TreeMap<Long, List<Record>> records);
+  public void setRecords(TreeMap<Long, List<Record>> records);
 }

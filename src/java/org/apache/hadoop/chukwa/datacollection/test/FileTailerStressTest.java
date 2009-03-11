@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.datacollection.test;
 
+
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.collector.servlet.ServletCollector;
@@ -32,66 +33,66 @@ import java.util.*;
 
 public class FileTailerStressTest {
 
-  static final int DELAY_MIN = 10*1000;
-  static final int DELAY_RANGE = 2* 1000;
-  
-  static class OccasionalWriterThread extends Thread
-  {
+  static final int DELAY_MIN = 10 * 1000;
+  static final int DELAY_RANGE = 2 * 1000;
+
+  static class OccasionalWriterThread extends Thread {
     File file;
-    
-    OccasionalWriterThread(File f)  {
+
+    OccasionalWriterThread(File f) {
       file = f;
     }
-    
-    public void run()  {
+
+    public void run() {
       try {
-      FileOutputStream fos = new FileOutputStream(file);
-      PrintWriter out = new PrintWriter(fos);
-      Random rand = new Random();
-      while(true) {
-        int delay = rand.nextInt( DELAY_RANGE ) + DELAY_MIN;
-        Thread.sleep(delay);
-        Date d = new Date();
-        out.println("some test data written at " + d.toString());
-        out.flush();
-      }
-      } catch(IOException e) {
+        FileOutputStream fos = new FileOutputStream(file);
+        PrintWriter out = new PrintWriter(fos);
+        Random rand = new Random();
+        while (true) {
+          int delay = rand.nextInt(DELAY_RANGE) + DELAY_MIN;
+          Thread.sleep(delay);
+          Date d = new Date();
+          out.println("some test data written at " + d.toString());
+          out.flush();
+        }
+      } catch (IOException e) {
         e.printStackTrace();
       } catch (InterruptedException e) {
       }
     }
   }
-    
-static int FILES_TO_USE  = 100;
+
+  static int FILES_TO_USE = 100;
+
   /**
    * @param args
    */
-  public static void main(String[] args)
-  {
-    try{
+  public static void main(String[] args) {
+    try {
       Server server = new Server(9990);
-      Context root = new Context(server,"/",Context.SESSIONS);
-  
+      Context root = new Context(server, "/", Context.SESSIONS);
+
       ServletCollector.setWriter(new ConsoleWriter(true));
-      root.addServlet(new ServletHolder(new ServletCollector(new ChukwaConfiguration(true))), "/*");
+      root.addServlet(new ServletHolder(new ServletCollector(
+          new ChukwaConfiguration(true))), "/*");
       server.start();
       server.setStopAtShutdown(false);
-  
+
       Thread.sleep(1000);
       ChukwaAgent agent = new ChukwaAgent();
-      HttpConnector connector = new HttpConnector(agent, "http://localhost:9990/chukwa");
+      HttpConnector connector = new HttpConnector(agent,
+          "http://localhost:9990/chukwa");
       connector.start();
-      
+
       ChukwaConfiguration cc = new ChukwaConfiguration();
       int portno = cc.getInt("chukwaAgent.control.port", 9093);
       ChukwaAgentController cli = new ChukwaAgentController("localhost", portno);
-      
 
       File workdir = new File("/tmp/stresstest/");
       workdir.mkdir();
-      for(int i = 0; i < FILES_TO_USE; ++i) {
-        File newTestF = new File( "/tmp/stresstest/" + i);
-        
+      for (int i = 0; i < FILES_TO_USE; ++i) {
+        File newTestF = new File("/tmp/stresstest/" + i);
+
         newTestF.deleteOnExit();
         (new OccasionalWriterThread(newTestF)).start();
         cli.addFile("test-lines", newTestF.getAbsolutePath());
@@ -100,7 +101,7 @@ static int FILES_TO_USE  = 100;
       Thread.sleep(60 * 1000);
       System.out.println("cleaning up");
       workdir.delete();
-    } catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }

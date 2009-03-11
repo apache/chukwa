@@ -18,34 +18,30 @@
 
 package org.apache.hadoop.chukwa.extraction.engine.datasource.record;
 
+
 import org.apache.hadoop.chukwa.extraction.engine.datasource.DataSourceException;
 
-public class MalformedFileFormat extends DataSourceException
-{
+public class MalformedFileFormat extends DataSourceException {
 
-	/**
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = 2180898410952691571L;
+  private static final long serialVersionUID = 2180898410952691571L;
 
-	public MalformedFileFormat()
-	{
-		super();
-	}
+  public MalformedFileFormat() {
+    super();
+  }
 
-	public MalformedFileFormat(String message, Throwable cause)
-	{
-		super(message, cause);
-	}
+  public MalformedFileFormat(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-	public MalformedFileFormat(String message)
-	{
-		super(message);
-	}
+  public MalformedFileFormat(String message) {
+    super(message);
+  }
 
-	public MalformedFileFormat(Throwable cause)
-	{
-		super(cause);
-	}
+  public MalformedFileFormat(Throwable cause) {
+    super(cause);
+  }
 
 }

@@ -18,31 +18,27 @@
 
 package org.apache.hadoop.chukwa.extraction.demux.processor.reducer;
 
-public class UnknownReduceTypeException extends Exception
-{
 
-	/**
+public class UnknownReduceTypeException extends Exception {
+
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = 5760553864088487836L;
+  private static final long serialVersionUID = 5760553864088487836L;
 
-	public UnknownReduceTypeException()
-	{
-	}
+  public UnknownReduceTypeException() {
+  }
 
-	public UnknownReduceTypeException(String message)
-	{
-		super(message);
-	}
+  public UnknownReduceTypeException(String message) {
+    super(message);
+  }
 
-	public UnknownReduceTypeException(Throwable cause)
-	{
-		super(cause);
-	}
+  public UnknownReduceTypeException(Throwable cause) {
+    super(cause);
+  }
 
-	public UnknownReduceTypeException(String message, Throwable cause)
-	{
-		super(message, cause);
-	}
+  public UnknownReduceTypeException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
 }

@@ -17,29 +17,31 @@
  */
 package org.apache.hadoop.chukwa.datacollection.adaptor;
 
-import junit.framework.TestCase;
 
+import junit.framework.TestCase;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
 
 public class TestExecAdaptor extends TestCase {
-  
+
   ChunkCatcherConnector chunks;
+
   public TestExecAdaptor() {
     chunks = new ChunkCatcherConnector();
     chunks.start();
   }
-  
+
   public void testWithPs() throws ChukwaAgent.AlreadyRunningException {
     try {
-      ChukwaAgent  agent = new ChukwaAgent();
-      agent.processCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.ExecAdaptor ps ps aux 0");
-  
+      ChukwaAgent agent = new ChukwaAgent();
+      agent
+          .processCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.ExecAdaptor ps ps aux 0");
+
       Chunk c = chunks.waitForAChunk();
       System.out.println(new String(c.getData()));
-    } catch(InterruptedException e) {
-      
+    } catch (InterruptedException e) {
+
     }
   }
 

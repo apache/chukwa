@@ -18,25 +18,26 @@
 
 package org.apache.hadoop.chukwa.extraction.archive;
 
-import java.text.SimpleDateFormat;
 
+import java.text.SimpleDateFormat;
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.Partitioner;
 
-public class ChukwaArchiveDataTypePartitioner<K, V> 
-	implements Partitioner<ChukwaArchiveKey,ChunkImpl>
-{
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd");
-	
-	public void configure(JobConf arg0)
-	{}
+public class ChukwaArchiveDataTypePartitioner<K, V> implements
+    Partitioner<ChukwaArchiveKey, ChunkImpl> {
+  SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd");
 
-	public int getPartition(ChukwaArchiveKey key,ChunkImpl chunk, int numReduceTasks)
-	{
-		
-		 return ( (chunk.getDataType() + "_" +sdf.format(key.getTimePartition() )).hashCode() & Integer.MAX_VALUE) % numReduceTasks;
-	}
+  public void configure(JobConf arg0) {
+  }
+
+  public int getPartition(ChukwaArchiveKey key, ChunkImpl chunk,
+      int numReduceTasks) {
+
+    return ((chunk.getDataType() + "_" + sdf.format(key.getTimePartition()))
+        .hashCode() & Integer.MAX_VALUE)
+        % numReduceTasks;
+  }
 
 }

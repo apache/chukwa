@@ -17,15 +17,14 @@
  */
 package org.apache.hadoop.chukwa.datacollection.sender;
 
+
 import junit.framework.TestCase;
 import java.util.*;
-
 import org.apache.hadoop.chukwa.datacollection.sender.RetryListOfCollectors;
 
 public class TestRetryListOfCollectors extends TestCase {
 
-  public void testRetryList()
-  {
+  public void testRetryList() {
     List<String> hosts = new ArrayList<String>();
     hosts.add("host1");
     hosts.add("host2");
@@ -33,20 +32,20 @@ public class TestRetryListOfCollectors extends TestCase {
     hosts.add("host4");
     RetryListOfCollectors rloc = new RetryListOfCollectors(hosts, 2000);
     assertEquals(hosts.size(), rloc.total());
-    
-    for(int i = 0; i < hosts.size(); ++i) {
+
+    for (int i = 0; i < hosts.size(); ++i) {
       assertTrue(rloc.hasNext());
-      String s =  rloc.next();
+      String s = rloc.next();
       assertTrue(s != null);
       System.out.println(s);
     }
-    
-    if(rloc.hasNext()) {
+
+    if (rloc.hasNext()) {
       String s = rloc.next();
       System.out.println("saw unexpected collector " + s);
       fail();
     }
-  
+
   }
 
 }

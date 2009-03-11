@@ -18,29 +18,25 @@
 
 package org.apache.hadoop.chukwa.datacollection.adaptor;
 
-public class AdaptorException extends Exception
-{
 
-	private static final long serialVersionUID = -8490279345367308690L;
+public class AdaptorException extends Exception {
 
-	public AdaptorException()
-	{
-		super();
-	}
+  private static final long serialVersionUID = -8490279345367308690L;
 
-	public AdaptorException(String arg0, Throwable arg1)
-	{
-		super(arg0, arg1);
-	}
+  public AdaptorException() {
+    super();
+  }
 
-	public AdaptorException(String arg0)
-	{
-		super(arg0);
-	}
+  public AdaptorException(String arg0, Throwable arg1) {
+    super(arg0, arg1);
+  }
 
-	public AdaptorException(Throwable arg0)
-	{
-		super(arg0);
-	}
+  public AdaptorException(String arg0) {
+    super(arg0);
+  }
+
+  public AdaptorException(Throwable arg0) {
+    super(arg0);
+  }
 
 }

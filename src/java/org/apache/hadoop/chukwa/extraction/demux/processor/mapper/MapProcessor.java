@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
+
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
@@ -25,7 +26,7 @@ import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
-public interface MapProcessor
-{
-	public void process(ChukwaArchiveKey archiveKey,Chunk chunk,OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter);
+public interface MapProcessor {
+  public void process(ChukwaArchiveKey archiveKey, Chunk chunk,
+      OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter);
 }

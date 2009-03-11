@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.datacollection.adaptor;
 
+
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
 
 public class ChukwaTestAdaptor implements Adaptor {
@@ -27,11 +28,11 @@ public class ChukwaTestAdaptor implements Adaptor {
   private String params = null;
   private long startOffset = 0l;
   private ChunkReceiver dest = null;
-  
+
   @Override
   public String getCurrentStatus() throws AdaptorException {
     // TODO Auto-generated method stub
-    return type+ " "+ params + " "+ startOffset;
+    return type + " " + params + " " + startOffset;
   }
 
   @Override
@@ -43,7 +44,7 @@ public class ChukwaTestAdaptor implements Adaptor {
   @Override
   public void hardStop() throws AdaptorException {
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
@@ -60,14 +61,12 @@ public class ChukwaTestAdaptor implements Adaptor {
     this.params = params;
     this.startOffset = offset;
     this.dest = dest;
-    System.out.println("adaptorId [" +adaptorId + "]");
-    System.out.println("type [" +type+ "]");
-    System.out.println("params [" +params+ "]");
-    System.out.println("startOffset [" +startOffset+ "]");
-    
-    
+    System.out.println("adaptorId [" + adaptorId + "]");
+    System.out.println("type [" + type + "]");
+    System.out.println("params [" + params + "]");
+    System.out.println("startOffset [" + startOffset + "]");
+
   }
-  
 
   public String getType() {
     return type;
@@ -108,5 +107,5 @@ public class ChukwaTestAdaptor implements Adaptor {
   public void setDest(ChunkReceiver dest) {
     this.dest = dest;
   }
-  
+
 }

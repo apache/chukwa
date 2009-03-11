@@ -18,49 +18,38 @@
 
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
-import java.util.HashMap;
 
+import java.util.HashMap;
 import org.apache.log4j.Logger;
 
+public class MapProcessorFactory {
+  static Logger log = Logger.getLogger(MapProcessorFactory.class);
 
+  private static HashMap<String, MapProcessor> processors = new HashMap<String, MapProcessor>(); // registry
 
-public class MapProcessorFactory
-{
-	static Logger log = Logger.getLogger(MapProcessorFactory.class);	
-	
-	private static HashMap<String,MapProcessor > processors =
-	    new HashMap<String, MapProcessor>(); // registry
-		
-	private MapProcessorFactory()
-	{}
-	
-	public static MapProcessor getProcessor(String parserClass)
-	 throws UnknownRecordTypeException
-	{
-		if (processors.containsKey(parserClass)) 
-		{
-			return processors.get(parserClass);
-		} 
-		else 
-		{
-			MapProcessor processor = null;
-			try 
-			{
-				processor = (MapProcessor)Class.forName(parserClass).getConstructor().newInstance();
-			} 
-			catch(ClassNotFoundException e) 
-			{
-				throw new UnknownRecordTypeException("Unknown parserClass:" + parserClass, e);			
-			}
-			catch(Exception e) 
-			{
-			  throw new UnknownRecordTypeException("error constructing processor", e);
-			}
-			
-			//TODO using a ThreadSafe/reuse flag to actually decide if we want 
-			// to reuse the same processor again and again
-			processors.put(parserClass,processor);
-			return processor;
-		}
-	}
+  private MapProcessorFactory() {
+  }
+
+  public static MapProcessor getProcessor(String parserClass)
+      throws UnknownRecordTypeException {
+    if (processors.containsKey(parserClass)) {
+      return processors.get(parserClass);
+    } else {
+      MapProcessor processor = null;
+      try {
+        processor = (MapProcessor) Class.forName(parserClass).getConstructor()
+            .newInstance();
+      } catch (ClassNotFoundException e) {
+        throw new UnknownRecordTypeException("Unknown parserClass:"
+            + parserClass, e);
+      } catch (Exception e) {
+        throw new UnknownRecordTypeException("error constructing processor", e);
+      }
+
+      // TODO using a ThreadSafe/reuse flag to actually decide if we want
+      // to reuse the same processor again and again
+      processors.put(parserClass, processor);
+      return processor;
+    }
+  }
 }

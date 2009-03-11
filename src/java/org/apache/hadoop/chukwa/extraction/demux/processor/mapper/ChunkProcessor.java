@@ -18,14 +18,16 @@
 
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
+
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
-public interface ChunkProcessor
-{
-	public String getDataType();
-	public void process(Chunk chunk,OutputCollector<Text, ChukwaRecord> output, Reporter reporter);
+public interface ChunkProcessor {
+  public String getDataType();
+
+  public void process(Chunk chunk, OutputCollector<Text, ChukwaRecord> output,
+      Reporter reporter);
 }

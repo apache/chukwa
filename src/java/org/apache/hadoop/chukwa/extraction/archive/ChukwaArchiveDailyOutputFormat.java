@@ -20,26 +20,25 @@ package org.apache.hadoop.chukwa.extraction.archive;
 
 
 import java.text.SimpleDateFormat;
-
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.mapred.lib.MultipleSequenceFileOutputFormat;
 import org.apache.log4j.Logger;
 
-public class ChukwaArchiveDailyOutputFormat extends MultipleSequenceFileOutputFormat<ChukwaArchiveKey, ChunkImpl>
-{
-	static Logger log = Logger.getLogger(ChukwaArchiveDailyOutputFormat.class);
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd");
-	
-	
-	@Override
-	protected String generateFileNameForKeyValue(ChukwaArchiveKey key, ChunkImpl chunk,
-			String name)
-	{
-		
-		if (log.isDebugEnabled())
-			{log.debug("ChukwaArchiveOutputFormat.fileName: " + sdf.format(key.getTimePartition()));}
-		
-		return sdf.format(key.getTimePartition()) + ".arc";
-	}
+public class ChukwaArchiveDailyOutputFormat extends
+    MultipleSequenceFileOutputFormat<ChukwaArchiveKey, ChunkImpl> {
+  static Logger log = Logger.getLogger(ChukwaArchiveDailyOutputFormat.class);
+  SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd");
+
+  @Override
+  protected String generateFileNameForKeyValue(ChukwaArchiveKey key,
+      ChunkImpl chunk, String name) {
+
+    if (log.isDebugEnabled()) {
+      log.debug("ChukwaArchiveOutputFormat.fileName: "
+          + sdf.format(key.getTimePartition()));
+    }
+
+    return sdf.format(key.getTimePartition()) + ".arc";
+  }
 }

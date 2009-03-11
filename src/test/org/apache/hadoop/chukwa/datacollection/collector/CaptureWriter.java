@@ -17,9 +17,9 @@
  */
 package org.apache.hadoop.chukwa.datacollection.collector;
 
+
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.WriterException;
@@ -31,17 +31,18 @@ public class CaptureWriter implements ChukwaWriter {
   @Override
   public void add(List<Chunk> chunks) throws WriterException {
 
-    synchronized(outputs) {
-     for(Chunk c: chunks)
-       outputs.add(c);
+    synchronized (outputs) {
+      for (Chunk c : chunks)
+        outputs.add(c);
     }
   }
 
   @Override
-  public void close() throws WriterException { }
+  public void close() throws WriterException {
+  }
 
   @Override
-  public void init(Configuration c) throws WriterException {  }
-  
-}
+  public void init(Configuration c) throws WriterException {
+  }
 
+}

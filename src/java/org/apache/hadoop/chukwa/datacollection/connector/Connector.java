@@ -18,30 +18,31 @@
 
 package org.apache.hadoop.chukwa.datacollection.connector;
 
+
 /**
- * This class is responsible for setting up a long living process that repeatedly calls the 
- * <code>send</code> function of a Sender.
+ * This class is responsible for setting up a long living process that
+ * repeatedly calls the <code>send</code> function of a Sender.
  */
 
-public interface Connector
-{
-	static final int proxyTimestampField = 0;
-	/**
+public interface Connector {
+  static final int proxyTimestampField = 0;
+  /**
 	 * 
 	 */
-	static final int proxyURIField = 1;
-	static final int proxyRetryField = 2;
-	
-	static final int adaptorTimestampField = 3;
-	static final int adaptorURIField = 4;
+  static final int proxyURIField = 1;
+  static final int proxyRetryField = 2;
 
-	static final int logTimestampField = 5;
-	static final int logSourceField = 6;
-	static final int logApplicationField = 7;
-	static final int logEventField = 8;
+  static final int adaptorTimestampField = 3;
+  static final int adaptorURIField = 4;
 
-	
-	public void start();
-    public void shutdown();
-    public void reloadConfiguration();
+  static final int logTimestampField = 5;
+  static final int logSourceField = 6;
+  static final int logApplicationField = 7;
+  static final int logEventField = 8;
+
+  public void start();
+
+  public void shutdown();
+
+  public void reloadConfiguration();
 }

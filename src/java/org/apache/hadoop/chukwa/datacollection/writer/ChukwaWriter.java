@@ -18,15 +18,16 @@
 
 package org.apache.hadoop.chukwa.datacollection.writer;
 
-import java.util.List;
 
+import java.util.List;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.conf.Configuration;
 
-public interface ChukwaWriter
-{
-	public void init(Configuration c) throws WriterException;
-	public void add(List<Chunk> chunks) throws WriterException;
-	public void close() throws WriterException;;
+public interface ChukwaWriter {
+  public void init(Configuration c) throws WriterException;
+
+  public void add(List<Chunk> chunks) throws WriterException;
+
+  public void close() throws WriterException;;
 
 }

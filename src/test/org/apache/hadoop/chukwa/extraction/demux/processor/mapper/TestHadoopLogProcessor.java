@@ -18,10 +18,9 @@
 
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
+
 import java.io.IOException;
-
 import junit.framework.TestCase;
-
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
@@ -34,46 +33,46 @@ import org.apache.hadoop.mapred.Reporter;
  * 
  * Currently more or less just a stub
  */
-public class TestHadoopLogProcessor extends TestCase{
-  
+public class TestHadoopLogProcessor extends TestCase {
+
   long serializedSize = 0;
   OutputCollector<ChukwaRecordKey, ChukwaRecord> nullcollector = new OutputCollector<ChukwaRecordKey, ChukwaRecord>() {
-    public void collect(ChukwaRecordKey arg0, ChukwaRecord arg1) throws IOException
-    {
+    public void collect(ChukwaRecordKey arg0, ChukwaRecord arg1)
+        throws IOException {
       serializedSize += arg1.toString().length();
     }
   };
 
-  
-  
   public void testHLPParseTimes() {
     HadoopLogProcessor hlp = new HadoopLogProcessor();
-  
+
     int LINES = 50000;
     long bytes = 0;
     long ts_start = System.currentTimeMillis();
-    for(int i =0; i < LINES; ++i) {
+    for (int i = 0; i < LINES; ++i) {
       Chunk c = getNewChunk();
       bytes += c.getData().length;
-      hlp.process(null,c, nullcollector, Reporter.NULL);
- //     hlp.parse(line, nullcollector, Reporter.NULL);
+      hlp.process(null, c, nullcollector, Reporter.NULL);
+      // hlp.parse(line, nullcollector, Reporter.NULL);
     }
     long time = (System.currentTimeMillis() - ts_start);
     System.out.println("parse took " + time + " milliseconds");
-    System.out.println("aka " + time * 1.0 / LINES + " ms per line or " + 
-        time *1000.0 / bytes  + " ms per kilobyte of log data");
+    System.out.println("aka " + time * 1.0 / LINES + " ms per line or " + time
+        * 1000.0 / bytes + " ms per kilobyte of log data");
     System.out.println("output records had total length of " + serializedSize);
   }
-  
 
   java.util.Random r = new java.util.Random();
+
   public Chunk getNewChunk() {
     int ms = r.nextInt(1000);
-    String line = "2008-05-29 10:42:22,"+ ms + " INFO org.apache.hadoop.dfs.DataNode: Some text goes here" +r.nextInt() + "\n";
-    ChunkImpl c = new ChunkImpl("HadoopLogProcessor", "test" ,line.length() -1 ,line.getBytes() , null );
-       
+    String line = "2008-05-29 10:42:22," + ms
+        + " INFO org.apache.hadoop.dfs.DataNode: Some text goes here"
+        + r.nextInt() + "\n";
+    ChunkImpl c = new ChunkImpl("HadoopLogProcessor", "test",
+        line.length() - 1, line.getBytes(), null);
+
     return c;
   }
-  
-}
 
+}

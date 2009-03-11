@@ -18,61 +18,61 @@
 
 package org.apache.hadoop.chukwa.hicc;
 
+
 import java.io.*;
 import java.util.*;
 
 public class ClusterConfig {
-    public static HashMap<String, String> clusterMap = new HashMap<String, String>();
-    private String path=System.getenv("CHUKWA_CONF_DIR")+File.separator;
-    static public String getContents(File aFile) {
-        //...checks on aFile are elided
-        StringBuffer contents = new StringBuffer();
-   
-        try {
-          //use buffering, reading one line at a time
-          //FileReader always assumes default encoding is OK!
-          BufferedReader input =  new BufferedReader(new FileReader(aFile));
-          try {
-             String line = null; //not declared within while loop
-             /*
-              * readLine is a bit quirky :
-              * it returns the content of a line MINUS the newline.
-              * it returns null only for the END of the stream.
-              * it returns an empty String if two newlines appear in a row.
-              */
-             while (( line = input.readLine()) != null){
-                contents.append(line);
-                contents.append(System.getProperty("line.separator"));
-             }
-          } finally {
-             input.close();
-          }
-        }
-          catch (IOException ex){
-          ex.printStackTrace();
-        }
+  public static HashMap<String, String> clusterMap = new HashMap<String, String>();
+  private String path = System.getenv("CHUKWA_CONF_DIR") + File.separator;
 
-        return contents.toString();
+  static public String getContents(File aFile) {
+    // ...checks on aFile are elided
+    StringBuffer contents = new StringBuffer();
+
+    try {
+      // use buffering, reading one line at a time
+      // FileReader always assumes default encoding is OK!
+      BufferedReader input = new BufferedReader(new FileReader(aFile));
+      try {
+        String line = null; // not declared within while loop
+        /*
+         * readLine is a bit quirky : it returns the content of a line MINUS the
+         * newline. it returns null only for the END of the stream. it returns
+         * an empty String if two newlines appear in a row.
+         */
+        while ((line = input.readLine()) != null) {
+          contents.append(line);
+          contents.append(System.getProperty("line.separator"));
+        }
+      } finally {
+        input.close();
+      }
+    } catch (IOException ex) {
+      ex.printStackTrace();
     }
 
-    public ClusterConfig() {
-        File cc = new File(path+"jdbc.conf");
-        String buffer = getContents(cc);
-        String[] lines = buffer.split("\n");
-        for(String line: lines) {
-            String[] data = line.split("=",2);
-            clusterMap.put(data[0],data[1]);
-        }
-    }
+    return contents.toString();
+  }
 
-    public String getURL(String cluster) {
-        String url = clusterMap.get(cluster);
-        return url; 
+  public ClusterConfig() {
+    File cc = new File(path + "jdbc.conf");
+    String buffer = getContents(cc);
+    String[] lines = buffer.split("\n");
+    for (String line : lines) {
+      String[] data = line.split("=", 2);
+      clusterMap.put(data[0], data[1]);
     }
+  }
 
-    public Iterator<String> getClusters() {
-        Set<String> keys = clusterMap.keySet();
-        Iterator<String> i = keys.iterator();
-        return i;
-    }    
+  public String getURL(String cluster) {
+    String url = clusterMap.get(cluster);
+    return url;
+  }
+
+  public Iterator<String> getClusters() {
+    Set<String> keys = clusterMap.keySet();
+    Iterator<String> i = keys.iterator();
+    return i;
+  }
 }

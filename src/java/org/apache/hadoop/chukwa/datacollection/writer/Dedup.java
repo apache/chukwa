@@ -17,21 +17,21 @@
  */
 package org.apache.hadoop.chukwa.datacollection.writer;
 
+
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.conf.Configuration;
 
 public class Dedup implements PipelineableWriter {
-  
+
   static final class DedupKey {
     String name;
-    long val; //sequence number
-    
+    long val; // sequence number
+
     public DedupKey(String n, long p) {
       name = n;
       val = p;
@@ -42,43 +42,45 @@ public class Dedup implements PipelineableWriter {
     }
 
     public boolean equals(Object dk) {
-      if(dk instanceof DedupKey)
-        return name.equals(((DedupKey)dk).name) && val == ((DedupKey)dk).val;
-      else return false;
+      if (dk instanceof DedupKey)
+        return name.equals(((DedupKey) dk).name) && val == ((DedupKey) dk).val;
+      else
+        return false;
     }
   }
-  
+
   static class FixedSizeCache<EntryType> {
     final HashSet<EntryType> hs;
     final Queue<EntryType> toDrop;
     final int maxSize;
-    volatile long dupchunks =0;
+    volatile long dupchunks = 0;
+
     public FixedSizeCache(int size) {
       maxSize = size;
       hs = new HashSet<EntryType>(maxSize);
       toDrop = new ArrayDeque<EntryType>(maxSize);
     }
-    
+
     public synchronized void add(EntryType t) {
-      if(maxSize == 0)
+      if (maxSize == 0)
         return;
-      
-      if(hs.size() >= maxSize) 
-        while(hs.size() >= maxSize) {
+
+      if (hs.size() >= maxSize)
+        while (hs.size() >= maxSize) {
           EntryType td = toDrop.remove();
           hs.remove(td);
         }
-      
+
       hs.add(t);
       toDrop.add(t);
     }
-    
+
     private synchronized boolean addAndCheck(EntryType t) {
-      if(maxSize == 0)
+      if (maxSize == 0)
         return false;
-      
-      boolean b= hs.contains(t);
-      if(b)
+
+      boolean b = hs.contains(t);
+      if (b)
         dupchunks++;
       else {
         hs.add(t);
@@ -86,12 +88,11 @@ public class Dedup implements PipelineableWriter {
       }
       return b;
     }
-    
+
     private long dupCount() {
       return dupchunks;
     }
   }
-  
 
   FixedSizeCache<DedupKey> cache;
   ChukwaWriter next;
@@ -104,11 +105,11 @@ public class Dedup implements PipelineableWriter {
   @Override
   public void add(List<Chunk> chunks) throws WriterException {
     ArrayList<Chunk> passedThrough = new ArrayList<Chunk>();
-    for(Chunk c: chunks)
-      if(! cache.addAndCheck(new DedupKey(c.getStreamName(), c.getSeqID())))
+    for (Chunk c : chunks)
+      if (!cache.addAndCheck(new DedupKey(c.getStreamName(), c.getSeqID())))
         passedThrough.add(c);
-    
-    if(!passedThrough.isEmpty())
+
+    if (!passedThrough.isEmpty())
       next.add(passedThrough);
   }
 

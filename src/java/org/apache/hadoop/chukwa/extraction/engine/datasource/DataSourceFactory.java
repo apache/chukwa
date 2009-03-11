@@ -18,54 +18,45 @@
 
 package org.apache.hadoop.chukwa.extraction.engine.datasource;
 
-import java.util.HashMap;
 
+import java.util.HashMap;
 import org.apache.hadoop.chukwa.extraction.engine.datasource.database.DatabaseDS;
 import org.apache.hadoop.chukwa.extraction.engine.datasource.record.ChukwaRecordDataSource;
 
-public class DataSourceFactory
-{
-	private static Object lock = new Object();
-	private static DataSourceFactory factory = null;
-	private HashMap<String, DataSource> dataSources = new HashMap<String, DataSource>();
-	
-	private DataSourceFactory()
-	{
-		// TODO load from config Name + class + threadSafe? 
-		
-		DataSource databaseDS = new DatabaseDS();
-		dataSources.put("MRJob", databaseDS);
-		dataSources.put("HodJob", databaseDS);
-		dataSources.put("QueueInfo", databaseDS);
-	
-	}
-	
-	public static DataSourceFactory getInstance()
-	{
-		synchronized(lock)
-		{
-			if ( factory == null)
-			{
-				factory = new DataSourceFactory();
-			}
-		}
-		return factory;
-	}
-	
-	public DataSource getDataSource(String datasourceName)
-	throws DataSourceException
-	{
-		if (dataSources.containsKey(datasourceName))
-		{
-			return dataSources.get(datasourceName);
-		}
-		else
-		{
-			DataSource hsdfsDS = new ChukwaRecordDataSource();
-			dataSources.put(datasourceName, hsdfsDS);
-			return hsdfsDS;
-			//TODO proto only!
-			// throw new DataSourceException("Unknown datasource");
-		}	
-	}
+public class DataSourceFactory {
+  private static Object lock = new Object();
+  private static DataSourceFactory factory = null;
+  private HashMap<String, DataSource> dataSources = new HashMap<String, DataSource>();
+
+  private DataSourceFactory() {
+    // TODO load from config Name + class + threadSafe?
+
+    DataSource databaseDS = new DatabaseDS();
+    dataSources.put("MRJob", databaseDS);
+    dataSources.put("HodJob", databaseDS);
+    dataSources.put("QueueInfo", databaseDS);
+
+  }
+
+  public static DataSourceFactory getInstance() {
+    synchronized (lock) {
+      if (factory == null) {
+        factory = new DataSourceFactory();
+      }
+    }
+    return factory;
+  }
+
+  public DataSource getDataSource(String datasourceName)
+      throws DataSourceException {
+    if (dataSources.containsKey(datasourceName)) {
+      return dataSources.get(datasourceName);
+    } else {
+      DataSource hsdfsDS = new ChukwaRecordDataSource();
+      dataSources.put(datasourceName, hsdfsDS);
+      return hsdfsDS;
+      // TODO proto only!
+      // throw new DataSourceException("Unknown datasource");
+    }
+  }
 }

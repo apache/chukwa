@@ -17,11 +17,10 @@
  */
 package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 
-import java.io.*;
 
+import java.io.*;
 import junit.framework.TestCase;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
-
 import java.util.Map;
 import java.util.Iterator;
 import org.apache.hadoop.chukwa.Chunk;
@@ -32,14 +31,16 @@ import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
 
 public class TestRawAdaptor extends TestCase {
   ChunkCatcherConnector chunks;
+
   public TestRawAdaptor() {
     chunks = new ChunkCatcherConnector();
     chunks.start();
   }
-  
-  public void testRawAdaptor() throws IOException, InterruptedException, ChukwaAgent.AlreadyRunningException {
 
-    ChukwaAgent  agent = new ChukwaAgent();
+  public void testRawAdaptor() throws IOException, InterruptedException,
+      ChukwaAgent.AlreadyRunningException {
+
+    ChukwaAgent agent = new ChukwaAgent();
     // Remove any adaptor left over from previous run
     ChukwaConfiguration cc = new ChukwaConfiguration();
     int portno = cc.getInt("chukwaAgent.control.port", 9093);
@@ -47,13 +48,14 @@ public class TestRawAdaptor extends TestCase {
     cli.removeAll();
     // sleep for some time to make sure we don't get chunk from existing streams
     Thread.sleep(5000);
-    File testFile = makeTestFile("chukwaRawTest",80);
-    long adaptorId = agent.processCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.FileTailingAdaptor" +
-        " raw " + testFile + " 0");
+    File testFile = makeTestFile("chukwaRawTest", 80);
+    long adaptorId = agent
+        .processCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.FileTailingAdaptor"
+            + " raw " + testFile + " 0");
     assertTrue(adaptorId != -1);
     Chunk c = chunks.waitForAChunk();
-    while(!c.getDataType().equals("raw")) {
-        c = chunks.waitForAChunk();
+    while (!c.getDataType().equals("raw")) {
+      c = chunks.waitForAChunk();
     }
     assertTrue(c.getDataType().equals("raw"));
     assertTrue(c.getRecordOffsets().length == 1);
@@ -63,11 +65,12 @@ public class TestRawAdaptor extends TestCase {
   }
 
   private File makeTestFile(String name, int size) throws IOException {
-    File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"),name);
+    File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"),
+        name);
     FileOutputStream fos = new FileOutputStream(tmpOutput);
-    
+
     PrintWriter pw = new PrintWriter(fos);
-    for(int i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i) {
       pw.print(i + " ");
       pw.println("abcdefghijklmnopqrstuvwxyz");
     }
@@ -75,14 +78,14 @@ public class TestRawAdaptor extends TestCase {
     pw.close();
     return tmpOutput;
   }
-  
+
   public static void main(String[] args) {
     try {
       TestRawAdaptor tests = new TestRawAdaptor();
       tests.testRawAdaptor();
-    } catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
-  
+
 }

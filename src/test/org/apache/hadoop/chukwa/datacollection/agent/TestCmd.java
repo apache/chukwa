@@ -18,86 +18,98 @@
 
 package org.apache.hadoop.chukwa.datacollection.agent;
 
+
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent.AlreadyRunningException;
 import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
-
 import junit.framework.TestCase;
 
 public class TestCmd extends TestCase {
 
-  public void testAddCmdWithParam()
-  {
+  public void testAddCmdWithParam() {
     ChukwaAgent agent;
     try {
       agent = new ChukwaAgent();
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
-      long l = agent.processCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor  chukwaTestAdaptorType 0 my param1 param2 /var/log/messages 114027");
+      long l = agent
+          .processCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor  chukwaTestAdaptorType 0 my param1 param2 /var/log/messages 114027");
       assertTrue(l != -1);
       Adaptor adaptor = agent.getAdaptorList().get(l);
       ChukwaTestAdaptor chukwaTestAdaptor = (ChukwaTestAdaptor) adaptor;
-      assertTrue("error in type","chukwaTestAdaptorType".intern() == chukwaTestAdaptor.getType().intern());
-      assertTrue("error in param", "0 my param1 param2 /var/log/messages".intern() == chukwaTestAdaptor.getParams().intern());
-      assertTrue("error in startOffset",114027l == chukwaTestAdaptor.getStartOffset());
+      assertTrue("error in type",
+          "chukwaTestAdaptorType".intern() == chukwaTestAdaptor.getType()
+              .intern());
+      assertTrue("error in param", "0 my param1 param2 /var/log/messages"
+          .intern() == chukwaTestAdaptor.getParams().intern());
+      assertTrue("error in startOffset", 114027l == chukwaTestAdaptor
+          .getStartOffset());
       agent.stopAdaptor(l, false);
       agent.shutdown();
 
       Thread.sleep(2000);
-    } catch(InterruptedException e) {
-      
+    } catch (InterruptedException e) {
+
     } catch (AlreadyRunningException e) {
       e.printStackTrace();
       fail(e.toString());
     }
   }
-  
-  public void testAddCmdWithoutParam1()
-  {
+
+  public void testAddCmdWithoutParam1() {
     ChukwaAgent agent;
     try {
       agent = new ChukwaAgent();
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
-      long l = agent.processCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor  chukwaTestAdaptorType 114027");
+      long l = agent
+          .processCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor  chukwaTestAdaptorType 114027");
       assertTrue(l != -1);
       Adaptor adaptor = agent.getAdaptorList().get(l);
       ChukwaTestAdaptor chukwaTestAdaptor = (ChukwaTestAdaptor) adaptor;
-      assertTrue("error in type","chukwaTestAdaptorType".intern() == chukwaTestAdaptor.getType().intern());
-      assertTrue("error in param", "".intern() == chukwaTestAdaptor.getParams().intern());
-      assertTrue("error in startOffset",114027l == chukwaTestAdaptor.getStartOffset());
+      assertTrue("error in type",
+          "chukwaTestAdaptorType".intern() == chukwaTestAdaptor.getType()
+              .intern());
+      assertTrue("error in param", "".intern() == chukwaTestAdaptor.getParams()
+          .intern());
+      assertTrue("error in startOffset", 114027l == chukwaTestAdaptor
+          .getStartOffset());
       agent.stopAdaptor(l, false);
       agent.shutdown();
       Thread.sleep(2000);
-    } catch(InterruptedException e) {
-      
+    } catch (InterruptedException e) {
+
     } catch (AlreadyRunningException e) {
       e.printStackTrace();
       fail(e.toString());
     }
   }
-  
-  public void testAddCmdWithoutParam2()
-  {
+
+  public void testAddCmdWithoutParam2() {
     ChukwaAgent agent;
     try {
       agent = new ChukwaAgent();
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
-      long l = agent.processCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor" 
-         + "  chukwaTestAdaptorType 0  114027");
+      long l = agent
+          .processCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor"
+              + "  chukwaTestAdaptorType 0  114027");
       assertTrue(l != -1);
       Adaptor adaptor = agent.getAdaptorList().get(l);
       ChukwaTestAdaptor chukwaTestAdaptor = (ChukwaTestAdaptor) adaptor;
-      assertTrue("error in type","chukwaTestAdaptorType".intern() == chukwaTestAdaptor.getType().intern());
-      assertTrue("error in param", "0".intern() == chukwaTestAdaptor.getParams().intern());
-      assertTrue("error in startOffset",114027l == chukwaTestAdaptor.getStartOffset());
+      assertTrue("error in type",
+          "chukwaTestAdaptorType".intern() == chukwaTestAdaptor.getType()
+              .intern());
+      assertTrue("error in param", "0".intern() == chukwaTestAdaptor
+          .getParams().intern());
+      assertTrue("error in startOffset", 114027l == chukwaTestAdaptor
+          .getStartOffset());
       agent.stopAdaptor(l, false);
       agent.shutdown();
       Thread.sleep(2000);
-    } catch(InterruptedException e) {
-      
+    } catch (InterruptedException e) {
+
     } catch (AlreadyRunningException e) {
       e.printStackTrace();
       fail(e.toString());

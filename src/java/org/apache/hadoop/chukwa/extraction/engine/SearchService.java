@@ -18,11 +18,10 @@
 
 package org.apache.hadoop.chukwa.extraction.engine;
 
+
 import org.apache.hadoop.chukwa.extraction.engine.datasource.DataSourceException;
 
-
-public interface SearchService
-{
-	public SearchResult search(String cluster,String[] dataSources,long t0,long t1,String filter,Token token)
-	throws DataSourceException;
+public interface SearchService {
+  public SearchResult search(String cluster, String[] dataSources, long t0,
+      long t1, String filter, Token token) throws DataSourceException;
 }

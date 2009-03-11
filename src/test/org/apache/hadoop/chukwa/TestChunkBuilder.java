@@ -17,13 +17,12 @@
  */
 package org.apache.hadoop.chukwa;
 
+
 import junit.framework.TestCase;
 
 public class TestChunkBuilder extends TestCase {
 
-
-  public void testChunkBuilder()
-  {
+  public void testChunkBuilder() {
     ChunkBuilder cb = new ChunkBuilder();
     cb.addRecord("foo".getBytes());
     cb.addRecord("bar".getBytes());

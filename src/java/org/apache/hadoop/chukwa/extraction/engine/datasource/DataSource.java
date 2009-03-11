@@ -18,20 +18,16 @@
 
 package org.apache.hadoop.chukwa.extraction.engine.datasource;
 
+
 import org.apache.hadoop.chukwa.extraction.engine.SearchResult;
 import org.apache.hadoop.chukwa.extraction.engine.Token;
 
+public interface DataSource {
 
+  public SearchResult search(SearchResult result, String cluster,
+      String dataSource, long t0, long t1, String filter, Token token)
+      throws DataSourceException;
 
-public interface DataSource
-{
-	 
-	public SearchResult
-		search(	SearchResult result,String cluster,String dataSource,
-				long t0,long t1,
-				String filter,
-				Token token)
-		throws DataSourceException;
-	public boolean isThreadSafe();
-	
+  public boolean isThreadSafe();
+
 }

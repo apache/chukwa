@@ -18,9 +18,9 @@
 
 package org.apache.hadoop.chukwa.inputtools.plugin;
 
+
 import org.json.JSONObject;
 
-public interface IPlugin
-{
-	JSONObject execute();
+public interface IPlugin {
+  JSONObject execute();
 }

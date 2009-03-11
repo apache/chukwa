@@ -26,20 +26,19 @@ import org.apache.hadoop.chukwa.extraction.engine.RecordUtil;
 import org.apache.hadoop.mapred.lib.MultipleSequenceFileOutputFormat;
 import org.apache.log4j.Logger;
 
-public class ChukwaRecordOutputFormat extends MultipleSequenceFileOutputFormat<ChukwaRecordKey, ChukwaRecord>
-{
-	static Logger log = Logger.getLogger(ChukwaRecordOutputFormat.class);
-	
-	@Override
-	protected String generateFileNameForKeyValue(ChukwaRecordKey key, ChukwaRecord record,
-			String name)
-	{
-		String output = RecordUtil.getClusterName(record)
-							+ "/" + key.getReduceType() 
-							+ "/" + key.getReduceType() + Util.generateTimeOutput(record.getTime());
+public class ChukwaRecordOutputFormat extends
+    MultipleSequenceFileOutputFormat<ChukwaRecordKey, ChukwaRecord> {
+  static Logger log = Logger.getLogger(ChukwaRecordOutputFormat.class);
 
-		//{log.info("ChukwaOutputFormat.fileName: [" + output +"]");}
-	
-		return output;
-	}
+  @Override
+  protected String generateFileNameForKeyValue(ChukwaRecordKey key,
+      ChukwaRecord record, String name) {
+    String output = RecordUtil.getClusterName(record) + "/"
+        + key.getReduceType() + "/" + key.getReduceType()
+        + Util.generateTimeOutput(record.getTime());
+
+    // {log.info("ChukwaOutputFormat.fileName: [" + output +"]");}
+
+    return output;
+  }
 }

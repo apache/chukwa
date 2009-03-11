@@ -23,13 +23,12 @@ import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.mapred.lib.MultipleSequenceFileOutputFormat;
 
-public class ChukwaArchiveStreamNameOutputFormat extends MultipleSequenceFileOutputFormat<ChukwaArchiveKey, ChunkImpl>
-{
+public class ChukwaArchiveStreamNameOutputFormat extends
+    MultipleSequenceFileOutputFormat<ChukwaArchiveKey, ChunkImpl> {
 
   @Override
-  protected String generateLeafFileName(String name)
-  {
+  protected String generateLeafFileName(String name) {
     return "chukwaArchive-" + super.generateLeafFileName(name);
   }
-  
+
 }

@@ -18,8 +18,8 @@
 
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
-import java.util.Calendar;
 
+import java.util.Calendar;
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
@@ -30,10 +30,9 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
 
-public abstract class AbstractProcessor implements MapProcessor
-{
+public abstract class AbstractProcessor implements MapProcessor {
   static Logger log = Logger.getLogger(AbstractProcessor.class);
-  
+
   Calendar calendar = Calendar.getInstance();
   byte[] bytes;
   int[] recordOffsets;
@@ -48,24 +47,19 @@ public abstract class AbstractProcessor implements MapProcessor
   OutputCollector<ChukwaRecordKey, ChukwaRecord> output = null;
   Reporter reporter = null;
 
-  public AbstractProcessor()
-  {
+  public AbstractProcessor() {
   }
 
   protected abstract void parse(String recordEntry,
       OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter)
       throws Throwable;
 
-  protected void saveChunkInError(Throwable throwable)
-  {
-    if (chunkInErrorSaved == false)
-    {
-      try
-      {
+  protected void saveChunkInError(Throwable throwable) {
+    if (chunkInErrorSaved == false) {
+      try {
         ChunkSaver.saveChunk(chunk, throwable, output, reporter);
         chunkInErrorSaved = true;
-      } catch (Exception e)
-      {
+      } catch (Exception e) {
         e.printStackTrace();
       }
     }
@@ -73,31 +67,26 @@ public abstract class AbstractProcessor implements MapProcessor
   }
 
   public void process(ChukwaArchiveKey archiveKey, Chunk chunk,
-      OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter)
-  {
+      OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter) {
     chunkInErrorSaved = false;
-    
+
     this.archiveKey = archiveKey;
     this.output = output;
     this.reporter = reporter;
-    
+
     reset(chunk);
-    
-    while (hasNext())
-    {
-      try
-      {
+
+    while (hasNext()) {
+      try {
         parse(nextLine(), output, reporter);
-      } catch (Throwable e)
-      {
+      } catch (Throwable e) {
         saveChunkInError(e);
       }
     }
   }
 
   protected void buildGenericRecord(ChukwaRecord record, String body,
-      long timestamp, String dataSource)
-  {
+      long timestamp, String dataSource) {
     calendar.setTimeInMillis(timestamp);
     calendar.set(Calendar.MINUTE, 0);
     calendar.set(Calendar.SECOND, 0);
@@ -107,8 +96,7 @@ public abstract class AbstractProcessor implements MapProcessor
         + timestamp);
     key.setReduceType(dataSource);
 
-    if (body != null)
-    {
+    if (body != null) {
       record.add(Record.bodyField, body);
     }
     record.setTime(timestamp);
@@ -119,8 +107,7 @@ public abstract class AbstractProcessor implements MapProcessor
 
   }
 
-  protected void reset(Chunk chunk)
-  {
+  protected void reset(Chunk chunk) {
     this.chunk = chunk;
     this.bytes = chunk.getData();
     this.recordOffsets = chunk.getRecordOffsets();
@@ -128,13 +115,11 @@ public abstract class AbstractProcessor implements MapProcessor
     startOffset = 0;
   }
 
-  protected boolean hasNext()
-  {
+  protected boolean hasNext() {
     return (currentPos < recordOffsets.length);
   }
 
-  protected String nextLine()
-  {
+  protected String nextLine() {
     String log = new String(bytes, startOffset, (recordOffsets[currentPos]
         - startOffset + 1));
     startOffset = recordOffsets[currentPos] + 1;

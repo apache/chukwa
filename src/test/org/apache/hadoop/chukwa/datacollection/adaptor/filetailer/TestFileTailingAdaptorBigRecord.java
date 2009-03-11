@@ -1,16 +1,15 @@
 package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
-
 import junit.framework.Assert;
 import junit.framework.TestCase;
 

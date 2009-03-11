@@ -17,6 +17,7 @@
  */
 package org.apache.hadoop.chukwa.hicc;
 
+
 import junit.framework.TestCase;
 import javax.servlet.http.HttpServletRequest;
 import java.util.TreeMap;
@@ -24,60 +25,56 @@ import java.util.ArrayList;
 
 public class TestChart extends TestCase {
 
-
-  public void testLineChart()
-  {
-    HttpServletRequest request=null;
+  public void testLineChart() {
+    HttpServletRequest request = null;
     Chart c = new Chart(request);
-    String render= "line";
+    String render = "line";
     TreeMap<String, TreeMap<String, Double>> dataMap = new TreeMap<String, TreeMap<String, Double>>();
     TreeMap<String, Double> series = new TreeMap<String, Double>();
     ArrayList<String> labels = new ArrayList<String>();
-    for(int i=0;i<5;i++) {
-      labels.add(""+i);
-      series.put(""+i,1.0*i);
+    for (int i = 0; i < 5; i++) {
+      labels.add("" + i);
+      series.put("" + i, 1.0 * i);
     }
     dataMap.put("series1", series);
     c.setXLabelsRange(labels);
-    c.setDataSet(render,dataMap);
+    c.setDataSet(render, dataMap);
     String output = c.plot();
     assertTrue(output.contains("lines"));
   }
 
-  public void testBarChart()
-  {
-    HttpServletRequest request=null;
+  public void testBarChart() {
+    HttpServletRequest request = null;
     Chart c = new Chart(request);
-    String render= "bar";
+    String render = "bar";
     TreeMap<String, TreeMap<String, Double>> dataMap = new TreeMap<String, TreeMap<String, Double>>();
     TreeMap<String, Double> series = new TreeMap<String, Double>();
     ArrayList<String> labels = new ArrayList<String>();
-    for(int i=0;i<5;i++) {
-      labels.add(""+i);
-      series.put(""+i,1.0*i);
+    for (int i = 0; i < 5; i++) {
+      labels.add("" + i);
+      series.put("" + i, 1.0 * i);
     }
     dataMap.put("series1", series);
     c.setXLabelsRange(labels);
-    c.setDataSet(render,dataMap);
+    c.setDataSet(render, dataMap);
     String output = c.plot();
     assertTrue(output.contains("bar"));
   }
 
-  public void testScatterChart()
-  {
-    HttpServletRequest request=null;
+  public void testScatterChart() {
+    HttpServletRequest request = null;
     Chart c = new Chart(request);
-    String render= "point";
+    String render = "point";
     TreeMap<String, TreeMap<String, Double>> dataMap = new TreeMap<String, TreeMap<String, Double>>();
     TreeMap<String, Double> series = new TreeMap<String, Double>();
     ArrayList<String> labels = new ArrayList<String>();
-    for(int i=0;i<5;i++) {
-      labels.add(""+i);
-      series.put(""+i,1.0*i);
+    for (int i = 0; i < 5; i++) {
+      labels.add("" + i);
+      series.put("" + i, 1.0 * i);
     }
     dataMap.put("series1", series);
     c.setXLabelsRange(labels);
-    c.setDataSet(render,dataMap);
+    c.setDataSet(render, dataMap);
     String output = c.plot();
     assertTrue(output.contains("point"));
   }

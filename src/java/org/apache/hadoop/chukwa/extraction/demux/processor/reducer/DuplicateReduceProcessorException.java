@@ -18,31 +18,27 @@
 
 package org.apache.hadoop.chukwa.extraction.demux.processor.reducer;
 
-public class DuplicateReduceProcessorException  extends RuntimeException
-{
 
-	/**
+public class DuplicateReduceProcessorException extends RuntimeException {
+
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = 7396161798611603019L;
+  private static final long serialVersionUID = 7396161798611603019L;
 
-	public DuplicateReduceProcessorException()
-	{
-	}
+  public DuplicateReduceProcessorException() {
+  }
 
-	public DuplicateReduceProcessorException(String message)
-	{
-		super(message);
-	}
+  public DuplicateReduceProcessorException(String message) {
+    super(message);
+  }
 
-	public DuplicateReduceProcessorException(Throwable cause)
-	{
-		super(cause);
-	}
+  public DuplicateReduceProcessorException(Throwable cause) {
+    super(cause);
+  }
 
-	public DuplicateReduceProcessorException(String message, Throwable cause)
-	{
-		super(message, cause);
-	}
+  public DuplicateReduceProcessorException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
 }

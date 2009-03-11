@@ -18,70 +18,67 @@
 
 package org.apache.hadoop.chukwa.datacollection;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-
 import org.apache.hadoop.chukwa.datacollection.sender.RetryListOfCollectors;
-
 import org.apache.hadoop.chukwa.datacollection.agent.*;
 import org.apache.log4j.Logger;
 
-public class DataFactory
-{
+public class DataFactory {
   static Logger log = Logger.getLogger(DataFactory.class);
-	static final int QUEUE_SIZE_KB = 10 * 1024;
-	static final String COLLECTORS_FILENAME = "collectors";
-	private static DataFactory dataFactory = null;
-	private ChunkQueue chunkQueue = new MemLimitQueue(QUEUE_SIZE_KB * 1024);
+  static final int QUEUE_SIZE_KB = 10 * 1024;
+  static final String COLLECTORS_FILENAME = "collectors";
+  private static DataFactory dataFactory = null;
+  private ChunkQueue chunkQueue = new MemLimitQueue(QUEUE_SIZE_KB * 1024);
 
-	static 
-	{
-		dataFactory = new DataFactory();
-	}
+  static {
+    dataFactory = new DataFactory();
+  }
 
-	private DataFactory()
-	{}
+  private DataFactory() {
+  }
 
-	public static DataFactory getInstance() {
-		return dataFactory;
-	}
+  public static DataFactory getInstance() {
+    return dataFactory;
+  }
 
-	public ChunkQueue getEventQueue() {
-		return chunkQueue;
-	}
+  public ChunkQueue getEventQueue() {
+    return chunkQueue;
+  }
 
-	/**
-	 * @return empty list if file does not exist
-	 * @throws IOException on other error
-	 */
-	public Iterator<String> getCollectorURLs() throws IOException
-	{
-		  String chukwaHome = System.getenv("CHUKWA_HOME");
-		  if (chukwaHome == null){
-			  chukwaHome = ".";
-		  }
+  /**
+   * @return empty list if file does not exist
+   * @throws IOException on other error
+   */
+  public Iterator<String> getCollectorURLs() throws IOException {
+    String chukwaHome = System.getenv("CHUKWA_HOME");
+    if (chukwaHome == null) {
+      chukwaHome = ".";
+    }
 
-		  if(!chukwaHome.endsWith("/"))
-		  {  chukwaHome = chukwaHome + File.separator; }
-		  log.info("Config - System.getenv(\"CHUKWA_HOME\"): [" + chukwaHome + "]" );
+    if (!chukwaHome.endsWith("/")) {
+      chukwaHome = chukwaHome + File.separator;
+    }
+    log.info("Config - System.getenv(\"CHUKWA_HOME\"): [" + chukwaHome + "]");
 
-		  String chukwaConf = System.getenv("CHUKWA_CONF_DIR");    
-		  if (chukwaConf == null)
-		  {
-			  chukwaConf = chukwaHome + "conf" + File.separator;
-		  }
+    String chukwaConf = System.getenv("CHUKWA_CONF_DIR");
+    if (chukwaConf == null) {
+      chukwaConf = chukwaHome + "conf" + File.separator;
+    }
 
-		  log.info("Config - System.getenv(\"chukwaConf\"): [" + chukwaConf + "]" );
-		  
-	  log.info("setting up collectors file: " + chukwaConf + 
-	      File.separator + COLLECTORS_FILENAME);
-		File collectors = new File(chukwaConf + File.separator + "collectors");
-		try{
-		  return new RetryListOfCollectors(collectors, 1000 * 15);//time is ms between tries
-		} catch(java.io.IOException e) {
-			log.error("failed to read collectors file: ", e);
-			throw e;
-		}
-	}
+    log.info("Config - System.getenv(\"chukwaConf\"): [" + chukwaConf + "]");
+
+    log.info("setting up collectors file: " + chukwaConf + File.separator
+        + COLLECTORS_FILENAME);
+    File collectors = new File(chukwaConf + File.separator + "collectors");
+    try {
+      return new RetryListOfCollectors(collectors, 1000 * 15);// time is ms
+                                                              // between tries
+    } catch (java.io.IOException e) {
+      log.error("failed to read collectors file: ", e);
+      throw e;
+    }
+  }
 }

@@ -1,12 +1,11 @@
 package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import junit.framework.TestCase;
-
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
@@ -47,7 +46,8 @@ public class TestCharFileTailingAdaptorUTF8 extends TestCase {
   }
 
   private File makeTestFile(String name, int size) throws IOException {
-    File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"), name);
+    File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"),
+        name);
     FileOutputStream fos = new FileOutputStream(tmpOutput);
 
     PrintWriter pw = new PrintWriter(fos);

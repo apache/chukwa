@@ -18,105 +18,85 @@
 
 package org.apache.hadoop.chukwa.inputtools.plugin.nodeactivity;
 
+
 import org.apache.hadoop.chukwa.inputtools.mdl.DataConfig;
 import org.apache.hadoop.chukwa.inputtools.plugin.ExecPlugin;
 import org.apache.hadoop.chukwa.inputtools.plugin.IPlugin;
 import org.json.JSONObject;
 
-public class NodeActivityPlugin extends ExecPlugin
-{
-	private String cmde = null;
-	private DataConfig dataConfig = null;
-	
-	public NodeActivityPlugin()
-	{
-		dataConfig = new DataConfig();
-		cmde = dataConfig.get("mdl.plugin.NodeActivityPlugin.cmde");
-	}
-	
-	@Override
-	public String getCmde()
-	{
-		return cmde;
-	}
-	
-	@Override
-	public JSONObject postProcess(JSONObject execResult)
-	{
-		try
-		{
-			if (execResult.getInt("status") < 0)
-			{
-				return execResult;
-			}
-			
-			String res = execResult.getString("stdout");
-			
-			String[] tab = res.split("\n");
-			int totalFreeNode = 0;
-			int totalUsedNode = 0;
-			int totalDownNode = 0;
-			
-			for(int i=0;i<tab.length;i++)
-			{
-				if (tab[i].indexOf("state =") <0)
-				{
-					tab[i] = null;
-					continue;
-				}
-	
-				String[] line = tab[i].split("state =");
-				tab[i] = null;
-				
-				if (line[1].trim().equals("free"))
-				{
-					totalFreeNode ++;
-				}
-				else if (line[1].trim().equals("job-exclusive"))
-				{
-					totalUsedNode ++;
-				}
-				else
-				{
-					totalDownNode ++;
-				}
-			}
-			
+public class NodeActivityPlugin extends ExecPlugin {
+  private String cmde = null;
+  private DataConfig dataConfig = null;
 
-			execResult.put("totalFreeNode", totalFreeNode);
-			execResult.put("totalUsedNode", totalUsedNode);
-			execResult.put("totalDownNode", totalDownNode);
-			execResult.put("source", "NodeActivity");
-			
-			execResult.put("status", 100);	
-			
-		} catch (Throwable e)
-		{
-			try
-			{
-				execResult.put("source", "NodeActivity");
-				execResult.put("status", -100);	
-				execResult.put("errorLog",e.getMessage());
-			}
-			catch(Exception e1) { e1.printStackTrace();}
-			e.printStackTrace();
-			
-		}
-		
-		return execResult;
-	}
+  public NodeActivityPlugin() {
+    dataConfig = new DataConfig();
+    cmde = dataConfig.get("mdl.plugin.NodeActivityPlugin.cmde");
+  }
 
-	public static void main(String[] args)
-	{
-		IPlugin plugin = new NodeActivityPlugin();
-		JSONObject result = plugin.execute();
-		System.out.print("Result: " + result);
-		
-		
-		
-		
-	}
+  @Override
+  public String getCmde() {
+    return cmde;
+  }
 
+  @Override
+  public JSONObject postProcess(JSONObject execResult) {
+    try {
+      if (execResult.getInt("status") < 0) {
+        return execResult;
+      }
 
+      String res = execResult.getString("stdout");
+
+      String[] tab = res.split("\n");
+      int totalFreeNode = 0;
+      int totalUsedNode = 0;
+      int totalDownNode = 0;
+
+      for (int i = 0; i < tab.length; i++) {
+        if (tab[i].indexOf("state =") < 0) {
+          tab[i] = null;
+          continue;
+        }
+
+        String[] line = tab[i].split("state =");
+        tab[i] = null;
+
+        if (line[1].trim().equals("free")) {
+          totalFreeNode++;
+        } else if (line[1].trim().equals("job-exclusive")) {
+          totalUsedNode++;
+        } else {
+          totalDownNode++;
+        }
+      }
+
+      execResult.put("totalFreeNode", totalFreeNode);
+      execResult.put("totalUsedNode", totalUsedNode);
+      execResult.put("totalDownNode", totalDownNode);
+      execResult.put("source", "NodeActivity");
+
+      execResult.put("status", 100);
+
+    } catch (Throwable e) {
+      try {
+        execResult.put("source", "NodeActivity");
+        execResult.put("status", -100);
+        execResult.put("errorLog", e.getMessage());
+      } catch (Exception e1) {
+        e1.printStackTrace();
+      }
+      e.printStackTrace();
+
+    }
+
+    return execResult;
+  }
+
+  public static void main(String[] args) {
+    IPlugin plugin = new NodeActivityPlugin();
+    JSONObject result = plugin.execute();
+    System.out.print("Result: " + result);
+
+  }
 
 }

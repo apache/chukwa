@@ -1,13 +1,12 @@
 package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import junit.framework.Assert;
 import junit.framework.TestCase;
-
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
@@ -77,8 +76,8 @@ public class TestFileExpirationPolicy extends TestCase {
 
       FileTailingAdaptor.GRACEFUL_PERIOD = 30 * 1000;
       long adaptorId = agent
-          .processCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped MyType 0 " 
-              + logFile +" 0");
+          .processCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped MyType 0 "
+              + logFile + " 0");
 
       assertTrue(adaptorId != -1);
 

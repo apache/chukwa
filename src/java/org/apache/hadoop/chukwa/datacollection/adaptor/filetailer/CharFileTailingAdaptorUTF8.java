@@ -18,59 +18,57 @@
 
 package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 
+
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
 import java.util.ArrayList;
 
 /**
- * A subclass of FileTailingAdaptor that reads UTF8/ascii
- * files and splits records at carriage returns.
- *
+ * A subclass of FileTailingAdaptor that reads UTF8/ascii files and splits
+ * records at carriage returns.
+ * 
  */
 public class CharFileTailingAdaptorUTF8 extends FileTailingAdaptor {
-  
-
 
   private static final char SEPARATOR = '\n';
-  
+
   private ArrayList<Integer> offsets = new ArrayList<Integer>();
-  
+
   /**
    * 
    * Note: this method uses a temporary ArrayList (shared across instances).
    * This means we're copying ints each time. This could be a performance issue.
-   * Also, 'offsets' never shrinks, and will be of size proportional to the 
+   * Also, 'offsets' never shrinks, and will be of size proportional to the
    * largest number of lines ever seen in an event.
    */
   @Override
-    protected int extractRecords(ChunkReceiver eq, long buffOffsetInFile, byte[] buf)
-    throws InterruptedException
-  {
-      for(int i = 0; i < buf.length; ++i) {
-        if(buf[i] == SEPARATOR) {
-          offsets.add(i);
-        }
+  protected int extractRecords(ChunkReceiver eq, long buffOffsetInFile,
+      byte[] buf) throws InterruptedException {
+    for (int i = 0; i < buf.length; ++i) {
+      if (buf[i] == SEPARATOR) {
+        offsets.add(i);
       }
+    }
 
-      if(offsets.size() > 0)  {
-        int[] offsets_i = new int[offsets.size()];
-        for(int i = 0; i < offsets_i.length ; ++i)
-          offsets_i[i] = offsets.get(i);
-      
-        int bytesUsed = offsets_i[offsets_i.length-1]  + 1; //char at last offset uses a byte
-        assert bytesUsed > 0: " shouldn't send empty events";
-        ChunkImpl event = new ChunkImpl(type, toWatch.getAbsolutePath(),buffOffsetInFile + bytesUsed, buf, this );
+    if (offsets.size() > 0) {
+      int[] offsets_i = new int[offsets.size()];
+      for (int i = 0; i < offsets_i.length; ++i)
+        offsets_i[i] = offsets.get(i);
 
-        event.setRecordOffsets(offsets_i);
-        eq.add(event);
-        
-        offsets.clear();
-        return bytesUsed;
-      }
-      else
-        return 0;
-      
+      int bytesUsed = offsets_i[offsets_i.length - 1] + 1; // char at last
+                                                           // offset uses a byte
+      assert bytesUsed > 0 : " shouldn't send empty events";
+      ChunkImpl event = new ChunkImpl(type, toWatch.getAbsolutePath(),
+          buffOffsetInFile + bytesUsed, buf, this);
+
+      event.setRecordOffsets(offsets_i);
+      eq.add(event);
+
+      offsets.clear();
+      return bytesUsed;
+    } else
+      return 0;
+
   }
 
-  
 }

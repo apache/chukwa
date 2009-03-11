@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.datacollection.agent;
 
+
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.log4j.Logger;
 
@@ -26,47 +27,49 @@ import org.apache.log4j.Logger;
  * 
  */
 public class AdaptorFactory {
-   
+
   static Logger log = Logger.getLogger(ChukwaAgent.class);
-    /**
-     * Instantiate an adaptor that can be added by the {@link ChukwaAgent}
-     * @param className the name of the {@link Adaptor} class to instantiate
-     * @return an Adaptor of the specified type
-     */
-    static Adaptor createAdaptor(String className){
+
+  /**
+   * Instantiate an adaptor that can be added by the {@link ChukwaAgent}
+   * 
+   * @param className the name of the {@link Adaptor} class to instantiate
+   * @return an Adaptor of the specified type
+   */
+  static Adaptor createAdaptor(String className) {
     Object obj = null;
-    try{
-      //the following reflection business for type checking is probably unnecessary
-      //since it will just throw a ClassCastException on error anyway.
+    try {
+      // the following reflection business for type checking is probably
+      // unnecessary
+      // since it will just throw a ClassCastException on error anyway.
       obj = Class.forName(className).newInstance();
-      if (Adaptor.class.isInstance(obj)){
+      if (Adaptor.class.isInstance(obj)) {
         return (Adaptor) obj;
-      } 
-      else        
+      } else
         return null;
-    } catch (Exception e1){
-      log.warn("Error instantiating new adaptor by class name, " +
-      		"attempting again, but with default chukwa package prepended, i.e. " +
-      		"org.apache.hadoop.chukwa.datacollection.adaptor." + className + ". " 
-      		+ e1);
-      try{
-        //if failed, try adding default class prefix
+    } catch (Exception e1) {
+      log
+          .warn("Error instantiating new adaptor by class name, "
+              + "attempting again, but with default chukwa package prepended, i.e. "
+              + "org.apache.hadoop.chukwa.datacollection.adaptor." + className
+              + ". " + e1);
+      try {
+        // if failed, try adding default class prefix
         Object obj2 = Class.forName(
-            "org.apache.hadoop.chukwa.datacollection.adaptor." +
-            className).newInstance();
-        if (Adaptor.class.isInstance(obj2)){
-          log.debug("Succeeded in finding class by adding default chukwa " +
-              "namespace prefix to class name profided");
+            "org.apache.hadoop.chukwa.datacollection.adaptor." + className)
+            .newInstance();
+        if (Adaptor.class.isInstance(obj2)) {
+          log.debug("Succeeded in finding class by adding default chukwa "
+              + "namespace prefix to class name profided");
           return (Adaptor) obj2;
-        } 
-        else        
+        } else
           return null;
       } catch (Exception e2) {
-        System.out.println("Also error instantiating new adaptor by classname" +
-        		"with prefix added" + e2);
+        System.out.println("Also error instantiating new adaptor by classname"
+            + "with prefix added" + e2);
         return null;
       }
     }
   }
-  
+
 }

@@ -17,55 +17,58 @@
  */
 package org.apache.hadoop.chukwa.inputtools;
 
+
 import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
-
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.mapred.*;
 
 /**
- * An instrumentation plugin for Hadoop, to trigger Chukwa-based task logfile collection.
+ * An instrumentation plugin for Hadoop, to trigger Chukwa-based task logfile
+ * collection.
  * 
- * WARNING:  This code depends on hadoop features only available in 0.19.
- * It won't do any good if you try to use it with an earlier Hadoop.
- *
+ * WARNING: This code depends on hadoop features only available in 0.19. It
+ * won't do any good if you try to use it with an earlier Hadoop.
+ * 
  */
-public class ChukwaTTInstru extends TaskTrackerMetricsInst 
-{
+public class ChukwaTTInstru extends TaskTrackerMetricsInst {
 
   private Map<TaskAttemptID, Long> stdOutAdaptors;
   private Map<TaskAttemptID, Long> stdErrAdaptors;
   private ChukwaAgentController chukwa;
-//  private TaskTrackerMetricsInst parent; //for chaining together multiple
-      //instrumentation subsystems
-  
+
+  // private TaskTrackerMetricsInst parent; //for chaining together multiple
+  // instrumentation subsystems
+
   public ChukwaTTInstru(TaskTracker t) {
     super(t);
     stdOutAdaptors = new HashMap<TaskAttemptID, Long>();
     stdErrAdaptors = new HashMap<TaskAttemptID, Long>();
     chukwa = new ChukwaAgentController();
   }
-  
-  public void reportTaskLaunch(TaskAttemptID taskid, File stdout, File stderr)  {
-//    parent.reportTaskLaunch(taskid, stdout, stderr);
-    long stdoutID = chukwa.addFile("unknown-userdata", stdout.getAbsolutePath());
-    long stderrID = chukwa.addFile("unknown-userdata", stderr.getAbsolutePath());
+
+  public void reportTaskLaunch(TaskAttemptID taskid, File stdout, File stderr) {
+    // parent.reportTaskLaunch(taskid, stdout, stderr);
+    long stdoutID = chukwa
+        .addFile("unknown-userdata", stdout.getAbsolutePath());
+    long stderrID = chukwa
+        .addFile("unknown-userdata", stderr.getAbsolutePath());
     stdOutAdaptors.put(taskid, stdoutID);
     stdErrAdaptors.put(taskid, stderrID);
   }
-  
+
   public void reportTaskEnd(TaskAttemptID taskid) {
     try {
       Long id = stdOutAdaptors.remove(taskid);
-      if(id != null)
+      if (id != null)
         chukwa.remove(id);
-      
+
       id = stdErrAdaptors.remove(taskid);
-      if(id != null)
+      if (id != null)
         chukwa.remove(id);
-    } catch(java.io.IOException e) {
-      //failed to talk to chukwa.  Not much to be done.
+    } catch (java.io.IOException e) {
+      // failed to talk to chukwa. Not much to be done.
     }
   }
 }

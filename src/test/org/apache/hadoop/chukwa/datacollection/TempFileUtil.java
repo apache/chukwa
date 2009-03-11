@@ -18,17 +18,20 @@
 
 package org.apache.hadoop.chukwa.datacollection;
 
+
 import java.io.*;
 import java.util.Random;
 
 public class TempFileUtil {
   public static File makeBinary(int length) throws IOException {
-    File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"),"chukwaTest");
+    File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"),
+        "chukwaTest");
     FileOutputStream fos = new FileOutputStream(tmpOutput);
     Random r = new Random();
-    byte[] randomData = new byte[ length];
+    byte[] randomData = new byte[length];
     r.nextBytes(randomData);
-    randomData[ length-1] = '\n';//need data to end with \n since default tailer uses that
+    randomData[length - 1] = '\n';// need data to end with \n since default
+                                  // tailer uses that
     fos.write(randomData);
     fos.flush();
     fos.close();

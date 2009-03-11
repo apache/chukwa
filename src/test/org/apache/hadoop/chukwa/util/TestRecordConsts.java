@@ -17,24 +17,25 @@
  */
 package org.apache.hadoop.chukwa.util;
 
+
 import junit.framework.TestCase;
 
 public class TestRecordConsts extends TestCase {
 
-  public void testEscapeAllButLastRecordSeparator()
-  {
-    String post = RecordConstants.escapeAllButLastRecordSeparator("\n", "foo bar baz\n");
+  public void testEscapeAllButLastRecordSeparator() {
+    String post = RecordConstants.escapeAllButLastRecordSeparator("\n",
+        "foo bar baz\n");
     assertEquals(post, "foo bar baz\n");
-    
-    post = RecordConstants.escapeAllButLastRecordSeparator("\n", "foo\nbar\nbaz\n");
+
+    post = RecordConstants.escapeAllButLastRecordSeparator("\n",
+        "foo\nbar\nbaz\n");
     post = post.replaceAll(RecordConstants.RECORD_SEPARATOR_ESCAPE_SEQ, "^D");
     assertEquals(post, "foo^D\nbar^D\nbaz\n");
 
-    System.out.println("string is " + post+".");
+    System.out.println("string is " + post + ".");
   }
 
-  public void testEscapeAllRecordSeparators()
-  {
+  public void testEscapeAllRecordSeparators() {
   }
 
 }

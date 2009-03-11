@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.datacollection.writer;
 
-public interface PipelineableWriter extends ChukwaWriter{
-	public void setNextStage(ChukwaWriter next);
+
+public interface PipelineableWriter extends ChukwaWriter {
+  public void setNextStage(ChukwaWriter next);
 }

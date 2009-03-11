@@ -18,80 +18,73 @@
 
 package org.apache.hadoop.chukwa.datacollection.test;
 
+
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.*;
 import org.apache.hadoop.chukwa.datacollection.agent.*;
 import org.apache.hadoop.chukwa.datacollection.connector.Connector;
-
 import java.util.*;
 
 /**
- * Output events to stdout.
- * Intended for debugging use.
- *
+ * Output events to stdout. Intended for debugging use.
+ * 
  */
 public class ConsoleOutConnector extends Thread implements Connector {
-  
+
   final ChukwaAgent agent;
   volatile boolean shutdown;
   final boolean silent;
-  
 
   public ConsoleOutConnector(ChukwaAgent a) {
     this(a, false);
   }
-  
-  public ConsoleOutConnector(ChukwaAgent a, boolean silent)
-  {
+
+  public ConsoleOutConnector(ChukwaAgent a, boolean silent) {
     agent = a;
     this.silent = silent;
   }
-  
-  public void run()
-  {
-    try{
+
+  public void run() {
+    try {
       System.out.println("console connector started");
       ChunkQueue eventQueue = DataFactory.getInstance().getEventQueue();
-      if(!silent)
+      if (!silent)
         System.out.println("-------------------");
-      
-      while(!shutdown)
-      {
+
+      while (!shutdown) {
         List<Chunk> evts = new ArrayList<Chunk>();
         eventQueue.collect(evts, 1);
-        
-        for(Chunk e: evts)
-        {
-          if(!silent) {
-            System.out.println("Console out connector got event at offset " + e.getSeqID());
+
+        for (Chunk e : evts) {
+          if (!silent) {
+            System.out.println("Console out connector got event at offset "
+                + e.getSeqID());
             System.out.println("data type was " + e.getDataType());
-            if(e.getData().length > 1000)
-              System.out.println("data length was " + e.getData().length+ ", not printing");
+            if (e.getData().length > 1000)
+              System.out.println("data length was " + e.getData().length
+                  + ", not printing");
             else
               System.out.println(new String(e.getData()));
           }
-          
+
           agent.reportCommit(e.getInitiator(), e.getSeqID());
-         
-          if(!silent)
+
+          if (!silent)
             System.out.println("-------------------");
         }
       }
-    }
-    catch(InterruptedException e)
-    {} //thread is about to exit anyway
+    } catch (InterruptedException e) {
+    } // thread is about to exit anyway
   }
 
-  public void shutdown()
-  {
+  public void shutdown() {
     shutdown = true;
     this.interrupt();
   }
 
-@Override
-public void reloadConfiguration()
-{
-	System.out.println("reloadConfiguration");
-}
+  @Override
+  public void reloadConfiguration() {
+    System.out.println("reloadConfiguration");
+  }
 
 }

@@ -18,89 +18,83 @@
 
 package org.apache.hadoop.chukwa.datacollection.writer;
 
+
 import org.apache.log4j.Logger;
 
-public class ClientAck
-{
-	static Logger log = Logger.getLogger(ClientAck.class);
-	
-	// TODO move all constant to config
-	
-	public static final int OK = 100;
-	public static final int KO = -100;
-	public static final int KO_LOCK = -200;
-	
-	private long ts = 0;
-	
-	private Object lock = new Object();
-	private int status = 0;
-	private Throwable exception = null;
-	private int waitTime = 6*1000;// 6 secs
-	private int timeOut = 15*1000;
-	
-	public ClientAck()
-	{
-		this.ts = System.currentTimeMillis() + timeOut;
-	}
-	
-  public int getTimeOut()
-  {
+public class ClientAck {
+  static Logger log = Logger.getLogger(ClientAck.class);
+
+  // TODO move all constant to config
+
+  public static final int OK = 100;
+  public static final int KO = -100;
+  public static final int KO_LOCK = -200;
+
+  private long ts = 0;
+
+  private Object lock = new Object();
+  private int status = 0;
+  private Throwable exception = null;
+  private int waitTime = 6 * 1000;// 6 secs
+  private int timeOut = 15 * 1000;
+
+  public ClientAck() {
+    this.ts = System.currentTimeMillis() + timeOut;
+  }
+
+  public int getTimeOut() {
     return timeOut;
   }
 
-  public void wait4Ack()
-	{
-		synchronized(lock)
-		{
-//			log.info(">>>>>>>>>>>>>>>>>>>>>>>>> Client synch");
-			while (this.status == 0)
-			{
-//				log.info(">>>>>>>>>>>>>>>>>>>>>>>>> Client Before wait");
-				try { lock.wait(waitTime);}
-				catch(InterruptedException e)
-				{}
-				long now = System.currentTimeMillis();
-				if (now > ts)
-				{
-					this.status = KO_LOCK;
-					this.exception = new RuntimeException("More than maximum time lock [" + this.toString() +"]");
-				}
-			}
-//			log.info("[" + Thread.currentThread().getName() + "] >>>>>>>>>>>>>>>>> Client after wait status [" + status +  "] [" + this.toString() + "]");
-		}
-	}
+  public void wait4Ack() {
+    synchronized (lock) {
+      // log.info(">>>>>>>>>>>>>>>>>>>>>>>>> Client synch");
+      while (this.status == 0) {
+        // log.info(">>>>>>>>>>>>>>>>>>>>>>>>> Client Before wait");
+        try {
+          lock.wait(waitTime);
+        } catch (InterruptedException e) {
+        }
+        long now = System.currentTimeMillis();
+        if (now > ts) {
+          this.status = KO_LOCK;
+          this.exception = new RuntimeException("More than maximum time lock ["
+              + this.toString() + "]");
+        }
+      }
+      // log.info("[" + Thread.currentThread().getName() +
+      // "] >>>>>>>>>>>>>>>>> Client after wait status [" + status + "] [" +
+      // this.toString() + "]");
+    }
+  }
 
-	public void releaseLock(int status, Throwable exception)
-	{
-		this.exception = exception;
-		this.status = status;
-		
-//		log.info("[" + Thread.currentThread().getName() + "] <<<<<<<<<<<<<<<<< Server synch [" + status + "] ----->>>> [" + this.toString() + "]");
-		synchronized(lock)
-		{		
-//			log.info("<<<<<<<<<<<<<<< Server before notify");
-			lock.notifyAll();
-		}
-//		log.info("<<<<<<<<<<<<<<< Server after notify");
-	}
-	
-	public int getStatus()
-	{
-		return status;
-	}
+  public void releaseLock(int status, Throwable exception) {
+    this.exception = exception;
+    this.status = status;
 
-	public void setStatus(int status)
-	{
-		this.status = status;
-	}
+    // log.info("[" + Thread.currentThread().getName() +
+    // "] <<<<<<<<<<<<<<<<< Server synch [" + status + "] ----->>>> [" +
+    // this.toString() + "]");
+    synchronized (lock) {
+      // log.info("<<<<<<<<<<<<<<< Server before notify");
+      lock.notifyAll();
+    }
+    // log.info("<<<<<<<<<<<<<<< Server after notify");
+  }
 
-	public Throwable getException()
-	{
-		return exception;
-	}
+  public int getStatus() {
+    return status;
+  }
 
-	public void setException(Throwable exception)
-	{
-		this.exception = exception;
-	}
+  public void setStatus(int status) {
+    this.status = status;
+  }
+
+  public Throwable getException() {
+    return exception;
+  }
+
+  public void setException(Throwable exception) {
+    this.exception = exception;
+  }
 }

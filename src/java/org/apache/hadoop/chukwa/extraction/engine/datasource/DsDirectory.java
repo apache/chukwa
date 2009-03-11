@@ -18,10 +18,10 @@
 
 package org.apache.hadoop.chukwa.extraction.engine.datasource;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.inputtools.mdl.DataConfig;
 import org.apache.hadoop.conf.Configuration;
@@ -29,81 +29,62 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-public class DsDirectory
-{
-	private static Object lock = new Object();
-	private static DsDirectory dsDirectory = null;
-	private static final String[] emptyArray = new String[0];
-	
-	
-	private String rootFolder = null;
-	private DataConfig dataConfig = null;
-	
-	private static FileSystem fs = null;
-	private static Configuration conf = null;
-	
-	private DsDirectory()
-	{
-		dataConfig = new DataConfig();
-		conf = new ChukwaConfiguration();
-		try
-		{
-			fs = FileSystem.get(conf);
-		} 
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		rootFolder = dataConfig.get("chukwa.engine.dsDirectory.rootFolder");
-		if (!rootFolder.endsWith("/"))
-		{
-			rootFolder +="/";
-		}
-	}
-	
-	public static DsDirectory getInstance()
-	{
-		synchronized(lock)
-		{
-			if (dsDirectory == null)
-			{
-				dsDirectory = new DsDirectory();
-			}
-		}
-		return dsDirectory;
-	}
-	
-	public String[] list(String cluster)
-	throws DataSourceException
-	{
-		List<String> datasources = new ArrayList<String>();
-		try
-		{
-			FileStatus[] fileStat = fs.listStatus(new Path(rootFolder+cluster));
-			
-			for (FileStatus fstat : fileStat)
-			{
-				if (fstat.isDir())
-				{
-					datasources.add(fstat.getPath().getName());
-				}
-			}
-		} 
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new DataSourceException(e);
-		}
-		return datasources.toArray(emptyArray);
-	}
-	
-	public static void main(String[] args) throws DataSourceException
-	{
-		DsDirectory dsd = DsDirectory.getInstance();
-		String[] dss = dsd.list("unknown");
-		for (String d : dss)
-		{
-			System.out.println(d);
-		}
-	}
+public class DsDirectory {
+  private static Object lock = new Object();
+  private static DsDirectory dsDirectory = null;
+  private static final String[] emptyArray = new String[0];
+
+  private String rootFolder = null;
+  private DataConfig dataConfig = null;
+
+  private static FileSystem fs = null;
+  private static Configuration conf = null;
+
+  private DsDirectory() {
+    dataConfig = new DataConfig();
+    conf = new ChukwaConfiguration();
+    try {
+      fs = FileSystem.get(conf);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    rootFolder = dataConfig.get("chukwa.engine.dsDirectory.rootFolder");
+    if (!rootFolder.endsWith("/")) {
+      rootFolder += "/";
+    }
+  }
+
+  public static DsDirectory getInstance() {
+    synchronized (lock) {
+      if (dsDirectory == null) {
+        dsDirectory = new DsDirectory();
+      }
+    }
+    return dsDirectory;
+  }
+
+  public String[] list(String cluster) throws DataSourceException {
+    List<String> datasources = new ArrayList<String>();
+    try {
+      FileStatus[] fileStat = fs.listStatus(new Path(rootFolder + cluster));
+
+      for (FileStatus fstat : fileStat) {
+        if (fstat.isDir()) {
+          datasources.add(fstat.getPath().getName());
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new DataSourceException(e);
+    }
+    return datasources.toArray(emptyArray);
+  }
+
+  public static void main(String[] args) throws DataSourceException {
+    DsDirectory dsd = DsDirectory.getInstance();
+    String[] dss = dsd.list("unknown");
+    for (String d : dss) {
+      System.out.println(d);
+    }
+  }
 }

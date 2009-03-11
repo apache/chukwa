@@ -18,8 +18,8 @@
 
 package org.apache.hadoop.chukwa.datacollection.test;
 
-import java.net.URI;
 
+import java.net.URI;
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.conf.Configuration;
@@ -29,59 +29,53 @@ import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Writable;
 
 public class SinkFileValidator {
-  
-  public static void main(String[] args)
-  {
+
+  public static void main(String[] args) {
     String fsURL = "hdfs://localhost:9000";
     String fname;
-    if(args.length < 1)
-    {
-      System.out.println("usage:  SinkFileValidator <filename> [filesystem URI] ");
+    if (args.length < 1) {
+      System.out
+          .println("usage:  SinkFileValidator <filename> [filesystem URI] ");
       System.exit(0);
     }
     fname = args[0];
-    if(args.length > 1)
+    if (args.length > 1)
       fsURL = args[1];
 
     Configuration conf = new Configuration();
-    try
-    {
-    FileSystem fs;
-    if(fsURL.equals("local"))
-      fs = FileSystem.getLocal(conf);
-    else
-       fs= FileSystem.get(new URI(fsURL), conf);
-    SequenceFile.Reader r= new SequenceFile.Reader(fs, new Path(fname), conf);
-    System.out.println("key class name is " + r.getKeyClassName());
-    System.out.println("value class name is " + r.getValueClassName());
-    
-    ChukwaArchiveKey key = new ChukwaArchiveKey();
-    ChunkImpl evt =  ChunkImpl.getBlankChunk();
-    int events = 0;
-    while(r.next(key, evt) &&  (events < 5))
-    {
-      if(!Writable.class.isAssignableFrom(key.getClass()))
-        System.out.println("warning: keys aren't writable");
-      
-      if(!Writable.class.isAssignableFrom(evt.getClass()))
-        System.out.println("warning: values aren't writable");
-      
-      if(evt.getData().length > 1000)
-      {
-        System.out.println("got event; data: " + new String(evt.getData(), 0, 1000));
-        System.out.println("....[truncating]");
-      }
+    try {
+      FileSystem fs;
+      if (fsURL.equals("local"))
+        fs = FileSystem.getLocal(conf);
       else
-        System.out.println("got event; data: " + new String(evt.getData()));
-      events ++;
-    }
-    System.out.println("file looks OK!");
-    }
-    catch(Exception e)
-    {
+        fs = FileSystem.get(new URI(fsURL), conf);
+      SequenceFile.Reader r = new SequenceFile.Reader(fs, new Path(fname), conf);
+      System.out.println("key class name is " + r.getKeyClassName());
+      System.out.println("value class name is " + r.getValueClassName());
+
+      ChukwaArchiveKey key = new ChukwaArchiveKey();
+      ChunkImpl evt = ChunkImpl.getBlankChunk();
+      int events = 0;
+      while (r.next(key, evt) && (events < 5)) {
+        if (!Writable.class.isAssignableFrom(key.getClass()))
+          System.out.println("warning: keys aren't writable");
+
+        if (!Writable.class.isAssignableFrom(evt.getClass()))
+          System.out.println("warning: values aren't writable");
+
+        if (evt.getData().length > 1000) {
+          System.out.println("got event; data: "
+              + new String(evt.getData(), 0, 1000));
+          System.out.println("....[truncating]");
+        } else
+          System.out.println("got event; data: " + new String(evt.getData()));
+        events++;
+      }
+      System.out.println("file looks OK!");
+    } catch (Exception e) {
       e.printStackTrace();
     }
-    
+
   }
 
 }

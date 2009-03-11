@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.hicc;
 
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 import java.io.IOException;
@@ -25,29 +26,31 @@ import java.util.*;
 import org.apache.hadoop.chukwa.hicc.Views;
 
 public class ViewsTag extends SimpleTagSupport {
-    private String key = null;
-    private String owner = null;
-    private String description = null;
-    Views views = new Views();
-    public void doTag() throws JspException, IOException {
-        for(int i=0;i<views.length();i++) {
-                int j=0;
-                getJspContext().setAttribute( "key", views.getKey(i) );
-                Iterator permission = views.getPermission(i);
-                String[] authUsers = new String[100];
-                for ( Iterator perm = permission; perm.hasNext(); ) {
-                    String who = perm.next().toString();
-                    authUsers[j]=who;
-//                    getJspContext().setAttribute( "permission."+who+".read", views.getReadPermission(i,who) );
-//                    getJspContext().setAttribute( "permission."+who+".write", views.getWritePermission(i,who) );
-                    j=j+1;
-                }
-//                getJspContext().setAttribute( "permission", authUsers );
-                getJspContext().setAttribute( "owner", views.getOwner(i) );
-                getJspContext().setAttribute( "description", views.getDescription(i) );
-	        getJspBody().invoke(null);
-        }
+  private String key = null;
+  private String owner = null;
+  private String description = null;
+  Views views = new Views();
+
+  public void doTag() throws JspException, IOException {
+    for (int i = 0; i < views.length(); i++) {
+      int j = 0;
+      getJspContext().setAttribute("key", views.getKey(i));
+      Iterator permission = views.getPermission(i);
+      String[] authUsers = new String[100];
+      for (Iterator perm = permission; perm.hasNext();) {
+        String who = perm.next().toString();
+        authUsers[j] = who;
+        // getJspContext().setAttribute( "permission."+who+".read",
+        // views.getReadPermission(i,who) );
+        // getJspContext().setAttribute( "permission."+who+".write",
+        // views.getWritePermission(i,who) );
+        j = j + 1;
+      }
+      // getJspContext().setAttribute( "permission", authUsers );
+      getJspContext().setAttribute("owner", views.getOwner(i));
+      getJspContext().setAttribute("description", views.getDescription(i));
+      getJspBody().invoke(null);
     }
+  }
 
 }
-

@@ -18,30 +18,34 @@
 
 package org.apache.hadoop.chukwa.extraction.demux;
 
+
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.Partitioner;
 import org.apache.log4j.Logger;
 
-public class ChukwaRecordPartitioner<K, V> 
-	implements Partitioner<ChukwaRecordKey, ChukwaRecord>
-{
-	static Logger log = Logger.getLogger(ChukwaRecordPartitioner.class);
-	public void configure(JobConf arg0)
-	{}
+public class ChukwaRecordPartitioner<K, V> implements
+    Partitioner<ChukwaRecordKey, ChukwaRecord> {
+  static Logger log = Logger.getLogger(ChukwaRecordPartitioner.class);
 
-	public int getPartition(org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey key,
-			org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord record, int numReduceTasks)
-	{
-		if (log.isDebugEnabled())
-		{
+  public void configure(JobConf arg0) {
+  }
 
-			log.debug("Partitioner key: [" + key.getReduceType() 
-					+ "] - Reducer:"
-					+ ( (key.getReduceType().hashCode() & Integer.MAX_VALUE) % numReduceTasks));	
-		}
-		return (key.getReduceType().hashCode() & Integer.MAX_VALUE) % numReduceTasks;
-	}
+  public int getPartition(
+      org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey key,
+      org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord record,
+      int numReduceTasks) {
+    if (log.isDebugEnabled()) {
+
+      log
+          .debug("Partitioner key: ["
+              + key.getReduceType()
+              + "] - Reducer:"
+              + ((key.getReduceType().hashCode() & Integer.MAX_VALUE) % numReduceTasks));
+    }
+    return (key.getReduceType().hashCode() & Integer.MAX_VALUE)
+        % numReduceTasks;
+  }
 
 }
