@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-45.  Added docs to folder structure. (Corinne Chandel via asrabkin)
+
     HADOOP-4989. Added capability to add scatter chart. (Eric Yang)
 
   IMPROVEMENTS
