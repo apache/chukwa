@@ -793,7 +793,7 @@
 		</macro_tar>
 	</target>
 
-        <target name="rpm" depends="clean,tar" description="Make release rpm">
+        <target name="rpm" depends="tar" description="Make release rpm">
 		<mkdir dir="${build.dir}/BUILD"/>
 		<mkdir dir="${build.dir}/RPMS"/>
 		<mkdir dir="${build.dir}/SOURCES"/>
