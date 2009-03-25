@@ -84,7 +84,7 @@
                           <include name="**/*.jar" />
                           <exclude name="**/*core*.jar" />
                   </fileset>
-                  <fileset dir="${hadoop.home.jars.dir}">   <!-- ASR -->
+                  <fileset dir="${hadoop.default.jars.dir}">   <!-- ASR -->
                           <include name="**/hadoop-0.18.0-core.jar" />
                   </fileset>
                   <fileset dir="${common.ivy.lib.dir}">
