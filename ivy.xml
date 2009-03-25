@@ -92,6 +92,25 @@
       name="log4j"
       rev="${log4j.version}"
       conf="common->master"/>
+    <dependency org="taglibs"
+      name="standard"
+      rev="${taglibs.version}"
+      conf="common->default"/>
+    <dependency org="jspapi"
+      name="jsp-api"
+      rev="${jsp-api.version}"
+      conf="common->default"/>
+    <dependency org="jstl"
+      name="jstl"
+      rev="${jstl.version}"
+      conf="common->default"/>
+    <dependency org="mysql"
+      name="mysql-connector-java"
+      rev="${mysql-connector.version}"
+      conf="common->default"/>
+    <!-- dependency org="org.apache.hadoop"
+      name="hadoop-core"
+      rev="${hadoop.version}"
+      conf="common->default"/ -->
     </dependencies>
-  
 </ivy-module>

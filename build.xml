@@ -67,10 +67,31 @@
                           <exclude name="**/*core*.jar" />
                   </fileset>
                   <fileset dir="${hadoop.home.jars.dir}">   <!-- ASR -->
-                          <include name="**/*core*.jar" />
+                          <include name="**/hadoop-0.2*-core.jar" />
+                  </fileset>
+                  <fileset dir="${common.ivy.lib.dir}">
+                          <include name="**/*.jar" />
                   </fileset>
                   <path refid="contrib-classpath"/>
           </path>
+	  <path id="dp-classpath">
+                  <fileset dir="${lib.dir}">
+                          <include name="**/*.jar" />
+                          <exclude name="**/excluded/" />
+                  </fileset>
+		  <pathelement location="${build.classes}"/>
+                  <fileset dir="${hadoop.default.jars.dir}">   <!-- ASR -->
+                          <include name="**/*.jar" />
+                          <exclude name="**/*core*.jar" />
+                  </fileset>
+                  <fileset dir="${hadoop.home.jars.dir}">   <!-- ASR -->
+                          <include name="**/hadoop-0.18.0-core.jar" />
+                  </fileset>
+                  <fileset dir="${common.ivy.lib.dir}">
+                          <include name="**/*.jar" />
+                  </fileset>
+		  <pathelement location="${conf.dir}"/>
+	  </path>
           <path id="testClasspath">
                   <pathelement location="${build.classes}"/>
                   <pathelement location="${test.build.classes}"/>
@@ -90,9 +111,12 @@
           <path id="testDemuxClasspath">
                   <pathelement location="${build.classes}"/>
                   <pathelement location="${test.build.classes}"/>
-                  <fileset dir="${hadoop.jar}">
+                  <fileset dir="${hadoop.default.jars.dir}">   <!-- ASR -->
                           <include name="**/*.jar" />
-                          <exclude name="**/excluded/" />
+                          <exclude name="**/hadoop-0.2*-core.jar" />
+                  </fileset>
+                  <fileset dir="${hadoop.home.jars.dir}">   <!-- ASR -->
+                          <include name="**/*core*.jar" />
                   </fileset>
                   <fileset dir="${lib.dir}">
                           <include name="**/*.jar" />
@@ -249,8 +273,7 @@
                 <property name="test.include" value="Test*"/>
                 <property name="test.classpath.id" value="test.classpath"/>
                 <property name="test.output" value="yes"/>
-                <!--<property name="test.timeout" value="900000"/> -->
-                <property name="test.timeout" value="5000"/>
+                <property name="test.timeout" value="900000"/>
                 <property name="test.junit.output.format" value="plain"/>
                 <property name="test.junit.fork.mode" value="perTest" />
                 <property name="test.junit.printsummary" value="yes" />
@@ -273,12 +296,54 @@
         </echo>
 	</target>
 
-	<target name="compile" depends="init" description="Compilation target">
-		<mkdir dir="${build.dir}"/>
-		<mkdir dir="${build.classes}"/>
-		<mkdir dir="${build.dir}/test"/>
-		<javac srcdir="src/java/org/apache/hadoop" destdir="${build.classes}" excludes="**/ChukwaTTInstru.java" debug="${javac.debug}">
+	<target name="compile" depends="compile-common,compile-inputtools,compile-datacollection,compile-extraction,compile-hicc" description="Compilation target">
+	</target>
+
+	<target name="compile-common" depends="init" description="Compilation target">
+		<javac srcdir="src/java" destdir="${build.classes}" debug="${javac.debug}">
+                        <exclude name="org/apache/hadoop/chukwa/datacollection/**" />
+                        <exclude name="org/apache/hadoop/chukwa/extraction/**" />
+                        <exclude name="org/apache/hadoop/chukwa/inputtools/**" />
+                        <exclude name="org/apache/hadoop/mapred/**" />
+                        <compilerarg value="-Xlint"/>
 			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="compile-inputtools" depends="init,compile-common" description="Compile Input Tools">
+		<javac srcdir="src/java" destdir="${build.classes}" excludes="**/ChukwaTTInstru.java" debug="${javac.debug}">
+                        <compilerarg value="-Xlint"/>
+                        <exclude name="org/apache/hadoop/*" />
+                        <include name="org/apache/hadoop/chukwa/inputtools/**" />
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="compile-datacollection" depends="init,compile-common" description="Compilation Data Collection Framework">
+		<javac srcdir="src/java" destdir="${build.classes}" debug="${javac.debug}">
+                        <compilerarg value="-Xlint"/>
+			<classpath refid="classpath" />
+                        <exclude name="org/apache/hadoop/*" />
+                        <include name="org/apache/hadoop/chukwa/datacollection/**" />
+		</javac>
+	</target>
+
+	<target name="compile-extraction" depends="init,compile-common" description="Compilation Data Processing Framework">
+		<javac srcdir="src/java" destdir="${build.classes}" debug="${javac.debug}">
+                        <compilerarg value="-Xlint"/>
+			<classpath refid="dp-classpath" />
+                        <exclude name="org/apache/hadoop/chukwa/*" />
+                        <include name="org/apache/hadoop/chukwa/database/**" />
+                        <include name="org/apache/hadoop/chukwa/extraction/**" />
+		</javac>
+	</target>
+
+	<target name="compile-hicc" depends="init" description="Compilation HICC Framework">
+		<javac srcdir="src/java" destdir="${build.classes}" debug="${javac.debug}">
+                        <compilerarg value="-Xlint"/>
+			<classpath refid="classpath" />
+                        <exclude name="org/apache/hadoop/chukwa/*" />
+                        <include name="org/apache/hadoop/chukwa/hicc/**" />
 		</javac>
 	</target>
 
@@ -291,7 +356,7 @@
            <delete dir="${test.build.classes}"/>
            <mkdir dir="${test.build.classes}"/>
 
-            <javac srcdir="${test.src.dir}/org/apache/hadoop/chukwa" destdir="${test.build.dir}/classes"  debug="${javac.debug}">
+            <javac srcdir="${test.src.dir}" destdir="${test.build.dir}/classes"  debug="${javac.debug}">
                  <classpath refid="testClasspath" />
                  <classpath refid="testDemuxClasspath" />
             </javac>
@@ -316,10 +381,13 @@
               <include name="**/${test.include}.java"/>
               <exclude name="**/${test.exclude}.java"/>
               <exclude name="**/TestAgentConfig.java"/>
+              <exclude name="**/TestDemux.java"/>
             </fileset>
            </batchtest>
            <batchtest todir="${test.build.dir}" if="testcase">
-            <fileset dir="${test.src.dir}" includes="**/${testcase}.java"/>
+            <fileset dir="${test.src.dir}" includes="**/${testcase}.java">
+              <exclude name="**/TestDemux.java"/>
+            </fileset>
            </batchtest>
          </junit>
          <fail if="tests.failed">Tests failed!</fail>
@@ -479,39 +547,20 @@
                 <copy todir="${build.dir}/hicc/WEB-INF/classes">
                         <fileset dir="${build.classes}">
                                 <include name="org/apache/hadoop/chukwa/hicc/**/*.class" />
-                        </fileset>
-                        <fileset dir="${build.classes}">
                                 <include name="org/apache/hadoop/chukwa/conf/**/*.class" />
-                        </fileset>
-                        <fileset dir="${build.classes}">
+                                <include name="org/apache/hadoop/chukwa/database/**/*.class" />
                                 <include name="org/apache/hadoop/chukwa/datacollection/**/*.class" />
-                        </fileset>
-                        <fileset dir="${build.classes}">
                                 <include name="org/apache/hadoop/chukwa/extraction/engine/**/*.class" />
-                        </fileset>
-                        <fileset dir="${build.classes}">
                                 <include name="org/apache/hadoop/chukwa/inputtools/*.class" />
-                        </fileset>
-                        <fileset dir="${build.classes}">
                                 <include name="org/apache/hadoop/chukwa/util/**/*.class" />
                         </fileset>
 
                         <fileset dir="${basedir}/src/java">
                                 <include name="org/apache/hadoop/chukwa/hicc/**/*.java" />
-                        </fileset>
-                        <fileset dir="${basedir}/src/java">
                                 <include name="org/apache/hadoop/chukwa/conf/**/*.java" />
-                        </fileset>
-                        <fileset dir="${basedir}/src/java">
                                 <include name="org/apache/hadoop/chukwa/datacollection/**/*.java" />
-                        </fileset>
-                        <fileset dir="${basedir}/src/java">
                                 <include name="org/apache/hadoop/chukwa/extraction/engine/**/*.java" />
-                        </fileset>
-                        <fileset dir="${basedir}/src/java">
                                 <include name="org/apache/hadoop/chukwa/inputtools/*.java" />
-                        </fileset>
-                        <fileset dir="${basedir}/src/java">
                                 <include name="org/apache/hadoop/chukwa/util/**/*.java" />
                         </fileset>
 
@@ -519,32 +568,29 @@
                 <copy todir="${build.dir}/hicc/WEB-INF/lib">
                         <fileset dir="${basedir}/lib">
                                 <include name="json.jar" />
-                                <include name="jstl.jar" />
-                                <include name="servlet.jar" />
-                                <include name="taglibs.jar" />
-                                <include name="commons-fileupload-*.jar" />
-                                <include name="commons-httpclient-*.jar" />
-                                <include name="commons-logging-adapters-*.jar" />
-                                <include name="commons-io-*.jar" />
-                                <include name="commons-logging-api-*.jar" />
-                                <include name="commons-logging.jar" />
-                                <include name="log4j-*.jar" />
+                                <include name="html-filter-1.0.jar" />
+                        </fileset>
+                        <fileset dir="${common.ivy.lib.dir}">
+                                <include name="*.jar" />
+                                <exclude name="jetty-*.jar" />
+                                <exclude name="jsp-api*.jar" />
+                                <exclude name="junit-*.jar" />
                         </fileset>
                         <fileset dir="${build.dir}">
                                 <include name="${name}-core-${chukwaVersion}.jar" />
                         </fileset>
                         <fileset dir="${build.dir}/${final.name}/hadoopjars">
                                 <include name="*.jar" />
+                                <exclude name="hadoop-0.2*-core.jar" />
                                 <exclude name="jasper-*.jar" />
                                 <exclude name="jetty-*.jar" />
-                                <exclude name="jsp-api.jar" />
+                                <exclude name="jsp-api*.jar" />
                         </fileset>
                 </copy>
         </target>
 
         <target name="hicc_war" depends="compile, hicc" description="Create hicc jar">
                 <jar jarfile="${build.dir}/hicc.war" basedir="${build.dir}/hicc">
-                        <fileset dir="${build.dir}/hicc" includes="**" />
                 </jar>
         </target>
 
@@ -672,6 +718,14 @@
 
 		<copy todir="${build.dir}/${final.name}/tools">
 			<fileset dir="${tools.dir}" />
+		</copy>
+
+		<copy todir="${build.dir}/${final.name}/var/descriptors">
+			<fileset dir="${basedir}/src/web/hicc/descriptors" />
+		</copy>
+
+		<copy todir="${build.dir}/${final.name}/var/views">
+			<fileset dir="${basedir}/src/web/hicc/views" />
 		</copy>
 
 		<chmod perm="ugo+x" type="file" parallel="false">
@@ -855,15 +909,5 @@ echo
                 </echo>
 		<rpm specFile="chukwa.spec" topDir="${build.dir}" cleanBuildDir="true" failOnError="true"/>
         </target>
-
-	<!-- the normal classpath -->
-	<path id="classpath">
-		<pathelement location="${build.classes}"/>
-		<fileset dir="${lib.dir}">
-			<include name="**/*.jar" />
-			<exclude name="**/excluded/" />
-		</fileset>
-		<pathelement location="${conf.dir}"/>
-	</path>
 
 </project>
