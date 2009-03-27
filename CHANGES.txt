@@ -35,6 +35,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-37.  Remove ChuckwaArchiveBuilder. (asrabkin)
+
     CHUKWA-33.  Reformat code to fit hadoop style.  (asrabkin)
  
     CHUKWA-8.  Remove deprecated conf files.  (eyang via asrabkin)
