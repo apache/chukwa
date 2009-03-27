@@ -272,7 +272,7 @@
                 <property name="test.build.testjar" value="${test.build.dir}/testjar"/>
                 <property name="test.include" value="Test*"/>
                 <property name="test.classpath.id" value="test.classpath"/>
-                <property name="test.output" value="yes"/>
+                <property name="test.output" value="no"/>
                 <property name="test.timeout" value="900000"/>
                 <property name="test.junit.output.format" value="plain"/>
                 <property name="test.junit.fork.mode" value="perTest" />
@@ -360,13 +360,20 @@
                  <classpath refid="testClasspath" />
                  <classpath refid="testDemuxClasspath" />
             </javac>
+
+            <copy todir="${test.build.dir}/classes/org/apache/hadoop/chukwa/inputtools/log4j/">
+                  <fileset dir="${basedir}/src/test/org/apache/hadoop/chukwa/inputtools/log4j/">
+                     <include name="late-log4j.properties" />
+                  </fileset>
+            </copy>
+
         </target>
 
             <!--printsummary="${test.junit.printsummary}" -->
 
 	<target name="test-chukwa" depends="compile,compile-test" description="Run Chukwa unit tests">
           <mkdir dir="${basedir}/var"/>
-          <junit showoutput="yes"
+          <junit showoutput="${test.output}"
             fork="yes"
             printsummary="withOutAndErr"
             forkmode="${test.junit.fork.mode}"

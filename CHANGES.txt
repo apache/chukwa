@@ -35,6 +35,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-28.  Late initalization of log4j adaptor.  (Jerome Boulon via asrabkin)
+
     CHUKWA-48.  Cleanup code to resolve compiler warnings.  (asrabkin)
 
     CHUKWA-9.  MetricDataLoader should close JDBC connection.  (Jerome Boulon via asrabkin)

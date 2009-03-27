@@ -183,6 +183,9 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
    */
   private int maxBackupIndex = 10;
 
+  private ClientFinalizer clientFinalizer = null;
+  
+  boolean hasBeenActivated = false;
   Date now = new Date();
 
   SimpleDateFormat sdf;
@@ -225,7 +228,6 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
         .println("Daily Rolling File Appender successfully registered file with agent: "
             + filename);
     this.datePattern = datePattern;
-    activateOptions();
   }
 
   /**
@@ -253,6 +255,11 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
   }
 
   public void activateOptions() {
+    
+    // Prevent early initialisation
+    if (!hasBeenActivated)
+    { return;}
+    
     super.activateOptions();
     if (datePattern != null && fileName != null) {
       now.setTime(System.currentTimeMillis());
@@ -478,7 +485,22 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
     }
   }
 
-  private ClientFinalizer clientFinalizer = null;
+  
+  /**
+   * Fix for late-initialisation
+   */
+  @Override
+  protected boolean checkEntryConditions() {
+    if (!hasBeenActivated) {
+      synchronized(chukwaLock) {
+        if (!hasBeenActivated) {
+          hasBeenActivated = true;
+          activateOptions();
+        }
+      }
+    }
+    return super.checkEntryConditions();
+  }
 
   /**
    * This method differentiates DailyRollingFileAppender from its super class.
@@ -514,6 +536,11 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
 
             chukwaClientIsNull = false;
 
+            // FIXME: Hack to make the log file readable by chukwa user. 
+            if(System.getProperty("os.name").intern()=="Linux".intern()) {
+              Runtime.getRuntime().exec("chmod 640 "+getFile());
+            }
+            
             // Watchdog is watching for ChukwaAgent only once every 5 minutes,
             // so there's no point in retrying more than once every 5 mins.
             // In practice, if the watchdog is not able to automatically restart
