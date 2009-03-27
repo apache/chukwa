@@ -366,6 +366,15 @@ public class MetricDataLoader {
         }
         stmt = null;
       }
+      if (conn != null) {
+        try {
+          conn.close();
+        } catch (SQLException sqlEx) {
+          // ignore
+        }
+        conn = null;
+      }
+
     }
   }
 
