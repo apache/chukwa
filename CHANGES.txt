@@ -35,6 +35,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-48.  Cleanup code to resolve compiler warnings.  (asrabkin)
+
     CHUKWA-9.  MetricDataLoader should close JDBC connection.  (Jerome Boulon via asrabkin)
 
     CHUKWA-37.  Remove ChuckwaArchiveBuilder. (asrabkin)

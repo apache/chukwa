@@ -46,8 +46,7 @@ public class PipelineStageWriter implements ChukwaWriter {
       String pipeline = conf.get("chukwaCollector.pipeline");
       try {
         String[] classes = pipeline.split(",");
-        ArrayList<PipelineableWriter> stages = new ArrayList<PipelineableWriter>();
-
+        log.info("using pipelined writers, pipe length is " + classes.length);
         PipelineableWriter lastWriter = null;
         if (classes.length > 1) {
           lastWriter = (PipelineableWriter) conf.getClassByName(classes[0])
@@ -57,7 +56,7 @@ public class PipelineStageWriter implements ChukwaWriter {
         }
 
         for (int i = 1; i < classes.length - 1; ++i) {
-          Class stageClass = conf.getClassByName(classes[i]);
+          Class<?> stageClass = conf.getClassByName(classes[i]);
           Object st = stageClass.newInstance();
           if (!(st instanceof PipelineableWriter))
             log.error("class " + classes[i]
@@ -72,7 +71,7 @@ public class PipelineStageWriter implements ChukwaWriter {
           lastWriter.setNextStage(stage);
           lastWriter = stage;
         }
-        Class stageClass = conf.getClassByName(classes[classes.length - 1]);
+        Class<?> stageClass = conf.getClassByName(classes[classes.length - 1]);
         Object st = stageClass.newInstance();
 
         if (!(st instanceof ChukwaWriter)) {

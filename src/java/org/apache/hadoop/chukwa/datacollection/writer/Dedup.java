@@ -89,9 +89,6 @@ public class Dedup implements PipelineableWriter {
       return b;
     }
 
-    private long dupCount() {
-      return dupchunks;
-    }
   }
 
   FixedSizeCache<DedupKey> cache;
