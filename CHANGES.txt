@@ -35,6 +35,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-41.  ChukwaLog4jAppender does not escape \n for exception.  (Jerome Boulon via asrabkin)
+
     CHUKWA-28.  Late initalization of log4j adaptor.  (Jerome Boulon via asrabkin)
 
     CHUKWA-48.  Cleanup code to resolve compiler warnings.  (asrabkin)

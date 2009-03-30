@@ -588,22 +588,28 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
           LogLog.error("rollOver() failed.", ioe);
         }
       }
-      // escape the newlines from record bodies and then write this record to
-      // the log file
-      this.qw.write(RecordConstants.escapeAllButLastRecordSeparator("\n",
-          this.layout.format(event)));
 
-      if (layout.ignoresThrowable()) {
+      boolean written = false;
+      if(layout.ignoresThrowable()) {
         String[] s = event.getThrowableStrRep();
         if (s != null) {
           int len = s.length;
-          for (int i = 0; i < len; i++) {
-            this.qw.write(s[i]);
-            this.qw.write(Layout.LINE_SEP);
+          StringBuilder sb = new StringBuilder();
+          sb.append(this.layout.format(event));
+          for(int i = 0; i < len; i++) {
+            sb.append(s[i]).append("\n");
           }
-        }
+          //escape the newlines from record bodies, exception and then write this record to the log file
+          written = true;
+          this.qw.write(RecordConstants.escapeAllButLastRecordSeparator("\n",sb.toString()));
+        } 
       }
-
+       
+      if (!written) {
+        //escape the newlines from record bodies and then write this record to the log file
+        this.qw.write(RecordConstants.escapeAllButLastRecordSeparator("\n",this.layout.format(event)));
+      }
+      
       if (this.immediateFlush) {
         this.qw.flush();
       }
