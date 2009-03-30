@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
+
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.chukwa.util.RecordConstants;
 import org.apache.log4j.FileAppender;
@@ -520,6 +521,20 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
       // and use the boolean to avoid the first level locking
       if (chukwaClientIsNull) {
         synchronized (chukwaLock) {
+
+          String log4jFileName = getFile(); 
+          String recordType = getRecordType();
+
+          long currentLength = 0L;
+          try {
+            File fooLog = new File(log4jFileName);
+            log4jFileName = fooLog.getAbsolutePath();
+            currentLength = fooLog.length();
+          } catch (Throwable e) {
+            log.warn("Exception while trying to get current file size for " + log4jFileName);
+            currentLength = 0L;
+          }
+
           if (chukwaClient == null) {
             if (getChukwaClientHostname() != null
                 && getChukwaClientPortNum() != 0) {
@@ -531,7 +546,7 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
             } else {
               chukwaClient = new ChukwaAgentController();
               log
-                  .debug("setup adaptor with no args, which means it used its defaults");
+              .debug("setup adaptor with no args, which means it used its defaults");
             }
 
             chukwaClientIsNull = false;
@@ -556,9 +571,10 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
             if (numRetries == 0) {
               numRetries = 48;
             }
-            String log4jFileName = getFile();
-            String recordType = getRecordType();
-            long adaptorID = chukwaClient.addFile(recordType, log4jFileName,
+
+
+            long adaptorID = chukwaClient.add(ChukwaAgentController.CharFileTailUTF8NewLineEscaped,
+                recordType,currentLength + " " + log4jFileName, currentLength,
                 numRetries, retryInterval);
 
             // Setup a shutdownHook for the controller
@@ -568,10 +584,13 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
 
             if (adaptorID > 0) {
               log.debug("Added file tailing adaptor to chukwa agent for file "
-                  + log4jFileName + "using this recordType :" + recordType);
+                  + log4jFileName + ", adaptorId:" + adaptorID 
+                  + " using this recordType :" + recordType 
+                  + ", starting at offset:" + currentLength);
             } else {
               log.debug("Chukwa adaptor not added, addFile(" + log4jFileName
-                  + ") returned " + adaptorID);
+                  + ") returned " + adaptorID 
+                  + ", current offset:" + currentLength);
             }
 
           }

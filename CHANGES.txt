@@ -35,6 +35,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-43.  ChukwaLog4jAppender should send the current file offset instead of sending 0.  (Jerome Boulon via asrabkin)
+
     CHUKWA-41.  ChukwaLog4jAppender does not escape \n for exception.  (Jerome Boulon via asrabkin)
 
     CHUKWA-28.  Late initalization of log4j adaptor.  (Jerome Boulon via asrabkin)
