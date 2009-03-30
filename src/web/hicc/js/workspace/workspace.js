@@ -21,18 +21,22 @@ var portalView = Class.create();
 function showView (request) {
       	            _currentView.viewObj=request.responseText.evalJSON();
                     _currentView.createView();
-	            _currentView.pages[0].pageSelected();
+	            _currentView.getCurrentPage().pageSelected();
 }
 
 portalView.prototype = {
 
-    initialize: function(id) {
+    initialize: function(id,tab) {
 	// initialize values
 	this.baseURL='/hicc/Workspace';
 
     	this.id=id;			// id of the view
 	this.pagesCount=0;		// total number of pages
-	this.currentPage=0;		// current page id
+        if(tab) {
+	    this.currentPage=tab;       // current page id
+        } else {
+	    this.currentPage=0;		// current page id
+        }
         this.pages=new Array();		// list of pages
 	this.description='';		// description of view
 	this.modified=0;
@@ -106,9 +110,8 @@ portalView.prototype = {
     createView: function() {
    	if (this.viewObj != null) {
 	    for (var j=0;j<this.viewObj.pages.length;j++) {
-		this.currentPage=j;
 	   	// create a div
-	   	page=this.addNewPage(this.viewObj.pages[this.currentPage].title, this.viewObj.pages[this.currentPage].columns, this.viewObj.pages[this.currentPage]);
+	   	page=this.addNewPage(this.viewObj.pages[j].title, this.viewObj.pages[j].columns, this.viewObj.pages[j]);
 	      	// page.setupPage();
             }
    	}
@@ -260,7 +263,19 @@ portalView.prototype = {
 		this.pages[i].pageDeselected();
 	    }
 	}
+    },
+
+    findPageByIndex: function(i) {
+        return this.pages[i].page_tag;
+    },
+
+    selectPageByIndex: function(i) {
+        this.selectPage(this.findPageByIndex(i));
     }	
+}
+
+function set_current_page(i) {
+    setTimeout("_currentView.selectPage(_currentView.pages["+i+"].page_tag);",2000);
 }
 
 function clickTab(evt) {
@@ -377,7 +392,15 @@ portalWidget.prototype = {
     },
 
     getWidgetUrl: function() { 
-	return "/hicc/";
+        var url="/hicc/";
+        if(this.block_obj.module) {
+            if(this.block_obj.module.match(/^http:\/\//)) {
+                url=this.block_obj.module;
+            } else {
+                url=url+this.block_obj.module;
+            }
+        }
+	return url;
     },
 
     getConfigObj: function() {
@@ -414,6 +437,8 @@ portalWidget.prototype = {
 	        content+='<tr><td>'+label+':<\/td><td>';
 	        if (param.type=='string') {
 		    content+='<input type="text" id="'+param_id+'" value="' + param.value + '" size="20" maxlength="255"\/>'
+	        } else if (param.type=='text') {
+		    content+='<textarea id="'+param_id+'" style="width: 300px; height: 100px">' + param.value + '</textarea>'
 	        } else if (param.type=='checkbox') {
 		    content+='<input type="checkbox" id="'+param_id+'" name="'+param_id+'" ' + ((param.value==1 || param.value == "on") ? "checked":"") + ' \/>'
 	        } else if (param.type=='radio') {
@@ -578,6 +603,8 @@ portalWidget.prototype = {
             }
 	    if (param.type=='string') {
 		$(param_id).value=param.value;
+	    } else if (param.type=='text') {
+		$(param_id).value=param.value;
 	    } else if (param.type=='checkbox') {
 		$(param_id).checked=((param.value==1 || param.value == "on") ? 1:0);
 	    } else if (param.type=='radio') {
@@ -740,6 +767,28 @@ portalWidget.prototype = {
    	textSpan = document.createElement('SPAN');
 	textSpan.innerHTML='&nbsp;';
    	ControlSpan.appendChild(textSpan);
+
+        var permaLink = document.createElement('A');
+        permaLink.id = 'permlink'+ this.pageid + "_" + this.boxIndex;
+        permaLink.style.border = '0';
+        permaLink.href = '';
+   	permaLink.onmouseover = function() {
+                                    build_permlink(this.id);
+        }
+        ControlSpan.appendChild(permaLink);
+
+   	image = document.createElement('IMG');
+   	image.src = linkImage;
+   	image.id = 'dragableBoxLink' + this.pageid+"_"+this.boxIndex;
+   	image.style.border = '0';
+   	image.style.visibility = 'hidden';
+   	image.style.cursor = 'pointer';
+      	image.setAttribute('alt','Permalink');
+   	permaLink.appendChild(image);
+
+   	textSpan = document.createElement('SPAN');
+	textSpan.innerHTML='&nbsp;';
+   	ControlSpan.appendChild(textSpan);
    
    	image = document.createElement('IMG');
    	image.src = refreshImage;
@@ -835,20 +884,28 @@ portalWidget.prototype = {
     },
 
     reloadBoxData: function() {
-
    	this.showStatusBarMessage('<img src="/hicc/images/loading.gif">');
         showHeader(this.pageid+"_"+this.boxIndex, 'visible');
         var url=this.getWidgetUrl();
         var parameters="";
-	var d=new Date();
-        if(this.block_obj.module) {
-            if(this.block_obj.module.match(/^http:\/\//)) {
-                url=this.block_obj.module;
-            } else {
-                url=this.getWidgetUrl()+this.block_obj.module;
-                parameters=this.getParametersString()+"&_s="+(d.getTime());
+        var d=new Date();
+        parameters=this.getParametersString()+"&_s="+(d.getTime());
+        if(document.getElementById('iframe'+this.pageid+"_"+this.boxIndex)) {
+            var d = document.getElementById('iframe'+this.pageid+"_"+this.boxIndex);
+            try {
+                var new_url=url.replace(/iframe\//,"");
+                d.contentWindow.refresh(new_url, parameters);
+       	        var now=new Date();
+                $msg="<font style='font-size:9px;'>Updated: "+now.formatDate("H:i:s")+"&nbsp;&nbsp;</font>";
+       	        $('dragableBoxStatusBar'+this.pageid+"_"+this.boxIndex).innerHTML=$msg;
+                if($('dragableBoxRefreshSource'+this.pageid+"_"+this.boxIndex)) {
+                    $('dragableBoxRefreshSource'+this.pageid+"_"+this.boxIndex).setAttribute('alt','Refresh Widget. '+$msg);
+                    showHeader(this.pageid+"_"+this.boxIndex, 'hidden');
+                }
+                return false;
+            } catch(err) {
             }
-        }
+        } 
 	var myAjax = new Ajax.Request(
          	url,
          	{ method: 'get', 
@@ -859,10 +916,51 @@ portalWidget.prototype = {
     }
 }
 
+function build_permlink(id) {
+   current_date=new Date();
+   var current = current_date.getTime();
+   if(current-last_hover>2000) { 
+       var origin="/hicc/index.jsp";
+       var pattern = /permlink(\d+)_(\d+)/;
+       var myArray = pattern.exec(id);
+       if(id) {
+           pageId=myArray[1];
+           boxId=myArray[2];
+           origin = _currentView.pages[pageId].dragableBoxesArray[boxId].getWidgetUrl()+"?"+_currentView.pages[pageId].dragableBoxesArray[boxId].getParametersString();
+       }
+       var regex = new RegExp(/\?/);
+       var delimit;
+       if(origin.match(regex)) {
+           delimit="&";
+       } else {
+           delimit="?";
+       }
+       if(id) {
+           var myAjax = new Ajax.Request('/hicc/jsp/permlink.jsp', 
+                                         { method: 'get', 
+                                           onSuccess: function(request) {
+                                                          document.getElementById(id).href=origin+delimit+request.responseText;
+                                                          last_hover=current;
+                                                      }
+                                         });
+       } else {
+           var selected = _currentView.findPage(_currentView.getCurrentPage().page_tag);
+           var myAjax = new Ajax.Request('/hicc/jsp/permlink.jsp', 
+                                         { method: 'get', 
+                                           onSuccess: function(request) {
+                                                          document.getElementById('permlink').href=origin+delimit+request.responseText+"&"+"_page="+selected;
+                                                          last_hover=current;
+                                                      }
+                                         });
+       }
+   }
+}
+
 function showHeader(id, state) {
    $('dragableBoxExpand' + id).style.visibility = state;		
    $('dragableBoxRefreshSource' + id).style.visibility = state;
    $('dragableBoxEditSource' + id).style.visibility = state;
+   $('dragableBoxLink' + id).style.visibility = state;
    $('dragableBoxCloseSource' + id).style.visibility = state;
    $('dragableBoxStatusBar' + id).style.visibility = state;
 }
@@ -1651,7 +1749,17 @@ portalPage.prototype = {
 	  	    this.dragableRuler[ruler.id]=new Draggable(ruler.id,{constraint:'horizontal',revert:moveRuler,
       			reverteffect: function(element, top_offset, left_offset) {
         		element._revert = new Effect.Move(element, { x: -left_offset, y: -top_offset, duration: 0.001});
-      		    }});
+      		    }, onDrag: function(element, draggable, event) { 
+                        if(navigator.userAgent.indexOf('Firefox')!=-1) {
+                            var dh = getDocHeight(document)+500;
+                            document.getElementById('firefox-bug').style.display='block';
+                            document.getElementById('firefox-bug').style.height=dh+'px';
+                        }
+                    }, onEnd: function(element, draggable, event) {
+                        if(navigator.userAgent.indexOf('Firefox')!=-1) {
+                            document.getElementById('firefox-bug').style.display='none';
+                        }
+                    } });
             	    var div = document.createElement('DIV');
                     columnWidth = 99 - sumWidth;
           	    div.style.cssText = 'float:left;width:'+(columnWidth)+'%;padding:0px;margin:0px;';
@@ -1740,7 +1848,17 @@ portalPage.prototype = {
 	  	this.dragableRuler[ruler.id]=new Draggable(ruler.id,{constraint:'horizontal',revert:moveRuler,
       		    reverteffect: function(element, top_offset, left_offset) {
         	    element._revert = new Effect.Move(element, { x: -left_offset, y: -top_offset, duration: 0.001});
-      		}});
+      		    }, onDrag: function(element, draggable, event) { 
+                        if(navigator.userAgent.indexOf('Firefox')!=-1) {
+                            var dh = getDocHeight(document)+500;
+                            document.getElementById('firefox-bug').style.display='block';
+                            document.getElementById('firefox-bug').style.height=dh+'px';
+                        }
+                    }, onEnd: function(element, draggable, event) {
+                        if(navigator.userAgent.indexOf('Firefox')!=-1) {
+                            document.getElementById('firefox-bug').style.display='none';
+                        }
+                    } });
 	    }
         }
        
@@ -1798,6 +1916,7 @@ portalPage.prototype = {
 }
 
 function moveDragableElement(e) {
+
    if(document.all)e = event;
    if(dragDropCounter<10)return;
    
@@ -1840,6 +1959,11 @@ function moveDragableElement(e) {
    if(!okToMove)return;
    okToMove = false;
    
+   if(navigator.userAgent.indexOf('Firefox')!=-1) {
+      var dh = getDocHeight(document)+500;
+      document.getElementById('firefox-bug').style.display='block';
+      document.getElementById('firefox-bug').style.height=dh+'px';
+   }
    destinationObj = false;	
    rectangleDiv.style.display = 'none'; 
    
@@ -1913,6 +2037,9 @@ function stop_dragDropElement() {
       return;
    }
    dragDropCounter = -1;
+   if(navigator.userAgent.indexOf('Firefox')!=-1) {
+      document.getElementById('firefox-bug').style.display='none';
+   }
    if(transparencyWhenDragging){
       dragObject.style.filter = null;
       dragObject.style.opacity = null;
@@ -1945,7 +2072,8 @@ function stop_dragDropElement() {
    destinationObj = false;
 
    _currentView.setModified(1);   
-   documentHeight = getClientHeight();	
+   documentHeight = getClientHeight();
+   _currentView.pages[idsplit[0]].dragableBoxesArray[idsplit[1]].reloadBoxData();
 }
 
 function cancelEvent() {
@@ -2793,10 +2921,11 @@ var autoScrollSpeed=4;				// higher = faster
 var dragObjectBorderWidth=1;			// Border size of the RSS box
 
 // images
-var rightArrowImage='/hicc/images/arrow_right.gif';	// for window open
-var downArrowImage='/hicc/images/arrow_down.gif';	// for window collpase
+var rightArrowImage='/hicc/images/arrow_right.png';	// for window open
+var downArrowImage='/hicc/images/arrow_down.png';	// for window collpase
 var refreshImage='/hicc/images/refresh.png';		// refresh window
-var editImage='/hicc/images/info.png';		// edit window
+var linkImage='/hicc/images/server_link.png';		// permalink
+var editImage='/hicc/images/info.png';			// edit window
 var closeImage='/hicc/images/close.png';		// close window
 var smallRightArrow='/hicc/images/small_arrow.gif';	// for individual item inside window
 
@@ -2822,7 +2951,7 @@ function ping_server() {
 }
 	
 // initialize the window
-function initScript(view_id) {
+function initScript(view_id,page) {
    resetAll();
    if (view_id == '') {
       view_id='default';
@@ -2830,7 +2959,7 @@ function initScript(view_id) {
 
    //create view
    _currentViewId=view_id;
-   _currentView=new portalView(view_id);
+   _currentView=new portalView(view_id,page);
    rectangleDiv=$('rectangleDiv');	
 }
 
@@ -3155,5 +3284,16 @@ function filter_event_viewer(boxId) {
         var idsplit=boxId.split("_");
         _currentView.getCurrentPage().dragableBoxesArray[idsplit[1]].reloadBoxData();
     }
+}
+
+function getDocHeight(doc) {
+  var docHt = 0, sh, oh;
+  if (doc.height) docHt = doc.height;
+  else if (doc.body) {
+    if (doc.body.scrollHeight) docHt = sh = doc.body.scrollHeight;
+    if (doc.body.offsetHeight) docHt = oh = doc.body.offsetHeight;
+    if (sh && oh) docHt = Math.max(sh, oh);
+  }
+  return docHt;
 }
 

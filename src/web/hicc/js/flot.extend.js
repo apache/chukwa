@@ -1,3 +1,5 @@
+var zoom=false;
+
 function showTooltip(x, y, contents) {
         if(x>document.body.clientWidth*.6) {
             x=x-200;
@@ -16,12 +18,13 @@ function showTooltip(x, y, contents) {
         }).appendTo("body").fadeIn(200);
 }
 
-wholePeriod=function () {
+function wholePeriod() {
         var cw = document.body.clientWidth-30;
-        var ch = document.body.clientHeight-50;
+        var ch = height-$("#placeholderTitle").height()-10;
         document.getElementById('placeholder').style.width=cw+'px';
         document.getElementById('placeholder').style.height=ch+'px';
         $.plot($("#placeholder"), _series, _options);
+        setIframeHeight(document.getElementById('boxId').value, height+$("#placeholderTitle").height()+$("#placeholderLegend").height());
 };
 
 options={
@@ -31,7 +34,7 @@ options={
         },
         selection: { mode: "xy" },
         grid: {
-                hoverable: true,
+                hoverable: false,
                 clickable: true,
                 tickColor: "#C0C0C0",
                 backgroundColor:"#FFFFFF"
@@ -72,7 +75,8 @@ options={
                  previousPoint = null;            
             }
          });
-		$("#placeholder").bind("selected", function (event, area) {
+	$("#placeholder").bind("selected", function (event, area) {
+            zoom = true;
 			plot = $.plot(
 				$("#placeholder"),
 				_series,
@@ -88,7 +92,6 @@ options={
 
 //  addept iframe height to content height
 function getDocHeight(doc) {
-  alert("getDocHeight called!");
   var docHt = 0, sh, oh;
   if (doc.height) docHt = doc.height;
   else if (doc.body) {
@@ -99,13 +102,34 @@ function getDocHeight(doc) {
   return docHt;
 }
 
-function setIframeHeight(ifrm) {
+function setIframeHeight(ifrm, height) {
   try {
     frame = window.parent.document.getElementById(ifrm);
     innerDoc = (frame.contentDocument) ? frame.contentDocument : frame.contentWindow.document;
     objToResize = (frame.style) ? frame.style: frame;
-    objToResize.height = innerDoc.body.scrollHeight;
+     if(height==0) {
+       objToResize.height = innerDoc.body.scrollHeight;
+     } else {
+       objToResize.height = height;
+     }
   } catch(err) {
     window.status = err.message;
+  }
+}
+
+function refresh(url, parameters) {
+  if(zoom) {
+    wholePeriod();
+    zoom=false;
+  } else {
+    if(parameters.indexOf("render=stack")>0) {
+        throw "force iframe refresh";
+    }
+    var dataURL = url+"?"+parameters;
+    $.get(dataURL,{format: 'json'}, function(data){
+        eval(data);
+        wholePeriod();
+        document.getElementById('placeholderTitle').innerHTML=chartTitle;
+    });
   }
 }
