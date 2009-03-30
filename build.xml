@@ -381,6 +381,7 @@
             dir="${test.build.dir}/classes/" timeout="${test.timeout}"
             errorProperty="tests.failed" failureProperty="tests.failed">
            <classpath refid="testClasspath"/>
+           <env key="DATACONFIG" value="${build.dir}/conf"/>
            <sysproperty key="test.src.dir" value="${test.src.dir}"/>
            <formatter type="${test.junit.output.format}" />
            <batchtest todir="${test.build.dir}" unless="testcase">
