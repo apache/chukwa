@@ -92,6 +92,7 @@ public class Aggregator {
   }
 
   public static void main(String[] args) {
+    long aggregatorStart = Calendar.getInstance().getTimeInMillis();
     long longest = 0;
     String longQuery = null;
     log.info("Aggregator started.");
@@ -121,8 +122,10 @@ public class Aggregator {
       }
     }
     db.close();
+    long aggregatorEnd = Calendar.getInstance().getTimeInMillis();
     log.info("Longest running query: " + longQuery + " (" + (double) longest
         / 1000 + " seconds)");
+    log.info("Total running time: ("+(double) (aggregatorEnd-aggregatorStart)/1000+" seconds)");
     log.info("Aggregator finished.");
   }
 

@@ -20,6 +20,7 @@ package org.apache.hadoop.chukwa.database;
 
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -101,9 +102,12 @@ public class DataExpiration {
     if (args.length == 2) {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
       try {
+        long dataExpStart = Calendar.getInstance().getTimeInMillis();
         start = sdf.parse(args[0]).getTime();
         end = start + (Long.parseLong(args[1]) * 1440 * 60 * 1000L);
         de.dropTables(start, end);
+        long dataExpEnd = Calendar.getInstance().getTimeInMillis();
+        log.info("DataExpiration for: "+args[0]+" "+args[1]+" finished: ("+(double) (dataExpEnd-dataExpStart)/1000+" seconds)");
       } catch (Exception e) {
         usage();
       }
