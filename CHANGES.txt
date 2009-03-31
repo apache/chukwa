@@ -3,22 +3,36 @@ Trunk (unreleased changes)
   INCOMPATIBLE CHANGES
 
   NEW FEATURES
+    CHUKWA-14.  Added permalink support to HICC GUI. (Eric Yang)
 
     CHUKWA-45.  Added docs to folder structure. (Corinne Chandel via asrabkin)
+
+    CHUKWA-13.  * Create a new Macro class for macro substitution. (Eric Yang)
+                * Changed Aggregator to use Macro class.
+                * Added macro substitution support to Chukwa Charting.
+                * Added Macro test case.
 
     HADOOP-4989. Added capability to add scatter chart. (Eric Yang)
 
   IMPROVEMENTS
-    
+
+    CHUKWA-64. Changed version number to 0.1.2, and release number to alpha. (Eric Yang)
+
+    CHUKWA-59. Collect HDFS Usage information for users. (Contribute by Cheng Zhang via Eric Yang)
+
+    CHUKWA-54. Filters web based input from HICC to prevent cross site scripting attack.
+
+    CHUKWA-31. Added duration logging for SQL statements. (Eric Yang)
+ 
     HADOOP-5373. Collectors track lifetime-received chunks. (asrabkin)
 
     HADOOP-5370. Collectors don't write empty sink files (asrabkin)
 
     HADOOP-5228. Chukwa tests shouldn't write to /tmp. (asrabkin)
 
-    HADOOP-5035. * Improved Y axis ticker labelling. 
+    HADOOP-5035. * Improved Y axis ticker labelling. (Eric Yang) 
                  * Used TreeMap to build non-time series data for charting. 
-                 * Improved handling of "not a number "values. (Eric Yang)
+                 * Improved handling of "not a number "values.
 
     HADOOP-5030. Changed RPM install location to the value specified by build.properties file. (Eric Yang)
 
@@ -34,6 +48,8 @@ Trunk (unreleased changes)
   OPTIMIZATIONS
 
   BUG FIXES
+
+    CHUKWA-58. Changed watchdog to look for CHUKWA_PID_DIR. (Eric Yang)
 
     CHUKWA-43.  ChukwaLog4jAppender should send the current file offset instead of sending 0.  (Jerome Boulon via asrabkin)
 
