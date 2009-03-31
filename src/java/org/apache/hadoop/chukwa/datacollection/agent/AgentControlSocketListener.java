@@ -56,6 +56,12 @@ public class AgentControlSocketListener extends Thread {
 
     ListenThread(Socket conn) {
       connection = conn;
+      try {
+        connection.setSoTimeout(60000);
+      } catch (SocketException e) {
+        log.warn("Error while settin soTimeout to 60000");
+        e.printStackTrace();
+      }
       this.setName("listen thread for " + connection.getRemoteSocketAddress());
     }
 

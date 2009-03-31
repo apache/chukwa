@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -120,6 +121,12 @@ public class ChukwaAgentController {
      */
     long register() throws IOException {
       Socket s = new Socket(hostname, portno);
+      try {
+        s.setSoTimeout(60000);
+      } catch (SocketException e) {
+        log.warn("Error while settin soTimeout to 60000");
+        e.printStackTrace();
+      }
       PrintWriter bw = new PrintWriter(new OutputStreamWriter(s
           .getOutputStream()));
       bw.println("ADD " + name + " " + appType + " " + params + " " + offset);
@@ -142,6 +149,12 @@ public class ChukwaAgentController {
 
     void unregister() throws IOException {
       Socket s = new Socket(hostname, portno);
+      try {
+        s.setSoTimeout(60000);
+      } catch (SocketException e) {
+        log.warn("Error while settin soTimeout to 60000");
+        e.printStackTrace();
+      }
       PrintWriter bw = new PrintWriter(new OutputStreamWriter(s
           .getOutputStream()));
       bw.println("SHUTDOWN " + id);
@@ -310,6 +323,12 @@ public class ChukwaAgentController {
 
   Map<Long, ChukwaAgentController.Adaptor> list() throws IOException {
     Socket s = new Socket(hostname, portno);
+    try {
+      s.setSoTimeout(60000);
+    } catch (SocketException e) {
+      log.warn("Error while settin soTimeout to 60000");
+      e.printStackTrace();
+    }
     PrintWriter bw = new PrintWriter(
         new OutputStreamWriter(s.getOutputStream()));
 
