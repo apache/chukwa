@@ -47,6 +47,9 @@ function clean_up {
   if [ "X$PARM" == "Xtorque" ]; then
     kill -9 `cat ${CHUKWA_PID_DIR}/TorqueDataLoader.pid`
   fi
+  if [ "X$PARM" == "XHDFSUsage" ]; then
+    kill -9 `cat ${CHUKWA_PID_DIR}/HDFSUsage-data-loader.pid`
+  fi
   echo "done"
   exit 0
 }
@@ -85,6 +88,10 @@ fi
 
 if [ "X$PARM" == "Xtorque" ]; then
   ${JAVA_HOME}/bin/java -DDOMAIN=${DOMAIN} -DTORQUE_SERVER=${TORQUE_SERVER} -DTORQUE_HOME=${TORQUE_HOME} -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DRECORD_TYPE=Torque -Dlog4j.configuration=system-data-loader.properties -classpath ${CLASSPATH}:${CHUKWA_CORE}:${COMMON}:${HADOOP_JAR}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.inputtools.mdl.TorqueDataLoader &
+fi
+
+if [ "X$PARM" == "XHDFSUsage" ]; then
+  ${JAVA_HOME}/bin/java $JVM_OPTS -DPERIOD=600 -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DRECORD_TYPE=HDFSUsage -Dlog4j.configuration=system-data-loader.properties -classpath ${HADOOP_CONF_DIR}:${CLASSPATH}:${CHUKWA_CORE}:${COMMON}:${HADOOP_JAR}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.jplugin.JPluginAgent org.apache.hadoop.chukwa.inputtools.hdfsusage.HDFSUsagePlugin &
 fi
 
 pid=$!

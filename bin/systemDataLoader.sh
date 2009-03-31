@@ -87,6 +87,16 @@ function status {
     fi
   fi
 
+  EXISTS=0
+  pidFile="${CHUKWA_PID_DIR}/HDFSUsage-data-loader.pid"
+  if [ -f $pidFile ]; then
+    pid=`head ${pidFile}`
+    ChildPIDRunningStatus=`${JPS} | grep ${pid} | grep HDFSUsage | grep -v grep | wc -l`
+    if [ $ChildPIDRunningStatus -ge 1 ]; then
+      EXISTS=1
+    fi
+  fi
+
   if [ ${EXISTS} -lt 1 ]; then
     echo "df data loader is stopped."
     RESULT=1
@@ -130,6 +140,9 @@ function shutdown {
   fi
   if [ -f ${CHUKWA_PID_DIR}/Netstat-data-loader.pid ]; then
     kill -9 `cat ${CHUKWA_PID_DIR}/Netstat-data-loader.pid`
+  fi
+  if [ -f ${CHUKWA_PID_DIR}/HDFSUsage-data-loader.pid ]; then
+    kill -9 `cat ${CHUKWA_PID_DIR}/HDFSUsage-data-loader.pid`
   fi
   rm -f $CHUKWA_PID_DIR/chukwa-$CHUKWA_IDENT_STRING-systemDataLoader.sh.pid
   echo "done"
@@ -225,6 +238,20 @@ fi
 
 if [ ${EXISTS} -lt 1 ]; then
   ${JAVA_HOME}/bin/java $JVM_OPTS -DPERIOD=60 -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DRECORD_TYPE=Netstat -Dlog4j.configuration=system-data-loader.properties -classpath ${CLASSPATH}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${TOOLS}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec ${CHUKWA_HOME}/bin/netstat.sh &
+fi
+
+EXISTS=0
+pidFile="${CHUKWA_PID_DIR}/HDFSUsage-data-loader.pid"
+if [ -f $pidFile ]; then
+  pid=`head ${pidFile}`
+  ChildPIDRunningStatus=`${JPS} | grep ${pid} | grep HDFSUsage | grep -v grep | wc -l`
+  if [ $ChildPIDRunningStatus -ge 1 ]; then
+    EXISTS=1
+  fi
+fi
+
+if [ ${EXISTS} -lt 1 ]; then
+  ${JAVA_HOME}/bin/java $JVM_OPTS -DPERIOD=600 -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DRECORD_TYPE=HDFSUsage -Dlog4j.configuration=system-data-loader.properties -classpath ${HADOOP_CONF_DIR}:${CLASSPATH}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${TOOLS}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.inputtools.jplugin.JPluginAgent org.apache.hadoop.chukwa.inputtools.hdfsusage.HDFSUsagePlugin &
 fi
 
 echo "done"

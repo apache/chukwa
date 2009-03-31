@@ -891,8 +891,11 @@ sed 's:CHUKWA_CONF_DIR=/usr/local/chukwa/conf:CHUKWA_CONF_DIR=%{_conf_dir}:' > %
 #sed 's:CHUKWA_CONF_DIR=/usr/local/chukwa/conf:CHUKWA_CONF_DIR=%{_conf_dir}:' > %{buildroot}/service/chukwa-pbsnodes/run
 #cat %{buildroot}%{_prefix}/tools/service/chukwa-torque/run | sed 's:/usr/local/chukwa:%{_prefix}:' | \
 #sed 's:CHUKWA_CONF_DIR=/usr/local/chukwa/conf:CHUKWA_CONF_DIR=%{_conf_dir}:' > %{buildroot}/service/chukwa-torque/run
-
+cat %{buildroot}%{_prefix}/tools/service/chukwa-hdfsusage/run | \
+sed 's:/usr/local/chukwa:%{_prefix}:' > %{buildroot}%{_prefix}/tools/service/chukwa-hdfsusage/run.new
+mv %{buildroot}%{_prefix}/tools/service/chukwa-hdfsusage/run.new %{buildroot}%{_prefix}/tools/service/chukwa-hdfsusage/run
 chmod a+x %{buildroot}/etc/init.d/chukwa-*
+chmod -R a+x %{buildroot}%{_prefix}/tools/service/chukwa-*
 chmod -R a+x %{buildroot}/service/chukwa-*
 rm -rf %{buildroot}%{_prefix}/src
 rm -rf %{buildroot}%{_prefix}/build.xml

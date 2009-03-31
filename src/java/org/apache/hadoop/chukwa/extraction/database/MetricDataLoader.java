@@ -262,7 +262,7 @@ public class MetricDataLoader {
           String sqlValues = "";
           boolean firstValue = true;
           while (fi.hasNext()) {
-            String fieldKey = (String) fi.next();
+            String fieldKey = fi.next();
             if (transformer.containsKey(fieldKey)) {
               if (!firstValue) {
                 sqlValues = sqlValues + ", ";
