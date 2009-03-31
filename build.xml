@@ -21,7 +21,8 @@
 	xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	<property name="name" value="chukwa"/>
-        <property name="chukwaVersion" value="0.1.1"/>
+        <property name="chukwaVersion" value="0.1.2"/>
+        <property name="chukwaRelease" value="alpha"/>
 	<property name="final.name" value="${name}-${chukwaVersion}"/>
 
         <import file="../build-contrib.xml" optional="true"/>
@@ -821,7 +822,7 @@
 %define name            chukwa
 %define summary         Distributed Computing Monitoring Framework.
 %define version         ${chukwaVersion}
-%define release         1
+%define release         ${chukwaRelease}
 %define license         ASF 2.0
 %define group           Development/Monitoring
 %define source          %{name}-%{version}.tar.gz
