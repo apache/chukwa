@@ -30,7 +30,7 @@ if [ "$CHUKWA_IDENT_STRING" = "" ]; then
 fi
 
 # monitor agent
-#pidFile=$CHUKWA_HOME/var/run/chukwa-$CHUKWA_IDENT_STRING-agent.sh.pid
+#pidFile=$CHUKWA_PID_DIR/chukwa-$CHUKWA_IDENT_STRING-agent.sh.pid
 #if [ -f $pidFile ]; then
 #  pid=`head ${pidFile}`
 #  ChildPIDRunningStatus=`ps ax | grep agent.sh | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
@@ -42,7 +42,7 @@ fi
 #fi
 
 # monitor collector
-pidFile=$CHUKWA_HOME/var/run/chukwa-$CHUKWA_IDENT_STRING-jettyCollector.sh.pid
+pidFile=$CHUKWA_PID_DIR/chukwa-$CHUKWA_IDENT_STRING-jettyCollector.sh.pid
 if [ -f $pidFile ]; then
   pid=`head ${pidFile}`
   ChildPIDRunningStatus=`ps ax | grep jettyCollector.sh | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
@@ -54,7 +54,7 @@ if [ -f $pidFile ]; then
 fi
 
 # monitor node activity data loader
-pidFile=$CHUKWA_HOME/var/run/PbsNodes-data-loader.pid
+pidFile=$CHUKWA_PID_DIR/PbsNodes-data-loader.pid
 if [ -f $pidFile ]; then
   pid=`head ${pidFile}`
   ChildPIDRunningStatus=`${JPS} | grep Exec | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
@@ -66,7 +66,7 @@ if [ -f $pidFile ]; then
 fi
 
 # monitor system data loader
-#pidFile=$CHUKWA_HOME/var/run/Df-data-loader.pid
+#pidFile=$CHUKWA_PID_DIR/Df-data-loader.pid
 #if [ -f $pidFile ]; then
 #  pid=`head ${pidFile}`
 #  ChildPIDRunningStatus=`${JPS} | grep Exec | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
@@ -77,7 +77,7 @@ fi
 #  fi
 #fi
 
-#pidFile=$CHUKWA_HOME/var/run/Iostat-data-loader.pid
+#pidFile=$CHUKWA_PID_DIR/Iostat-data-loader.pid
 #if [ -f $pidFile ]; then
 #  pid=`head ${pidFile}`
 #  ChildPIDRunningStatus=`${JPS} | grep Exec | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
@@ -88,7 +88,7 @@ fi
 #  fi
 #fi
 
-#pidFile=$CHUKWA_HOME/var/run/Sar-data-loader.pid
+#pidFile=$CHUKWA_PID_DIR/Sar-data-loader.pid
 #if [ -f $pidFile ]; then
 #  pid=`head ${pidFile}`
 #  ChildPIDRunningStatus=`${JPS} | grep Exec | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
@@ -99,7 +99,7 @@ fi
 #  fi
 #fi
 
-#pidFile=$CHUKWA_HOME/var/run/Top-data-loader.pid
+#pidFile=$CHUKWA_PID_DIR/Top-data-loader.pid
 #if [ -f $pidFile ]; then
 #  pid=`head ${pidFile}`
 #  ChildPIDRunningStatus=`${JPS} | grep Exec | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
@@ -111,7 +111,7 @@ fi
 #fi
 
 # monitor torque data loader
-pidFile=$CHUKWA_HOME/var/run/TorqueDataLoader.pid
+pidFile=$CHUKWA_PID_DIR/TorqueDataLoader.pid
 if [ -f $pidFile ]; then
   pid=`head ${pidFile}`
   ChildPIDRunningStatus=`${JPS} | grep TorqueDataLoader | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
@@ -123,7 +123,7 @@ if [ -f $pidFile ]; then
 fi
 
 # monitor dataSinkFiles.sh
-pidFile=$CHUKWA_HOME/var/run/chukwa-$CHUKWA_IDENT_STRING-processSinkFiles.sh.pid
+pidFile=$CHUKWA_PID_DIR/chukwa-$CHUKWA_IDENT_STRING-processSinkFiles.sh.pid
 if [ -f $pidFile ]; then
   pid=`head ${pidFile}`
   ChildPIDRunningStatus=`ps ax | grep processSinkFiles.sh | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
@@ -135,7 +135,7 @@ if [ -f $pidFile ]; then
 fi
 
 # monitor dbAdmin.sh
-pidFile=$CHUKWA_HOME/var/run/chukwa-$CHUKWA_IDENT_STRING-dbAdmin.sh.pid
+pidFile=$CHUKWA_PID_DIR/chukwa-$CHUKWA_IDENT_STRING-dbAdmin.sh.pid
 if [ -f $pidFile ]; then
   pid=`head ${pidFile}`
   ChildPIDRunningStatus=`ps ax | grep dbAdmin.sh | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
