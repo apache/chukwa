@@ -115,7 +115,7 @@ public class DatasetMapper {
                 }
                 data.put(label, tmp);
               } else {
-                double current = rs.getDouble(3);
+                double current = rs.getDouble(j);
                 if (current > max) {
                   max = current;
                 }

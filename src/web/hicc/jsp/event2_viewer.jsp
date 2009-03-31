@@ -17,17 +17,18 @@
  * limitations under the License.
  */
 %>
+<%@ page import = "java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.dao.*, org.apache.hadoop.chukwa.dao.database.*, org.apache.hadoop.chukwa.dao.hdfs.*, org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
-   response.setHeader("boxId", request.getParameter("boxId"));
+   XssFilter xf = new XssFilter(request);
+   response.setHeader("boxId", xf.getParameter("boxId"));
 %>
-<%@ page import = "java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.dao.*, org.apache.hadoop.chukwa.dao.database.*, org.apache.hadoop.chukwa.dao.hdfs.*" %>
 <% String filter=(String)session.getAttribute("filter");
    if(filter==null) {
        filter="";
    } %>
 <div style="height:300px;overflow:auto;">
-Filter: <input type="text" id="<%= request.getParameter("boxId") %>filter" name="<%= request.getParameter("boxId") %>filter" value="<%= filter %>" class="formInput">
-<input type="button" name="apply_filter" value="Filter" onClick="filter_event_viewer('<%= request.getParameter("boxId") %>');" class="formButton">
+Filter: <input type="text" id="<%= XssFilter.filter(request.getParameter("boxId")) %>filter" name="<%= XssFilter.filter(request.getParameter("boxId")) %>filter" value="<%= filter %>" class="formInput">
+<input type="button" name="apply_filter" value="Filter" onClick="filter_event_viewer('<%= XssFilter.filter(request.getParameter("boxId")) %>');" class="formButton">
 <table class="simple" width="100%">
 <tr>
 <th>Time</th>
@@ -37,7 +38,7 @@ Filter: <input type="text" id="<%= request.getParameter("boxId") %>filter" name=
         String cluster = (String) session.getAttribute("cluster");
         ClusterConfig cc = new ClusterConfig();
         String jdbc = cc.getURL(cluster);
-        String boxId=request.getParameter("boxId");
+        String boxId=XssFilter.filter(request.getParameter("boxId"));
         TimeHandler time = new TimeHandler(request);
         String startdate = time.getStartTimeText();
         String enddate = time.getEndTimeText();

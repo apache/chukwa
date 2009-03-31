@@ -17,14 +17,15 @@
  * limitations under the License.
  */
 %>
-<%@ page import = "javax.servlet.http.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.tomcat.util.http.Parameters" %>
+<%@ page import = "javax.servlet.http.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.tomcat.util.http.Parameters, org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
+       XssFilter xf = new XssFilter(request);
        for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
            String name = (String) e.nextElement();
            if(name.equals("_delete")) {
-               session.setAttribute(request.getParameter(name),null);
+               session.setAttribute(xf.getParameter(name),null);
            } else {
-               session.setAttribute(name,request.getParameter(name));
+               session.setAttribute(xf.filter(name),xf.getParameter(name));
            }
        }
 %>

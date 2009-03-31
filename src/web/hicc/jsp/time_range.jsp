@@ -17,11 +17,12 @@
  * limitations under the License.
  */
 %>
+<%@ page import = "java.util.Hashtable, java.util.Enumeration, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, org.apache.hadoop.chukwa.hicc.TimeHandler, java.text.NumberFormat, org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
-   response.setHeader("boxId", request.getParameter("boxId"));
+   XssFilter xf = new XssFilter(request);
+   response.setHeader("boxId", xf.getParameter("boxId"));
 %>
-<%@ page import = "java.util.Hashtable, java.util.Enumeration, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, org.apache.hadoop.chukwa.hicc.TimeHandler, java.text.NumberFormat" %>
-<% String boxId = request.getParameter("boxId"); 
+<% String boxId = xf.getParameter("boxId"); 
    TimeHandler time = new TimeHandler(request, (String)session.getAttribute("time_zone")); %>
 Time Period 
 <select id="<%= boxId %>period" name="<%= boxId %>time_period" class="formSelect">

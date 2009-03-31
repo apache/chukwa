@@ -17,11 +17,12 @@
  * limitations under the License.
  */
 %>
+<%@ page import = "javax.servlet.http.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.database.DatabaseConfig, org.apache.hadoop.chukwa.util.XssFilter"  %>
+<% XssFilter xf = new XssFilter(request);
+   String boxId = xf.getParameter("boxId"); %>
 <%
-   response.setHeader("boxId", request.getParameter("boxId"));
+   response.setHeader("boxId", xf.getParameter("boxId"));
 %>
-<%@ page import = "javax.servlet.http.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.database.DatabaseConfig"  %>
-<% String boxId = request.getParameter("boxId"); %>
 <div class="panel">
 <h2>Hosts</h2>
 <fieldset>
@@ -29,7 +30,7 @@
 <select id="<%= boxId %>group_items" name="<%= boxId %>group_items" MULTIPLE size=10 class="formSelect" style="width:200px;">
 <%
     String[] machineNames = (String [])session.getAttribute("machine_names");
-    String cluster=request.getParameter("cluster");
+    String cluster=xf.getParameter("cluster");
     if(cluster!=null && !cluster.equals("null")) {
         session.setAttribute("cluster",cluster);
     } else {

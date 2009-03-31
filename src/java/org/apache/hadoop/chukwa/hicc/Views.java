@@ -25,8 +25,8 @@ import org.json.*;
 
 public class Views {
   public JSONArray viewsData;
-  private String path = System.getProperty("catalina.home")
-      + "/webapps/hicc/views/workspace_view_list.cache";
+  private String path = System.getenv("CHUKWA_DATA_DIR")
+      + "/views/workspace_view_list.cache";
 
   static public String getContents(File aFile) {
     // ...checks on aFile are elided
@@ -69,7 +69,7 @@ public class Views {
   public String getOwner(int i) {
     String owner = null;
     try {
-      owner = ((JSONObject) ((JSONArray) viewsData).get(i)).get("owner")
+      owner = ((JSONObject) viewsData.get(i)).get("owner")
           .toString();
     } catch (JSONException e) {
     }
@@ -79,7 +79,7 @@ public class Views {
   public Iterator getPermission(int i) {
     Iterator permission = null;
     try {
-      permission = ((JSONObject) ((JSONObject) ((JSONArray) viewsData).get(i))
+      permission = ((JSONObject) ((JSONObject) viewsData.get(i))
           .get("permission")).keys();
     } catch (JSONException e) {
     }
@@ -89,8 +89,10 @@ public class Views {
   public String getReadPermission(int i, String who) {
     String read = null;
     try {
-      read = ((JSONObject) ((JSONObject) ((JSONObject) ((JSONArray) viewsData)
-          .get(i)).get("permission")).get(who)).get("read").toString();
+      JSONObject view = (JSONObject) viewsData.get(i);
+      JSONObject permission = (JSONObject) view.get("permission");
+      JSONObject user = (JSONObject) permission.get(who);
+      read = user.get("read").toString();
     } catch (JSONException e) {
     }
     return read;
@@ -99,8 +101,7 @@ public class Views {
   public String getWritePermission(int i, String who) {
     String write = null;
     try {
-      write = ((JSONObject) ((JSONObject) ((JSONObject) ((JSONArray) viewsData)
-          .get(i)).get("permission")).get(who)).get("write").toString();
+      write = ((JSONObject) ((JSONObject) ((JSONObject) viewsData.get(i)).get("permission")).get(who)).get("write").toString();
     } catch (JSONException e) {
     }
     return write;
@@ -109,7 +110,7 @@ public class Views {
   public String getDescription(int i) {
     String description = null;
     try {
-      description = ((JSONObject) ((JSONArray) viewsData).get(i)).get(
+      description = ((JSONObject) viewsData.get(i)).get(
           "description").toString();
     } catch (JSONException e) {
     }
@@ -119,13 +120,13 @@ public class Views {
   public String getKey(int i) {
     String key = null;
     try {
-      key = ((JSONObject) ((JSONArray) viewsData).get(i)).get("key").toString();
+      key = ((JSONObject) viewsData.get(i)).get("key").toString();
     } catch (JSONException e) {
     }
     return key;
   }
 
   public int length() {
-    return ((JSONArray) viewsData).length();
+    return viewsData.length();
   }
 }

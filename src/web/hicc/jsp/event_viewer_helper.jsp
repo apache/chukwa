@@ -18,9 +18,10 @@
  */
 %>
 <%
-   response.setHeader("boxId", request.getParameter("boxId"));
+   XssFilter xf = new XssFilter(request);
+   response.setHeader("boxId", xf.getParameter("boxId"));
 %>
-<%@ page import = "java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.extraction.engine.*, org.apache.hadoop.chukwa.hicc.TimeHandler" %>
+<%@ page import = "java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.extraction.engine.*, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.util.XssFilter" %>
 <% String filter=(String)session.getAttribute("filter");
    if(filter==null) {
        filter="";
@@ -42,7 +43,7 @@
             </tr>
     </thead>
 <%
-        String[] database = request.getParameterValues("database");
+        String[] database = xf.getParameterValues("database");
 %>
     <tbody>
     </tbody>
@@ -51,7 +52,7 @@
 <script type="text/javascript">
 $('.flexme1').flexigrid(
 			{
-                        url: '/hicc/jsp/event_viewer_data.jsp?<% for(int i=0;i<database.length;i++) { out.print("database="+database[i]+"&"); } %>',
+                        url: '/hicc/jsp/event_viewer_data.jsp?<% for(int i=0;i<database.length;i++) { out.print("database="+XssFilter.filter(database[i])+"&"); } %>',
                         dataType: 'json',
 			searchitems : [
 				{display: 'Event', name : 'event', isdefault: true}

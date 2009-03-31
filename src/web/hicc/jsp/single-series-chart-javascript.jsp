@@ -17,15 +17,17 @@
  * limitations under the License.
  */
 %>
+<%@ page import = "java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.hicc.Chart, org.apache.hadoop.chukwa.hicc.DatasetMapper, org.apache.hadoop.chukwa.database.DatabaseConfig, org.apache.hadoop.chukwa.database.Macro, org.apache.hadoop.chukwa.util.XssFilter"  %> 
 <%
-   response.setHeader("boxId", request.getParameter("boxId"));
+   XssFilter xf = new XssFilter(request);
+   response.setHeader("boxId", xf.getParameter("boxId"));
+   response.setContentType("text/html; chartset=UTF-8//IGNORE");
 %>
-<%@ page import = "java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.hicc.Chart, org.apache.hadoop.chukwa.hicc.DatasetMapper, org.apache.hadoop.chukwa.database.DatabaseConfig"  %> 
 <%
-    String boxId=request.getParameter("boxId");
+    String boxId=xf.getParameter("boxId");
     String render="line";
     String cluster = (String) session.getAttribute("cluster");
-    String graphType = request.getParameter("graph_type");
+    String graphType = xf.getParameter("graph_type");
     int width=300;
     int height=200;
     if(request.getParameter("width")!=null) {
@@ -34,12 +36,12 @@
     if(request.getParameter("height")!=null) {
         height=Integer.parseInt(request.getParameter("height"));
     }
-    String title = request.getParameter("title");
+    String title = xf.getParameter("title");
     if(cluster==null) {
          cluster="demo";
     }
-    String match=request.getParameter("match");
-    String group = request.getParameter("group");
+    String match=xf.getParameter("match");
+    String group = xf.getParameter("group");
     if(match!=null) {
         String matched = (String)session.getAttribute(match);
         if(matched==null || matched.equals("")) {
@@ -58,17 +60,24 @@
     long end = now.getTimeInMillis();
     String startS="";
     String endS="";
-    String[] metric = request.getParameterValues("metric");
-    StringBuffer metrics=new StringBuffer();
-    for(int i=0;i<metric.length;i++) {
-        if(i==0) {
-            metrics.append(metric[i]);
-        } else {
-            metrics.append(",");
-            metrics.append(metric[i]);
+    String[] metric = xf.getParameterValues("metric");
+    if(metric!=null) {
+        if(metric[0].indexOf(",")>0) {
+            metric = metric[0].split(",");
         }
     }
-    String random = request.getParameter("_s");
+    StringBuffer metrics=new StringBuffer();
+    if(metric!=null) {
+        for(int i=0;i<metric.length;i++) {
+            if(i==0) {
+                metrics.append(metric[i]);
+            } else {
+                metrics.append(",");
+                metrics.append(metric[i]);
+            }
+        }
+    }
+    String random = xf.getParameter("_s");
     TimeHandler time = new TimeHandler(request, (String)session.getAttribute("time_zone"));
     startS = time.getStartTimeText();
     endS = time.getEndTimeText();
@@ -88,11 +97,11 @@ No time range specified.  Select a time range through widget preference, or use 
        }
        String minclause = "";
        if(request.getParameter("minnodes")!=null) {
-           minclause="and j.NumOfMachines >= "+request.getParameter("minnodes");
+           minclause="and j.NumOfMachines >= "+xf.getParameter("minnodes");
        }
        String whereclause = "";
        if(request.getParameter("user")!=null && !request.getParameter("user").equals("")) {
-           whereclause="and j.UserID = "+request.getParameter("user");
+           whereclause="and j.UserID = "+xf.getParameter("user");
        }
        String mrtimeclause = "";
        try {
@@ -104,12 +113,12 @@ No time range specified.  Select a time range through widget preference, or use 
        Statement stmt = null;
        ResultSet rs = null;
        if(request.getParameter("group_items")!=null) {
-           if(session.getAttribute(request.getParameter("group_items"))==null) {
-               session.setAttribute(request.getParameter("group_items"),"");
+           if(session.getAttribute(xf.getParameter("group_items"))==null) {
+               session.setAttribute(xf.getParameter("group_items"),"");
            }
            int counter = 0;
-           String[] group_items = ((String)session.getAttribute(request.getParameter("group_items"))).split(",");
-           String appendDomain = request.getParameter("append_domain");
+           String[] group_items = ((String)session.getAttribute(xf.getParameter("group_items"))).split(",");
+           String appendDomain = xf.getParameter("append_domain");
            if(appendDomain==null) {
                appendDomain="";
            }
@@ -128,12 +137,12 @@ No time range specified.  Select a time range through widget preference, or use 
                }
            }
        }
-       String table = (String)request.getParameter("table");
+       String table = (String)xf.getParameter("table");
        if(table==null) {
            table = "cluster_system_metrics";
        }
        if(request.getParameter("group_override")!=null) {
-           group=request.getParameter("group_override");
+           group=xf.getParameter("group_override");
        }
        String[] tables = null;
        DatabaseConfig dbc = new DatabaseConfig();
@@ -159,6 +168,11 @@ No time range specified.  Select a time range through widget preference, or use 
            if(request.getParameter("find_slope")!=null) {
                odometer=true;
            }
+           if(request.getParameter("query")!=null) {
+               query = request.getParameter("query");
+               Macro mp = new Macro(start,end,query, request);
+               query = mp.toString();
+           }
            dataFinder.execute(query,groupBySecondColumn,odometer,graphType);
            List<String> tmpLabels = dataFinder.getXAxisMap();
            TreeMap<String, TreeMap<String, Double>> tmpDataMap = dataFinder.getDataset();
@@ -181,34 +195,38 @@ No time range specified.  Select a time range through widget preference, or use 
        }
        if(dataMap.size()!=0) {
            if(request.getParameter("render")!=null) {
-               render=request.getParameter("render");
+               render=xf.getParameter("render");
            }
            Chart c = new Chart(request);
            c.setYAxisLabels(false);
-           if(request.getParameter("x_label")!=null && request.getParameter("x_label").equals("on")) {
+           if(request.getParameter("x_label")!=null && xf.getParameter("x_label").equals("on")) {
                c.setXAxisLabels(true);
            } else {
                c.setXAxisLabels(false);
            }
            c.setYAxisLabel("");
            if(request.getParameter("x_axis_label")!=null) {
-               c.setXAxisLabel(request.getParameter("x_axis_label"));
+               c.setXAxisLabel(xf.getParameter("x_axis_label"));
            } else {
                c.setXAxisLabel("Time");
            }
-           c.setTitle(metrics.toString());
+           if(title!=null) {
+               c.setTitle(title);
+           } else {
+               c.setTitle(metrics.toString());
+           }
            if(request.getParameter("y_axis_max")!=null) {
-               double max = Double.parseDouble(request.getParameter("y_axis_max"));
+               double max = Double.parseDouble(xf.getParameter("y_axis_max"));
                c.setYMax(max);
            }
-           if(request.getParameter("legend")!=null && request.getParameter("legend").equals("off")) {
+           if(request.getParameter("legend")!=null && xf.getParameter("legend").equals("off")) {
                c.setLegend(false);
            }
            c.setGraphType(graphType);
            c.setXLabelsRange(labels);
            c.setSize(width,height);
            c.setDataSet(render,dataMap);
-           if(metric.length>1) {
+           if(metric!=null && group==null) {
                c.setSeriesOrder(metric);
            }
            out.println(c.plot());

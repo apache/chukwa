@@ -24,19 +24,23 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.sql.*;
+
+import org.apache.hadoop.chukwa.util.XssFilter;
 import org.json.*;
 
 public class Workspace extends HttpServlet {
-
-  private String path = System.getProperty("catalina.home") + "/webapps/hicc";
+  public static final long serialVersionUID = 101L;
+  private String path = System.getenv("CHUKWA_DATA_DIR");
   private JSONObject hash = new JSONObject();
   private String user = "admin";
+  private XssFilter xf = null;
 
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
-    response.setContentType("text/html");
+    xf = new XssFilter(request);
+    response.setContentType("text/plain");
     PrintWriter out = response.getWriter();
-    String method = request.getParameter("method");
+    String method = xf.getParameter("method");
     if (method.equals("get_views_list")) {
       getViewsList(request, response);
     }
@@ -108,8 +112,8 @@ public class Workspace extends HttpServlet {
   public void cloneView(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
     PrintWriter out = response.getWriter();
-    String name = request.getParameter("name");
-    String template = request.getParameter("clone_name");
+    String name = xf.getParameter("name");
+    String template = xf.getParameter("clone_name");
     File aFile = new File(path + "/views/" + template);
     String config = getContents(aFile);
     int i = 0;
@@ -138,7 +142,7 @@ public class Workspace extends HttpServlet {
   public void deleteView(HttpServletRequest request,
       HttpServletResponse response) throws IOException, ServletException {
     PrintWriter out = response.getWriter();
-    String name = request.getParameter("name");
+    String name = xf.getParameter("name");
     File aFile = new File(path + "/views/" + name + ".view");
     aFile.delete();
     File deleteCache = new File(path + "/views/workspace_view_list.cache");
@@ -149,7 +153,7 @@ public class Workspace extends HttpServlet {
   public void getViewsList(HttpServletRequest request,
       HttpServletResponse response) throws IOException, ServletException {
     PrintWriter out = response.getWriter();
-    String format = request.getParameter("format");
+    String format = xf.getParameter("format");
     File aFile = new File(path + "/views/workspace_view_list.cache");
     String viewsCache = getContents(aFile);
     out.println(viewsCache);
@@ -158,7 +162,7 @@ public class Workspace extends HttpServlet {
   public void getView(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
     PrintWriter out = response.getWriter();
-    String id = request.getParameter("id");
+    String id = xf.getParameter("id");
     genViewCache(path + "/views");
     File aFile = new File(path + "/views/" + id + ".view");
     String view = getContents(aFile);
@@ -168,7 +172,7 @@ public class Workspace extends HttpServlet {
   public void changeViewInfo(HttpServletRequest request,
       HttpServletResponse response) throws IOException, ServletException {
     PrintWriter out = response.getWriter();
-    String id = request.getParameter("name");
+    String id = xf.getParameter("name");
     String config = request.getParameter("config");
     try {
       JSONObject jt = new JSONObject(config);
@@ -192,7 +196,7 @@ public class Workspace extends HttpServlet {
   public void saveView(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
     PrintWriter out = response.getWriter();
-    String id = request.getParameter("name");
+    String id = xf.getParameter("name");
     String config = request.getParameter("config");
     File aFile = new File(path + "/views/" + id + ".view");
     setContents(path + "/views/" + id + ".view", config);
@@ -202,7 +206,7 @@ public class Workspace extends HttpServlet {
   public void getWidgetList(HttpServletRequest request,
       HttpServletResponse response) throws IOException, ServletException {
     PrintWriter out = response.getWriter();
-    String format = request.getParameter("format");
+    String format = xf.getParameter("format");
     genWidgetCache(path + "/descriptors");
     File aFile = new File(path + "/descriptors/workspace_plugin.cache");
     String viewsCache = getContents(aFile);

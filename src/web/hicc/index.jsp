@@ -17,8 +17,18 @@
  * limitations under the License.
  */
 %>
-<%@ page import = "javax.servlet.http.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler"  %>
+<%@ page import = "javax.servlet.http.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.regex.Pattern, java.util.regex.Matcher, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.util.XssFilter"  %>
 <%
+    XssFilter xf = new XssFilter(request);
+    for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
+        Pattern p = Pattern.compile("_session.(.*)");
+        String name = (String) e.nextElement();
+        Matcher matcher = p.matcher(name);
+        if(matcher.find()) {
+            String realName = matcher.group(1);
+            session.setAttribute(realName,request.getParameter(name));
+        }
+    }
     if(session.getAttribute("cluster")==null) {
         ClusterConfig cc = new ClusterConfig();
         Iterator ci = cc.getClusters();
@@ -28,7 +38,7 @@
     if(session.getAttribute("period")==null || session.getAttribute("start")==null || session.getAttribute("end")==null ||
        session.getAttribute("time_type")==null) {
         session.setAttribute("time_type","last");
-        session.setAttribute("period","last1hr");
+        session.setAttribute("period","last24hr");
         long now = Calendar.getInstance().getTime().getTime();
         session.setAttribute("start",now-(60*60*1000));
         session.setAttribute("end",now);
@@ -46,6 +56,7 @@
 <html><title>Hadoop Infrastructure Care Center</title>
 <body id="main_body">
 <div id="debug"></div>
+<div id="firefox-bug" style="display:none; position: absolute; top: 0px; left: 0px; width:100%; height:100%;z-index:100;opacity:0.7;"></div>
 <div id="shadow" class="shadow"> 
 <table width="100%" height="100%"><tr><td valign="center" align="middle">
 <table padding="20px">
@@ -80,6 +91,8 @@
 var _users_list=''; //'[% users_list_json %]'.evalJSON();
 var expanded_page=1;
 var need_save=0;
+var current_date = new Date();
+var last_hover=0;
 window.onbeforeunload = check_save;
 </script>
 <script type="text/javascript">
@@ -97,7 +110,7 @@ function toggle_view_all() {
 </script>
 <input type=hidden name=cmd id=cmd value=1>
 <table width="100%" cellpadding=3 cellspacing=0>
-<tr><td nowrap><img src="images/chukwa.jpg" align="absmiddle"> Hadoop Infrastructure Care Center</td>
+<tr><td nowrap><img src="images/chukwa.jpg" align="absmiddle">Hadoop Infrastructure Care Center</td>
     <td align="left" nowrap class="portal_top_nav_bar" nowrap> </td></tr>
 </table>
 <table width="100%" cellpadding=0 cellspacing=0 class="menubar">
@@ -127,7 +140,7 @@ function toggle_view_all() {
 </ul>
 </div>
 </td><td>
-</td><td align="right"><a href='#' onclick='toggle_view_all()' class='glossy_icon'><img id='view_all' src='/hicc/images/stop.png' border=0></a>  <a href='#' onclick='_currentView.getCurrentPage().refresh_all();' class='glossy_icon'><img src='/hicc/images/refresh.png' border=0></a>&nbsp;</div>
+</td><td align="right"><a href='#' onmouseover='javascript:build_permlink();' id='permlink' class='glossy_icon'><img id='permlink_icon' src='/hicc/images/server_link.png' border=0></a> <a href='#' onclick='toggle_view_all()' class='glossy_icon'><img id='view_all' src='/hicc/images/stop.png' border=0></a>  <a href='#' onclick='_currentView.getCurrentPage().refresh_all();' class='glossy_icon'><img src='/hicc/images/refresh.png' border=0></a>&nbsp;</div>
 </td></tr>
 </table>
 <table width="100%" cellpadding=0 cellspacing=0>
@@ -220,7 +233,7 @@ Select the widget from the widget tree to see the detail.
 <script>
 // initialize the script
 update_views_list();
-initScript('<% if(request.getParameter("view") != null) { out.print(request.getParameter("view")); } else { out.print("default"); } %>');
+initScript('<% if(request.getParameter("view") != null) { out.print(request.getParameter("view")); } else { out.print("default"); } %>',<% if (request.getParameter("_page")!=null) { out.print(request.getParameter("_page")); } else { out.print("0"); } %>);
 set_current_view('<% if(request.getParameter("view") != null) { out.print(request.getParameter("view")); } else { out.print("default"); } %>');
 $('shadow').style.display='none';
 

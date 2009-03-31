@@ -1,17 +1,16 @@
 {
-"id":"disk-pcnt",
-"title":"Disk Statistics By Percentage",
+"id":"hadoop_jvm",
+"title":"JVM Metrics By Rate",
 "version":"0.1",
-"categories":"System Metrics,Server,Status",
+"categories":"Hadoop,Java Virtual Machine,Status",
 "module":"iframe/jsp/single-series-chart-javascript.jsp",
-"description":"Display disk related statistics",
+"description":"Display Java virtual machine metrics for Hadoop",
 "screendump":"\/images\/server_load.gif",
 "refresh":"15",
 "parameters":[
-{"name":"table","type":"string","value":"disk","edit":"0"},
-{"name":"group_override","type":"string","value":"concat(host,mount) as mount","edit":"0"},
-{"name":"y_axis_max","type":"string","value":"100","edit":"0"},
-{"name":"metric","type":"string","value":"used_percent","edit":"0"},
+{"name":"table","type":"string","value":"hadoop_jvm","edit":"0"},
+{"name":"normalize_time","type":"string","value":"true","edit":"0"},
+{"name":"group_override","type":"string","value":"concat(host,' ',process_name) as process","edit":"0"},
 {"name":"group","type":"string","value":"host","edit":"0"},
 {"name":"group_items","type":"string","value":"hosts","edit":"0"},
 {"name":"period","type":"select","value":"","label":"Period","options":[
@@ -25,6 +24,18 @@
 {"label":"Yesterday","value":"yesterday"},
 {"label":"Last 7 Days","value":"last7d"},
 {"label":"Last 30 Days","value":"last30d"}
+]},
+{"name":"metric","type":"select","value":"threads_blocked","label":"Metric","options":[
+{"label":"mem_heap_committed_m","value":"mem_heap_committed_m"},
+{"label":"mem_heap_used_m","value":"mem_heap_used_m"},
+{"label":"mem_non_heap_committed_m","value":"mem_non_heap_committed_m"},
+{"label":"mem_non_heap_used_m","value":"mem_non_heap_used_m"},
+{"label":"threads_blocked","value":"threads_blocked"},
+{"label":"threads_new","value":"threads_new"},
+{"label":"threads_runnable","value":"threads_runnable"},
+{"label":"threads_terminated","value":"threads_terminated"},
+{"label":"threads_timed_waiting","value":"threads_timed_waiting"},
+{"label":"threads_waiting","value":"threads_waiting"},
 ]},
 {"name":"width","type":"select","value":"300","label":"Width","options":[
 {"label":"300","value":"300"},
@@ -44,6 +55,7 @@
 ]},
 {"name":"legend","type":"radio","value":"on","label":"Show Legends","options":[
 {"label":"On","value":"on"},
-{"label":"Off","value":"off"}]}
+{"label":"Off","value":"off"}
+]}
 ]
 }

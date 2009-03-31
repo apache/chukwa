@@ -17,10 +17,11 @@
  * limitations under the License.
  */
 %>
+<%@ page import = "java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*,org.jfree.chart.*, org.jfree.data.category.*, org.jfree.chart.servlet.*, org.jfree.chart.entity.*, org.jfree.chart.plot.*, org.jfree.chart.plot.*, org.jfree.chart.renderer.category.*, org.jfree.data.general.DatasetUtilities, org.jfree.chart.axis.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
-   response.setHeader("boxId", request.getParameter("boxId"));
+   XssFilter xf = new XssFilter(request);
+   response.setHeader("boxId", xf.getParameter("boxId"));
 %>
-<%@ page import = "java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*,org.jfree.chart.*, org.jfree.data.category.*, org.jfree.chart.servlet.*, org.jfree.chart.entity.*, org.jfree.chart.plot.*, org.jfree.chart.plot.*, org.jfree.chart.renderer.category.*, org.jfree.data.general.DatasetUtilities, org.jfree.chart.axis.*, org.apache.hadoop.chukwa.hicc.ClusterConfig" %>
 <% if(session.getAttribute("HodID")==null || session.getAttribute("HodID").equals("")) { %>
 <h2> Select a Hod Job from Hod Job List </h2>
 <% } else { %>

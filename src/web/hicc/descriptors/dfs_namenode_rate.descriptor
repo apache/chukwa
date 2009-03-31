@@ -1,0 +1,39 @@
+{
+"id":"dfs_namenode_rate",
+"title":"Name Node Metrics By Rate",
+"version":"0.1",
+"categories":"Hadoop,Name Node,Status",
+"module":"iframe/jsp/single-series-chart-javascript.jsp",
+"description":"Display hadoop name node related stats",
+"screendump":"\/images\/server_load.gif",
+"refresh":"15",
+"parameters":[
+{"name":"group_override","type":"string","value":"host","edit":"0"},
+{"name":"group","type":"string","value":"host","edit":"0"},
+{"name":"table","type":"string","value":"dfs_namenode","edit":"0"},
+{"name":"period","type":"select","value":"","label":"Period","options":[
+{"label":"Use Time Widget","value":""},
+{"label":"Last 1 Hour","value":"last1hr"},
+{"label":"Last 2 Hours","value":"last2hr"},
+{"label":"Last 3 Hours","value":"last3hr"},
+{"label":"Last 6 Hours","value":"last6hr"},
+{"label":"Last 12 Hours","value":"last12hr"},
+{"label":"Last 24 Hours","value":"last24hr"},
+{"label":"Yesterday","value":"yesterday"},
+{"label":"Last 7 Days","value":"last7d"},
+{"label":"Last 30 Days","value":"last30d"}
+]},
+{"name":"metric","type":"select_multiple","value":"block_report_avg_time","label":"Metric","options":[
+{"label":"blocks_corrupted","value":"blocks_corrupted"},
+{"label":"safe_mode_time","value":"safe_mode_time"},
+{"label":"syncs_avg_time","value":"syncs_avg_time"},
+{"label":"transactions_avg_time","value":"transactions_avg_time"},
+{"label":"block_report_avg_time","value":"block_report_avg_time"},
+{"label":"fs_image_load_time","value":"fs_image_load_time"}
+]},
+{"name":"legend","type":"radio","value":"on","label":"Show Legends","options":[
+{"label":"On","value":"on"},
+{"label":"Off","value":"off"}
+]}
+]
+}

@@ -1,19 +1,15 @@
 {
-"id":"disk-pcnt",
-"title":"Disk Statistics By Percentage",
+"id":"sql_charter",
+"title":"SQL Charter",
 "version":"0.1",
-"categories":"System Metrics,Server,Status",
+"categories":"Developer,Utility",
 "module":"iframe/jsp/single-series-chart-javascript.jsp",
-"description":"Display disk related statistics",
-"screendump":"\/images\/server_load.gif",
-"refresh":"15",
+"description":"Display chart from SQL queries",
+"refresh":"0",
 "parameters":[
-{"name":"table","type":"string","value":"disk","edit":"0"},
-{"name":"group_override","type":"string","value":"concat(host,mount) as mount","edit":"0"},
-{"name":"y_axis_max","type":"string","value":"100","edit":"0"},
-{"name":"metric","type":"string","value":"used_percent","edit":"0"},
-{"name":"group","type":"string","value":"host","edit":"0"},
-{"name":"group_items","type":"string","value":"hosts","edit":"0"},
+{"name":"query","type":"text","value":"select host,max(load_1),min(load_1),avg(load_1) from system_metrics_2032_week where timestamp >='2008-12-13 17:30' and timestamp <= '2008-12-13 18:30' group by host","label":"Query","edit":"1"},
+{"name":"title","type":"string","label":"Title","value":"","edit":"1"},
+{"name":"x_axis_label","type":"string","value":"Hostname","edit":"0"},
 {"name":"period","type":"select","value":"","label":"Period","options":[
 {"label":"Use Time Widget","value":""},
 {"label":"Last 1 Hour","value":"last1hr"},
@@ -44,6 +40,14 @@
 ]},
 {"name":"legend","type":"radio","value":"on","label":"Show Legends","options":[
 {"label":"On","value":"on"},
-{"label":"Off","value":"off"}]}
+{"label":"Off","value":"off"}
+]},
+{"name":"render","type":"select","value":"stack-area","label":"Chart Type","options":[
+{"label":"Area","value":"area"},
+{"label":"Bar","value":"bar"},
+{"label":"Line Chart","value":"line"},
+{"label":"Scatter Chart","value":"point"},
+{"label":"Stacked Area Chart","value":"stack-area"},
+]}
 ]
 }

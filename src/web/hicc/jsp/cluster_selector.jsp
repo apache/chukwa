@@ -17,15 +17,17 @@
  * limitations under the License.
  */
 %>
+<%@ page import = "javax.servlet.http.*, java.io.*, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.util.XssFilter"  %>
 <%
-   response.setHeader("boxId", request.getParameter("boxId"));
+   XssFilter xf = new XssFilter(request);
+   response.setContentType("text/html; chartset=UTF-8//IGNORE");
+   response.setHeader("boxId", xf.getParameter("boxId"));
 %>
-<%@ page import = "javax.servlet.http.*, java.io.*, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig"  %>
-<% String boxId = request.getParameter("boxId"); %>
+<% String boxId = xf.getParameter("boxId"); %>
 Cluster
 <select id="<%= boxId %>cluster" name="<%= boxId %>cluster" class="formSelect">
 <%
-       String cluster=request.getParameter("cluster");
+       String cluster=xf.getParameter("cluster");
        if(cluster!=null && !cluster.equals("null")) {
            session.setAttribute("cluster",cluster);
        } else {

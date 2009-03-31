@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.hadoop.chukwa.hicc.ColorPicker;
+import org.apache.hadoop.chukwa.util.XssFilter;
 
 public class Chart {
   private String id;
@@ -57,10 +58,12 @@ public class Chart {
   private List<String> rightList;
   private boolean userDefinedMax = false;
   private String[] seriesOrder = null;
-
+  private XssFilter xf = null;
+  
   public Chart(HttpServletRequest request) {
-    if (request != null && request.getParameter("boxId") != null) {
-      this.id = request.getParameter("boxId");
+    xf = new XssFilter(request);
+    if (request != null && xf.getParameter("boxId") != null) {
+      this.id = xf.getParameter("boxId");
     } else {
       this.id = "0";
     }
@@ -166,10 +169,13 @@ public class Chart {
     String dateFormat = "%H:%M";
     if (xLabel.intern() == "Time".intern()) {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-      long xMin;
       try {
-        xMin = Long.parseLong(xLabelRange.get(0));
-        long xMax = Long.parseLong(xLabelRange.get(xLabelRange.size() - 1));
+        long xMin = 0;
+        long xMax = 0;
+        if(xLabelRange!=null && xLabelRange.size()>0) {
+          xMin = Long.parseLong(xLabelRange.get(0));
+          xMax = Long.parseLong(xLabelRange.get(xLabelRange.size() - 1));
+        }
         if (xMax - xMin > 31536000000L) {
           dateFormat = "%y";
         } else if (xMax - xMin > 2592000000L) {
@@ -192,11 +198,11 @@ public class Chart {
       xAxisOptions
           .append("tickFormatter: function (val, axis) { return xLabels[Math.round(val)]; }, ticks: 0");
     }
-    if (request != null && request.getParameter("format") == null) {
+    if (request != null && xf.getParameter("format") == null) {
       output
           .append("<html><link href=\"/hicc/css/default.css\" rel=\"stylesheet\" type=\"text/css\">\n");
       output
-          .append("<body onresize=\"wholePeriod()\"><script type=\"text/javascript\" src=\"/hicc/js/jquery-1.2.6.min.js\"></script>\n");
+          .append("<body onresize=\"wholePeriod();\"><script type=\"text/javascript\" src=\"/hicc/js/jquery-1.2.6.min.js\"></script>\n");
       output
           .append("<script type=\"text/javascript\" src=\"/hicc/js/jquery.flot.pack.js\"></script>\n");
       output
@@ -301,8 +307,8 @@ public class Chart {
       if (this.seriesOrder != null) {
         keyNames = this.seriesOrder;
       } else {
-        keyNames = ((String[]) dataMap.keySet().toArray(
-            new String[dataMap.size()]));
+        keyNames = dataMap.keySet().toArray(
+            new String[dataMap.size()]);
       }
       int counter = 0;
       if (i != 0) {
@@ -352,39 +358,41 @@ public class Chart {
         output.append(showYAxis);
         output.append("}, data:[");
         TreeMap<String, Double> data = dataMap.get(seriesName);
-        for (String dp : data.keySet()) {
-          int rangeLabel = 0;
-          if (counter2 != 0) {
-            output.append(",");
-          }
-          if (xLabel.equals("Time")) {
-            if (data.get(dp) == Double.NaN) {
-              output.append("[\"");
-              output.append(dp);
-              output.append("\",NULL]");
-            } else {
-              output.append("[\"");
-              output.append(dp);
-              output.append("\",");
-              output.append(data.get(dp));
-              output.append("]");
+        if(data!=null) {
+          for (String dp : data.keySet()) {
+            int rangeLabel = 0;
+            if (counter2 != 0) {
+              output.append(",");
             }
-          } else {
-            long value = xLabelRangeHash.get(dp);
-            if (data.get(dp) == Double.NaN) {
-              output.append("[\"");
-              output.append(value);
-              output.append("\",NULL]");
+            if (xLabel.equals("Time")) {
+              if (data.get(dp) == Double.NaN) {
+                output.append("[\"");
+                output.append(dp);
+                output.append("\",NULL]");
+              } else {
+                output.append("[\"");
+                output.append(dp);
+                output.append("\",");
+                output.append(data.get(dp));
+                output.append("]");
+              }
             } else {
-              output.append("[\"");
-              output.append(value);
-              output.append("\",");
-              output.append(data.get(dp));
-              output.append("]");
+              long value = xLabelRangeHash.get(dp);
+              if (data.get(dp) == Double.NaN) {
+                output.append("[\"");
+                output.append(value);
+                output.append("\",NULL]");
+              } else {
+                output.append("[\"");
+                output.append(value);
+                output.append("\",");
+                output.append(data.get(dp));
+                output.append("]");
+              }
+              rangeLabel++;
             }
-            rangeLabel++;
+            counter2++;
           }
-          counter2++;
         }
         output.append("], min:0");
         if (this.userDefinedMax) {
@@ -397,7 +405,7 @@ public class Chart {
       i++;
     }
     output.append(" ];\n");
-    if (request != null && request.getParameter("format") == null) {
+    if (request != null && xf.getParameter("format") == null) {
       output.append(" wholePeriod();</script></body></html>\n");
     } else {
       output.append("chartTitle=\"<center>" + this.title + "</center>\";");

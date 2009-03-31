@@ -1,8 +1,8 @@
 {
 "id":"cluster_metrics_pcnt",
-"title":"Cluster Metrics by Percentage",
+"title":"Cluster Metrics By Percentage",
 "version":"0.1",
-"categories":"System,Status",
+"categories":"System Metrics,Cluster,Status",
 "module":"iframe/jsp/single-series-chart-javascript.jsp",
 "description":"Display cluster related stats by percentage",
 "screendump":"\/images\/server_load.gif",

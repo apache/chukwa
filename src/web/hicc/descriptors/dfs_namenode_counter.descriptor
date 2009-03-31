@@ -1,15 +1,17 @@
 {
-"id":"dfs_namenode",
-"title":"DFS Name Node Metrics",
+"id":"dfs_namenode_counter",
+"title":"Name Node Metrics By Counter",
 "version":"0.1",
-"categories":"Hadoop,Status",
+"categories":"Hadoop,Name Node,Status",
 "module":"iframe/jsp/single-series-chart-javascript.jsp",
-"description":"Display system related stats",
+"description":"Display hadoop name node stats by accumulated values",
 "screendump":"\/images\/server_load.gif",
 "refresh":"15",
 "parameters":[
 {"name":"find_slope","type":"string","value":"true","edit":"0"},
 {"name":"table","type":"string","value":"dfs_namenode","edit":"0"},
+{"name":"group_override","type":"string","value":"host","edit":"0"},
+{"name":"group","type":"string","value":"host","edit":"0"},
 {"name":"period","type":"select","value":"","label":"Period","options":[
 {"label":"Use Time Widget","value":""},
 {"label":"Last 1 Hour","value":"last1hr"},
@@ -22,9 +24,8 @@
 {"label":"Last 7 Days","value":"last7d"},
 {"label":"Last 30 Days","value":"last30d"}
 ]},
-{"name":"metric","type":"select_multiple","value":"block_report_avg_time","label":"Metric","options":[
+{"name":"metric","type":"select_multiple","value":"files_created","label":"Metric","options":[
 {"label":"add_block_ops","value":"add_block_ops"},                            
-{"label":"blocks_corrupted","value":"blocks_corrupted"},
 {"label":"create_file_ops","value":"create_file_ops"},         
 {"label":"delete_file_ops","value":"delete_file_ops"},
 {"label":"files_created","value":"files_created"},
@@ -32,18 +33,17 @@
 {"label":"files_deleted","value":"files_deleted"},
 {"label":"get_block_locations","value":"get_block_locations"},
 {"label":"get_listing_ops","value":"get_listing_ops"},
-{"label":"safe_mode_time","value":"safe_mode_time"},
-{"label":"syncs_avg_time","value":"syncs_avg_time"},
 {"label":"syncs_num_ops","value":"syncs_num_ops"},
-{"label":"transactions_avg_time","value":"transactions_avg_time"},
 {"label":"transactions_num_ops","value":"transactions_num_ops"},
-{"label":"block_report_avg_time","value":"block_report_avg_time"},
-{"label":"block_report_num_ops","value":"block_report_num_ops"},
-{"label":"fs_image_load_time","value":"fs_image_load_time"}
+{"label":"block_report_num_ops","value":"block_report_num_ops"}
 ]},
 {"name":"legend","type":"radio","value":"on","label":"Show Legends","options":[
 {"label":"On","value":"on"},
 {"label":"Off","value":"off"}
+]},
+{"name":"render","type":"select","value":"stack-area","label":"Chart Type","options":[
+{"label":"Line Chart","value":"line"},
+{"label":"Stacked Area Chart","value":"stack-area"}
 ]}
 ]
 }

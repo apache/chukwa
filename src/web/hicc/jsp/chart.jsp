@@ -17,8 +17,11 @@
  * limitations under the License.
  */
 %>
+<%@ page import = "org.apache.hadoop.chukwa.util.XssFilter"  %>
+
 <%
-   response.setHeader("boxId", request.getParameter("boxId"));
+   XssFilter = new XssFilter(request);
+   response.setHeader("boxId", xf.getParameter("boxId"));
 %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>

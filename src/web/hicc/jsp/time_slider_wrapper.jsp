@@ -17,9 +17,11 @@
  * limitations under the License.
  */
 %>
+<%@page import ="org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
-   response.setHeader("boxId", request.getParameter("boxId"));
+   XssFilter xf = new XssFilter(request);
+   response.setHeader("boxId", xf.getParameter("boxId"));
 %>
-<IFRAME id="<%= request.getParameter("boxId") %>iframe" src="/hicc/jsp/time_slider.jsp" width="100%" frameborder="0" height="80" scrolling="no"></IFRAME>
-  <input type=button id="time_slider_apply" name="time_slider_apply" value="Apply" onclick="save_time_slider(document.getElementById('<%= request.getParameter("boxId") %>iframe').contentDocument.getElementById('hidden_start').innerHTML,document.getElementById('<%= request.getParameter("boxId") %>iframe').contentDocument.getElementById('hidden_end').innerHTML);" class="formButton">
+<IFRAME id="<%= xf.getParameter("boxId") %>iframe" src="/hicc/jsp/time_slider.jsp" width="100%" frameborder="0" height="80" scrolling="no"></IFRAME>
+  <input type=button id="time_slider_apply" name="time_slider_apply" value="Apply" onclick="save_time_slider(document.getElementById('<%= xf.getParameter("boxId") %>iframe').contentDocument.getElementById('hidden_start').innerHTML,document.getElementById('<%= xf.getParameter("boxId") %>iframe').contentDocument.getElementById('hidden_end').innerHTML);" class="formButton">
 

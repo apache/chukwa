@@ -17,8 +17,9 @@
  * limitations under the License.
  */
 %>
+<%@page import = "org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
-   response.setHeader("boxId", request.getParameter("boxId"));
+   response.setHeader("boxId", xf.getParameter("boxId"));
 %>
-<IFRAME id="<%= request.getParameter("boxId") %>iframe" src="/hicc/jsp/event.jsp" width="100%" frameborder="0" height="600"></IFRAME>
+<IFRAME id="<%= xf.getParameter("boxId") %>iframe" src="/hicc/jsp/event.jsp" width="100%" frameborder="0" height="600"></IFRAME>
 

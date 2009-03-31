@@ -17,11 +17,12 @@
  * limitations under the License.
  */
 %>
+<%@ page import = "java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.extraction.engine.*, org.apache.hadoop.chukwa.hicc.TimeHandler, org.json.*, org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
-   response.setHeader("boxId", request.getParameter("boxId"));
+   XssFilter xf = new XssFilter(request);
+   response.setHeader("boxId", xf.getParameter("boxId"));
 %>
-<%@ page import = "java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.extraction.engine.*, org.apache.hadoop.chukwa.hicc.TimeHandler, org.json.*" %>
-<% String filter=(String)request.getParameter("query");
+<% String filter=xf.getParameter("query"));
    if(filter==null) {
        filter="";
    }
@@ -32,7 +33,7 @@
         Calendar now = Calendar.getInstance();
         long start = 0;
         long end = now.getTimeInMillis();
-        String[] database = request.getParameterValues("database");
+        String[] database = xf.getParameterValues("database");
         String[] timefield = new String[3];
         timefield[0]="LAUNCH_TIME";
         timefield[1]="StartTime";

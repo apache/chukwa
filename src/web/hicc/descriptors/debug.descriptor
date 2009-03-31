@@ -2,7 +2,7 @@
 "id":"debug",
 "title":"Session Debugger",
 "version":"0.1",
-"categories":"Global,Utilities",
+"categories":"Developer,Utilities",
 "module":"jsp\/debug.jsp",
 "description":"Display session stats",
 "refresh":"15",

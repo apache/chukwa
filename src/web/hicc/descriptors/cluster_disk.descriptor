@@ -2,7 +2,7 @@
 "id":"cluster-disk",
 "title":"Cluster Disk Statistics",
 "version":"0.1",
-"categories":"System,Disk,Status",
+"categories":"System Metrics,Cluster,Status",
 "module":"iframe/jsp/single-series-chart-javascript.jsp",
 "description":"Display cluster disk related statistics",
 "screendump":"\/images\/server_load.gif",

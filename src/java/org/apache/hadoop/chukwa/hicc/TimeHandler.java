@@ -20,6 +20,9 @@ package org.apache.hadoop.chukwa.hicc;
 
 
 import javax.servlet.http.*;
+
+import org.apache.hadoop.chukwa.util.XssFilter;
+
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.text.SimpleDateFormat;
@@ -38,7 +41,8 @@ public class TimeHandler {
   private String endMin = null;
   private String startS = null;
   private String endS = null;
-
+  private XssFilter xf = null;
+  
   public TimeHandler(HttpServletRequest request) {
     this.tz = TimeZone.getTimeZone("UTC");
     init(request);
@@ -54,6 +58,7 @@ public class TimeHandler {
   }
 
   public void init(HttpServletRequest request) {
+    xf = new XssFilter(request);
     Calendar now = Calendar.getInstance();
     this.session = request.getSession();
     this.request = request;
@@ -71,7 +76,7 @@ public class TimeHandler {
       session.setAttribute("end", "" + end);
     } else if (request.getParameter("period") != null
         && !request.getParameter("period").equals("")) {
-      String period = request.getParameter("period");
+      String period = xf.getParameter("period");
       this.start = now.getTimeInMillis();
       this.end = now.getTimeInMillis();
       if (period.equals("last1hr")) {

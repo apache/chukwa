@@ -2,7 +2,7 @@
 "id":"cluster_metrics",
 "title":"Cluster Metrics",
 "version":"0.1",
-"categories":"System,Status",
+"categories":"System Metrics,Cluster,Status",
 "module":"iframe/jsp/single-series-chart-javascript.jsp",
 "description":"Display cluster related stats",
 "screendump":"\/images\/server_load.gif",
@@ -22,6 +22,7 @@
 {"label":"Last 30 Days","value":"last30d"}
 ]},
 {"name":"metric","type":"select_multiple","value":"load_15","label":"Metric","options":[
+{"label":"Reporting Hosts","value":"host"},
 {"label":"load_15","value":"load_15"},
 {"label":"load_5","value":"load_5"},
 {"label":"load_1","value":"load_1"},

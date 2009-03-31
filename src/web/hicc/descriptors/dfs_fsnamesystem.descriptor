@@ -1,6 +1,6 @@
 {
 "id":"dfs_fsnamesystem",
-"title":"DFS FS Name System Metrics",
+"title":"HDFS FS Name System Metrics",
 "version":"0.1",
 "categories":"Hadoop,Status",
 "module":"iframe/jsp/single-series-chart-javascript.jsp",

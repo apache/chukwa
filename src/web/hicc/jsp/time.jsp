@@ -17,17 +17,19 @@
  * limitations under the License.
  */
 %>
+<%@ page import = "java.util.Hashtable, java.util.Enumeration, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, org.apache.hadoop.chukwa.hicc.TimeHandler, java.text.NumberFormat, org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
-   response.setHeader("boxId", request.getParameter("boxId"));
+   XssFilter xf = new XssFilter(request);
+   response.setContentType("text/html; chartset=UTF-8//IGNORE");
+   response.setHeader("boxId", xf.getParameter("boxId"));
 %>
-<%@ page import = "java.util.Hashtable, java.util.Enumeration, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, org.apache.hadoop.chukwa.hicc.TimeHandler, java.text.NumberFormat" %>
 <% 
    if(request.getParameter("time_zone")!=null) {
-       session.setAttribute("time_zone",request.getParameter("time_zone"));
+       session.setAttribute("time_zone",xf.getParameter("time_zone"));
    }
    String timeType="combo";
    if(request.getParameter("time_type")!=null) {
-       timeType=request.getParameter("time_type");
+       timeType=xf.getParameter("time_type");
    }
    if(((String)request.getHeader("user-agent")).indexOf("iPhone")>0) {
 %>

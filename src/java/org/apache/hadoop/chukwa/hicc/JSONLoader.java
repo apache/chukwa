@@ -55,7 +55,7 @@ public class JSONLoader {
     String buffer = getContents(source);
     try {
       JSONObject rows = new JSONObject(buffer);
-      jsonData = new JSONArray((String) rows.get("rows").toString());
+      jsonData = new JSONArray(rows.get("rows").toString());
     } catch (JSONException e) {
     }
   }
@@ -63,7 +63,7 @@ public class JSONLoader {
   public String getTS(int i) {
     String ts = null;
     try {
-      ts = ((JSONObject) ((JSONArray) jsonData).get(i)).get("ts").toString();
+      ts = ((JSONObject) jsonData.get(i)).get("ts").toString();
     } catch (JSONException e) {
     }
     return ts;
@@ -72,7 +72,7 @@ public class JSONLoader {
   public String getTags(int i) {
     String tags = null;
     try {
-      tags = ((JSONObject) ((JSONArray) jsonData).get(i)).get("tags")
+      tags = ((JSONObject) jsonData.get(i)).get("tags")
           .toString();
     } catch (JSONException e) {
     }
@@ -82,7 +82,7 @@ public class JSONLoader {
   public String getValue(int i) {
     String value = null;
     try {
-      value = ((JSONObject) ((JSONArray) jsonData).get(i)).get("value")
+      value = ((JSONObject) jsonData.get(i)).get("value")
           .toString();
     } catch (JSONException e) {
     }
@@ -90,6 +90,6 @@ public class JSONLoader {
   }
 
   public int length() {
-    return ((JSONArray) jsonData).length();
+    return jsonData.length();
   }
 }

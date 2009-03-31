@@ -2,7 +2,7 @@
 "id":"system_metrics",
 "title":"System Metrics",
 "version":"0.1",
-"categories":"System,Status",
+"categories":"System Metrics,Server,Status",
 "module":"iframe/jsp/single-series-chart-javascript.jsp",
 "description":"Display system related stats",
 "screendump":"\/images\/server_load.gif",
@@ -23,7 +23,7 @@
 {"label":"Last 7 Days","value":"last7d"},
 {"label":"Last 30 Days","value":"last30d"}
 ]},
-{"name":"metric","type":"select","value":"load_1","label":"Metric","options":[
+{"name":"metric","type":"select_multiple","value":"load_1","label":"Metric","options":[
 {"label":"15 minutes load average","value":"load_15"},
 {"label":"5 minutes load average","value":"load_5"},
 {"label":"1 minutes load average","value":"load_1"},
