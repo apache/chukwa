@@ -76,6 +76,7 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
     if (out == null) {
       synchronized (lock) {
         if (out == null) {
+          String logName = null;
           java.util.Properties properties = new java.util.Properties();
           properties.load(this.getClass().getClassLoader().getResourceAsStream(
               "chukwa-hadoop-metrics-log4j.properties"));
@@ -90,7 +91,7 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
           appender.setAppend(true);
           if (properties.getProperty("log4j.appender.chukwa." + contextName
               + ".Dir") != null) {
-            String logName = properties.getProperty("log4j.appender.chukwa."
+            logName = properties.getProperty("log4j.appender.chukwa."
                 + contextName + ".Dir")
                 + File.separator
                 + "chukwa-"
@@ -100,16 +101,11 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
                 + "-"
                 + System.currentTimeMillis() + ".log";
 
-            // FIXME: Hack to make the log file readable by chukwa user.
-            if (System.getProperty("os.name").intern() == "Linux".intern()) {
-              Runtime.getRuntime().exec("chmod 640 " + logName);
-            }
             appender.setFile(logName);
           } else {
-            appender
-                .setFile(metricsLogDir + File.separator + "chukwa-" + user
-                    + "-" + contextName + "-" + System.currentTimeMillis()
-                    + ".log");
+            logName = metricsLogDir+File.separator+"chukwa-"+user+"-"
+                +contextName + "-" + System.currentTimeMillis()+ ".log";
+            appender.setFile(logName);
           }
           appender.activateOptions();
           appender.setRecordType(properties
@@ -126,6 +122,10 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
                   + ".DatePattern"));
           logger.addAppender(appender);
           out = logger;
+          // FIXME: Hack to make the log file readable by chukwa user.
+          if (System.getProperty("os.name").intern() == "Linux".intern()) {
+            Runtime.getRuntime().exec("chmod 666 " + logName);
+          }
         }
       }
     }

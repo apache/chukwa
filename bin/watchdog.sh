@@ -145,3 +145,12 @@ if [ -f $pidFile ]; then
       "$bin/chukwa-daemon.sh" --config $CHUKWA_CONF_DIR start dbAdmin.sh &
   fi
 fi
+
+tenmin=`echo ${min} | cut -b 2-`
+if [ "X${tenmin}" == "X0" ]; then
+  if [ -d ${CHUKWA_LOG_DIR}/metrics ]; then
+    ${CHUKWA_HOME}/tools/expire.sh 3 ${CHUKWA_LOG_DIR}/metrics nowait
+  fi
+fi
+
+

@@ -522,6 +522,15 @@
 	</target>
 
 	<target name="chukwa-hadoop_jar" depends="compile" description="Create chukwa_hadoop jar for use with getting hadoop to use chukwa">
+                <mkdir dir="${build.dir}/conf"/>
+                <copy todir="${build.dir}/conf">
+                    <fileset dir="${basedir}/conf">
+                        <include name="chukwa-hadoop-metrics-log4j.properties"/>
+                    </fileset>
+                    <filterset>
+                        <filter token="CHUKWA_LOG_DIR" value="${CHUKWA_LOG_DIR}"/>
+                    </filterset>
+                </copy>
 
 		<jar jarfile="${build.dir}/chukwa-hadoop-${chukwaVersion}-client.jar" basedir="${build.classes}" includes="org/apache/hadoop/chukwa/inputtools/log4j/**/*.class">
 			<fileset dir="${basedir}/src/java">
@@ -530,7 +539,7 @@
 		                <include name="org/apache/hadoop/chukwa/datacollection/client/**/*.java"/>
 		                <include name="org/apache/hadoop/chukwa/util/**/*.java"/>
 			</fileset>
-			<fileset dir="${basedir}/conf">
+			<fileset dir="${build.dir}/conf">
 		                <include name="chukwa-hadoop-metrics-log4j.properties"/>
 			</fileset>
 			<fileset dir="${build.classes}">
@@ -894,6 +903,7 @@ sed 's:CHUKWA_CONF_DIR=/usr/local/chukwa/conf:CHUKWA_CONF_DIR=%{_conf_dir}:' > %
 cat %{buildroot}%{_prefix}/tools/service/chukwa-hdfsusage/run | \
 sed 's:/usr/local/chukwa:%{_prefix}:' > %{buildroot}%{_prefix}/tools/service/chukwa-hdfsusage/run.new
 mv %{buildroot}%{_prefix}/tools/service/chukwa-hdfsusage/run.new %{buildroot}%{_prefix}/tools/service/chukwa-hdfsusage/run
+chmod a+x %{buildroot}%{_prefix}/tools/expire.sh
 chmod a+x %{buildroot}/etc/init.d/chukwa-*
 chmod -R a+x %{buildroot}%{_prefix}/tools/service/chukwa-*
 chmod -R a+x %{buildroot}/service/chukwa-*

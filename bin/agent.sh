@@ -36,6 +36,11 @@ if [ "X$1" = "Xstop" ]; then
    stop
 fi
 
+if [ ! -d ${CHUKWA_LOG_DIR} ]; then
+  mkdir -p ${CHUKWA_LOG_DIR}/metrics
+  chmod 777 ${CHUKWA_LOG_DIR}/metrics
+fi
+
 
 ${JAVA_HOME}/bin/java -Xms32M -Xmx64M -DAPP=agent -Dlog4j.configuration=chukwa-log4j.properties -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -classpath ${CLASSPATH}:${CHUKWA_AGENT}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent $@ &
 
