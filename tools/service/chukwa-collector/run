@@ -1,5 +1,5 @@
 #!/bin/sh
 CHUKWA_CONF_DIR=/usr/local/chukwa/conf
 
-exec setuidgid gmon /usr/local/chukwa/bin/jettyCollector.sh --config $CHUKWA_CONF_DIR
+exec setuidgid gmon /usr/local/chukwa/bin/jettyCollector.sh --config $CHUKWA_CONF_DIR &>/dev/null
 
