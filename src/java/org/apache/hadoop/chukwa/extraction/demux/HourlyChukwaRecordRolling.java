@@ -238,12 +238,6 @@ public class HourlyChukwaRecordRolling extends Configured implements Tool {
     conf.setOutputValueClass(ChukwaRecord.class);
     conf.setOutputFormat(SequenceFileOutputFormat.class);
 
-    conf.set("mapred.compress.map.output", "true");
-    conf.set("mapred.map.output.compression.codec",
-        "org.apache.hadoop.io.compress.LzoCodec");
-    conf.set("mapred.output.compress", "true");
-    conf.set("mapred.output.compression.type", "BLOCK");
-
     log.info("HourlyChukwaRecordRolling input: " + args[0]);
     log.info("HourlyChukwaRecordRolling output: " + args[1]);
 

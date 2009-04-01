@@ -92,12 +92,6 @@ public class ChukwaArchiveBuilder extends Configured implements Tool {
       return printUsage();
     }
 
-    jobConf.set("mapred.compress.map.output", "true");
-    jobConf.set("mapred.map.output.compression.codec",
-        "org.apache.hadoop.io.compress.LzoCodec");
-    jobConf.set("mapred.output.compress", "true");
-    jobConf.set("mapred.output.compression.type", "BLOCK");
-
     jobConf.setOutputKeyClass(ChukwaArchiveKey.class);
     jobConf.setOutputValueClass(ChunkImpl.class);
 

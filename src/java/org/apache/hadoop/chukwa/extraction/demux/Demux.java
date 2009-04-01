@@ -157,9 +157,6 @@ public class Demux extends Configured implements Tool {
     conf.setOutputValueClass(ChukwaRecord.class);
     conf.setOutputFormat(ChukwaRecordOutputFormat.class);
 
-    // conf.setCompressMapOutput(true);
-    // conf.setMapOutputCompressorClass(LzoCodec.class);
-
     List<String> other_args = new ArrayList<String>();
     for (int i = 0; i < args.length; ++i) {
       try {
