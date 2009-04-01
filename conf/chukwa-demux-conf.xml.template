@@ -104,4 +104,10 @@
     <description>Parser class for Map reduce Job Configuration</description>
    </property>
     
+   <property>
+    <name>HDFSUsage</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.JPluginMapper</value>
+    <description></description>
+   </property>
+
 </configuration>
