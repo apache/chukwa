@@ -287,7 +287,9 @@ public class ChukwaAgentController {
       throws IOException {
     syncWithAgent();
     ChukwaAgentController.Adaptor a = runningAdaptors.remove(adaptorID);
-    a.unregister();
+    if ( a != null ) {
+      a.unregister();
+    }
     return a;
 
   }
