@@ -594,11 +594,12 @@ create table if not exists user_util_template (
     index(timestamp)
 );
 
-create table if not exists QueueInfo(
-    Timestamp timestamp default 0,
-    HodID VARCHAR(20),
-    Queue VARCHAR(20),
-    NumOfMachine smallint unsigned,
-    status varchar(1),
-    index(Timestamp)
+create table if not exists util_template (
+    timestamp timestamp default CURRENT_TIMESTAMP,
+    user VARCHAR(20),
+    queue VARCHAR(20),
+    bytes bigint,
+    slot_hours double,
+    primary key(user, timestamp),
+    index(queue)
 );

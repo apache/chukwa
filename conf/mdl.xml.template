@@ -1259,5 +1259,31 @@
   <value>5,30,180,720</value>
 </property>
 
+<property>
+  <name>report.db.name.hdfsusage</name>
+  <value>hdfs_usage</value>
+  <description></description>
+</property>
+  
+<property>
+  <name>metric.hdfsusage.user</name>
+  <value>user</value>
+</property>
+
+<property>
+  <name>metric.hdfsusage.bytes</name>
+  <value>bytes</value>
+</property>
+
+<property>
+  <name>metric.hdfsusage.timestamp</name>
+  <value>timestamp</value>
+</property>
+
+<property>
+  <name>consolidator.table.hdfs_usage</name>
+  <value>5,30,180,720</value>
+</property>
+
 </configuration>
 
