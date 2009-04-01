@@ -91,7 +91,7 @@ if [ "X$PARM" == "Xtorque" ]; then
 fi
 
 if [ "X$PARM" == "XHDFSUsage" ]; then
-  ${JAVA_HOME}/bin/java $JVM_OPTS -DPERIOD=600 -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DRECORD_TYPE=HDFSUsage -Dlog4j.configuration=system-data-loader.properties -classpath ${HADOOP_CONF_DIR}:${CLASSPATH}:${CHUKWA_CORE}:${COMMON}:${HADOOP_JAR}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.jplugin.JPluginAgent org.apache.hadoop.chukwa.inputtools.hdfsusage.HDFSUsagePlugin &
+  ${JAVA_HOME}/bin/java $JVM_OPTS -DPERIOD=600 -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DRECORD_TYPE=HDFSUsage -Dlog4j.configuration=system-data-loader.properties -classpath ${HADOOP_CONF_DIR}:${CLASSPATH}:${CHUKWA_CORE}:${COMMON}:${HADOOP_JAR}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.inputtools.jplugin.JPluginAgent org.apache.hadoop.chukwa.inputtools.hdfsusage.HDFSUsagePlugin &
 fi
 
 pid=$!
