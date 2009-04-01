@@ -18,7 +18,6 @@
 
 package org.apache.hadoop.chukwa.extraction.database;
 
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,10 +27,14 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
@@ -41,23 +44,40 @@ import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.chukwa.extraction.engine.RecordUtil;
 import org.apache.hadoop.chukwa.util.ClusterConfig;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.SequenceFile;
 
 public class MetricDataLoader {
   private static Log log = LogFactory.getLog(MetricDataLoader.class);
-  private static Connection conn = null;
-  private static Statement stmt = null;
+
+  private Statement stmt = null;
   private ResultSet rs = null;
-  private static DatabaseConfig mdlConfig = null;
-  private static HashMap<String, String> normalize = null;
-  private static HashMap<String, String> transformer = null;
-  private static HashMap<String, Float> conversion = null;
-  private static HashMap<String, String> dbTables = null;
+  private DatabaseConfig mdlConfig = null;
+  private HashMap<String, String> normalize = null;
+  private HashMap<String, String> transformer = null;
+  private HashMap<String, Float> conversion = null;
+  private HashMap<String, String> dbTables = null;
   private HashMap<String, HashMap<String, Integer>> dbSchema = null;
-  private static String newSpace = "-";
-  private static boolean batchMode = true;
+  private String newSpace = "-";
+  private boolean batchMode = true;
+  private Connection conn = null;
+
+  private static ChukwaConfiguration conf = null;
+  private static FileSystem fs = null;
+
+  static {
+    conf = new ChukwaConfiguration();
+    String fsName = conf.get("writer.hdfs.filesystem");
+    try {
+      fs = FileSystem.get(new URI(fsName), conf);
+    } catch (Exception e) {
+      e.printStackTrace();
+      log.warn("Exception during HDFS init, Bailing out!", e);
+      System.exit(-1);
+    }
+  }
 
   /** Creates a new instance of DBWriter */
   public MetricDataLoader() {
@@ -150,43 +170,39 @@ public class MetricDataLoader {
   public void process(Path source) throws IOException, URISyntaxException,
       SQLException {
 
-    System.out.println("Input file:" + source.getName());
-
-    ChukwaConfiguration conf = new ChukwaConfiguration();
-    String fsName = conf.get("writer.hdfs.filesystem");
-    FileSystem fs = FileSystem.get(new URI(fsName), conf);
+    log.info("StreamName: " + source.getName());
 
     SequenceFile.Reader r = new SequenceFile.Reader(fs, source, conf);
 
     stmt = conn.createStatement();
     conn.setAutoCommit(false);
+    long currentTimeMillis = System.currentTimeMillis();
+    boolean isSuccessful = true;
+    String recordType = null;
 
     ChukwaRecordKey key = new ChukwaRecordKey();
     ChukwaRecord record = new ChukwaRecord();
     try {
       int batch = 0;
       while (r.next(key, record)) {
-        boolean isSuccessful = true;
         String sqlTime = DatabaseWriter.formatTimeStamp(record.getTime());
         log.debug("Timestamp: " + record.getTime());
         log.debug("DataType: " + key.getReduceType());
-        log.debug("StreamName: " + source.getName());
 
         String[] fields = record.getFields();
         String table = null;
         String[] priKeys = null;
         HashMap<String, HashMap<String, String>> hashReport = new HashMap<String, HashMap<String, String>>();
-        String normKey = new String();
+        StringBuilder normKey = new StringBuilder();
         String node = record.getValue("csource");
-        String recordType = key.getReduceType().toLowerCase();
-        if (dbTables.containsKey("report.db.name." + recordType)) {
-
-          String[] tmp = mdlConfig.findTableName(mdlConfig
-              .get("report.db.name." + recordType), record.getTime(), record
-              .getTime());
+        recordType = key.getReduceType().toLowerCase();
+        String dbKey = "report.db.name." + recordType;
+        if (dbTables.containsKey(dbKey)) {
+          String[] tmp = mdlConfig.findTableName(mdlConfig.get(dbKey), record
+              .getTime(), record.getTime());
           table = tmp[0];
         } else {
-          log.debug("report.db.name." + recordType + " does not exist.");
+          log.debug(dbKey + " does not exist.");
           continue;
         }
         log.debug("table name:" + table);
@@ -199,21 +215,35 @@ public class MetricDataLoader {
           String keyName = escape(field.toLowerCase(), newSpace);
           String keyValue = escape(record.getValue(field).toLowerCase(),
               newSpace);
-          if (normalize.containsKey("normalize." + recordType + "." + keyName)) {
-            if (normKey.equals("")) {
-              normKey = keyName + "." + keyValue;
+          StringBuilder buildKey = new StringBuilder();
+          buildKey.append("normalize.");
+          buildKey.append(recordType);
+          buildKey.append(".");
+          buildKey.append(keyName);
+          if (normalize.containsKey(buildKey.toString())) {
+            if (normKey.toString().equals("")) {
+              normKey.append(keyName);
+              normKey.append(".");
+              normKey.append(keyValue);
             } else {
-              normKey = normKey + "." + keyName + "." + keyValue;
+              normKey.append(".");
+              normKey.append(keyName);
+              normKey.append(".");
+              normKey.append(keyValue);
             }
           }
-          String normalizedKey = "metric." + recordType + "." + normKey;
+          StringBuilder normalizedKey = new StringBuilder();
+          normalizedKey.append("metric.");
+          normalizedKey.append(recordType);
+          normalizedKey.append(".");
+          normalizedKey.append(normKey);
           if (hashReport.containsKey(node)) {
             HashMap<String, String> tmpHash = hashReport.get(node);
-            tmpHash.put(normalizedKey, keyValue);
+            tmpHash.put(normalizedKey.toString(), keyValue);
             hashReport.put(node, tmpHash);
           } else {
             HashMap<String, String> tmpHash = new HashMap<String, String>();
-            tmpHash.put(normalizedKey, keyValue);
+            tmpHash.put(normalizedKey.toString(), keyValue);
             hashReport.put(node, tmpHash);
           }
         }
@@ -221,11 +251,21 @@ public class MetricDataLoader {
           String valueName = escape(field.toLowerCase(), newSpace);
           String valueValue = escape(record.getValue(field).toLowerCase(),
               newSpace);
-          String normalizedKey = "metric." + recordType + "." + valueName;
-          if (!normKey.equals("")) {
-            normalizedKey = "metric." + recordType + "." + normKey + "."
-                + valueName;
+          StringBuilder buildKey = new StringBuilder();
+          buildKey.append("metric.");
+          buildKey.append(recordType);
+          buildKey.append(".");
+          buildKey.append(valueName);
+          if (!normKey.toString().equals("")) {
+            buildKey = new StringBuilder();
+            buildKey.append("metric.");
+            buildKey.append(recordType);
+            buildKey.append(".");
+            buildKey.append(normKey);
+            buildKey.append(".");
+            buildKey.append(valueName);
           }
+          String normalizedKey = buildKey.toString();
           if (hashReport.containsKey(node)) {
             HashMap<String, String> tmpHash = hashReport.get(node);
             tmpHash.put(normalizedKey, valueValue);
@@ -240,101 +280,158 @@ public class MetricDataLoader {
         }
         Iterator<String> i = hashReport.keySet().iterator();
         while (i.hasNext()) {
-          long currentTimeMillis = System.currentTimeMillis();
           Object iteratorNode = i.next();
           HashMap<String, String> recordSet = hashReport.get(iteratorNode);
           Iterator<String> fi = recordSet.keySet().iterator();
           // Map any primary key that was not included in the report keyName
-          String sqlPriKeys = "";
+          StringBuilder sqlPriKeys = new StringBuilder();
           try {
             for (String priKey : priKeys) {
               if (priKey.equals("timestamp")) {
-                sqlPriKeys = sqlPriKeys + priKey + " = \"" + sqlTime + "\"";
+                sqlPriKeys.append(priKey);
+                sqlPriKeys.append(" = \"");
+                sqlPriKeys.append(sqlTime);
+                sqlPriKeys.append("\"");
               }
               if (!priKey.equals(priKeys[priKeys.length - 1])) {
-                sqlPriKeys = sqlPriKeys + ", ";
+                sqlPriKeys.append(sqlPriKeys);
+                sqlPriKeys.append(", ");
               }
             }
           } catch (Exception nullException) {
             // ignore if primary key is empty
           }
           // Map the hash objects to database table columns
-          String sqlValues = "";
+          StringBuilder sqlValues = new StringBuilder();
           boolean firstValue = true;
           while (fi.hasNext()) {
-            String fieldKey = fi.next();
+            String fieldKey = (String) fi.next();
             if (transformer.containsKey(fieldKey)) {
               if (!firstValue) {
-                sqlValues = sqlValues + ", ";
+                sqlValues.append(", ");
               }
               try {
-                if (dbSchema.get(dbTables.get("report.db.name." + recordType))
-                    .get(transformer.get(fieldKey)) == java.sql.Types.VARCHAR
-                    || dbSchema.get(
-                        dbTables.get("report.db.name." + recordType)).get(
+                if (dbSchema.get(dbTables.get(dbKey)).get(
+                    transformer.get(fieldKey)) == java.sql.Types.VARCHAR
+                    || dbSchema.get(dbTables.get(dbKey)).get(
                         transformer.get(fieldKey)) == java.sql.Types.BLOB) {
-                  if (conversion.containsKey("conversion." + fieldKey)) {
-                    sqlValues = sqlValues + transformer.get(fieldKey) + "="
-                        + recordSet.get(fieldKey)
-                        + conversion.get("conversion." + fieldKey).toString();
+                  String conversionKey = "conversion." + fieldKey;
+                  if (conversion.containsKey(conversionKey)) {
+                    sqlValues.append(transformer.get(fieldKey));
+                    sqlValues.append("=");
+                    sqlValues.append(recordSet.get(fieldKey));
+                    sqlValues.append(conversion.get(conversionKey).toString());
                   } else {
-                    sqlValues = sqlValues + transformer.get(fieldKey) + "=\""
-                        + recordSet.get(fieldKey) + "\"";
+                    sqlValues.append(transformer.get(fieldKey));
+                    sqlValues.append("=\"");
+                    sqlValues.append(recordSet.get(fieldKey).replaceAll("\"",
+                        "'"));
+                    sqlValues.append("\"");
                   }
+                } else if (dbSchema.get(dbTables.get(dbKey)).get(
+                    transformer.get(fieldKey)) == java.sql.Types.TIMESTAMP) {
+                  SimpleDateFormat formatter = new SimpleDateFormat(
+                      "yyyy-MM-dd HH:mm:ss");
+                  Date recordDate = new Date();
+                  recordDate.setTime((long) Long.parseLong(recordSet
+                      .get(fieldKey)));
+                  sqlValues.append(transformer.get(fieldKey));
+                  sqlValues.append("=\"");
+                  sqlValues.append(formatter.format(recordDate));
+                  sqlValues.append("\"");
+                } else if (dbSchema.get(dbTables.get(dbKey)).get(
+                    transformer.get(fieldKey)) == java.sql.Types.BIGINT
+                    || dbSchema.get(dbTables.get(dbKey)).get(
+                        transformer.get(fieldKey)) == java.sql.Types.TINYINT
+                    || dbSchema.get(dbTables.get(dbKey)).get(
+                        transformer.get(fieldKey)) == java.sql.Types.INTEGER) {
+                  long tmp = 0;
+                  try {
+                    tmp = Long.parseLong(recordSet.get(fieldKey).toString());
+                    String conversionKey = "conversion." + fieldKey;
+                    if (conversion.containsKey(conversionKey)) {
+                      tmp = tmp
+                          * Long.parseLong(conversion.get(conversionKey)
+                              .toString());
+                    }
+                  } catch (Exception e) {
+                    tmp = 0;
+                  }
+                  sqlValues.append(transformer.get(fieldKey));
+                  sqlValues.append("=");
+                  sqlValues.append(tmp);
                 } else {
-                  double tmp;
+                  double tmp = 0;
                   tmp = Double.parseDouble(recordSet.get(fieldKey).toString());
-                  if (conversion.containsKey("conversion." + fieldKey)) {
+                  String conversionKey = "conversion." + fieldKey;
+                  if (conversion.containsKey(conversionKey)) {
                     tmp = tmp
-                        * Double.parseDouble(conversion.get(
-                            "conversion." + fieldKey).toString());
+                        * Double.parseDouble(conversion.get(conversionKey)
+                            .toString());
                   }
                   if (Double.isNaN(tmp)) {
                     tmp = 0;
                   }
-                  sqlValues = sqlValues + transformer.get(fieldKey) + "=" + tmp;
+                  sqlValues.append(transformer.get(fieldKey));
+                  sqlValues.append("=");
+                  sqlValues.append(tmp);
                 }
                 firstValue = false;
               } catch (NumberFormatException ex) {
-                if (conversion.containsKey("conversion." + fieldKey)) {
-                  sqlValues = sqlValues + transformer.get(fieldKey) + "="
-                      + recordSet.get(fieldKey)
-                      + conversion.get("conversion." + fieldKey).toString();
+                String conversionKey = "conversion." + fieldKey;
+                if (conversion.containsKey(conversionKey)) {
+                  sqlValues.append(transformer.get(fieldKey));
+                  sqlValues.append("=");
+                  sqlValues.append(recordSet.get(fieldKey));
+                  sqlValues.append(conversion.get(conversionKey).toString());
                 } else {
-                  sqlValues = sqlValues + transformer.get(fieldKey) + "=\""
-                      + recordSet.get(fieldKey) + "\"";
+                  sqlValues.append(transformer.get(fieldKey));
+                  sqlValues.append("=\"");
+                  sqlValues.append(recordSet.get(fieldKey)
+                      .replaceAll("\"", "'"));
+                  sqlValues.append("\"");
                 }
                 firstValue = false;
+              } catch (NullPointerException ex) {
+                log.error("dbKey:" + dbKey + " fieldKey:" + fieldKey
+                    + " does not contain valid MDL structure.");
               }
             }
           }
 
-          String sql = null;
+          StringBuilder sql = new StringBuilder();
           if (sqlPriKeys.length() > 0) {
-            sql = "INSERT INTO " + table + " SET " + sqlPriKeys + ","
-                + sqlValues + " ON DUPLICATE KEY UPDATE " + sqlPriKeys + ","
-                + sqlValues + ";";
+            sql.append("INSERT INTO ");
+            sql.append(table);
+            sql.append(" SET ");
+            sql.append(sqlPriKeys.toString());
+            sql.append(",");
+            sql.append(sqlValues.toString());
+            sql.append(" ON DUPLICATE KEY UPDATE ");
+            sql.append(sqlPriKeys.toString());
+            sql.append(",");
+            sql.append(sqlValues.toString());
+            sql.append(";");
           } else {
-            sql = "INSERT INTO " + table + " SET " + sqlValues
-                + " ON DUPLICATE KEY UPDATE " + sqlValues + ";";
+            sql.append("INSERT INTO ");
+            sql.append(table);
+            sql.append(" SET ");
+            sql.append(sqlValues.toString());
+            sql.append(" ON DUPLICATE KEY UPDATE ");
+            sql.append(sqlValues.toString());
+            sql.append(";");
           }
-          log.debug(sql);
+          log.trace(sql);
           if (batchMode) {
-            stmt.addBatch(sql);
+            stmt.addBatch(sql.toString());
             batch++;
           } else {
-            stmt.execute(sql);
+            stmt.execute(sql.toString());
           }
-          String logMsg = (isSuccessful ? "Saved" : "Error occurred in saving");
-          long latencyMillis = System.currentTimeMillis() - currentTimeMillis;
-          int latencySeconds = ((int) (latencyMillis + 500)) / 1000;
           if (batchMode && batch > 20000) {
             int[] updateCounts = stmt.executeBatch();
             batch = 0;
           }
-          log.debug(logMsg + " (" + recordType + ","
-              + RecordUtil.getClusterName(record) + "," + record.getTime()
-              + ") " + latencySeconds + " sec");
         }
 
       }
@@ -343,38 +440,46 @@ public class MetricDataLoader {
       }
     } catch (SQLException ex) {
       // handle any errors
+      isSuccessful = false;
       log.error(ex, ex);
       log.error("SQLException: " + ex.getMessage());
       log.error("SQLState: " + ex.getSQLState());
       log.error("VendorError: " + ex.getErrorCode());
     } catch (Exception e) {
+      isSuccessful = false;
+      log.error(ExceptionUtil.getStackTrace(e));
       e.printStackTrace();
     } finally {
+      if (batchMode) {
+        conn.commit();
+      }
+      long latencyMillis = System.currentTimeMillis() - currentTimeMillis;
+      int latencySeconds = ((int) (latencyMillis + 500)) / 1000;
+      String logMsg = (isSuccessful ? "Saved" : "Error occurred in saving");
+      log.info(logMsg + " (" + recordType + ","
+          + RecordUtil.getClusterName(record) + ") " + latencySeconds + " sec");
       if (rs != null) {
         try {
           rs.close();
-        } catch (SQLException sqlEx) {
-          // ignore
+        } catch (SQLException ex) {
+          log.error(ex, ex);
+          log.error("SQLException: " + ex.getMessage());
+          log.error("SQLState: " + ex.getSQLState());
+          log.error("VendorError: " + ex.getErrorCode());
         }
         rs = null;
       }
       if (stmt != null) {
         try {
           stmt.close();
-        } catch (SQLException sqlEx) {
-          // ignore
+        } catch (SQLException ex) {
+          log.error(ex, ex);
+          log.error("SQLException: " + ex.getMessage());
+          log.error("SQLState: " + ex.getSQLState());
+          log.error("VendorError: " + ex.getErrorCode());
         }
         stmt = null;
       }
-      if (conn != null) {
-        try {
-          conn.close();
-        } catch (SQLException sqlEx) {
-          // ignore
-        }
-        conn = null;
-      }
-
     }
   }
 

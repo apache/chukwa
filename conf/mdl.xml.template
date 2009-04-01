@@ -390,6 +390,11 @@
 </property>
 
 <property>
+  <name>metric.systemmetrics.%system</name>
+  <value>cpu_system_pcnt</value>
+</property>
+
+<property>
   <name>metric.systemmetrics.%user</name>
   <value>cpu_user_pcnt</value>
 </property>
@@ -1280,6 +1285,487 @@
   <value>timestamp</value>
 </property>
 
+<property>
+  <name>consolidator.table.hdfs_usage</name>
+  <value>5,30,180,720</value>
+</property>
+
+
+<!-- start mapping for jobdata -->
+<property>
+  <name>report.db.name.jobdata</name>
+  <value>mr_job</value>
+  <description></description>
+</property>
+  
+<property>
+  <name>consolidator.table.mr_job</name>
+  <value>5,30,180,720</value>
+</property>
+
+<property>
+  <name>metric.jobdata.jobid</name>
+  <value>job_id</value>
+</property>
+
+<property>
+  <name>metric.jobdata.user</name>
+  <value>user</value>
+</property>
+
+<property>
+  <name>metric.jobdata.mapred.job.queue.name</name>
+  <value>queue</value>
+</property>
+
+<property>
+  <name>metric.jobdata.job_status</name>
+  <value>status</value>
+</property>
+
+<property>
+  <name>metric.jobdata.submit_time</name>
+  <value>submit_time</value>
+</property>
+
+<property>
+  <name>metric.jobdata.launch_time</name>
+  <value>launch_time</value>
+</property>
+
+<property>
+  <name>metric.jobdata.finish_time</name>
+  <value>finish_time</value>
+</property>
+
+<property>
+  <name>metric.jobdata.jobconf-json</name>
+  <value>jobconf</value>
+</property>
+  
+<!-- for hadoop 0.20 -->
+<property>
+  <name>metric.jobdata.counter:filesystemcounters:hdfs_bytes_read</name>
+  <value>hdfs_bytes_read</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:filesystemcounters:hdfs_bytes_written</name>
+  <value>hdfs_bytes_written</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:filesystemcounters:file_bytes_read</name>
+  <value>local_bytes_read</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:filesystemcounters:file_bytes_written</name>
+  <value>local_bytes_written</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.jobinprogress$counter:total_launched_maps</name>
+  <value>launched_map_tasks</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.jobinprogress$counter:total_launched_reduces</name>
+  <value>launched_reduce_tasks</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.jobinprogress$counter:data_local_maps</name>
+  <value>data_local_map_tasks</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.jobinprogress$counter:data_local_reduces</name>
+  <value>data_local_reduce_tasks</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.task$counter:map_input_bytes</name>
+  <value>map_input_bytes</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.task$counter:map_output_bytes</name>
+  <value>map_output_bytes</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.task$counter:map_input_records</name>
+  <value>map_input_records</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.task$counter:map_output_records</name>
+  <value>map_output_records</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.task$counter:combine_input_records</name>
+  <value>combine_input_records</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.task$counter:combine_output_records</name>
+  <value>combine_output_records</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.task$counter:spilled_records</name>
+  <value>spilled_records</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.task$counter:reduce_input_groups</name>
+  <value>reduce_input_groups</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.task$counter:reduce_output_groups</name>
+  <value>reduce_output_groups</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.task$counter:reduce_input_records</name>
+  <value>reduce_input_records</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:org.apache.hadoop.mapred.task$counter:reduce_output_records</name>
+  <value>reduce_output_records</value>
+</property>
+<!-- end for hadoop 0.20 -->
+
+<!-- for hadoop 0.18 -->
+<property>
+  <name>metric.jobdata.counter:hadoop18:file-systems.hdfs-bytes-read</name>
+  <value>hdfs_bytes_read</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:file-systems.hdfs-bytes-written</name>
+  <value>hdfs_bytes_written</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:file-systems.local-bytes-read</name>
+  <value>local_bytes_read</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:file-systems.local-bytes-written</name>
+  <value>local_bytes_written</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:job-counters-.launched-map-tasks</name>
+  <value>launched_map_tasks</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:job-counters-.launched-reduce-tasks</name>
+  <value>launched_reduce_tasks</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:job-counters-.data-local-map-tasks</name>
+  <value>data_local_map_tasks</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:job-counters-.data-local-reduce-tasks</name>
+  <value>data_local_reduce_tasks</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:map-reduce-framework.map-input-bytes</name>
+  <value>map_input_bytes</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:map-reduce-framework.map-output-bytes</name>
+  <value>map_output_bytes</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:map-reduce-framework.map-input-records</name>
+  <value>map_input_records</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:map-reduce-framework.map-output-records</name>
+  <value>map_output_records</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:map-reduce-framework.combine-input-records</name>
+  <value>combine_input_records</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:map-reduce-framework.combine-output-records</name>
+  <value>combine_output_records</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:map-reduce-framework.spilled-records</name>
+  <value>spilled_records</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:map-reduce-framework.reduce-input-groups</name>
+  <value>reduce_input_groups</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:map-reduce-framework.reduce-output-groups</name>
+  <value>reduce_output_groups</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:map-reduce-framework.reduce-input-records</name>
+  <value>reduce_input_records</value>
+</property>
+
+<property>
+  <name>metric.jobdata.counter:hadoop18:map-reduce-framework.reduce-output-records</name>
+  <value>reduce_output_records</value>
+</property>
+
+<!-- end for hadoop 0.18 -->
+<!-- end mapping for jobdata -->
+
+<!-- start mapping for taskdata -->
+<property>
+  <name>report.db.name.taskdata</name>
+  <value>mr_task</value>
+  <description></description>
+</property>
+  
+<property>
+  <name>consolidator.table.mr_task</name>
+  <value>5,30,180,720</value>
+</property>
+
+<property>
+  <name>metric.taskdata.jobid</name>
+  <value>job_id</value>
+</property>
+
+<property>
+  <name>metric.taskdata.taskid</name>
+  <value>task_id</value>
+</property>
+
+<property>
+  <name>metric.taskdata.start_time</name>
+  <value>start_time</value>
+</property>
+
+<property>
+  <name>metric.taskdata.finish_time</name>
+  <value>finish_time</value>
+</property>
+
+<property>
+  <name>metric.taskdata.task_status</name>
+  <value>status</value>
+</property>
+
+<property>
+  <name>metric.taskdata.task_attempt_times</name>
+  <value>attempts</value>
+</property>
+
+<!-- for hadoop 20 -->
+<property>
+  <name>metric.taskdata.counter:filesystemcounters:hdfs_bytes_read</name>
+  <value>hdfs_bytes_read</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:filesystemcounters:hdfs_bytes_written</name>
+  <value>hdfs_bytes_written</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:filesystemcounters:file_bytes_read</name>
+  <value>local_bytes_read</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:filesystemcounters:file_bytes_written</name>
+  <value>local_bytes_written</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:map_input_bytes</name>
+  <value>map_input_bytes</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:map_output_bytes</name>
+  <value>map_output_bytes</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:map_input_records</name>
+  <value>map_input_records</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:map_output_records</name>
+  <value>map_output_records</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:combine_input_records</name>
+  <value>combine_input_records</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:combine_output_records</name>
+  <value>combine_output_records</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:spilled_records</name>
+  <value>spilled_records</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:reduce_input_groups</name>
+  <value>reduce_input_groups</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:reduce_output_groups</name>
+  <value>reduce_output_groups</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:reduce_input_bytes</name>
+  <value>reduce_input_bytes</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:reduce_output_bytes</name>
+  <value>reduce_output_bytes</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:reduce_input_records</name>
+  <value>reduce_input_records</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:reduce_output_records</name>
+  <value>reduce_output_records</value>
+</property>
+<!-- end for hadoop 20 -->
+
+<!-- for hadoop 18 -->
+<property>
+  <name>metric.taskdata.counter:hadoop18:file-systems.hdfs-bytes-read</name>
+  <value>hdfs_bytes_read</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:file-systems.hdfs-bytes-written</name>
+  <value>hdfs_bytes_written</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:file-systems.local-bytes-read</name>
+  <value>local_bytes_read</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:file-systems.local-bytes-written</name>
+  <value>local_bytes_written</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:map-reduce-framework.map-input-bytes</name>
+  <value>map_input_bytes</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:map-reduce-framework.map-output-bytes</name>
+  <value>map_output_bytes</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:map-reduce-framework.map-input-records</name>
+  <value>map_input_records</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:map-reduce-framework.map-output-records</name>
+  <value>map_output_records</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:map-reduce-framework.combine-input-records</name>
+  <value>combine_input_records</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:map-reduce-framework.combine-output-records</name>
+  <value>combine_output_records</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:map-reduce-framework.spilled-records</name>
+  <value>spilled_records</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:map-reduce-framework.reduce-input-groups</name>
+  <value>reduce_input_groups</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:map-reduce-framework.reduce-output-groups</name>
+  <value>reduce_output_groups</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:map-reduce-framework.reduce-input-records</name>
+  <value>reduce_input_records</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:map-reduce-framework.reduce-output-records</name>
+  <value>reduce_output_records</value>
+</property>
+<!-- end for hadoop 18 -->
+
+<property>
+  <name>report.db.name.hdfsusage</name>
+  <value>hdfs_usage</value>
+  <description></description>
+</property>
+
+<property>
+  <name>metric.hdfsusage.user</name>
+  <value>user</value>
+</property>
+
+<property>
+  <name>metric.hdfsusage.bytes</name>
+  <value>bytes</value>
+</property>
+
+<property>
+  <name>metric.hdfsusage.timestamp</name>
+  <value>timestamp</value>
+</property>
+  
 <property>
   <name>consolidator.table.hdfs_usage</name>
   <value>5,30,180,720</value>

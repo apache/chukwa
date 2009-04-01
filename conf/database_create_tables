@@ -1,5 +1,29 @@
-create table if not exists node_activity_template 
-(
+drop table if exists node_activity_template;
+drop table if exists switch_data_template;
+drop table if exists system_metrics_template;
+drop table if exists disk_template;
+drop table if exists cluster_disk_template;
+drop table if exists cluster_system_metrics_template;
+drop table if exists dfs_namenode_template;
+drop table if exists dfs_datanode_template;
+drop table if exists dfs_fsnamesystem_template;
+drop table if exists dfs_throughput_template;
+drop table if exists hadoop_jvm_template;
+drop table if exists hadoop_mapred_template;
+drop table if exists hadoop_rpc_template;
+drop table if exists cluster_hadoop_rpc_template;
+drop table if exists hadoop_rpc_calls_template;
+drop table if exists mr_job_template;
+drop table if exists mr_task_template;
+drop table if exists mr_job_timeline_template;
+drop table if exists hod_machine_template;
+drop table if exists HodJob_template;
+drop table if exists hod_job_digest_template;
+drop table if exists user_util_template;
+drop table if exists hdfs_usage_template;
+drop table if exists QueueInfo;
+
+create table if not exists node_activity_template (
     timestamp  timestamp default CURRENT_TIMESTAMP,
     used int(11) default NULL,
     usedMachines text,
@@ -9,7 +33,7 @@ create table if not exists node_activity_template
     downMachines text,
     primary key(timestamp),
     index (Timestamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists switch_data_template (
     timestamp timestamp default CURRENT_TIMESTAMP,
@@ -20,7 +44,7 @@ create table if not exists switch_data_template (
     value double,
     primary key(timestamp, host, port),
     index (Timestamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists system_metrics_template (
     timestamp  timestamp default CURRENT_TIMESTAMP,
@@ -80,7 +104,7 @@ create table if not exists system_metrics_template (
     swap_used_pcnt float,
     primary key(host, timestamp),
     index (timestamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists disk_template (
     timestamp  timestamp default CURRENT_TIMESTAMP,
@@ -92,7 +116,7 @@ create table if not exists disk_template (
     fs varchar(40),
     primary key(timestamp,host,mount),
     index (timestamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists cluster_disk_template (
     timestamp  timestamp default CURRENT_TIMESTAMP,
@@ -102,7 +126,7 @@ create table if not exists cluster_disk_template (
     used_percent double,
     primary key(timestamp,mount),
     index (timestamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists cluster_system_metrics_template (
     timestamp  timestamp default CURRENT_TIMESTAMP,
@@ -162,7 +186,7 @@ create table if not exists cluster_system_metrics_template (
     swap_used_pcnt float,
     primary key(timestamp),
     index (timestamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists dfs_namenode_template (
     timestamp timestamp default 0,
@@ -186,7 +210,7 @@ create table if not exists dfs_namenode_template (
     fs_image_load_time double,
     primary key(timestamp, host),
     index(timeStamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists dfs_datanode_template (
     timestamp timestamp default 0,
@@ -220,7 +244,7 @@ create table if not exists dfs_datanode_template (
     writes_from_remote_client double,
     primary key(timestamp, host),
     index(timestamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists dfs_fsnamesystem_template (
     timestamp timestamp default 0,
@@ -236,7 +260,7 @@ create table if not exists dfs_fsnamesystem_template (
     under_replicated_blocks double,
     primary key(timestamp, host),
     index(timestamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists dfs_throughput_template (
     timestamp timestamp default 0,
@@ -270,7 +294,7 @@ create table if not exists dfs_throughput_template (
     writes_from_remote_client double,
     primary key(timestamp),
     index(timestamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists hadoop_jvm_template (
     timestamp timestamp default 0,
@@ -294,7 +318,7 @@ create table if not exists hadoop_jvm_template (
     threads_waiting double,
     primary key (timestamp, host, process_name),
     index(timestamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists hadoop_mapred_template (
     timestamp timestamp default 0,
@@ -307,7 +331,7 @@ create table if not exists hadoop_mapred_template (
     reduces_launched double,
     primary key (timestamp, host),
     index(timestamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists hadoop_rpc_template (
     timestamp timestamp default 0,
@@ -342,7 +366,7 @@ create table if not exists hadoop_rpc_template (
     submit_job_num_ops double,
     primary key (timestamp, host),
     index(timestamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists cluster_hadoop_rpc_template (
     timestamp timestamp default 0,
@@ -377,7 +401,7 @@ create table if not exists cluster_hadoop_rpc_template (
     submit_job_num_ops double,
     primary key (timestamp),
     index(timestamp)
-);
+) ENGINE=InnoDB;
 
 create table if not exists hadoop_rpc_calls_template (
     timestamp timestamp default 0,
@@ -385,117 +409,83 @@ create table if not exists hadoop_rpc_calls_template (
     calls double,
     primary key(timestamp, method),
     index(timestamp)
-);
+) ENGINE=InnoDB;
 
-create table if not exists mssrgraph_template (
-    timestamp timestamp default 0,
+create table if not exists mr_job_template (
+    job_id varchar(80),
+    user varchar(32),
+    queue varchar(100),
+    status varchar(10),
+    submit_time timestamp default 0,
+    launch_time timestamp default 0,
+    finish_time timestamp default 0,
+    hdfs_bytes_read bigint default 0,
+    hdfs_bytes_written bigint default 0,
+    local_bytes_read bigint default 0,
+    local_bytes_written bigint default 0,
+    launched_map_tasks bigint default 0,
+    launched_reduce_tasks bigint default 0,
+    data_local_map_tasks bigint default 0,
+    data_local_reduce_tasks bigint default 0,
+    map_input_bytes bigint default 0,
+    map_output_bytes bigint default 0,
+    map_input_records bigint default 0,
+    map_output_records bigint default 0,
+    combine_input_records bigint default 0,
+    combine_output_records bigint default 0,
+    spilled_records bigint default 0,
+    reduce_input_groups bigint default 0,
+    reduce_output_groups bigint default 0,
+    reduce_input_records bigint default 0,
+    reduce_output_records bigint default 0,
+    jobconf  text, 
+    primary key(job_id),
+    index(submit_time, finish_time, user, queue)
+) ENGINE=InnoDB;
+
+create table if not exists mr_task_template (
     job_id VARCHAR(80),
-    type VARCHAR(10),
-    count double,
-    primary key (timestamp, job_id),
-    index(timestamp)
-);
-
-create table if not exists mr_job(
-    HodID varchar(20),
-    MRJobID varchar(80),
-    MRJobName varchar(100),
-    STATUS varchar(10),
-    SUBMIT_TIME timestamp default 0,
-    LAUNCH_TIME timestamp default 0,
-    FINISH_TIME timestamp default 0,
-    MAPPER_PHASE_END_TIME timestamp default 0,
-    TOTAL_MAPS int unsigned,
-    TOTAL_REDUCES int unsigned,
-    FINISHED_MAPS  int unsigned,
-    FINISHED_REDUCES  int unsigned,      
-    NumOfLocalSplits int unsigned,
-    NumOfRackLocalSplits int unsigned,
-    NUM_OF_MAPPER_ATTEMPTS int unsigned,
-    NUM_OF_REDUCER_ATTEMPTS int unsigned,
-    MAPPER_PHASE_EXECUTION_TIME int,
-    AvgMapperExecutionTime int unsigned,
-    AvgLocalMapperExecutionTime int unsigned,
-    AvgRackLocalMapperExecutionTime int unsigned,
-    AvgRemoteMapperExecutionTime int unsigned,
-    AvgReducerExecutionTime int unsigned,
-    AvgShuffleExecutionTime int unsigned,
-    AvgSortExecutionTime int unsigned,
-    MapperClass varchar(80),
-    ReducerClass varchar(80),
-    PartitionerClass varchar(80),
-    CombinerClass varchar(80),
-    InputFormatClass varchar(80),
-    InputKeyClass varchar(80),
-    InputValueClass varchar(80),
-    OutputFormatClass varchar(80),
-    OutputCompressed tinyint,
-    OutputCompressionType  varchar(20),
-    OutputCompressionCodec varchar(20),
-    OutputKeyClass varchar(80),
-    OutputValueClass varchar(80),
-    MapOutputKeyClass varchar(80),
-    MapOutputValueClass varchar(80),
-    MapOutputCompressed tinyint,
-    MapOutputCompressionType  varchar(20),
-    MapOutputCompressionCodec varchar(20),
-    InputDataSizeInMB int unsigned,
-    MapOutputSizeInMB int unsigned,
-    OutputDataSizeInMB int unsigned,
-    MR_JOBCONF  text, 
-    InputDir  text, 
-    primary key(SUBMIT_TIME, HodID, MRJobID),
-    index(SUBMIT_TIME)
-);
-
-create table if not exists mr_job_counters_template (
-    timestamp timestamp default 0,
-    job_id BIGINT,
-    hdfs_bytes_read double,
-    hdfs_bytes_written double,
-    local_bytes_read double,
-    local_bytes_written double,
-    data_local_map_tasks double,
-    launched_map_tasks double,
-    launched_reduce_tasks double,
-    combine_input_records double,
-    combine_output_records double,
-    map_input_bytes double,
-    map_output_bytes double,
-    map_input_records double,
-    map_output_records double,
-    reduce_input_groups double,
-    reduce_input_records double,
-    reduce_output_records double,
-    primary key (timestamp, job_id),
-    index(timestamp)
-);
+    task_id VARCHAR(80),
+    start_time timestamp default 0,
+    finish_time timestamp default 0,
+    status varchar(10) default 0,
+    attempts tinyint default 0,
+    hdfs_bytes_read bigint default 0,
+    hdfs_bytes_written bigint default 0,
+    local_bytes_read bigint default 0,
+    local_bytes_written bigint default 0,
+    map_input_bytes bigint default 0,
+    map_output_bytes bigint default 0,
+    map_input_records bigint default 0,
+    map_output_records bigint default 0,
+    combine_input_records bigint default 0,
+    combine_output_records bigint default 0,
+    spilled_records bigint default 0,
+    reduce_input_groups bigint default 0,
+    reduce_output_groups bigint default 0,
+    reduce_input_records bigint default 0,
+    reduce_output_records bigint default 0,
+    reduce_input_bytes bigint default 0,
+    reduce_output_bytes bigint default 0,
+    primary key(task_id),
+    index(start_time, finish_time, job_id)
+) ENGINE=InnoDB;
 
 create table if not exists mr_job_timeline_template (
     timestamp timestamp default CURRENT_TIMESTAMP,
-    mr_job_id varchar(80),
+    job_id varchar(80),
     task_type varchar(20),
-    tasks double,
-    time double,
-    primary key(timestamp, mr_job_id),
-    index(timestamp)
-);
+    task_id double,
+    status varchar(20),
+    primary key(timestamp, job_id),
+    index(timestamp, job_id, task_id, task_type)
+) ENGINE=InnoDB;
 
-create table if not exists mr_finish_time_vs_size_template (
-    timestamp timestamp default CURRENT_TIMESTAMP,
-    mr_job_id varchar(80),
-    task_type varchar(20),
-    size double,
-    time double,
-    primary key(timestamp, mr_job_id),
-    index(timestamp)
-);
-    
 create table if not exists hod_machine_template (
     hodid varchar(20) not null, 
     host varchar(40) not null,
     index(HodId)
-);
+) ENGINE=InnoDB;
 
 create table if not exists HodJob_template (
     HodID varchar(20), 
@@ -510,7 +500,7 @@ create table if not exists HodJob_template (
     LogProcessStatus varchar(20),
     primary key(HodId),
     index(StartTime, EndTime)
-);
+) ENGINE=InnoDB;
 
 create table if not exists hod_job_digest_template (
     timestamp timestamp default 0,
@@ -572,34 +562,33 @@ create table if not exists hod_job_digest_template (
     swap_used_pcnt float,
     primary key(HodId, timestamp),
     index(timestamp)
-); 
+) ENGINE=InnoDB; 
 
 create table if not exists user_util_template (
     timestamp timestamp default CURRENT_TIMESTAMP,
     user VARCHAR(20),
-    node_total int,
-    cpu_unused double,
-    cpu_used double,
-    cpu_used_pcnt float,
-    disk_unused double,
-    disk_used double,
-    disk_used_pcnt float,
-    network_unused double,
-    network_used double,
-    network_used_pcnt float,
-    memory_unused double,
-    memory_used double,
-    memory_used_pcnt float,
+    node_total int default 0,
+    cpu_unused double default 0,
+    cpu_used double default 0,
+    cpu_used_pcnt float default 0,
+    disk_unused double default 0,
+    disk_used double default 0,
+    disk_used_pcnt float default 0,
+    network_unused double default 0,
+    network_used double default 0,
+    network_used_pcnt float default 0,
+    memory_unused double default 0,
+    memory_used double default 0,
+    memory_used_pcnt float default 0,
     primary key(user, timestamp),
     index(timestamp)
-);
+) ENGINE=InnoDB;
 
-create table if not exists util_template (
+create table if not exists hdfs_usage_template (
     timestamp timestamp default CURRENT_TIMESTAMP,
     user VARCHAR(20),
-    queue VARCHAR(20),
-    bytes bigint,
-    slot_hours double,
-    primary key(user, timestamp),
-    index(queue)
-);
+    bytes bigint default 0,
+    files bigint default 0,
+    primary key(timestamp, user),
+    index(timestamp)
+) ENGINE=InnoDB;
