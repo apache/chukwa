@@ -105,7 +105,7 @@
                           <exclude name="**/*core*.jar" />
                   </fileset>
                   <fileset dir="${hadoop.home.jars.dir}">   <!-- ASR -->
-                          <include name="**/*core*.jar" />
+                          <include name="**/hadoop-0.20*.jar" />
                   </fileset>
                   <path refid="contrib-classpath"/>
           </path>
@@ -324,8 +324,9 @@
 		<javac srcdir="src/java" destdir="${build.classes}" debug="${javac.debug}">
                         <compilerarg value="-Xlint"/>
 			<classpath refid="classpath" />
-                        <exclude name="org/apache/hadoop/*" />
+                        <exclude name="org/apache/hadoop/mapred/**" />
                         <include name="org/apache/hadoop/chukwa/datacollection/**" />
+                        <include name="org/apache/hadoop/metrics/spi/**" />
 		</javac>
 	</target>
 
@@ -471,16 +472,25 @@
 			<fileset dir="${build.dir}">
 				<include name="org/apache/hadoop/chukwa/conf/**/*.class"/>
 			</fileset>
-			<fileset dir="${build.dir}">
+                        <fileset dir="${build.classes}">
+                                <include name="org/apache/hadoop/metrics/**/*.class"/>
+                        </fileset>
+
+			<fileset dir="${build.classes}">
 				<include name="org/apache/hadoop/chukwa/util/**/*.class"/>
 			</fileset>
-			<fileset dir="${build.dir}">
+			<fileset dir="${build.classes}">
 				<include name="org/apache/hadoop/chukwa/inputtools/**/*.class"/>
 			</fileset>
-			<fileset dir="${build.dir}">
+			<fileset dir="${build.classes}">
+                                <exclude name="org/apache/hadoop/chukwa/datacollection/collector/**/*.class"/>
+                                <exclude name="org/apache/hadoop/chukwa/datacollection/writer/**/*.class"/>
 				<include name="org/apache/hadoop/chukwa/datacollection/**/*.class"/>
 			</fileset>
 
+                        <fileset dir="${basedir}/src/java">
+                                <include name="org/apache/hadoop/metrics/**/*.java"/>
+                        </fileset>
 			<fileset dir="${basedir}/src/java">
 				<include name="org/apache/hadoop/chukwa/client/**/*.java"/>
 			</fileset>
@@ -523,15 +533,6 @@
 
 	<target name="chukwa-hadoop_jar" depends="compile" description="Create chukwa_hadoop jar for use with getting hadoop to use chukwa">
                 <mkdir dir="${build.dir}/conf"/>
-                <copy todir="${build.dir}/conf">
-                    <fileset dir="${basedir}/conf">
-                        <include name="chukwa-hadoop-metrics-log4j.properties"/>
-                    </fileset>
-                    <filterset>
-                        <filter token="CHUKWA_LOG_DIR" value="${CHUKWA_LOG_DIR}"/>
-                    </filterset>
-                </copy>
-
 		<jar jarfile="${build.dir}/chukwa-hadoop-${chukwaVersion}-client.jar" basedir="${build.classes}" includes="org/apache/hadoop/chukwa/inputtools/log4j/**/*.class">
 			<fileset dir="${basedir}/src/java">
 				<include name="org/apache/hadoop/mapred/**/*.java"/>

@@ -12,6 +12,30 @@
     <description>Reduce count </description>
   </property>
 
+  <property>
+    <name>jvm</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopMetricsProcessor</value>
+    <description>Parser class for </description>
+  </property>
+
+  <property>
+    <name>mapred</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopMetricsProcessor</value>
+    <description>Parser class for </description>
+  </property>
+
+  <property>
+    <name>rpc</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopMetricsProcessor</value>
+    <description>Parser class for </description>
+  </property>
+
+  <property>
+    <name>dfs</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopMetricsProcessor</value>
+    <description>Parser class for </description>
+  </property>
+
   
   <property>
     <name>SysLog</name>
@@ -28,12 +52,6 @@
   <property>
     <name>HadoopLog</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopLogProcessor</value>
-    <description>Parser class for </description>
-  </property>
-
-  <property>
-    <name>HadoopMetricsProcessor</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopMetricsProcessor</value>
     <description>Parser class for </description>
   </property>
 
@@ -84,12 +102,6 @@
     <name>Torque</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Torque</value>
     <description>Parser class for Parsing qstat and tracejob</description>
-   </property>
-  
-   <property>
-    <name>YWatch</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.YWatch</value>
-    <description>Parser class for </description>
    </property>
   
    <property>

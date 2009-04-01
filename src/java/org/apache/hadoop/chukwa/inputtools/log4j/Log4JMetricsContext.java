@@ -18,44 +18,42 @@
 package org.apache.hadoop.chukwa.inputtools.log4j;
 
 
-import java.io.*;
-import java.util.Enumeration;
-import java.util.logging.LogManager;
-import java.util.Properties;
-import org.apache.hadoop.mapred.TaskLogAppender;
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.hadoop.metrics.ContextFactory;
 import org.apache.hadoop.metrics.MetricsException;
 import org.apache.hadoop.metrics.spi.AbstractMetricsContext;
 import org.apache.hadoop.metrics.spi.OutputRecord;
-import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Log4JMetricsContext extends AbstractMetricsContext {
-
-  Logger out = null; // Logger.getLogger(Log4JMetricsContext.class);
+  Logger log = Logger.getLogger(Log4JMetricsContext.class);
+  Logger out = null; 
   static final Object lock = new Object();
 
   /* Configuration attribute names */
-  // protected static final String FILE_NAME_PROPERTY = "fileName";
+  protected static final String  OUTPUT_DIR_PROPERTY = "directory";
   protected static final String PERIOD_PROPERTY = "period";
-  private static final String metricsLogDir = System
-      .getProperty("hadoop.log.dir");
-  private static final String user = System.getProperty("user.name");
+  protected static final String ADD_UUID_PROPERTY = "uuid";
+  
 
+  protected static final String user = System.getProperty("user.name");
+  
+  protected String outputDir = null;
+  protected int period = 0;
+  protected boolean needUUID = false;
+  
   /** Creates a new instance of FileContext */
   public Log4JMetricsContext() {
   }
 
   public void init(String contextName, ContextFactory factory) {
     super.init(contextName, factory);
-    /*
-     * String fileName = getAttribute(FILE_NAME_PROPERTY); if (fileName != null)
-     * { file = new File(fileName); }
-     */
-
+   
     String periodStr = getAttribute(PERIOD_PROPERTY);
     if (periodStr != null) {
       int period = 0;
@@ -67,6 +65,25 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
         throw new MetricsException("Invalid period: " + periodStr);
       }
       setPeriod(period);
+      this.period = period;
+      log.info("Log4JMetricsContext." + contextName + ".period=" + period);
+    }
+    
+    outputDir = getAttribute(OUTPUT_DIR_PROPERTY);
+    if (outputDir == null) {
+      log.warn("Log4JMetricsContext." + contextName + "."+ OUTPUT_DIR_PROPERTY + " is null");
+      throw new MetricsException("Invalid output directory: " + outputDir);
+    }
+    File fOutputDir = new File(outputDir);
+    if (!fOutputDir.exists()) {
+      fOutputDir.mkdirs();
+    }
+    log.info("Log4JMetricsContext." + contextName + "." + OUTPUT_DIR_PROPERTY +"=" + outputDir);
+    
+    String uuid = getAttribute(ADD_UUID_PROPERTY);
+    if (uuid != null && uuid.equalsIgnoreCase("true")) {
+      needUUID = true;
+      log.info("Log4JMetricsContext." + contextName + "." + ADD_UUID_PROPERTY +" has been activated."); 
     }
   }
 
@@ -76,56 +93,42 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
     if (out == null) {
       synchronized (lock) {
         if (out == null) {
-          String logName = null;
-          java.util.Properties properties = new java.util.Properties();
-          properties.load(this.getClass().getClassLoader().getResourceAsStream(
-              "chukwa-hadoop-metrics-log4j.properties"));
-          Logger logger = Logger.getLogger(Log4JMetricsContext.class);
-          logger.setAdditivity(false);
-          PatternLayout layout = new PatternLayout(properties
-              .getProperty("log4j.appender.chukwa." + contextName
-                  + ".layout.ConversionPattern"));
+          PatternLayout layout = new PatternLayout("%d{ISO8601} %p %c: %m%n");
+          
           org.apache.hadoop.chukwa.inputtools.log4j.ChukwaDailyRollingFileAppender appender = new org.apache.hadoop.chukwa.inputtools.log4j.ChukwaDailyRollingFileAppender();
-          appender.setName("chukwa." + contextName);
+          appender.setName("chukwa.metrics." + contextName);
           appender.setLayout(layout);
           appender.setAppend(true);
-          if (properties.getProperty("log4j.appender.chukwa." + contextName
-              + ".Dir") != null) {
-            logName = properties.getProperty("log4j.appender.chukwa."
-                + contextName + ".Dir")
-                + File.separator
-                + "chukwa-"
-                + user
-                + "-"
-                + contextName
-                + "-"
-                + System.currentTimeMillis() + ".log";
-
-            appender.setFile(logName);
+          if (needUUID) {
+            appender.setFile(outputDir + File.separator + "chukwa-" + user
+                + "-" + contextName + "-" + System.currentTimeMillis()
+                + ".log");
           } else {
-            logName = metricsLogDir+File.separator+"chukwa-"+user+"-"
-                +contextName + "-" + System.currentTimeMillis()+ ".log";
-            appender.setFile(logName);
+            appender.setFile(outputDir + File.separator + "chukwa-" + user
+                + "-" + contextName 
+                + ".log");
           }
-          appender.activateOptions();
-          appender.setRecordType(properties
-              .getProperty("log4j.appender.chukwa." + contextName
-                  + ".recordType"));
-          appender.setChukwaClientHostname(properties
-              .getProperty("log4j.appender.chukwa." + contextName
-                  + ".chukwaClientHostname"));
-          appender.setChukwaClientPortNum(Integer.parseInt(properties
-              .getProperty("log4j.appender.chukwa." + contextName
-                  + ".chukwaClientPortNum")));
-          appender.setDatePattern(properties
-              .getProperty("log4j.appender.chukwa." + contextName
-                  + ".DatePattern"));
+
+          try {
+            File fooLogFile = new File(appender.getFile());
+            if (!fooLogFile.exists()) {
+              fooLogFile.createNewFile();
+            }
+            fooLogFile.setReadable(true, false);
+            fooLogFile.setWritable(true, false);
+            fooLogFile = null;
+          }catch (Exception e) {
+            log.warn("Exception while trying to set file permission," , e);
+          }
+          
+          appender.setRecordType( contextName);
+          appender.setDatePattern(".yyyy-MM-dd");
+          
+          Logger logger = Logger.getLogger("chukwa.metrics." + contextName);
+          logger.setAdditivity(false);
           logger.addAppender(appender);
+          appender.activateOptions();
           out = logger;
-          // FIXME: Hack to make the log file readable by chukwa user.
-          if (System.getProperty("os.name").intern() == "Linux".intern()) {
-            Runtime.getRuntime().exec("chmod 666 " + logName);
-          }
         }
       }
     }
@@ -135,6 +138,7 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
       json.put("contextName", contextName);
       json.put("recordName", recordName);
       json.put("chukwa_timestamp", System.currentTimeMillis());
+      json.put("period", period);
       for (String tagName : outRec.getTagNames()) {
         json.put(tagName, outRec.getTag(tagName));
       }
@@ -142,8 +146,7 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
         json.put(metricName, outRec.getMetric(metricName));
       }
     } catch (JSONException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.warn("exception in Log4jMetricsContext:" , e);
     }
     out.info(json.toString());
   }

@@ -3,6 +3,9 @@ Trunk (unreleased changes)
   INCOMPATIBLE CHANGES
 
   NEW FEATURES
+    
+    CHUKWA-12.  Add instrumention Api for Chukwa components.  (Jerome Boulon via asrabkin)
+
     CHUKWA-14.  Added permalink support to HICC GUI. (Eric Yang)
 
     CHUKWA-45.  Added docs to folder structure. (Corinne Chandel via asrabkin)

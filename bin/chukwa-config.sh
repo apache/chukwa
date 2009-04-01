@@ -100,6 +100,9 @@ COMMON=`ls ${CHUKWA_HOME}/lib/*.jar ${CHUKWA_HOME}/hadoopjars/commons*.jar`
 export COMMON=`echo ${COMMON} | sed 'y/ /:/'`
 export CHUKWA_CORE=${CHUKWA_HOME}/chukwa-core-${CHUKWA_VERSION}.jar
 export CHUKWA_AGENT=${CHUKWA_HOME}/chukwa-agent-${CHUKWA_VERSION}.jar
+export HADOOP_20_JAR=${CHUKWA_HOME}/hadoopjars/hadoop-0.20-dev-core.jar
+export HADOOP_18_JAR=${CHUKWA_HOME}/hadoopjars/hadoop-0.18.0-core.jar
+
 export CURRENT_DATE=`date +%Y%m%d%H%M`
 
 if [ -z ${HADOOP_JAR} ]; then

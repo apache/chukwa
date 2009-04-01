@@ -21,6 +21,7 @@ package org.apache.hadoop.chukwa.datacollection.agent;
 
 import org.apache.hadoop.chukwa.datacollection.DataFactory;
 import org.apache.hadoop.chukwa.datacollection.adaptor.*;
+import org.apache.hadoop.chukwa.datacollection.agent.metrics.AgentMetrics;
 import org.apache.hadoop.chukwa.datacollection.connector.*;
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
 import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
@@ -41,7 +42,7 @@ import java.io.*;
  */
 public class ChukwaAgent {
   // boolean WRITE_CHECKPOINTS = true;
-
+  static final AgentMetrics agentMetrics = new AgentMetrics("ChukwaAgent", "chukwaAgent");;
   static Logger log = Logger.getLogger(ChukwaAgent.class);
   static ChukwaAgent agent = null;
   private static PidFile pFile = null;
@@ -308,6 +309,8 @@ public class ChukwaAgent {
           adaptor.start(adaptorID, dataType, params, offset, DataFactory
               .getInstance().getEventQueue());
           log.info("started a new adaptor, id = " + adaptorID);
+          ChukwaAgent.agentMetrics.adaptorCount.set(adaptorsByNumber.size());
+          ChukwaAgent.agentMetrics.addedAdaptor.inc();
           return adaptorID;
 
         } catch (Exception e) {
@@ -483,7 +486,9 @@ public class ChukwaAgent {
     } else {
       adaptorPositions.remove(toStop);
     }
-
+    ChukwaAgent.agentMetrics.adaptorCount.set(adaptorsByNumber.size());
+    ChukwaAgent.agentMetrics.removedAdaptor.inc();
+    
     try {
       if (gracefully) {
         offset = toStop.shutdown();

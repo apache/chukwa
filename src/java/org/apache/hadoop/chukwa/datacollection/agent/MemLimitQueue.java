@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Queue;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.ChunkQueue;
+import org.apache.hadoop.chukwa.datacollection.agent.metrics.ChunkQueueMetrics;
 import org.apache.log4j.Logger;
 
 /**
@@ -35,7 +36,7 @@ import org.apache.log4j.Logger;
  */
 public class MemLimitQueue implements ChunkQueue {
   static Logger log = Logger.getLogger(WaitingQueue.class);
-
+  static final ChunkQueueMetrics metrics = new ChunkQueueMetrics("ChukwaAgent", "chunkQueue");;
   private Queue<Chunk> queue = new LinkedList<Chunk>();
   private long dataSize = 0;
   private final long MAX_MEM_USAGE;
@@ -52,13 +53,18 @@ public class MemLimitQueue implements ChunkQueue {
     synchronized (this) {
       while (chunk.getData().length + dataSize > MAX_MEM_USAGE) {
         try {
+          metrics.fullQueue.set(1);
           this.wait();
           log.info("MemLimitQueue is full [" + dataSize + "]");
         } catch (InterruptedException e) {
         }
       }
+      metrics.fullQueue.set(0);
       dataSize += chunk.getData().length;
       queue.add(chunk);
+      metrics.addedChunk.inc();
+      metrics.queueSize.set(queue.size());
+      metrics.dataSize.set(dataSize);
       this.notifyAll();
     }
 
@@ -79,11 +85,14 @@ public class MemLimitQueue implements ChunkQueue {
       int size = 0;
       while (!queue.isEmpty() && (size < maxSize)) {
         Chunk e = this.queue.remove();
+        metrics.removedChunk.inc();
         int chunkSize = e.getData().length;
         size += chunkSize;
         dataSize -= chunkSize;
+        metrics.dataSize.set(dataSize);
         events.add(e);
       }
+      metrics.queueSize.set(queue.size());
       this.notifyAll();
     }
 

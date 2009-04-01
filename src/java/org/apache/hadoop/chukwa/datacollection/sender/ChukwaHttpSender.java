@@ -40,6 +40,7 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
+import org.apache.hadoop.chukwa.datacollection.sender.metrics.HttpSenderMetrics;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.DataOutputBuffer;
 import org.apache.log4j.Logger;
@@ -61,6 +62,8 @@ public class ChukwaHttpSender implements ChukwaSender {
   final int WAIT_FOR_COLLECTOR_REBOOT;
   // FIXME: this should really correspond to the timer in RetryListOfCollectors
 
+  static final HttpSenderMetrics metrics = new HttpSenderMetrics("ChukwaAgent", "chukwaHttpSender");
+  
   static Logger log = Logger.getLogger(ChukwaHttpSender.class);
   static HttpClient client = null;
   static MultiThreadedHttpConnectionManager connectionManager = null;
@@ -201,10 +204,13 @@ public class ChukwaHttpSender implements ChukwaSender {
         return commitResults;
       } catch (Throwable e) {
         log.error("Http post exception", e);
+        ChukwaHttpSender.metrics.httpThrowable.inc();
         log
             .info("Checking list of collectors to see if another collector has been specified for rollover");
         if (collectors.hasNext()) {
+          ChukwaHttpSender.metrics.collectorRollover.inc();
           currCollector = collectors.next();
+
           log
               .info("Found a new collector to roll over to, retrying HTTP Post to collector "
                   + currCollector);
@@ -255,11 +261,18 @@ public class ChukwaHttpSender implements ChukwaSender {
     log.info(">>>>>> HTTP post to " + dest + " length = "
         + data.getContentLength());
     // Send POST request
-
+    ChukwaHttpSender.metrics.httpPost.inc();
+    
     // client.setTimeout(15*1000);
     int statusCode = client.executeMethod(method);
 
     if (statusCode != HttpStatus.SC_OK) {
+      ChukwaHttpSender.metrics.httpException.inc();
+      
+      if (statusCode == HttpStatus.SC_REQUEST_TIMEOUT ) {
+        ChukwaHttpSender.metrics.httpTimeOutException.inc();
+      }
+      
       log.error(">>>>>> HTTP post response statusCode: " + statusCode
           + ", statusLine: " + method.getStatusLine());
       // do something aggressive here
@@ -283,13 +296,5 @@ public class ChukwaHttpSender implements ChukwaSender {
         log.debug("response: " + line);
       }
     }
-  }
-
-  public static void main(String[] argv) throws InterruptedException {
-    // HttpConnectorClient cc = new HttpConnectorClient();
-    // do something smarter than to hide record headaches, like force them to
-    // create and add records to a chunk
-    // cc.addChunk("test-source", "test-streamName", "test-application",
-    // "test-dataType", new byte[]{1,2,3,4,5});
   }
 }
