@@ -31,12 +31,11 @@ import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.fs.Path;
 
 public class ChukwaJobTrackerInstrumentation extends
-    org.apache.hadoop.mapred.JobTrackerInstrumentation {
+    org.apache.hadoop.mapred.JobTrackerMetricsInst {
 
   protected final JobTracker tracker;
   private static ChukwaAgentController chukwaClient = null;
   private static Log log = LogFactory.getLog(JobTrackerInstrumentation.class);
-  private static HashMap<JobID, Long> jobConfs = null;
   private static HashMap<JobID, Long> jobHistories = null;
 
   public ChukwaJobTrackerInstrumentation(JobTracker jt, JobConf conf) {
@@ -45,31 +44,15 @@ public class ChukwaJobTrackerInstrumentation extends
     if (chukwaClient == null) {
       chukwaClient = new ChukwaAgentController();
     }
-    if (jobConfs == null) {
-      jobConfs = new HashMap<JobID, Long>();
-    }
     if (jobHistories == null) {
       jobHistories = new HashMap<JobID, Long>();
     }
   }
 
-  public void launchMap(TaskAttemptID taskAttemptID) {
 
-  }
-
-  public void completeMap(TaskAttemptID taskAttemptID) {
-
-  }
-
-  public void launchReduce(TaskAttemptID taskAttemptID) {
-
-  }
-
-  public void completeReduce(TaskAttemptID taskAttemptID) {
-
-  }
 
   public void submitJob(JobConf conf, JobID id) {
+    super.submitJob(conf,id);
     String chukwaJobConf = tracker.getLocalJobFilePath(id);
     try {
       String jobFileName = JobHistory.JobInfo.getJobHistoryFileName(conf, id);
@@ -78,9 +61,8 @@ public class ChukwaJobTrackerInstrumentation extends
       String jobConfPath = JobHistory.JobInfo.getLocalJobFilePath(id);
       long adaptorID = chukwaClient
           .add(
-              "org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped",
+              "org.apache.hadoop.chukwa.datacollection.adaptor.FileAdaptor",
               "JobConf", "0 " + jobConfPath, 0);
-      jobConfs.put(id, adaptorID);
       if (jobHistoryPath.toString().matches("^hdfs://")) {
         adaptorID = chukwaClient.add(
             "org.apache.hadoop.chukwa.datacollection.adaptor.HDFSAdaptor",
@@ -97,13 +79,11 @@ public class ChukwaJobTrackerInstrumentation extends
     }
   }
 
-  public void completeJob(JobConf conf, JobID id) {
+  public void finalizeJob(JobConf conf, JobID id) {
+    super.finalizeJob(conf,id);
     try {
       if (jobHistories.containsKey(id)) {
         chukwaClient.remove(jobHistories.get(id));
-      }
-      if (jobConfs.containsKey(id)) {
-        chukwaClient.remove(jobConfs.get(id));
       }
     } catch (Throwable e) {
       log.warn("could not remove adaptor for this job: " + id.toString(), e);
