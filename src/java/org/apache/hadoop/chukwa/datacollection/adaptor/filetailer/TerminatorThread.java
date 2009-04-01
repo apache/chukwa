@@ -6,7 +6,7 @@ import org.apache.hadoop.chukwa.datacollection.adaptor.FileAdaptor;
 import org.apache.log4j.Logger;
 
 public class TerminatorThread extends Thread {
-  private static Logger log = Logger.getLogger(FileAdaptor.class);
+  private static Logger log = Logger.getLogger(TerminatorThread.class);
 
   private FileTailingAdaptor adaptor = null;
   private ChunkReceiver eq = null;
