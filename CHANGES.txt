@@ -3,6 +3,8 @@ Trunk (unreleased changes)
   INCOMPATIBLE CHANGES
 
   NEW FEATURES
+
+    CHUKWA-62.  Add script to start tailing files.  (asrabkin)
     
     CHUKWA-12.  Add instrumention Api for Chukwa components.  (Jerome Boulon via asrabkin)
 
