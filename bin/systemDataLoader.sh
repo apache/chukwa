@@ -78,6 +78,23 @@ function status {
   fi
 
   EXISTS=0
+  pidFile="${CHUKWA_PID_DIR}/Ps-data-loader.pid"
+  if [ -f $pidFile ]; then
+    pid=`head ${pidFile}`
+    ChildPIDRunningStatus=`${JPS} | grep ${pid} | grep Exec | grep -v grep | wc -l`
+    if [ $ChildPIDRunningStatus -ge 1 ]; then
+      EXISTS=1
+    fi
+  fi
+
+  if [ ${EXISTS} -lt 1 ]; then
+    echo "ps data loader is stopped."
+    RESULT=1
+  else
+    echo "ps data loader is running."
+  fi
+
+  EXISTS=0
   pidFile="${CHUKWA_PID_DIR}/Df-data-loader.pid"
   if [ -f $pidFile ]; then
     pid=`head ${pidFile}`
@@ -134,6 +151,9 @@ function shutdown {
   fi
   if [ -f ${CHUKWA_PID_DIR}/Top-data-loader.pid ]; then
     kill -9 `cat ${CHUKWA_PID_DIR}/Top-data-loader.pid`
+  fi
+  if [ -f ${CHUKWA_PID_DIR}/Ps-data-loader.pid ]; then
+    kill -9 `cat ${CHUKWA_PID_DIR}/Ps-data-loader.pid`
   fi
   if [ -f ${CHUKWA_PID_DIR}/Df-data-loader.pid ]; then
     kill -9 `cat ${CHUKWA_PID_DIR}/Df-data-loader.pid`
@@ -210,6 +230,20 @@ fi
 
 if [ ${EXISTS} -lt 1 ]; then
   ${JAVA_HOME}/bin/java $JVM_OPTS -DPERIOD=60 -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DRECORD_TYPE=Top -Dlog4j.configuration=system-data-loader.properties -classpath ${CLASSPATH}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${TOOLS}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec top -b -n 1 -c &
+fi
+
+EXISTS=0
+pidFile="${CHUKWA_PID_DIR}/Ps-data-loader.pid"
+if [ -f $pidFile ]; then
+  pid=`head ${pidFile}`
+  ChildPIDRunningStatus=`${JPS} | grep ${pid} | grep Exec | grep -v grep | wc -l`
+  if [ $ChildPIDRunningStatus -ge 1 ]; then
+    EXISTS=1
+  fi
+fi
+
+if [ ${EXISTS} -lt 1 ]; then
+  ${JAVA_HOME}/bin/java $JVM_OPTS -DPERIOD=60 -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DRECORD_TYPE=Ps -Dlog4j.configuration=system-data-loader.properties -classpath ${CLASSPATH}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${TOOLS}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec ps axo pid,user,vsize,size,pcpu,pmem,time,start,cmd &
 fi
 
 EXISTS=0

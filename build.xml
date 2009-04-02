@@ -874,6 +874,7 @@ mkdir -p %{buildroot}/service/chukwa-netstat
 mkdir -p %{buildroot}/service/chukwa-pbsnodes
 mkdir -p %{buildroot}/service/chukwa-sar
 mkdir -p %{buildroot}/service/chukwa-top
+mkdir -p %{buildroot}/service/chukwa-ps
 mkdir -p %{buildroot}/service/chukwa-torque
 cat %{buildroot}%{_prefix}/tools/init.d/chukwa-data-processors | \
 sed 's:- chukwa -c:- %{uid} -c:' | \
@@ -895,6 +896,8 @@ cat %{buildroot}%{_prefix}/tools/service/chukwa-sar/run | sed 's:/usr/local/chuk
 sed 's:CHUKWA_CONF_DIR=/usr/local/chukwa/conf:CHUKWA_CONF_DIR=%{_conf_dir}:' > %{buildroot}/service/chukwa-sar/run
 cat %{buildroot}%{_prefix}/tools/service/chukwa-top/run | sed 's:/usr/local/chukwa:%{_prefix}:' | \
 sed 's:CHUKWA_CONF_DIR=/usr/local/chukwa/conf:CHUKWA_CONF_DIR=%{_conf_dir}:' > %{buildroot}/service/chukwa-top/run
+cat %{buildroot}%{_prefix}/tools/service/chukwa-ps/run | sed 's:/usr/local/chukwa:%{_prefix}:' | \
+sed 's:CHUKWA_CONF_DIR=/usr/local/chukwa/conf:CHUKWA_CONF_DIR=%{_conf_dir}:' > %{buildroot}/service/chukwa-ps/run
 #cat %{buildroot}%{_prefix}/tools/service/chukwa-collector/run | sed 's:/usr/local/chukwa:%{_prefix}:' | \
 #sed 's:CHUKWA_CONF_DIR=/usr/local/chukwa/conf:CHUKWA_CONF_DIR=%{_conf_dir}:' > %{buildroot}/service/chukwa-collector/run
 #cat %{buildroot}%{_prefix}/tools/service/chukwa-pbsnodes/run | sed 's:/usr/local/chukwa:%{_prefix}:' | \
@@ -929,6 +932,7 @@ echo
 /service/chukwa-netstat/run
 /service/chukwa-sar/run
 /service/chukwa-top/run
+/service/chukwa-ps/run
                 </echo>
 		<rpm specFile="chukwa.spec" topDir="${build.dir}" cleanBuildDir="true" failOnError="true"/>
         </target>

@@ -35,6 +35,9 @@ function clean_up {
   if [ "X$PARM" == "Xtop" ]; then
     kill -9 `cat ${CHUKWA_PID_DIR}/Top-data-loader.pid`
   fi
+  if [ "X$PARM" == "Xps" ]; then
+    kill -9 `cat ${CHUKWA_PID_DIR}/Ps-data-loader.pid`
+  fi
   if [ "X$PARM" == "Xdf" ]; then
     kill -9 `cat ${CHUKWA_PID_DIR}/Df-data-loader.pid`
   fi
@@ -72,6 +75,10 @@ fi
 
 if [ "X$PARM" == "Xtop" ]; then
   ${JAVA_HOME}/bin/java $JVM_OPTS -DPERIOD=60 -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DRECORD_TYPE=Top -Dlog4j.configuration=system-data-loader.properties -classpath ${CLASSPATH}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${TOOLS}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec top -b -n 1 -c &
+fi
+
+if [ "X$PARM" == "Xps" ]; then
+  ${JAVA_HOME}/bin/java $JVM_OPTS -DPERIOD=60 -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DRECORD_TYPE=Ps -Dlog4j.configuration=system-data-loader.properties -classpath ${CLASSPATH}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${TOOLS}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec ps axo pid,user,vsize,size,pcpu,pmem,time,start,cmd &
 fi
 
 if [ "X$PARM" == "Xdf" ]; then

@@ -110,6 +110,17 @@ fi
 #  fi
 #fi
 
+pidFile=$CHUKWA_PID_DIR/Ps-data-loader.pid
+if [ -f $pidFile ]; then
+  pid=`head ${pidFile}`
+  ChildPIDRunningStatus=`${JPS} | grep Exec | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
+  if [ $ChildPIDRunningStatus -lt 1 ]; then
+      HOSTNAME=`hostname`
+      echo "${HOSTNAME}: Ps-data-loader pid file exists, but process missing.  Restarting systemDataLoader.sh."
+      "$bin/chukwa-daemon.sh" --config $CHUKWA_CONF_DIR start systemDataLoader.sh &
+  fi
+fi
+
 # monitor torque data loader
 pidFile=$CHUKWA_PID_DIR/TorqueDataLoader.pid
 if [ -f $pidFile ]; then
@@ -152,5 +163,7 @@ if [ "X${tenmin}" == "X0" ]; then
     ${CHUKWA_HOME}/tools/expire.sh 3 ${CHUKWA_LOG_DIR}/metrics nowait
   fi
 fi
+
+
 
 
