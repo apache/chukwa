@@ -422,7 +422,7 @@ public class TorqueInfoProcessor {
 
     Iterator<String> hodIdsIt = hodIds.iterator();
     while (hodIdsIt.hasNext()) {
-      String hodId = (String) hodIdsIt.next();
+      String hodId = hodIdsIt.next();
       TreeMap<String, String> aJobData = currentHodJobs.get(hodId);
       String status = aJobData.get("status");
       String process = aJobData.get("process");

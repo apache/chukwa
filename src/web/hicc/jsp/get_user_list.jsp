@@ -34,7 +34,7 @@
        ClusterConfig cc = new ClusterConfig();
        String jdbc = cc.getURL(cluster);
        try {
-           conn = DriverManager.getConnection(jdbc);
+           conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc);
            stmt = conn.createStatement();
            String query = "select distinct UserID from HodJob order by UserID";
            if (stmt.execute(query)) {

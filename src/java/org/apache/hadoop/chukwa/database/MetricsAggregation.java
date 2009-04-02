@@ -40,8 +40,7 @@ public class MetricsAggregation {
     try {
       // The newInstance() call is a work around for some
       // broken Java implementations
-      String jdbcDriver = System.getenv("JDBC_DRIVER");
-      Class.forName(jdbcDriver).newInstance();
+      org.apache.hadoop.chukwa.util.DriverManagerUtil.loadDriver().newInstance();
       log.info("Initialized JDBC URL: " + jdbc_url);
     } catch (Exception ex) {
       // handle the error
@@ -49,7 +48,7 @@ public class MetricsAggregation {
       log.error(ex, ex);
     }
     try {
-      conn = DriverManager.getConnection(jdbc_url);
+      conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc_url);
     } catch (SQLException ex) {
       ex.printStackTrace();
       log.error(ex, ex);

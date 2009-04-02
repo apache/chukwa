@@ -52,7 +52,7 @@
        ClusterConfig cc = new ClusterConfig();
        String jdbc = cc.getURL(cluster);
        try {
-           conn = DriverManager.getConnection(jdbc);
+           conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc);
            stmt = conn.createStatement();
            String query = "";
            String HodID = (String)session.getAttribute("HodID");

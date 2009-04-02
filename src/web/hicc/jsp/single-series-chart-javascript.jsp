@@ -105,8 +105,7 @@ No time range specified.  Select a time range through widget preference, or use 
        }
        String mrtimeclause = "";
        try {
-           String jdbcDriver = System.getenv("JDBC_DRIVER");
-           Class.forName(jdbcDriver).newInstance();
+           org.apache.hadoop.chukwa.util.DriverManagerUtil.loadDriver().newInstance();
        } catch (Exception ex) {
        }
        Connection conn = null;

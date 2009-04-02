@@ -116,15 +116,14 @@ public class MetricDataLoader {
     try {
       // The newInstance() call is a work around for some
       // broken Java implementations
-      String jdbcDriver = System.getenv("JDBC_DRIVER");
-      Class.forName(jdbcDriver).newInstance();
+      org.apache.hadoop.chukwa.util.DriverManagerUtil.loadDriver().newInstance();
       log.debug("Initialized JDBC URL: " + jdbc_url);
     } catch (Exception ex) {
       // handle the error
       log.error(ex, ex);
     }
     try {
-      conn = DriverManager.getConnection(jdbc_url);
+      conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc_url);
       HashMap<String, String> dbNames = mdlConfig.startWith("report.db.name.");
       Iterator<String> ki = dbNames.keySet().iterator();
       dbSchema = new HashMap<String, HashMap<String, Integer>>();

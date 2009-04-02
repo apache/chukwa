@@ -53,7 +53,7 @@
        SimpleDateFormat format2 = new SimpleDateFormat("kk");
        SimpleDateFormat format3 = new SimpleDateFormat("mm");
        try {
-           conn = DriverManager.getConnection(jdbc);
+           conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc);
            stmt = conn.createStatement();
            DatabaseConfig dbc = new DatabaseConfig();
            String[] tables = dbc.findTableName("HodJob",time.getStartTime(),time.getEndTime());

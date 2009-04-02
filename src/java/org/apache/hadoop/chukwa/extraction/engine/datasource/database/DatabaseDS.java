@@ -73,7 +73,7 @@ public class DatabaseDS implements DataSource {
       // ClusterConfig cc = new ClusterConfig();
       String jdbc = ""; // cc.getURL(cluster);
 
-      Connection conn = DriverManager.getConnection(jdbc);
+      Connection conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc);
 
       stmt = conn.createStatement();
       String query = "";

@@ -47,8 +47,7 @@ public class DatasetMapper {
     try {
       // The newInstance() call is a work around for some
       // broken Java implementations
-      String jdbcDriver = System.getenv("JDBC_DRIVER");
-      Class.forName(jdbcDriver).newInstance();
+      org.apache.hadoop.chukwa.util.DriverManagerUtil.loadDriver().newInstance();
     } catch (Exception ex) {
       // handle the error
     }
@@ -61,7 +60,7 @@ public class DatasetMapper {
     double max = 0.0;
     int labelsCount = 0;
     try {
-      conn = DriverManager.getConnection(jdbc);
+      conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc);
       stmt = conn.createStatement();
       // rs = stmt.executeQuery(query);
       if (stmt.execute(query)) {
