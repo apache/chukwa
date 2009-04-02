@@ -103,9 +103,7 @@ public class Iostat extends AbstractProcessor {
                 try {
                   // Filter out overflow values for older linux systems
                   long x=Long.parseLong(data[j]);
-                  if(x>1000000000L) {
-                    record.add(headers[j],"0");
-                  } else {
+                  if(x<100000000000L) {
                     record.add(headers[j],data[j]);
                   }
                 } catch(NumberFormatException ex) {
