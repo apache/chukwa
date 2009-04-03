@@ -174,6 +174,12 @@
   <value>user_util</value>
 </property>
 
+<property>
+  <name>report.db.name.clienttrace</name>
+  <value>ClientTrace</value>
+  <description></description>
+</property>
+
 <!-- System Metrics Config -->
 <property>
   <name>report.db.primary.key.systemmetrics</name>
@@ -497,6 +503,57 @@
 <property>
   <name>metric.df.csource</name>
   <value>host</value>
+</property>
+
+<!-- clienttrace -->
+<property>
+  <name>report.db.primary.key.clienttrace</name>
+  <value>timestamp</value>
+</property>
+
+<property>
+  <name>metric.clienttrace.local_hdfs_read</name>
+  <value>local_hdfs_read</value>
+</property>
+
+<property>
+  <name>metric.clienttrace.intra_rack_hdfs_read</name>
+  <value>intra_rack_hdfs_read</value>
+</property>
+
+<property>
+  <name>metric.clienttrace.inter_rack_hdfs_read</name>
+  <value>inter_rack_hdfs_read</value>
+</property>
+
+<property>
+  <name>metric.clienttrace.local_hdfs_write</name>
+  <value>local_hdfs_write</value>
+</property>
+
+<property>
+  <name>metric.clienttrace.intra_rack_hdfs_write</name>
+  <value>intra_rack_hdfs_write</value>
+</property>
+
+<property>
+  <name>metric.clienttrace.inter_rack_hdfs_write</name>
+  <value>inter_rack_hdfs_write</value>
+</property>
+
+<property>
+  <name>metric.clienttrace.local_mapred_shuffle</name>
+  <value>local_mapred_shuffle</value>
+</property>
+
+<property>
+  <name>metric.clienttrace.intra_rack_mapred_shuffle</name>
+  <value>intra_rack_mapred_shuffle</value>
+</property>
+
+<property>
+  <name>metric.clienttrace.inter_rack_mapred_shuffle</name>
+  <value>inter_rack_mapred_shuffle</value>
 </property>
 
 <!-- dfs name node metrics -->
@@ -1768,6 +1825,11 @@
   
 <property>
   <name>consolidator.table.hdfs_usage</name>
+  <value>5,30,180,720</value>
+</property>
+
+<property>
+  <name>consolidator.table.ClientTrace</name>
   <value>5,30,180,720</value>
 </property>
 

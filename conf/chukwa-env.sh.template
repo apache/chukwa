@@ -47,6 +47,9 @@ export chukwaRecordsRepository="/chukwa/repos/"
 # The location of chukwa logs, defaults to CHUKWA_HOME/logs
 #export CHUKWA_LOG_DIR="/tmp/chukwa-log-dir"
 
+# The location to store chukwa data, defaults to CHUKWA_HOME/data
+#export CHUKWA_DATA_DIR="${CHUKWA_HOME}/data"
+
 # The location of torque pbsnodes command
 #export nodeActivityCmde="
 

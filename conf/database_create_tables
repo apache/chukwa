@@ -592,3 +592,29 @@ create table if not exists hdfs_usage_template (
     primary key(timestamp, user),
     index(timestamp)
 ) ENGINE=InnoDB;
+
+create table if not exists util_template (
+    timestamp timestamp default CURRENT_TIMESTAMP,
+    user VARCHAR(20),
+    queue VARCHAR(20),
+    bytes bigint,
+    slot_hours double,
+    primary key(user, timestamp),
+    index(queue)
+) ENGINE=InnoDB;
+
+create table if not exists ClientTrace_template (
+    Timestamp timestamp default 0,
+    local_hdfs_read double,
+    intra_rack_hdfs_read double,
+    inter_rack_hdfs_read double,
+    local_hdfs_write double,
+    intra_rack_hdfs_write double,
+    inter_rack_hdfs_write double,
+    local_mapred_shuffle double,
+    intra_rack_mapred_shuffle double,
+    inter_rack_mapred_shuffle double,
+    primary key(timestamp),
+     index(timestamp)
+) ENGINE=InnoDB;
+

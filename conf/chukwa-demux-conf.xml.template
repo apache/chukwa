@@ -117,6 +117,12 @@
    </property>
     
    <property>
+     <name>ClientTrace</name>
+     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.ClientTraceProcessor</value>
+     <description>Parser class for TaskTracker and DataNode clienttrace data</description>
+   </property>
+ 
+   <property>
     <name>HDFSUsage</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.JPluginMapper</value>
     <description></description>
