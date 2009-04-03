@@ -4,6 +4,15 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-17. Collect PS output every 10 minutes and parse into key/value pairs sequence file. (Cheng Zhang via Eric Yang)
+
+    CHUKWA-55. Aggregate data from HDFS bytes usage, and Mapreduce Job slot time to compute user usage of the cluster. (Eric Yang)
+
+    CHUKWA-50.  Added parser for extract Job History and Job Conf into key value pairs, 
+                and database loader dictionary file. (Contribute by Cheng Zhang via Eric Yang)
+
+    CHUKWA-69.  Calculate trapezoid area for a given series of data.  (Contribute by Cheng Zhang via Eric Yang)
+
     CHUKWA-62.  Add script to start tailing files.  (asrabkin)
     
     CHUKWA-12.  Add instrumention Api for Chukwa components.  (Jerome Boulon via asrabkin)
@@ -20,6 +29,10 @@ Trunk (unreleased changes)
     HADOOP-4989. Added capability to add scatter chart. (Eric Yang)
 
   IMPROVEMENTS
+
+    CHUKWA-29.  Added TaskTracker and DataNode client trace log parser and database loader.  (Chris Douglas via Eric Yang)
+
+    CHUKWA-86. Improved JDBC compatibility layer (Cheng Zhang via Eric Yang)
 
     CHUKWA-64. Changed version number to 0.1.2, and release number to alpha. (Eric Yang)
 
@@ -53,6 +66,23 @@ Trunk (unreleased changes)
   OPTIMIZATIONS
 
   BUG FIXES
+
+    CHUKWA-1. Remove lzo job configuration from Chukwa data processors. (Contribute by Jerome Boulon via Eric Yang)
+
+    CHUKWA-40. Check for null pointer exception before unregister adaptor. (Contribute By Jerome Boulon via Eric Yang)
+
+    CHUKWA-75. Filter out iostat values that is greater than 1+e10.
+
+    CHUKWA-47. ChukwaJobTrackerInstrumentation class extends JobTrackerMetricsInst and added 
+               finalizedJob method for stop streaming job history log file. (Jerome Boulon via Eric Yang)
+
+    CHUKWA-66. Corrected TerminatorThread logger class name. (Eric Yang)
+
+    CHUKWA-65. Redirect metrics log file to CHUKWA_LOG_DIR, and setup read/writable permission on the metrics
+               log files. (Eric Yang)
+
+
+    CHUKWA-73. Added Socket Timeout 60 seconds. (Jerome Boulon via Eric Yang)
 
     CHUKWA-58. Changed watchdog to look for CHUKWA_PID_DIR. (Eric Yang)
 
