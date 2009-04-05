@@ -67,6 +67,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-92.  AbstractMetricsContext was using the wrong value (Jerome Boulon via asrabkin)
+
     CHUKWA-70.  Rewrite FileAdaptor.  (Jerome Boulon via asrabkin)
 
     CHUKWA-93.  Fix NPE in SeqFileWriter.  (Jiaqi Tan via asrabkin)

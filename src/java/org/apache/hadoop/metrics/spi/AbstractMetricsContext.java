@@ -53,7 +53,7 @@ public abstract class AbstractMetricsContext implements MetricsContext {
     
   private int period = MetricsContext.DEFAULT_PERIOD;
   private Timer timer = null;
-  private long lastRun = 0L;    
+  private boolean computeRate = true;    
   private Set<Updater> updaters = new HashSet<Updater>(1);
   private volatile boolean isMonitoring = false;
     
@@ -355,16 +355,12 @@ public abstract class AbstractMetricsContext implements MetricsContext {
         else {
           Number newNumber = sum(updateNumber, currentNumber);
           metricMap.put(metricName, newNumber);
-          if (lastRun != 0) {
-            long duration = now -lastRun;
-            if (duration != 0) {
-              double rate = newNumber.doubleValue() * 60.0 / duration;
+          metricMap.put(metricName+"_raw", updateNumber);
+          if (computeRate ) {
+              double rate = updateNumber.doubleValue() * 60.0 / period;
               metricMap.put(metricName+"_rate", rate);
-            } else {
-              metricMap.put(metricName+"_rate", 0.0);
             }
-          }
-          lastRun = now;
+          computeRate = true;
         }
       }
     }
