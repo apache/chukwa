@@ -81,6 +81,8 @@ public class SeqFileWriter implements ChukwaWriter {
   public void init(Configuration conf) throws WriterException {
     outputDir = conf.get("chukwaCollector.outputDir", "/chukwa");
 
+    this.conf = conf;
+
     rotateInterval = conf.getInt("chukwaCollector.rotateInterval",
         1000 * 60 * 5);// defaults to 5 minutes
     nextRotate = System.currentTimeMillis() + rotateInterval;
