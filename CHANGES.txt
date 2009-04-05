@@ -67,6 +67,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-70.  Rewrite FileAdaptor.  (Jerome Boulon via asrabkin)
+
     CHUKWA-93.  Fix NPE in SeqFileWriter.  (Jiaqi Tan via asrabkin)
 
     CHUKWA-1. Remove lzo job configuration from Chukwa data processors. (Contribute by Jerome Boulon via Eric Yang)
