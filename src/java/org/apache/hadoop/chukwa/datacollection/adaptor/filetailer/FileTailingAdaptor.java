@@ -134,6 +134,10 @@ public class FileTailingAdaptor implements Adaptor {
    */
   public void hardStop() throws AdaptorException {
     tailer.stopWatchingFile(this);
+    try {
+    reader.close();
+    } catch(IOException e) {
+    }
   }
 
   /**

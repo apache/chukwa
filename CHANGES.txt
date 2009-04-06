@@ -30,6 +30,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-81.  Fix file descriptor leak.  (asrabkin)
+
     CHUKWA-29.  Added TaskTracker and DataNode client trace log parser and database loader.  (Chris Douglas via Eric Yang)
 
     CHUKWA-86. Improved JDBC compatibility layer (Cheng Zhang via Eric Yang)
