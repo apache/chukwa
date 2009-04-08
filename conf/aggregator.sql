@@ -89,7 +89,17 @@ replace into [cluster_system_metrics_decade] (select timestamp,[avg(cluster_syst
 #replace into [user_util_year] (select timestamp,[group_avg(user_util)] from [user_util_quarter] where timestamp between '[past_540_minutes]' and '[now]' group by FLOOR(UNIX_TIMESTAMP(Timestamp)/10800),user);
 #replace into [user_util_decade] (select timestamp,[group_avg(user_util)] from [user_util_year] where timestamp between '[past_2160_minutes]' and '[now]' group by FLOOR(UNIX_TIMESTAMP(Timestamp)/43200),user);
 #
-replace into [util_month] (select timestamp,[group_avg(util)] from [util_week] where timestamp between '[past_15_minutes]' and '[now]' group by FLOOR(UNIX_TIMESTAMP(Timestamp)/300),user);
-replace into [util_quarter] (select timestamp,[group_avg(util)] from [util_month] where timestamp between '[past_90_minutes]' and '[now]' group by FLOOR(UNIX_TIMESTAMP(Timestamp)/1800),user);
-replace into [util_year] (select timestamp,[group_avg(util)] from [util_quarter] where timestamp between '[past_540_minutes]' and '[now]' group by FLOOR(UNIX_TIMESTAMP(Timestamp)/10800),user);
-replace into [util_decade] (select timestamp,[group_avg(util)] from [util_year] where timestamp between '[past_2160_minutes]' and '[now]' group by FLOOR(UNIX_TIMESTAMP(Timestamp)/43200),user);
+replace into [mr_job_month] (select * from [mr_job_week] where finish_time between '[past_15_minutes]' and '[now]');
+replace into [mr_job_quarter] (select * from [mr_job_week] where finish_time between '[past_15_minutes]' and '[now]');
+replace into [mr_job_year] (select * from [mr_job_week] where finish_time between '[past_15_minutes]' and '[now]');
+replace into [mr_job_decade] (select * from [mr_job_week] where finish_time between '[past_15_minutes]' and '[now]');
+#
+replace into [mr_task_month] (select * from [mr_task_week] where finish_time between '[past_15_minutes]' and '[now]');
+replace into [mr_task_quarter] (select * from [mr_task_week] where finish_time between '[past_15_minutes]' and '[now]');
+replace into [mr_task_year] (select * from [mr_task_week] where finish_time between '[past_15_minutes]' and '[now]');
+replace into [mr_task_decade] (select * from [mr_task_week] where finish_time between '[past_15_minutes]' and '[now]');
+#
+replace into [util_month] (select timestamp,user,queue,bytes,slot_hours from [util_week] where timestamp between '[past_15_minutes]' and '[now]' group by FLOOR(UNIX_TIMESTAMP(Timestamp)/600),user);
+replace into [util_quarter] (select timestamp,user,queue,sum(bytes)/3,sum(slot_hours)/3 from [util_month] where timestamp between '[past_90_minutes]' and '[now]' group by FLOOR(UNIX_TIMESTAMP(Timestamp)/1800),user);
+replace into [util_year] (select timestamp,user,queue,sum(bytes)/8,sum(slot_hours)/8 from [util_quarter] where timestamp between '[past_540_minutes]' and '[now]' group by FLOOR(UNIX_TIMESTAMP(Timestamp)/10800),user);
+replace into [util_decade] (select timestamp,user,queue,sum(bytes)/4,sum(slot_hours)/4 from [util_year] where timestamp between '[past_2160_minutes]' and '[now]' group by FLOOR(UNIX_TIMESTAMP(Timestamp)/43200),user);
