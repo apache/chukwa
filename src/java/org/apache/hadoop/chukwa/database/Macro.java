@@ -260,7 +260,7 @@ public class Macro {
             String mkey = macroKeys.next();
             if(macroList.get(mkey).contains("|")) {
                 StringBuffer buf = new StringBuffer();
-                String[] tableList = macroList.get(mkey).split("|");
+                String[] tableList = macroList.get(mkey).split("\\|");
                 boolean first = true;
                 for(String table : tableList) {
                     String newQuery = query.replace("["+mkey+"]", table);
