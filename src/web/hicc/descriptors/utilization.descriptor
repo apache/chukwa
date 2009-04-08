@@ -1,0 +1,30 @@
+{
+"id":"utilization",
+"title":"Utilization",
+"version":"0.1",
+"categories":"Accounting,Utilities",
+"module":"iframe\/jsp\/table_viewer.jsp",
+"description":"Display Queue/User utilization of the hadoop cluter",
+"screendump":"",
+"refresh":"0",
+"parameters":[
+{"name":"report","type":"string","value":"/hicc/jsp/util.jsp","edit":"0"},
+{"name":"column","type":"string","value":"Queue","edit":"0"},
+{"name":"column","type":"string","value":"HDFS Usage Bytes (Per Hour)","edit":"0"},
+{"name":"column","type":"string","value":"Slot Hours (Per Hour)","edit":"0"},
+{"name":"columnSize","type":"string","value":"200","edit":"0"},
+{"name":"columnSize","type":"string","value":"200","edit":"0"},
+{"name":"columnSize","type":"string","value":"200","edit":"0"},
+{"name":"columnAlign","type":"string","value":"left","edit":"0"},
+{"name":"columnAlign","type":"string","value":"right","edit":"0"},
+{"name":"columnAlign","type":"string","value":"right","edit":"0"},
+{"name":"height","type":"select","value":"600","label":"Height","options":[
+{"label":"200","value":"200"},
+{"label":"400","value":"400"},
+{"label":"600","value":"600"},
+{"label":"800","value":"800"},
+{"label":"1000","value":"1000"}
+]}
+]}
+]
+}

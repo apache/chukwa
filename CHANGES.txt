@@ -69,6 +69,10 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-61.  Added report widget for accounting information. (Eric Yang)
+
+    CHUKWA-77.  Added Database Schema for Hadoop accounting information. (Eric Yang)
+
     CHUKWA-92.  AbstractMetricsContext was using the wrong value (Jerome Boulon via asrabkin)
 
     CHUKWA-70.  Rewrite FileAdaptor.  (Jerome Boulon via asrabkin)
