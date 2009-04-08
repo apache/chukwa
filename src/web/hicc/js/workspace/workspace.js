@@ -870,7 +870,7 @@ portalWidget.prototype = {
 	    module=this.block_obj.module;
 	}
 	var string=module+"/";
-	string+='&page='+this.pageid+'&boxIndex='+this.boxIndex+'&boxId='+this.pageid+'_'+this.boxIndex;
+	string+='&_page='+this.pageid+'&boxIndex='+this.boxIndex+'&boxId='+this.pageid+'_'+this.boxIndex;
 
 	for (iCount=0;iCount<this.block_obj.parameters.length;iCount++) {
 	    string+="&";
