@@ -190,20 +190,16 @@ public class MoveToRepository {
       if (!fs.exists(destFilePath)) {
         log.info(">>>>>>>>>>>> Before Rename" + recordFile + " -- "
             + destFilePath);
-        // fs.rename(recordFile,destFilePath);
-        FileUtil.copy(fs, recordFile, fs, destFilePath, false, false, conf);
-        // FileUtil.replaceFile(new File(recordFile.toUri()), new
-        // File(destFilePath.toUri()));
+        boolean rename = fs.rename(recordFile,destFilePath);
         done = true;
-        log.info(">>>>>>>>>>>> after Rename" + destFilePath);
+        log.info(">>>>>>>>>>>> after Rename" + destFilePath + " , rename:"+rename);
       } else {
-        log.info("Start MoveToRepository main()");
+        log.info("increment spill for :" + destFilePath);
       }
       count++;
-      // Just put a limit here
-      // TODO read from config
+
       if (count > 1000) {
-        throw new IOException("too many files in this directory: " + destDir);
+        log.warn("too many files in this directory: " + destDir);
       }
     } while (!done);
   }

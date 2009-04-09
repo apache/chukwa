@@ -40,6 +40,7 @@ import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.JobPriority;
 import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
@@ -156,6 +157,7 @@ public class Demux extends Configured implements Tool {
     conf.setOutputKeyClass(ChukwaRecordKey.class);
     conf.setOutputValueClass(ChukwaRecord.class);
     conf.setOutputFormat(ChukwaRecordOutputFormat.class);
+    conf.setJobPriority(JobPriority.VERY_HIGH);
 
     List<String> other_args = new ArrayList<String>();
     for (int i = 0; i < args.length; ++i) {

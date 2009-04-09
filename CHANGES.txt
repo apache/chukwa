@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-78.  Added down sample SQL aggregation for job data, task data and utilization data. (Eric Yang)
+
     CHUKWA-17. Collect PS output every 10 minutes and parse into key/value pairs sequence file. (Cheng Zhang via Eric Yang)
 
     CHUKWA-55. Aggregate data from HDFS bytes usage, and Mapreduce Job slot time to compute user usage of the cluster. (Eric Yang)
@@ -29,6 +31,12 @@ Trunk (unreleased changes)
     HADOOP-4989. Added capability to add scatter chart. (Eric Yang)
 
   IMPROVEMENTS
+
+    CHUKWA-26.  * DemuxManager, ArchiveManager and PostProcessorManager are now a single daemon process each.
+                * Each one working independently from others, as soon as something is available.
+                * Start-data-processor is now using those new daemons instead of pocessSink.sh
+                * Daily will process a daily compaction only when all hourly would have been done.
+                * Demux is now able to send NSCA commands to Nagios. (Jerome Boulon via Eric Yang)
 
     CHUKWA-81.  Fix file descriptor leak.  (asrabkin)
 

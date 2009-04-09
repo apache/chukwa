@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
+import org.apache.hadoop.chukwa.util.PidFile;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -37,6 +38,7 @@ import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.JobPriority;
 import org.apache.hadoop.mapred.SequenceFileInputFormat;
 import org.apache.hadoop.mapred.SequenceFileOutputFormat;
 import org.apache.hadoop.mapred.lib.IdentityMapper;
@@ -63,9 +65,45 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
     System.exit(-1);
   }
 
+  public static boolean hourlyRolling(String dailyStreamDirectory) {
+   
+    Path pHour = null;
+    try {
+      log.info("Checking for HourlyRolling in " + dailyStreamDirectory);
+      
+      for (int i=0;i<24;i++) {
+        pHour = new Path(dailyStreamDirectory + "/" + i);
+        if (! fs.exists(pHour)) {
+          log.info("HourlyData is missing for:" + pHour);
+          continue;
+        } else {
+          FileStatus[] files = fs.listStatus(pHour);
+          boolean containsHourly = false;
+          for(FileStatus file: files) {
+            log.info("Debug checking" + file.getPath());
+            if (file.getPath().getName().indexOf("_HourlyDone_") > 0) {
+              containsHourly = true;
+              break;
+            }
+          }
+          if (containsHourly == false) {
+            log.info("HourlyDone is missing for : " + pHour);
+            return false;
+          }
+        }
+      }
+      return true;
+    }catch(Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
   public static void buildDailyFiles(String chukwaMainRepository,
       String tempDir, String rollingFolder, int workingDay) throws IOException {
     // process
+    
+    boolean alldone = true;
+    
     Path dayPath = new Path(rollingFolder + "/daily/" + workingDay);
     FileStatus[] clustersFS = fs.listStatus(dayPath);
     for (FileStatus clusterFs : clustersFS) {
@@ -78,16 +116,27 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
         String dataSource = dataSourceFS.getPath().getName();
         // Repo path = reposRootDirectory/<cluster>/<day>/*/*.evt
 
+
         // put the rotate flag
         fs.mkdirs(new Path(chukwaMainRepository + "/" + cluster + "/"
             + dataSource + "/" + workingDay + "/rotateDone"));
-
+        
+        if (hourlyRolling(chukwaMainRepository + "/" + cluster + "/" + dataSource + "/" + workingDay) == false) {
+          log.warn("Skipping this directory, hourly not done. " + chukwaMainRepository + "/" + cluster + "/"
+            + dataSource + "/" + workingDay );
+          alldone = false;
+          continue;
+        } 
+        
+        log.info("Running Daily rolling for " + chukwaMainRepository + "/" + cluster + "/"
+            + dataSource + "/" + workingDay + "/rotateDone");
+        
         // rotate
         // Merge
         String[] mergeArgs = new String[5];
         // input
         mergeArgs[0] = chukwaMainRepository + "/" + cluster + "/" + dataSource
-            + "/" + workingDay + "/[0-24]*/*.evt";
+            + "/" + workingDay + "/[0-9]*/*.evt";
         // temp dir
         mergeArgs[1] = tempDir + "/" + cluster + "/" + dataSource + "/"
             + workingDay + "_" + System.currentTimeMillis();
@@ -95,7 +144,7 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
         mergeArgs[2] = chukwaMainRepository + "/" + cluster + "/" + dataSource
             + "/" + workingDay;
         // final output fileName
-        mergeArgs[3] = dataSource + "_" + workingDay;
+        mergeArgs[3] = dataSource + "_DailyDone_"  + workingDay;
         // delete rolling directory
         mergeArgs[4] = rollingFolder + "/daily/" + workingDay + "/" + cluster
             + "/" + dataSource;
@@ -128,17 +177,23 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
         } // End if (!rollInSequence)
 
         // Delete the processed dataSourceFS
-        FileUtil.fullyDelete(fs, dataSourceFS.getPath());
+          FileUtil.fullyDelete(fs, dataSourceFS.getPath());
 
       } // End for(FileStatus dataSourceFS : dataSourcesFS)
 
       // Delete the processed clusterFs
-      FileUtil.fullyDelete(fs, clusterFs.getPath());
+      if (alldone == true) {
+        FileUtil.fullyDelete(fs, clusterFs.getPath());
+      }
+      
 
     } // End for(FileStatus clusterFs : clustersFS)
 
     // Delete the processed dayPath
-    FileUtil.fullyDelete(fs, dayPath);
+    if (alldone == true) {
+      FileUtil.fullyDelete(fs, dayPath);
+    }
+    
   }
 
   /**
@@ -146,6 +201,10 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
    * @throws Exception
    */
   public static void main(String[] args) throws Exception {
+    
+    PidFile pFile = new PidFile("DailyChukwaRecordRolling");
+    Runtime.getRuntime().addShutdownHook(pFile);
+    
     conf = new ChukwaConfiguration();
     String fsName = conf.get("writer.hdfs.filesystem");
     fs = FileSystem.get(new URI(fsName), conf);
@@ -195,9 +254,17 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
     for (FileStatus dayFS : daysFS) {
       try {
         int workingDay = Integer.parseInt(dayFS.getPath().getName());
+        log.info("Daily working on :" + workingDay);
         if (workingDay < currentDay) {
-          buildDailyFiles(chukwaMainRepository, tempDir, rollingFolder,
-              workingDay);
+          
+          try {
+            buildDailyFiles(chukwaMainRepository, tempDir, rollingFolder,
+                workingDay);
+          } catch(Throwable e) {
+            e.printStackTrace();
+            log.warn("Daily rolling failed on :" + rollingFolder +"/" + workingDay  ) ;
+          }
+          
         } // End if ( workingDay < currentDay)
       } // End Try workingDay =
         // Integer.parseInt(sdf.format(dayFS.getPath().getName()));
@@ -225,7 +292,7 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
 
     FileInputFormat.setInputPaths(conf, args[0]);
     FileOutputFormat.setOutputPath(conf, new Path(args[1]));
-
+    conf.setJobPriority(JobPriority.LOW);
     JobClient.runJob(conf);
     return 0;
   }

@@ -31,17 +31,24 @@ public class DatabaseLoader {
 
     System.out.println("Input directory:" + args[0]);
 
+    HashMap<String, String> dataSources = new HashMap<String, String>();
     for (int i = 1; i < args.length; i++) {
-      hashDatasources.put(args[i], "");
+      dataSources.put(args[i], "");
     }
 
     conf = new ChukwaConfiguration();
     fs = FileSystem.get(conf);
-    Path demuxDir = new Path(args[0]);
+    loadData( fs,args[0],dataSources );
+  }
+
+  public static void loadData(FileSystem fs,String inputDirectory, HashMap<String, String> dataSources) throws IOException {
+    DatabaseLoader.hashDatasources = dataSources;
+    DatabaseLoader.fs = fs;
+    Path demuxDir = new Path(inputDirectory);
     FileStatus fstat = fs.getFileStatus(demuxDir);
 
     if (!fstat.isDir()) {
-      throw new IOException(args[0] + " is not a directory!");
+      throw new IOException(inputDirectory + " is not a directory!");
     } else {
       // cluster Directory
       FileStatus[] clusterDirectories = fs.listStatus(demuxDir);
@@ -66,8 +73,6 @@ public class DatabaseLoader {
           }
         }
       }
-
-      System.exit(0);
     }
   }
 

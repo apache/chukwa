@@ -33,7 +33,11 @@ if [ ! -f ${CHUKWA_HOME}/opt/apache-tomcat-6.0.16/webapps/hicc-${CHUKWA_VERSION}
 fi 
 
 # start data processors
-"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR --watchdog start processSinkFiles.sh watchdog
+#"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR --watchdog start processSinkFiles.sh watchdog
+"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR --watchdog start archive.sh watchdog
+"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR --watchdog start demux.sh watchdog
+"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR --watchdog start postProcess.sh watchdog
+
 
 # start database admin script
 "$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR start dbAdmin.sh

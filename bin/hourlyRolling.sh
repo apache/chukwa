@@ -20,11 +20,16 @@ bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 . "$bin"/chukwa-config.sh
 
-HADOOP_OPTS="$HADOOP_OPTS -DAPP=hourlyRolling -Dlog4j.configuration=chukwa-log4j.properties -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} "
-export HADOOP_OPTS
-export HADOOP_CONF_DIR
-HADOOP_CMDE="${HADOOP_HOME}/bin/hadoop "
+pidFile=${CHUKWA_PID_DIR}/HourlyChukwaRecordRolling.pid
+if [ -f $pidFile ]; then
+  pid=`head ${pidFile}`
+  ChildPIDRunningStatus=`ps ax | grep HourlyChukwaRecordRolling | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
+  if [ $ChildPIDRunningStatus -gt 0 ]; then
+      exit -1
+  fi
+fi
 
-  $HADOOP_CMDE jar ${CHUKWA_CORE} org.apache.hadoop.chukwa.extraction.demux.HourlyChukwaRecordRolling rollInSequence true deleteRawdata true
+rm -f ${pidFile}
 
+${JAVA_HOME}/bin/java -DAPP=hourlyRolling -Dlog4j.configuration=chukwa-log4j.properties -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_PID_DIR=${CHUKWA_PID_DIR} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -classpath ${CLASSPATH}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${tools}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.extraction.demux.HourlyChukwaRecordRolling rollInSequence true deleteRawdata true
 

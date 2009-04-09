@@ -41,6 +41,45 @@ fi
 #  fi 
 #fi
 
+
+# monitor demux.sh
+pidFile=${CHUKWA_PID_DIR}/DemuxManager.pid
+if [ -f $pidFile ]; then
+  pid=`head ${pidFile}`
+  ChildPIDRunningStatus=`ps ax | grep DemuxManager | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
+  if [ $ChildPIDRunningStatus -lt 1 ]; then
+      HOSTNAME=`hostname`
+      echo "${HOSTNAME}: pid file exists, but process missing.  Restarting demux.sh."
+      "$bin/chukwa-daemon.sh" --config $CHUKWA_CONF_DIR start demux.sh &
+  fi
+fi
+
+# monitor postProcess.sh
+pidFile=$CHUKWA_PID_DIR/PostProcessorManager.pid
+if [ -f $pidFile ]; then
+  pid=`head ${pidFile}`
+  ChildPIDRunningStatus=`ps ax | grep PostProcessorManager | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
+  if [ $ChildPIDRunningStatus -lt 1 ]; then
+      HOSTNAME=`hostname`
+      echo "${HOSTNAME}: pid file exists, but process missing.  Restarting postProcess.sh."
+      "$bin/chukwa-daemon.sh" --config $CHUKWA_CONF_DIR start postProcess.sh &
+  fi
+fi
+
+# monitor archive.sh
+pidFile=${CHUKWA_PID_DIR}/ArchiveManager.pid
+if [ -f $pidFile ]; then
+  pid=`head ${pidFile}`
+  ChildPIDRunningStatus=`ps ax | grep ChukwaArchiveManager | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
+  if [ $ChildPIDRunningStatus -lt 1 ]; then
+      HOSTNAME=`hostname`
+      echo "${HOSTNAME}: pid file exists, but process missing.  Restarting postProcess.sh."
+      "$bin/chukwa-daemon.sh" --config $CHUKWA_CONF_DIR start archive.sh &
+  fi
+fi
+
+
+
 # monitor collector
 pidFile=$CHUKWA_PID_DIR/chukwa-$CHUKWA_IDENT_STRING-jettyCollector.sh.pid
 if [ -f $pidFile ]; then

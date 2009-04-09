@@ -20,17 +20,23 @@ bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 . "$bin"/chukwa-config.sh
 
-
-pidFile=${CHUKWA_PID_DIR}/DailyChukwaRecordRolling.pid
-if [ -f $pidFile ]; then
-  pid=`head ${pidFile}`
-  ChildPIDRunningStatus=`ps ax | grep DailyChukwaRecordRolling | grep -v grep | grep -o "[^ ].*" | grep ${pid} | wc -l`
-  if [ $ChildPIDRunningStatus -gt 0 ]; then
-      exit -1
-  fi
+if [ "$CHUKWA_IDENT_STRING" = "" ]; then
+  export CHUKWA_IDENT_STRING="$USER"
 fi
 
-rm -f ${pidFile}
 
-${JAVA_HOME}/bin/java -DAPP=dailyRolling -Dlog4j.configuration=chukwa-log4j.properties -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DCHUKWA_PID_DIR=${CHUKWA_PID_DIR} -classpath ${CLASSPATH}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${tools}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.extraction.demux.DailyChukwaRecordRolling rollInSequence true deleteRawdata true
+
+trap 'rm -f $CHUKWA_PID_DIR/chukwa-$CHUKWA_IDENT_STRING-archive.sh.pid ${CHUKWA_PID_DIR}/ArchiveManager.pid; exit 0' 1 2 15
+echo "${pid}" > "$CHUKWA_PID_DIR/archive.pid"
+
+
+if [ "X$1" = "Xstop" ]; then
+  echo -n "Shutting down postProcess.sh..."
+  kill -TERM `cat ${CHUKWA_PID_DIR}/ArchiveManager.pid`
+  echo "done"
+  exit 0
+fi
+
+# run ArchiveManager
+${JAVA_HOME}/bin/java -Djava.library.path=${JAVA_LIBRARY_PATH} -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DAPP=archiveManager -Dlog4j.configuration=chukwa-log4j.properties -classpath ${CHUKWA_HOME}/conf:${CLASSPATH}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${tools} org.apache.hadoop.chukwa.extraction.archive.ChukwaArchiveManager
 

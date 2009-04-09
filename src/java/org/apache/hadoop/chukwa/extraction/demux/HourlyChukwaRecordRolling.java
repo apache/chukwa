@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
+import org.apache.hadoop.chukwa.util.PidFile;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -37,6 +38,7 @@ import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.JobPriority;
 import org.apache.hadoop.mapred.SequenceFileInputFormat;
 import org.apache.hadoop.mapred.SequenceFileOutputFormat;
 import org.apache.hadoop.mapred.lib.IdentityMapper;
@@ -76,13 +78,13 @@ public class HourlyChukwaRecordRolling extends Configured implements Tool {
       Path dataSourceClusterHourPaths = new Path(rollingFolder + "/hourly/"
           + workingDay + "/" + workingHour + "/" + cluster);
       FileStatus[] dataSourcesFS = fs.listStatus(dataSourceClusterHourPaths);
+      
       for (FileStatus dataSourceFS : dataSourcesFS) {
         String dataSource = dataSourceFS.getPath().getName();
-        // Repo path = reposRootDirectory/<cluster>/<day>/<hour>/*/*.evt
+        // Repo path = reposRootDirectory/<cluster>/<datasource>/<day>/<hour>/*/*.evt
 
         // put the rotate flag
-        fs
-            .mkdirs(new Path(chukwaMainRepository + "/" + cluster + "/"
+        fs.mkdirs(new Path(chukwaMainRepository + "/" + cluster + "/"
                 + dataSource + "/" + workingDay + "/" + workingHour
                 + "/rotateDone"));
 
@@ -99,7 +101,7 @@ public class HourlyChukwaRecordRolling extends Configured implements Tool {
         mergeArgs[2] = chukwaMainRepository + "/" + cluster + "/" + dataSource
             + "/" + workingDay + "/" + workingHour;
         // final output fileName
-        mergeArgs[3] = dataSource + "_" + workingDay + "_" + workingHour;
+        mergeArgs[3] = dataSource + "_HourlyDone_" + workingDay + "_" + workingHour;
         // delete rolling directory
         mergeArgs[4] = rollingFolder + "/hourly/" + workingDay + "/"
             + workingHour + "/" + cluster + "/" + dataSource;
@@ -150,6 +152,9 @@ public class HourlyChukwaRecordRolling extends Configured implements Tool {
    * @throws Exception
    */
   public static void main(String[] args) throws Exception {
+    PidFile pFile = new PidFile("HourlyChukwaRecordRolling");
+    Runtime.getRuntime().addShutdownHook(pFile);
+    
     conf = new ChukwaConfiguration();
     String fsName = conf.get("writer.hdfs.filesystem");
     fs = FileSystem.get(new URI(fsName), conf);
@@ -211,8 +216,13 @@ public class HourlyChukwaRecordRolling extends Configured implements Tool {
                                                                           // hour
           ) {
 
-            buildHourlyFiles(chukwaMainRepository, tempDir, rollingFolder,
-                workingDay, workingHour);
+            try {
+              buildHourlyFiles(chukwaMainRepository, tempDir, rollingFolder,
+                  workingDay, workingHour);
+            } catch(Throwable e) {
+              e.printStackTrace();
+              log.warn("Hourly rolling failed on :" + rollingFolder +"/" + workingDay +"/" + workingHour ) ;
+            }
 
           } // End if ( (workingDay < currentDay) || ( (workingDay ==
             // currentDay) && (intHour < currentHour) ) )
@@ -220,6 +230,7 @@ public class HourlyChukwaRecordRolling extends Configured implements Tool {
       } // End Try workingDay =
         // Integer.parseInt(sdf.format(dayFS.getPath().getName()));
       catch (NumberFormatException e) { /* Not a standard Day directory skip */
+        log.warn("Exception in hourlyRolling:", e);
       }
 
     } // for(FileStatus dayFS : daysFS)
@@ -243,7 +254,7 @@ public class HourlyChukwaRecordRolling extends Configured implements Tool {
 
     FileInputFormat.setInputPaths(conf, args[0]);
     FileOutputFormat.setOutputPath(conf, new Path(args[1]));
-
+    conf.setJobPriority(JobPriority.LOW);
     JobClient.runJob(conf);
     return 0;
   }

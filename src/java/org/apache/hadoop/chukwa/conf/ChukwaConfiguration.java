@@ -56,6 +56,9 @@ public class ChukwaConfiguration extends Configuration {
       super.addResource(new Path(chukwaConf + "/chukwa-agent-conf.xml"));
       log.debug("added chukwa-agent-conf.xml to ChukwaConfiguration");
 
+      super.addResource(new Path(chukwaConf + "/chukwa-demux-conf.xml"));
+      log.debug("added chukwa-demux-conf.xml to ChukwaConfiguration");
+      
       super.addResource(new Path(chukwaConf + "/hadoop-site.xml"));
       log.debug("added hadoop-site.xml to ChukwaConfiguration");
 
