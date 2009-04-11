@@ -79,6 +79,10 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-98.  Added Daemon watcher to capture signal for pid file management. (Cheng Zhang via Eric Yang)
+
+    CHUKWA-120.  Added the missing commons-cli library. (Jerome Boulon via Eric Yang)
+
     CHUKWA-61.  Added report widget for accounting information. (Eric Yang)
 
     CHUKWA-77.  Added Database Schema for Hadoop accounting information. (Eric Yang)

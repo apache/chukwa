@@ -9,14 +9,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.inputtools.plugin.ExecPlugin;
 import org.apache.hadoop.chukwa.inputtools.plugin.IPlugin;
-import org.apache.hadoop.chukwa.util.PidFile;
+import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Exec extends TimerTask {
   private static Log log = LogFactory.getLog(Exec.class);
   private String cmde = null;
-  private static PidFile pFile = null;
   private Timer timer = null;
   private IPlugin plugin = null;
 
@@ -51,8 +50,7 @@ public class Exec extends TimerTask {
   }
 
   public static void main(String[] args) {
-    pFile = new PidFile(System.getProperty("RECORD_TYPE") + "-data-loader");
-    Runtime.getRuntime().addShutdownHook(pFile);
+    DaemonWatcher.createInstance(System.getProperty("RECORD_TYPE") + "-data-loader");
     int period = 60;
     try {
       if (System.getProperty("PERIOD") != null) {

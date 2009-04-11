@@ -26,7 +26,7 @@ import java.text.SimpleDateFormat;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
 import org.apache.hadoop.chukwa.util.NagiosHelper;
-import org.apache.hadoop.chukwa.util.PidFile;
+import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -62,8 +62,7 @@ public class DemuxManager implements CHUKWA_CONSTANT {
 
 
   public static void main(String[] args) throws Exception {
-    PidFile pFile = new PidFile("DemuxManager");
-    Runtime.getRuntime().addShutdownHook(pFile);
+    DaemonWatcher.createInstance("DemuxManager");
     
     DemuxManager manager = new DemuxManager();
     manager.start();
@@ -154,7 +153,7 @@ public class DemuxManager implements CHUKWA_CONSTANT {
 
          if (globalErrorcounter > 5) {
            log.warn("==================\nToo many errors, Bail out!\n==================");
-           System.exit(-1);
+           DaemonWatcher.bailout(-1);
          }
          
          // Check for anomalies
