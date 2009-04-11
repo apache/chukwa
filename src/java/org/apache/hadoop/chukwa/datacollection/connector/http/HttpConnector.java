@@ -47,6 +47,7 @@ import org.apache.hadoop.chukwa.datacollection.DataFactory;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.connector.Connector;
 import org.apache.hadoop.chukwa.datacollection.sender.*;
+import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.log4j.Logger;
 
 public class HttpConnector implements Connector, Runnable {
@@ -171,11 +172,11 @@ public class HttpConnector implements Connector, Runnable {
           .info("received stop() command so exiting run() loop to shutdown connector");
     } catch (OutOfMemoryError e) {
       log.warn("Bailing out", e);
-      System.exit(-1);
+      DaemonWatcher.bailout(-1);
     } catch (InterruptedException e) {
       // do nothing, let thread die.
       log.warn("Bailing out", e);
-      System.exit(-1);
+      DaemonWatcher.bailout(-1);
     } catch (java.io.IOException e) {
       log.error("connector failed; shutting down agent");
       agent.shutdown(true);

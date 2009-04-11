@@ -24,6 +24,7 @@ import java.util.TimerTask;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.PidFile;
 
 public class JPluginAgent {
@@ -102,8 +103,7 @@ public class JPluginAgent {
     }
 
     try {
-      PidFile pFile = new PidFile(plugin.getRecordType() + "-data-loader");
-      Runtime.getRuntime().addShutdownHook(pFile);
+      DaemonWatcher.createInstance(plugin.getRecordType() + "-data-loader");
     } catch (Exception e) {
       e.printStackTrace();
     }

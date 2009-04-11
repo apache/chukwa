@@ -25,7 +25,7 @@ import org.apache.hadoop.chukwa.datacollection.agent.metrics.AgentMetrics;
 import org.apache.hadoop.chukwa.datacollection.connector.*;
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
 import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
-import org.apache.hadoop.chukwa.util.PidFile;
+import org.apache.hadoop.chukwa.util.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
@@ -45,7 +45,6 @@ public class ChukwaAgent {
   static final AgentMetrics agentMetrics = new AgentMetrics("ChukwaAgent", "chukwaAgent");;
   static Logger log = Logger.getLogger(ChukwaAgent.class);
   static ChukwaAgent agent = null;
-  private static PidFile pFile = null;
 
   public static ChukwaAgent getAgent() {
     return agent;
@@ -107,8 +106,7 @@ public class ChukwaAgent {
    */
   public static void main(String[] args) throws AdaptorException {
 
-    pFile = new PidFile("Agent");
-    Runtime.getRuntime().addShutdownHook(pFile);
+    DaemonWatcher.createInstance("Agent");
 
     try {
       if (args.length > 0 && args[0].equals("-help")) {
@@ -123,7 +121,7 @@ public class ChukwaAgent {
         System.out
             .println("another agent is running (or port has been usurped). "
                 + "Bailing out now");
-        System.exit(-1);
+        DaemonWatcher.bailout(-1);
       }
 
       int uriArgNumber = 0;

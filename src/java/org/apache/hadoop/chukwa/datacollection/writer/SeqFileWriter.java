@@ -29,6 +29,7 @@ import java.util.TimerTask;
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.ChunkImpl;
+import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -239,7 +240,7 @@ public class SeqFileWriter implements ChukwaWriter {
         // so there's nothing we can do
         // Shutting down the collector for now
         // Watchdog will re-start it automatically
-        System.exit(-1);
+        DaemonWatcher.bailout(-1);
       }
     }
 
@@ -302,7 +303,7 @@ public class SeqFileWriter implements ChukwaWriter {
         if (writeChunkRetries < 0) {
           log
               .fatal("Too many IOException when trying to write a chunk, Collector is going to exit!");
-          System.exit(-1);
+          DaemonWatcher.bailout(-1);
         }
         throw new WriterException(e);
       }
@@ -361,7 +362,7 @@ public class SeqFileWriter implements ChukwaWriter {
         if (writeChunkRetries < 0) {
           log
               .fatal("Too many IOException when trying to write a chunk, Collector is going to exit!");
-          System.exit(-1);
+          DaemonWatcher.bailout(-1);
         }
         throw new WriterException(e);
       }

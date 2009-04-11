@@ -29,7 +29,7 @@ import java.util.List;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
 import org.apache.hadoop.chukwa.extraction.database.DatabaseLoader;
-import org.apache.hadoop.chukwa.util.PidFile;
+import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -71,8 +71,7 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
   
   public static void main(String[] args) throws Exception {
  
-    PidFile pFile = new PidFile("PostProcessorManager");
-    Runtime.getRuntime().addShutdownHook(pFile);
+    DaemonWatcher.createInstance("PostProcessorManager");
     
 
     
@@ -106,7 +105,7 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
     String[] datasources = conf.getStrings("postProcessorManager.dbloader.ds");
     if (datasources == null || datasources.length == 0) {
       log.warn("Cannot read postProcessorManager.dbloader.ds from configuration, bail out!");
-      System.exit(-1);
+      DaemonWatcher.bailout(-1);
     }
     for(String ds: datasources) {
       dataSources.put(ds.trim(), "");
@@ -120,7 +119,7 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
       if (errorCount >= 4 ) {
         // it's better to exit, Watchdog will re-strat it
         log.warn("Too many error - bail out!");
-        System.exit(-1);
+        DaemonWatcher.bailout(-1);
       }
       
       try {

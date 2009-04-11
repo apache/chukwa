@@ -24,19 +24,17 @@ import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.servlet.*;
 import org.apache.hadoop.chukwa.datacollection.collector.servlet.ServletCollector;
 import org.apache.hadoop.chukwa.datacollection.writer.*;
-import org.apache.hadoop.chukwa.util.PidFile;
+import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 
 public class CollectorStub {
 
   static int THREADS = 80;
-  private static PidFile pFile = null;
   public static Server jettyServer = null;
 
   public static void main(String[] args) {
 
-    pFile = new PidFile("Collector");
-    Runtime.getRuntime().addShutdownHook(pFile);
+    DaemonWatcher.createInstance("Collector");
     try {
       if (args.length >= 1 && args[0].equalsIgnoreCase("-help")) {
         System.out.println("usage:  CollectorStub [portno] [pretend]");
@@ -95,7 +93,7 @@ public class CollectorStub {
 
     } catch (Exception e) {
       e.printStackTrace();
-      System.exit(0);
+      DaemonWatcher.bailout(-1);
     }
 
   }

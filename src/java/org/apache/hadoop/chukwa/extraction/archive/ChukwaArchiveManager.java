@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
 
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
-import org.apache.hadoop.chukwa.util.PidFile;
+import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -60,8 +60,7 @@ public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
   }
 
   public static void main(String[] args) throws Exception {
-    PidFile pFile = new PidFile("ArchiveManager");
-    Runtime.getRuntime().addShutdownHook(pFile);
+    DaemonWatcher.createInstance("ArchiveManager");
     
     ChukwaArchiveManager manager = new ChukwaArchiveManager();
     manager.start();
@@ -118,7 +117,7 @@ public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
         if (errorCount >= 4 ) {
           // it's better to exit, Watchdog will re-start it
           log.warn("Too many error - bail out!");
-          System.exit(-1);
+          DaemonWatcher.bailout(-1);
         }
         // /chukwa/archives/<YYYYMMDD>/dataSinkDirXXX
         //  to
