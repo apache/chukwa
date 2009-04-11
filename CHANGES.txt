@@ -32,6 +32,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-80.  Extracted rpm spec file from build.xml file.  Fix start up script, and config script. (Eric Yang)
+
     CHUKWA-26.  * DemuxManager, ArchiveManager and PostProcessorManager are now a single daemon process each.
                 * Each one working independently from others, as soon as something is available.
                 * Start-data-processor is now using those new daemons instead of pocessSink.sh

@@ -31,13 +31,14 @@ prog=chukwa-data-processors
 config () {
         CHUKWA_HOME=/usr/local/chukwa
         CHUKWA_CONF_DIR=/usr/local/chukwa/conf
+        CHUKWA_USER=chukwa
 }
 
 start () {
         echo -n $"Starting $prog: "
         config
         # start daemon
-	su - chukwa -c "${CHUKWA_HOME}/bin/start-data-processors.sh --config $CHUKWA_CONF_DIR "
+	su - ${CHUKWA_USER} -c "${CHUKWA_HOME}/bin/start-data-processors.sh --config $CHUKWA_CONF_DIR "
         RETVAL=$?
         echo
         [ $RETVAL = 0 ] && touch /var/lock/subsys/$prog
@@ -48,7 +49,7 @@ stop () {
         # stop daemon
         echo -n $"Stopping $prog: "
         config
-	su - chukwa -c "${CHUKWA_HOME}/bin/stop-data-processors.sh --config $CHUKWA_CONF_DIR "
+	su - ${CHUKWA_USER} -c "${CHUKWA_HOME}/bin/stop-data-processors.sh --config $CHUKWA_CONF_DIR "
         RETVAL=$?
         echo
         [ $RETVAL = 0 ] && rm -f /var/lock/subsys/$prog
