@@ -1,5 +1,7 @@
 #!/bin/sh
 CHUKWA_CONF_DIR=/usr/local/chukwa/conf
+CHUKWA_HOME=/usr/local/chukwa
+CHUKWA_USER=chukwa
 
-exec setuidgid gmon /usr/local/chukwa/bin/exec-data-loader.sh --config $CHUKWA_CONF_DIR HDFSUsage &>/dev/null
+exec setuidgid ${CHUKWA_USER} ${CHUKWA_HOME}/bin/exec-data-loader.sh --config $CHUKWA_CONF_DIR HDFSUsage &>/dev/null
 
