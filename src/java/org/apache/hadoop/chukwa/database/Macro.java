@@ -79,15 +79,16 @@ public class Macro {
             String meta="";
             String[] table = null;
             if(forCharting) {
-                dbc.findTableNameForCharts(macro.substring(macro.indexOf("(")+1,macro.indexOf(")")), start, end);
+                table = dbc.findTableNameForCharts(macro.substring(macro.indexOf("(")+1,macro.indexOf(")")), start, end);
             } else {
-                dbc.findTableName(macro.substring(macro.indexOf("(")+1,macro.indexOf(")")), start, end);
+                table = dbc.findTableName(macro.substring(macro.indexOf("(")+1,macro.indexOf(")")), start, end);
             }
             try {
                 String cluster = System.getProperty("CLUSTER");
                 if(cluster==null) {
                     cluster="unknown";
                 }
+                db = new DatabaseWriter(cluster);
                 DatabaseMetaData dbMetaData = db.getConnection().getMetaData();
                 ResultSet rs = dbMetaData.getColumns ( null,null,table[0], null);
                 boolean first=true;
@@ -124,6 +125,7 @@ public class Macro {
                         first=false;
                     }
                 }
+                db.close();
                 if(first) {
                     throw new SQLException("Table is undefined.");
                 }
