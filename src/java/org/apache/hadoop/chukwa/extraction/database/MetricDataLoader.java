@@ -66,6 +66,7 @@ public class MetricDataLoader {
 
   private static ChukwaConfiguration conf = null;
   private static FileSystem fs = null;
+  private String jdbc_url = "";
 
   static {
     conf = new ChukwaConfiguration();
@@ -107,49 +108,32 @@ public class MetricDataLoader {
         }
       }
     }
-    String jdbc_url = "";
     log.debug("cluster name:" + cluster);
     if (!cluster.equals("")) {
       ClusterConfig cc = new ClusterConfig();
       jdbc_url = cc.getURL(cluster);
     }
-    try {
-      // The newInstance() call is a work around for some
-      // broken Java implementations
-      org.apache.hadoop.chukwa.util.DriverManagerUtil.loadDriver().newInstance();
-      log.debug("Initialized JDBC URL: " + jdbc_url);
-    } catch (Exception ex) {
-      // handle the error
-      log.error(ex, ex);
-    }
-    try {
-      conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc_url);
-      HashMap<String, String> dbNames = mdlConfig.startWith("report.db.name.");
-      Iterator<String> ki = dbNames.keySet().iterator();
-      dbSchema = new HashMap<String, HashMap<String, Integer>>();
-      DatabaseWriter dbWriter = new DatabaseWriter(cluster);
-      while (ki.hasNext()) {
-        String table = dbNames.get(ki.next().toString());
-        String query = "select * from " + table + "_template limit 1";
-        try {
-          ResultSet rs = dbWriter.query(query);
-          ResultSetMetaData rmeta = rs.getMetaData();
-          HashMap<String, Integer> tableSchema = new HashMap<String, Integer>();
-          for (int i = 1; i <= rmeta.getColumnCount(); i++) {
-            tableSchema.put(rmeta.getColumnName(i), rmeta.getColumnType(i));
-          }
-          dbSchema.put(table, tableSchema);
-        } catch (SQLException ex) {
-          log
-              .debug("table: "
-                  + table
-                  + " template does not exist, MDL will not load data for this table.");
+    HashMap<String, String> dbNames = mdlConfig.startWith("report.db.name.");
+    Iterator<String> ki = dbNames.keySet().iterator();
+    dbSchema = new HashMap<String, HashMap<String, Integer>>();
+    DatabaseWriter dbWriter = new DatabaseWriter(cluster);
+    while (ki.hasNext()) {
+      String table = dbNames.get(ki.next().toString());
+      String query = "select * from " + table + "_template limit 1";
+      try {
+        ResultSet rs = dbWriter.query(query);
+        ResultSetMetaData rmeta = rs.getMetaData();
+        HashMap<String, Integer> tableSchema = new HashMap<String, Integer>();
+        for (int i = 1; i <= rmeta.getColumnCount(); i++) {
+          tableSchema.put(rmeta.getColumnName(i), rmeta.getColumnType(i));
         }
+        dbSchema.put(table, tableSchema);
+      } catch (SQLException ex) {
+        log.debug("table: " + table
+          + " template does not exist, MDL will not load data for this table.");
       }
-      dbWriter.close();
-    } catch (SQLException ex) {
-      log.error(ex, ex);
     }
+    dbWriter.close();
   }
 
   public void interrupt() {
@@ -166,6 +150,23 @@ public class MetricDataLoader {
 
   }
 
+  public static String escapeQuotes( String s ) {
+    StringBuffer sb = new StringBuffer(); 
+    int index; 
+    int length = s.length(); 
+    char ch;
+    for( index = 0; index < length; ++index ) {
+      if(( ch = s.charAt( index )) == '\"' ) {
+        sb.append( "\\\"" ); 
+      } else if( ch == '\\' ) {
+        sb.append( "\\\\" ); 
+      } else {
+        sb.append( ch );
+      }
+    }
+    return( sb.toString()); 
+  } 
+
   public void process(Path source) throws IOException, URISyntaxException,
       SQLException {
 
@@ -173,6 +174,16 @@ public class MetricDataLoader {
 
     SequenceFile.Reader r = new SequenceFile.Reader(fs, source, conf);
 
+    try {
+      // The newInstance() call is a work around for some
+      // broken Java implementations
+      org.apache.hadoop.chukwa.util.DriverManagerUtil.loadDriver().newInstance();
+      log.debug("Initialized JDBC URL: " + jdbc_url);
+    } catch (Exception ex) {
+      // handle the error
+      log.error(ex, ex);
+    }
+    conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc_url);
     stmt = conn.createStatement();
     conn.setAutoCommit(false);
     long currentTimeMillis = System.currentTimeMillis();
@@ -322,10 +333,9 @@ public class MetricDataLoader {
                     sqlValues.append(conversion.get(conversionKey).toString());
                   } else {
                     sqlValues.append(transformer.get(fieldKey));
-                    sqlValues.append("=\"");
-                    sqlValues.append(recordSet.get(fieldKey).replaceAll("\"",
-                        "'"));
-                    sqlValues.append("\"");
+                    sqlValues.append("=\'");
+                    sqlValues.append(escapeQuotes(recordSet.get(fieldKey)));
+                    sqlValues.append("\'");
                   }
                 } else if (dbSchema.get(dbTables.get(dbKey)).get(
                     transformer.get(fieldKey)) == java.sql.Types.TIMESTAMP) {
@@ -385,10 +395,9 @@ public class MetricDataLoader {
                   sqlValues.append(conversion.get(conversionKey).toString());
                 } else {
                   sqlValues.append(transformer.get(fieldKey));
-                  sqlValues.append("=\"");
-                  sqlValues.append(recordSet.get(fieldKey)
-                      .replaceAll("\"", "'"));
-                  sqlValues.append("\"");
+                  sqlValues.append("='");
+                  sqlValues.append(escapeQuotes(recordSet.get(fieldKey)));
+                  sqlValues.append("'");
                 }
                 firstValue = false;
               } catch (NullPointerException ex) {
@@ -450,7 +459,14 @@ public class MetricDataLoader {
       e.printStackTrace();
     } finally {
       if (batchMode) {
-        conn.commit();
+        try {
+          conn.commit();
+        } catch (SQLException ex) {
+          log.error(ex, ex);
+          log.error("SQLException: " + ex.getMessage());
+          log.error("SQLState: " + ex.getSQLState());
+          log.error("VendorError: " + ex.getErrorCode());
+        }
       }
       long latencyMillis = System.currentTimeMillis() - currentTimeMillis;
       int latencySeconds = ((int) (latencyMillis + 500)) / 1000;
@@ -478,6 +494,17 @@ public class MetricDataLoader {
           log.error("VendorError: " + ex.getErrorCode());
         }
         stmt = null;
+      }
+      if (conn != null) {
+        try {
+          conn.close();
+        } catch (SQLException ex) {
+          log.error(ex, ex);
+          log.error("SQLException: " + ex.getMessage());
+          log.error("SQLState: " + ex.getSQLState());
+          log.error("VendorError: " + ex.getErrorCode());
+        }
+        conn = null;
       }
     }
   }
