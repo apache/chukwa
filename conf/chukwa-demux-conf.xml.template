@@ -69,19 +69,6 @@
   </property>
  
    <property>
-    <name>Log4jJobHistoryProcessor</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Log4jJobHistoryProcessor</value>
-    <description>Parser class for </description>
-  </property>
-
-   <property>
-    <name>JobLogHistoryProcessor</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.JobLogHistoryProcessor</value>
-    <description>Parser class for </description>
-  </property>
-
- 
-   <property>
     <name>PbsNodes</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.PbsNodes</value>
     <description>Parser class for </description>
@@ -116,6 +103,12 @@
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.TsProcessor</value>
     <description>Parser class for </description>
    </property>
+
+   <property>
+    <name>JobHistory</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.JobLog</value>
+    <description>Parser class for </description>
+  </property>
 
    <property>
     <name>JobConf</name>
