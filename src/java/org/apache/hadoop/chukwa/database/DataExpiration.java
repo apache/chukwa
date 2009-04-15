@@ -68,9 +68,11 @@ public class DataExpiration {
                 + partition + "_" + parts[parts.length - 1];
             dbw.execute(dropPartition);
             partition--;
-            dropPartition = "drop table if exists " + table + "_" + partition
-                + "_" + parts[parts.length - 1];
-            dbw.execute(dropPartition);
+            if(partition>=0) {
+              dropPartition = "drop table if exists " + table + "_" + partition
+                  + "_" + parts[parts.length - 1];
+              dbw.execute(dropPartition);
+            }
           } catch (NumberFormatException e) {
             log
                 .error("Error in parsing table partition number, skipping table:"
@@ -81,6 +83,7 @@ public class DataExpiration {
           }
         }
       }
+      dbw.close();
     } catch (Exception e) {
       e.printStackTrace();
     }
