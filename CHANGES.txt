@@ -85,6 +85,14 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-132.  Handle multi-line output in Job History file more gracefully. (Cheng Zhang via Eric Yang)
+
+    CHUKWA-124.  Fixed JDBC connection initialization and closing.  Added escapeQuotes utility method. (Eric Yang)
+
+    CHUKWA-122. Updated logic for finding time partition for Macro.  (Eric Yang)
+
+    CHUKWA-125. Updated chukwa demux template to include JobHistory parser. (Eric Yang)
+
     CHUKWA-98.  Added Daemon watcher to capture signal for pid file management. (Cheng Zhang via Eric Yang)
 
     CHUKWA-120. Added the missing commons-cli library. (Jerome Boulon via Eric Yang)
