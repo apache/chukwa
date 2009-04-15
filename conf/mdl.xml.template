@@ -1400,6 +1400,26 @@
   <value>jobconf</value>
 </property>
   
+<property>
+  <name>metric.jobdata.finished_maps</name>
+  <value>finished_maps</value>
+</property>
+
+<property>
+  <name>metric.jobdata.finished_reduces</name>
+  <value>finished_reduces</value>
+</property>
+
+<property>
+  <name>metric.jobdata.failed_maps</name>
+  <value>failed_maps</value>
+</property>
+
+<property>
+  <name>metric.jobdata.failed_reduces</name>
+  <value>failed_reduces</value>
+</property>
+
 <!-- for hadoop 0.20 -->
 <property>
   <name>metric.jobdata.counter:filesystemcounters:hdfs_bytes_read</name>
@@ -1830,6 +1850,17 @@
 
 <property>
   <name>consolidator.table.ClientTrace</name>
+  <value>5,30,180,720</value>
+</property>
+
+<property>
+  <name>report.db.name.util</name>
+  <value>util</value>
+  <description></description>
+</property>
+
+<property>
+  <name>consolidator.table.util</name>
   <value>5,30,180,720</value>
 </property>
 
