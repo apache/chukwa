@@ -30,13 +30,52 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
 public class JobLog extends AbstractProcessor {
+  private String savedLines = "";
+  
+  /**
+   * Job logs could be split into multiple lines.  
+   * If input recordEntry ends with '"' or '" .', process the line. 
+   * Otherwise, save the log and wait for the next log. 
+   * 
+   * @return An object of JobLogLine if a full job log is found. Null otherwise.
+   */
+  public JobLogLine getJobLogLine(String recordEntry) {
+    if(recordEntry == null) {
+      savedLines = "";
+      return null;
+    }
+    recordEntry = recordEntry.trim();
+    if(recordEntry.length() == 0) {
+      savedLines = "";
+      return null;
+    }
+    
+    if(recordEntry.startsWith("Job") 
+        || recordEntry.startsWith("Task") 
+        || recordEntry.startsWith("MapAttempt") 
+        || recordEntry.startsWith("ReduceAttempt")) 
+    {
+      savedLines = "";
+    }
+    
+    savedLines += recordEntry;
+    if(!savedLines.endsWith("\"") && !savedLines.endsWith("\" .")) {
+      return null;
+    }
+    
+    JobLogLine line = new JobLogLine(savedLines);
+    return line;
+  }
 
 	@Override
 	protected void parse(String recordEntry,
 			OutputCollector<ChukwaRecordKey, ChukwaRecord> output,
 			Reporter reporter) throws Throwable 
 	{
-		JobLogLine line = new JobLogLine(recordEntry);
+	  JobLogLine line = getJobLogLine(recordEntry);
+	  if(line == null) {
+	    return;
+	  }
 		key = new ChukwaRecordKey();
 		ChukwaRecord record = new ChukwaRecord();
 		this.buildGenericRecord(record, null, -1l, line.getLogType());
