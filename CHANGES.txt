@@ -85,6 +85,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-121.  Added logic to detect partition number less than 0.  (Eric Yang)
+
     CHUKWA-132.  Handle multi-line output in Job History file more gracefully. (Cheng Zhang via Eric Yang)
 
     CHUKWA-124.  Fixed JDBC connection initialization and closing.  Added escapeQuotes utility method. (Eric Yang)
