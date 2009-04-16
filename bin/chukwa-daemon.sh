@@ -96,7 +96,7 @@ fi
 case $startStop in
 
   (start)
-    MAIL=`cat ${CHUKWA_CONF_DIR}/alert.conf`
+    MAIL=`cat ${CHUKWA_CONF_DIR}/alert`
 
     RANDOM=`date '+%s'`
     PARTROL_HOUR=$[($RANDOM % 24)]
