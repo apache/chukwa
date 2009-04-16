@@ -19,21 +19,36 @@
 package org.apache.hadoop.chukwa.datacollection.agent;
 
 
-import org.apache.hadoop.chukwa.datacollection.DataFactory;
-import org.apache.hadoop.chukwa.datacollection.adaptor.*;
-import org.apache.hadoop.chukwa.datacollection.agent.metrics.AgentMetrics;
-import org.apache.hadoop.chukwa.datacollection.connector.*;
-import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
-import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
-import org.apache.hadoop.chukwa.util.*;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.log4j.Logger;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.*;
+
+import org.apache.hadoop.chukwa.datacollection.DataFactory;
+import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
+import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
+import org.apache.hadoop.chukwa.datacollection.agent.metrics.AgentMetrics;
+import org.apache.hadoop.chukwa.datacollection.connector.Connector;
+import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
+import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
+import org.apache.hadoop.chukwa.util.DaemonWatcher;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.log4j.Logger;
 
 /**
  * The local agent daemon that runs on each machine. This class is designed to
@@ -192,7 +207,8 @@ public class ChukwaAgent {
     if (checkpointDir != null && !checkpointDir.exists()) {
       checkpointDir.mkdirs();
     }
-    tags = conf.get("chukwaAgent.tags", "cluster=\"unknown\"");
+    
+    DataFactory.getInstance().addDefaultTag(conf.get("chukwaAgent.tags", "cluster=\"unknown\""));
 
     log.info("Config - CHECKPOINT_BASE_NAME: [" + CHECKPOINT_BASE_NAME + "]");
     log.info("Config - checkpointDir: [" + checkpointDir + "]");
@@ -594,9 +610,4 @@ public class ChukwaAgent {
   AgentControlSocketListener getControlSock() {
     return controlSock;
   }
-
-  public static String getTags() {
-    return tags;
-  }
-
 }

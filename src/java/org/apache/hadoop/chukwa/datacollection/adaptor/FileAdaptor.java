@@ -279,8 +279,7 @@ public class FileAdaptor implements Adaptor {
       byte[] buf, long fileTime) throws InterruptedException {
     final ChunkImpl chunk = new ChunkImpl(type, toWatch.getAbsolutePath(),
         buffOffsetInFile + buf.length, buf, this);
-    String tags = chunk.getTags();
-    chunk.setTags(tags + " time=\"" + fileTime + "\"");
+    chunk.addTag("time=\"" + fileTime + "\"");
     log.info("Adding " + toWatch.getAbsolutePath() + " to the queue");
     eq.add(chunk);
     log.info( toWatch.getAbsolutePath() + " added to the queue");
