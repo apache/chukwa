@@ -22,8 +22,9 @@ package org.apache.hadoop.chukwa.datacollection;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+
+import org.apache.hadoop.chukwa.datacollection.agent.MemLimitQueue;
 import org.apache.hadoop.chukwa.datacollection.sender.RetryListOfCollectors;
-import org.apache.hadoop.chukwa.datacollection.agent.*;
 import org.apache.log4j.Logger;
 
 public class DataFactory {
@@ -31,8 +32,10 @@ public class DataFactory {
   static final int QUEUE_SIZE_KB = 10 * 1024;
   static final String COLLECTORS_FILENAME = "collectors";
   private static DataFactory dataFactory = null;
-  private ChunkQueue chunkQueue = new MemLimitQueue(QUEUE_SIZE_KB * 1024);
+  private ChunkQueue chunkQueue = null;
 
+  private String defaultTags = "";
+  
   static {
     dataFactory = new DataFactory();
   }
@@ -44,10 +47,21 @@ public class DataFactory {
     return dataFactory;
   }
 
-  public ChunkQueue getEventQueue() {
+  public synchronized ChunkQueue getEventQueue() {
+    if (chunkQueue == null) {
+      chunkQueue = new MemLimitQueue(QUEUE_SIZE_KB * 1024);
+    }
     return chunkQueue;
   }
 
+  public String getDefaultTags() {
+    return defaultTags;
+  }
+  
+  public void addDefaultTag(String tag) {
+    this.defaultTags += " " + tag.trim();
+  }
+  
   /**
    * @return empty list if file does not exist
    * @throws IOException on other error

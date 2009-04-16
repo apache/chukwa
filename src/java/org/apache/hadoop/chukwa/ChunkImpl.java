@@ -24,12 +24,14 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+
+import org.apache.hadoop.chukwa.datacollection.DataFactory;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
-import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 
 public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
   public static int PROTOCOL_VERSION = 1;
 
+  protected DataFactory dataFactory = DataFactory.getInstance();
   private String source = "";
   private String application = "";
   private String dataType = "";
@@ -43,7 +45,6 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
   long seqID;
 
   ChunkImpl() {
-    this.tags = ChukwaAgent.getTags();
   }
 
   public static ChunkImpl getBlankChunk() {
@@ -54,7 +55,7 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
                    Adaptor source) {
     this.seqID = seq;
     this.source = localHostAddr;
-    this.tags = ChukwaAgent.getTags();
+    this.tags = dataFactory.getDefaultTags();
     this.application = streamName;
     this.dataType = dataType;
     this.data = data;
@@ -161,8 +162,8 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
   }
 
   @Override
-  public void setTags(String tags) {
-    this.tags = tags;
+  public void addTag(String tags) {
+    this.tags += " "+ tags;
   }
 
   /**

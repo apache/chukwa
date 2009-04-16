@@ -32,6 +32,12 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-128.  Added tools to compute aggregation in database. (Eric Yang)
+
+    CHUKWA-112.  Updated README file.  (Corinne Chandel via Eric Yang)
+
+    CHUKWA-134. Add release audit target. (Giridharan Kesavan via Eric Yang)
+
     CHUKWA-80.  Extracted rpm spec file from build.xml file.  Fix start up script, and config script. (Eric Yang)
 
     CHUKWA-26.  * DemuxManager, ArchiveManager and PostProcessorManager are now a single daemon process each.
@@ -84,6 +90,10 @@ Trunk (unreleased changes)
   OPTIMIZATIONS
 
   BUG FIXES
+
+    CHUKWA-119.  Removed dependency of ChukwaAgent from ChunkImpl for preventing multiple
+                 MetricsContext to be initialized in the same VM. (Jerome Boulon via Eric Yang)
+
 
     CHUKWA-121.  Added logic to detect partition number less than 0.  (Eric Yang)
 

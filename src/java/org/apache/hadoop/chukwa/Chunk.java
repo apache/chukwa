@@ -105,16 +105,17 @@ public interface Chunk {
   public int getSerializedSizeEstimate();
 
   /**
-   * @return name of cluster that this chunk comes from.
+   * @return tags.
    * 
    */
   public String getTags();
 
   /**
-   * Set the name of the cluster that this chunk comes from.
+   * Add tag.
    * 
    */
-  public void setTags(String tags);
+  public void addTag(String tag);
 
+  
   public void write(DataOutput data) throws IOException;
 }
