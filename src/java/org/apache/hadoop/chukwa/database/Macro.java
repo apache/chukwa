@@ -88,9 +88,7 @@ public class Macro {
                 if(cluster==null) {
                     cluster="unknown";
                 }
-                if(db==null) {
-                    db = new DatabaseWriter(cluster);
-                }
+                db = new DatabaseWriter(cluster);
                 DatabaseMetaData dbMetaData = db.getConnection().getMetaData();
                 ResultSet rs = dbMetaData.getColumns ( null,null,table[0], null);
                 boolean first=true;
