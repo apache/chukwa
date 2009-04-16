@@ -18,6 +18,8 @@
       extends="jetty"
       description="artifacts needed to compile/test the application"/>
     <conf name="jetty" visibility="private" />
+    <conf name="releaseaudit" visibility="private"
+	description="Artifacts required for releaseaudit target"/>
     
   </configurations>
 
@@ -112,5 +114,17 @@
       name="hadoop-core"
       rev="${hadoop.version}"
       conf="common->default"/ -->
-    </dependencies>
+    <dependency org="com.google.code.p.arat"
+      name="rat-lib"
+      rev="${rats-lib.version}"
+      conf="releaseaudit->default"/>
+    <dependency org="commons-lang"
+      name="commons-lang"
+      rev="${commons-lang.version}"
+      conf="releaseaudit->default"/>
+    <dependency org="commons-collections"
+      name="commons-collections"
+      rev="${commons-collections.version}"
+      conf="releaseaudit->default"/>
+  </dependencies>
 </ivy-module>

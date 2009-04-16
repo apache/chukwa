@@ -140,7 +140,7 @@
 	  	<property name="build.ivy.lib.dir" location="${build.ivy.dir}/lib" />
 		<property name="build.ivy.report.dir" location="${build.ivy.dir}/report" />
 	  	<property name="common.ivy.lib.dir" location="${build.ivy.lib.dir}/${ant.project.name}/common"/> 
-
+                <property name="rat.reporting.classname" value="rat.Report"/> 
 	  	<!--this is the naming policy for artifacts we want pulled down-->
 	  	<property name="ivy.artifact.retrieve.pattern"
     			value="${ant.project.name}/[conf]/[artifact]-[revision].[ext]"/>
@@ -195,7 +195,8 @@
 		<ivy:cachepath pathid="contrib-classpath" conf="common" />
 	</target>
         
-        <target name="init-hadoop" if="hadoopMode">
+
+<target name="init-hadoop" if="hadoopMode">
 		<antcall target="ivy-retrieve-common"/>
                 <echo>Hadoop Mode</echo>
 	        <property name="build.dir" value="${basedir}/build"/>
@@ -540,9 +541,6 @@
 		                <include name="org/apache/hadoop/chukwa/datacollection/client/**/*.java"/>
 		                <include name="org/apache/hadoop/chukwa/util/**/*.java"/>
 			</fileset>
-			<fileset dir="${build.dir}/conf">
-		                <include name="chukwa-hadoop-metrics-log4j.properties"/>
-			</fileset>
 			<fileset dir="${build.classes}">
 				<include name="org/apache/hadoop/mapred/**/*.class"/>
 				<include name="org/apache/hadoop/chukwa/datacollection/client/**/*.class"/>
@@ -632,6 +630,7 @@
             <delete dir="${build.dir}"/>
             <delete dir="${build.ivy.lib.dir}/${ant.project.home}"/>
             <delete dir="build"/>
+	    <delete file="${ivy.jar}"/>	
             <delete dir="${docs.src}/build"/>
         </target>
 	<!-- ====================================================== -->
@@ -724,8 +723,18 @@
 		</copy>
 
 		<copy todir="${build.dir}/${final.name}/conf">
-			<fileset dir="${basedir}/conf"/>
+			<fileset dir="${basedir}/conf">
+                                <exclude name="hadoop-metrics.properties" />
+                        </fileset>
 		</copy>
+                <copy file="${basedir}/conf/hadoop-metrics.properties"
+                            tofile="${build.dir}/${final.name}/conf/hadoop-metrics.properties">
+                        <filterchain>
+                                <replacetokens>
+                                        <token key="CHUKWA_LOG_DIR" value="${CHUKWA_LOG_DIR}"/>
+                                </replacetokens>
+                        </filterchain>
+                </copy>
 
 		<copy todir="${build.dir}/${final.name}/opt" failonerror="false">
 			<fileset dir="${opt.dir}" />
@@ -835,4 +844,24 @@
 		<rpm specFile="chukwa.spec" topDir="${build.dir}" cleanBuildDir="true" failOnError="true"/>
         </target>
 
+        <!-- ================================================================== -->
+	<!-- Perform audit activities for the release                           -->
+  	<!-- ================================================================== -->
+  	<target name="releaseaudit" depends="package,ivy-retrieve-releaseaudit" description="Release Audit activities">
+    		<java classname="${rat.reporting.classname}" fork="true">
+      			<classpath refid="releaseaudit-classpath"/>
+      			<arg value="${build.dir}/${final.name}"/>
+    		</java>
+  	</target>
+
+	<target name="ivy-retrieve-releaseaudit" depends="ivy-resolve-releaseaudit"
+    		description="Retrieve Ivy-managed artifacts for the compile configurations">
+    		<ivy:retrieve settingsRef="${ant.project.name}.ivy.settings"
+      			pattern="${build.ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" />
+    		<ivy:cachepath pathid="releaseaudit-classpath" conf="releaseaudit"/>
+  	</target>
+
+	<target name="ivy-resolve-releaseaudit" depends="ivy-init-local">
+    		<ivy:resolve settingsRef="${ant.project.name}.ivy.settings" conf="releaseaudit"/>
+  	</target>
 </project>
