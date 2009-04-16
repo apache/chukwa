@@ -310,7 +310,7 @@ public class ChukwaAgent {
       long adaptorID;
       synchronized (adaptorsByNumber) {
         for (Map.Entry<Long, Adaptor> a : adaptorsByNumber.entrySet()) {
-          if (params.intern() == a.getValue().getStreamName().intern()) {
+          if (params.indexOf(a.getValue().getStreamName())!=-1) {
             log.warn(params + " already exist, skipping.");
             return -1;
           }
