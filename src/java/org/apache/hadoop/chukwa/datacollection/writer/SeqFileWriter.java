@@ -112,23 +112,14 @@ public class SeqFileWriter implements ChukwaWriter {
     try {
       fs = FileSystem.get(new URI(fsname), conf);
       if (fs == null) {
-        log.error("can't connect to HDFS at " + fs.getUri());
-        return;
-      } else
-        log.info("filesystem is " + fs.getUri());
-    } catch (IOException e) {
-      log
-          .error(
-              "can't connect to HDFS, trying default file system instead (likely to be local)",
-              e);
-      try {
-        fs = FileSystem.get(conf);
-      } catch (IOException err) {
-        log.error("can't connect to default file system either", e);
-      }
-    } catch (URISyntaxException e) {
-      log.error("problem generating new URI from config setting");
-      return;
+        log.error("can't connect to HDFS at " + fs.getUri() + " bail out!");
+        DaemonWatcher.bailout(-1);
+      } 
+    } catch (Throwable e) {
+      log.error(
+          "can't connect to HDFS, trying default file system instead (likely to be local)",
+          e);
+      DaemonWatcher.bailout(-1);
     }
 
     // Setup everything by rotating
