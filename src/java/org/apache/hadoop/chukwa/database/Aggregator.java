@@ -25,9 +25,11 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
@@ -73,27 +75,40 @@ public class Aggregator {
     return contents.toString();
   }
 
-  public void process(String query) {
-    ResultSet rs = null;
-    String[] columns;
-    int[] columnsType;
-    String groupBy = "";
-    long start = current;
-    long end = current;
-
+  public void process(long start, long end, String query) {
     try {
-      Macro macroProcessor = new Macro(current, current, query);
+      Macro macroProcessor = new Macro(start, end, query);
       query = macroProcessor.toString();
+      log.info(query);
       db.execute(query);
     } catch (Exception e) {
       log.error(query);
-      log.error(e.getMessage());
+      log.error(ExceptionUtil.getStackTrace(e));
     }
   }
 
+  public void process(String query) {
+    long start = current;
+    long end = current;
+    process(current, current, query);
+  }
+
   public static void main(String[] args) {
+    long startTime = 0;
+    long endTime = 0;
     long aggregatorStart = Calendar.getInstance().getTimeInMillis();
     long longest = 0;
+    if(args.length>=4) {
+      ParsePosition pp = new ParsePosition(0);
+      SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+      String buffer = args[0]+" "+args[1];
+      Date tmp = format.parse(buffer, pp);
+      startTime = tmp.getTime();
+      buffer = args[2]+" "+args[3];
+      pp = new ParsePosition(0);
+      tmp = format.parse(buffer, pp);
+      endTime = tmp.getTime();
+    }
     String longQuery = null;
     log.info("Aggregator started.");
     String cluster = System.getProperty("CLUSTER");
@@ -105,21 +120,28 @@ public class Aggregator {
         .getenv("CHUKWA_CONF_DIR")
         + File.separator + "aggregator.sql"));
     String[] query = queries.split("\n");
-    for (int i = 0; i < query.length; i++) {
-      if (query[i].equals("")) {
-      } else if (query[i].indexOf("#") == 0) {
-        log.debug("skipping: " + query[i]);
-      } else {
-        Aggregator dba = new Aggregator();
-        long start = Calendar.getInstance().getTimeInMillis();
-        dba.process(query[i]);
-        long end = Calendar.getInstance().getTimeInMillis();
-        long duration = end - start;
-        if (duration >= longest) {
-          longest = duration;
-          longQuery = query[i];
+    while(startTime<=endTime) {
+      for (int i = 0; i < query.length; i++) {
+        if (query[i].equals("")) {
+        } else if (query[i].indexOf("#") == 0) {
+          log.debug("skipping: " + query[i]);
+        } else {
+          Aggregator dba = new Aggregator();
+          long start = Calendar.getInstance().getTimeInMillis();
+          if(startTime!=0 && endTime!=0) {
+            dba.process(startTime, startTime, query[i]);
+          } else {
+            dba.process(query[i]);
+          }
+          long end = Calendar.getInstance().getTimeInMillis();
+          long duration = end - start;
+          if (duration >= longest) {
+            longest = duration;
+            longQuery = query[i];
+          }
         }
       }
+      startTime = startTime + 5*60000;
     }
     db.close();
     long aggregatorEnd = Calendar.getInstance().getTimeInMillis();
