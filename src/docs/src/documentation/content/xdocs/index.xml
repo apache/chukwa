@@ -27,11 +27,10 @@
         The Chukwa Documentation provides the information you need to get started using Chukwa.
       </p>
       <p>
-        Begin with the <a href="quickstart.html"> Chukwa Quick Start</a> which shows you how to setup and deploy Chukwa. 
-        Then move on to  .....
+        Begin with the <a href="admin.html"> Chukwa Administration Guide</a> which shows you how to setup and deploy Chukwa. 
       </p>
       <p>
-		If you have more questions, you can ask on the <a href="http://hadoop.apache.org/mailing_lists.html">XXX Mailing Lists</a>.
-    </p>
+		If you have more questions, you can ask on the <a href="ext:lists">Chukwa Core Mailing Lists</a>.
+      </p>
   </body>
 </document>

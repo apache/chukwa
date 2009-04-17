@@ -32,6 +32,16 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-141. Updated Chukwa Docs overview page for 0.1.2. (Corinne Chandel via Eric Yang)
+
+    CHUKWA-138. Updated Chukwa Admin Guide. (Corinne Chandel via Eric Yang)
+
+    CHUKWA-140. Updated Chukwa Docs tab for 0.1.2. (Corinne Chandel via Eric Yang)
+
+    CHUKWA-112.  Updated README file.  (Corinne Chandel via Eric Yang)
+
+    CHUKWA-134. Add release audit target. (Giridharan Kesavan via Eric Yang)
+
     CHUKWA-80.  Extracted rpm spec file from build.xml file.  Fix start up script, and config script. (Eric Yang)
 
     CHUKWA-26.  * DemuxManager, ArchiveManager and PostProcessorManager are now a single daemon process each.
@@ -78,6 +88,11 @@ Trunk (unreleased changes)
   OPTIMIZATIONS
 
   BUG FIXES
+
+    CHUKWA-139. Rewrite collector bail out code.  (Cheng Zhang via Eric Yang)
+
+    CHUKWA-119.  Removed dependency of ChukwaAgent from ChunkImpl for preventing multiple 
+                 MetricsContext to be initialized in the same VM. (Jerome Boulon via Eric Yang)
 
     CHUKWA-121.  Added logic to detect partition number less than 0.  (Eric Yang)
 
