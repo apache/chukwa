@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+<document>
+  <header>
+    <title>Chukwa Administration Guide</title>
+  </header>
+  <body>
+
+<section>
+<title> Purpose </title>
+<p>The purpose of this document is to help you install and configure Chukwa.</p>
+</section>
+
+<section>
+<title> Pre-requisites</title>
+<section>
+<title>Supported Platforms</title>
+<p>GNU/Linux is supported as a development and production platform. Chukwa has been demonstrated on Hadoop clusters with 2000 nodes.</p>
+</section>
+<section>
+<title>Required Software</title>
+<p>Required software for Linux include:</p>
+<ol>
+<li> Java 1.6.10, preferably from Sun, installed (see <a href="http://java.sun.com/">http://java.sun.com/</a>)
+</li> <li> MySQL 5.1.30 (see below)
+</li> <li> Hadoop cluster, installed (see <a href="http://hadoop.apache.org/" >http://hadoop.apache.org/</a>)
+</li> <li> ssh must be installed and sshd must be running to use the Chukwa scripts that manage remote Chukwa daemons 
+</li></ol> 
+</section>
+</section>
+
+
+<section>
+<title>Install Chukwa</title>
+<p>Chukwa is installed on: </p>
+<ul>
+<li> A hadoop cluster created specifically for Chukwa (referred to as the Chukwa cluster)</li> 
+<li> The source nodes that Chukwa monitors (referred to as the monitored source nodes)</li>
+</ul> 
+<p></p>
+<p></p>
+<p>Chukwa can also be installed on a single node, in which case the machine must have at least 16 GB of memory. </p>
+<p></p>
+<p></p>
+<p></p>
+
+<figure  align="left" alt="Chukwa Components" src="images/components.gif" />
+
+<section>
+<title>General  Install Procedure </title>
+<p>1. Select one of the nodes in the Chukwa cluster: </p>
+<ul>
+<li> Create a directory for the Chukwa installation (Chukwa will automatically set the  environment variable <strong>CHUKWA_HOME</strong> to point to this directory during the install)
+</li> <li> Move to the new directory
+</li> <li> Download and un-tar the Chukwa binary
+</li> <li> Configure the components for the Chukwa cluster (see Chukwa Cluster Deployment)
+</li> <li> Zip the directory and deploy to all nodes in the Chukwa cluster
+</li></ul> 
+<p></p>
+<p></p>
+<p>2. Select one of the source nodes to be monitored </p>
+<ul>
+<li> Create a directory for the Chukwa installation (Chukwa will set the environment variable <strong>CHUKWA_HOME</strong> to point to this directory)
+</li> <li> Move to the new directory
+</li> <li> Download and un-tar the Chukwa binary
+</li> <li> Configure the components for the source nodes (see Monitored Source Node Deployment)
+</li> <li> Zip the directory and deploy to all source nodes to be monitored
+</li></ul> 
+</section>
+
+<section>
+<title>Chukwa Binary</title>
+<p>To get a Chukwa distribution, download a recent stable release of Hadoop from one of the Apache Download Mirrors. 
+Nightly build of Chukwa trunk is available from <a href="http://hadoopqa.yst.corp.yahoo.com:8080/hudson/job/chukwa-release/">Hudson</a>.  
+</p>
+<p>You want the file named: chukwa-n.n.n.nnnnnnn.tar.gz</p>
+</section>
+
+<section>
+<title>Chukwa Configuration Files </title>
+<p>The Chukwa configuration files are located in the CHUKWA_HOME/conf directory. The configuration files that you modify are named <strong> *.template. </strong>
+To set up your Chukwa installation (to configure various components), copy, rename, and modify the *.template files as necessary. 
+For example, copy the chukwa-collector-conf.xml.template file to a file named chukwa-collector-conf.xml and then modify the file to include the cluster/group name for the source nodes.
+
+
+
+
+
+</p>
+</section>
+
+</section>
+
+
+<section>
+<title>Chukwa Cluster Deployment </title>
+<p>This section describes how to set up the Chukwa cluster and related components.</p>
+
+<section>
+<title>1. Set the Environment Variables</title>
+<p>Edit the CHUKWA_HOME/conf/chukwa-env.sh configuration file. </p> 
+<ul>
+<li> Set JAVA_HOME to your Java installation.
+</li> <li> Set HADOOP_JAR to $CHUKWA_HOME/hadoopjars/hadoop-0.18.2.jar 
+</li> <li> Set CHUKWA_IDENT_STRING to the Chukwa cluster name. 
+</li></ul> 
+</section>
+
+<section>
+<title>2. Set Up the Hadoop jar File </title>
+<source>
+cp $HADOOP&#95;HOME/lib hadoop-&#42;-core.jar file $CHUKWA&#95;HOME/hadoopjars
+</source>
+</section>
+
+
+<section>
+<title> 3. Configure the Collector  </title>
+<p>Edit the CHUKWA_HOME/conf/chukwa-collector-conf.xml configuration file.</p>
+<p>Set the writer.hdfs.filesystem property to the HDFS root url. </p>
+</section>
+
+<section>
+<title> 4. Set Up the Database </title>
+<p>Set up and configure the MySQL database.</p>
+
+<section>
+<title>Install MySQL</title>
+
+<section>
+<title>Download MySQL</title>
+<p>Download MySQL 5.1 from the <a href="http://dev.mysql.com/downloads/mysql/5.1.html#downloads">MySQL site</a>. </p>
+<source>
+tar fxvz mysql-&#42;.tar.gz -C $CHUKWA&#95;HOME/opt
+cd $CHUKWA&#95;HOME/opt/mysql-&#42;
+</source>
+</section>
+
+<section>
+<title>Set Up my.cnf</title>
+<p>
+Copy the my.cnf file (see below) to the CHUKWA_HOME/opt/mysql-* directory.
+</p>
+<source>
+./scripts/mysql&#95;install&#95;db
+./bin/mysqld&#95;safe&#38;
+./bin/mysqladmin -u root create &#60;clustername&#62;
+./bin/mysql -u root &#60;clustername&#62; &#60; $CHUKWA&#95;HOME/conf/database&#95;create&#95;table
+</source>
+</section>
+
+
+<section>
+<title>Set Up the Database URL </title>
+<p>Edit the CHUKWA_HOME/conf/jdbc.conf configuration file. </p>
+<p>Set the clustername to the MYSQL root URL.</p>
+<source>
+&#60;clustername&#62;&#61;jdbc:mysql://localhost:3306/&#60;clustername&#62;?user&#61;root
+</source>
+</section>
+
+<section>
+<title>Download MySQL Connector/J</title>
+<p>Download the MySQL Connector/J 5.1 from the  <a href="http://dev.mysql.com/downloads/connector/j/5.1.html">MySQL site</a>, 
+and place the jar file in $CHUKWA_HOME/lib.</p>
+</section>
+</section>
+
+<section>
+<title>Configure my.cnf File</title>
+
+<p>Create my.cnf file which contains the following:</p>
+<source>
+&#91;mysqld]
+tempdir&#61;/grid/0/tmp
+datadir&#61;/var/lib/mysql
+socket&#61;/var/lib/mysql/mysql.sock
+# Default to using old password format for compatibility with mysql 3.x
+# clients (those using the mysqlclient10 compatibility package).
+old&#95;passwords&#61;1
+
+&#91;mysql.server]
+user&#61;mysql
+basedir&#61;/var/lib
+
+&#91;mysqld&#95;safe]
+log-error&#61;/var/log/mysqld.log
+pid-file&#61;/var/run/mysqld/mysqld.pid
+
+# 16GB Database Configuration
+skip-locking
+key&#95;buffer &#61; 4096M
+max&#95;allowed&#95;packet &#61; 16M
+table&#95;cache &#61; 4096
+sort&#95;buffer&#95;size &#61; 32M
+read&#95;buffer&#95;size &#61; 32M
+read&#95;rnd&#95;buffer&#95;size &#61; 128M
+myisam&#95;sort&#95;buffer&#95;size &#61; 256M
+thread&#95;cache&#95;size &#61; 128
+query&#95;cache&#95;size &#61; 4096M
+# Try number of CPU&#39;s&#42;2 for thread&#95;concurrency
+thread&#95;concurrency &#61; 16
+skip-federated
+
+# 8GB Database Configuration
+#skip-locking
+#key&#95;buffer &#61; 2048M
+#max&#95;allowed&#95;packet &#61; 8M
+#table&#95;cache &#61; 2048
+#sort&#95;buffer&#95;size &#61; 16M
+#read&#95;buffer&#95;size &#61; 16M
+#read&#95;rnd&#95;buffer&#95;size &#61; 64M
+#myisam&#95;sort&#95;buffer&#95;size &#61; 128M
+#thread&#95;cache&#95;size &#61; 64
+#query&#95;cache&#95;size &#61; 2048M
+#thread&#95;concurrency &#61; 16
+#skip-federated
+
+
+#master configuration
+log-bin&#61;mysql-bin
+server-id       &#61; 3
+expire&#95;logs&#95;days &#61; 3
+
+#slave configuration
+#
+#server-id       &#61; 5
+#master-host     &#61;   &#60;hostname&#62;
+#master-user     &#61;   gmetrics
+#master-password &#61;   gmetrics
+#master-port     &#61;  3306
+#log-bin&#61;mysql-bin
+
+&#91;mysqldump]
+quick
+max&#95;allowed&#95;packet &#61; 16M
+
+&#91;mysql]
+no-auto-rehash
+
+# 16 GB Configuration
+&#91;isamchk]
+key&#95;buffer &#61; 4064M
+sort&#95;buffer&#95;size &#61; 4064M
+read&#95;buffer &#61; 32M
+write&#95;buffer &#61; 32M
+
+&#91;myisamchk]
+key&#95;buffer &#61; 4064M
+sort&#95;buffer&#95;size &#61; 4064M
+read&#95;buffer &#61; 32M
+write&#95;buffer &#61; 32M
+
+# 8 GB configuration
+#&#91;isamchk]
+#key&#95;buffer &#61; 4064M
+#sort&#95;buffer&#95;size &#61; 4064M
+#read&#95;buffer &#61; 32M
+#write&#95;buffer &#61; 32M
+
+#&#91;myisamchk]
+#key&#95;buffer &#61; 4064M
+#sort&#95;buffer&#95;size &#61; 4064M
+#read&#95;buffer &#61; 32M
+#write&#95;buffer &#61; 32M
+
+&#91;mysqlhotcopy]
+interactive-timeout
+</source>
+
+<p>Uncomment the configuration base on database master or database slave hardware. For slave, make sure the master's hostname is added to master-host.</p>
+</section>
+
+<section>
+<title>Setup MySQL for Replication </title>
+
+<p>Start the MySQL shell:</p>
+<source>
+mysql -u root -p
+Enter password:
+</source>
+
+<p>From the MySQL shell, enter these commands (replace <em>some_password</em> with an actual password):</p>
+
+<source>
+GRANT REPLICATION SLAVE ON &#42;.&#42; TO &#39;gmetrics&#39;&#64;&#39;&#37;&#39; IDENTIFIED BY &#39;&#60;some&#95;password&#62;&#39;;
+FLUSH PRIVILEGES; 
+</source>
+</section>
+</section>
+
+<section>
+<title>5. Start the Chukwa Processes </title>
+
+<p>The Chukwa startup scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
+<ul>
+<li> Start the Chukwa collector  script (execute this command only on those nodes that have the Chukwa Collector installed):
+</li></ul> 
+<source>CHUKWA&#95;HOME/tools/init.d/chukwa-collector start </source> <ul>
+<li> Start the Chukwa data processors script (execute this command only on the data processor node):
+</li></ul> 
+<source>CHUKWA&#95;HOME/tools/init.d/chukwa-data-processors start </source>
+</section>
+
+<section>
+<title>6. Validate the Chukwa Processes </title>
+
+<p>The Chukwa status scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
+<ul>
+<li> To obtain the status for the Chukwa collector, run:
+</li></ul> 
+<source>CHUKWA&#95;HOME/tools/init.d/chukwa-collector status </source> <ul>
+<li> To verify that the data processors are functioning correctly: 
+</li></ul> 
+<source>Visit the Chukwa hadoop cluster&#39;s Job Tracker UI for job status. 
+Refresh to the Chukwa Cluster Configuration page for the Job Tracker URL. </source>
+</section>
+</section>
+
+<section>
+<title>Monitored Source Node Deployment </title>
+<p>This section describes how to set up the source nodes. </p>
+
+<section>
+<title>1. Set the Environment Variables </title>
+<p>Edit the CHUKWA_HOME/conf/chukwa-current/chukwa-env.sh configuration file. </p>
+<ul>
+<li> Set JAVA_HOME to the root of your Java installation 
+</li><li> Set other environment variables as necessary
+</li></ul> 
+
+<source>
+export JAVA&#95;HOME&#61;/grid/0/java/jdk
+export HADOOP&#95;HOME&#61;/grid/0/hadoop/current
+export nodeActivityCmde&#61;&#34;/grid/0/torque/current/bin/pbsnodes &#34;
+export TORQUE&#95;HOME&#61;/grid/0/torque
+export TORQUE&#95;SERVER&#61;gs302291
+export DOMAIN&#61;inktomisearch.com
+export chuwaRecordsRepository&#61;&#34;/chukwa/repos/&#34;
+export JDBC&#95;DRIVER&#61;com.mysql.jdbc.Driver
+export JDBC&#95;URL&#95;PREFIX&#61;jdbc:mysql://
+</source>
+</section>
+
+
+<section>
+<title>2. Configure the Agent</title>
+
+<p>Edit the CHUKWA_HOME/conf/chukwa-current/chukwa-agent-conf.xml configuration file. </p>
+<p>Enter the cluster/group name that identifies the monitored source nodes.</p>
+
+<source>
+ &#60;property&#62;
+    &#60;name&#62;chukwaAgent.tags&#60;/name&#62;
+    &#60;value&#62;cluster&#61;&#34;demo&#34;&#60;/value&#62;
+    &#60;description&#62;The cluster&#39;s name for this agent&#60;/description&#62;
+  &#60;/property&#62;
+</source>
+
+<p>Edit the CHUKWA_HOME/conf/chukwa-current/agents (or chukwa-agents) configuration file. </p>
+<p>Create a list of hosts that are running the Chukwa agent:</p>
+
+<source>
+localhost
+localhost
+localhost
+</source>
+
+<p>Edit the CHUKWA_HOME/conf/collectors configuration file. </p>
+<p>The Chukwa agent needs to know about the Chukwa collectors. Create a list of hosts that are running the Chukwa collector:</p>
+
+<p>This:</p>
+<source>
+&#60;collector1HostName&#62;
+&#60;collector2HostName&#62;
+&#60;collector3HostName&#62;
+</source>
+
+<p>Or, this:</p>
+<source>
+http://&#60;collector1HostName&#62;:&#60;collector1Port&#62;/
+http://&#60;collector2HostName&#62;:&#60;collector2Port&#62;/
+http://&#60;collector3HostName&#62;:&#60;collector3Port&#62;/
+</source>
+</section>
+
+
+
+<section>
+<title>3. Configure the Adaptor</title>
+<p>Edit the CHUKWA_HOME/conf/initial_adaptors configuration file.</p>
+
+<p>Define the default adaptors.</p>
+<source>
+add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped SysLog 0 /var/log/messages 0
+</source>
+<p>Make sure Chukwa has a Read access to /var/log/messages. </p>
+</section>
+
+
+<section>
+<title>4. Start the Chukwa Processes </title>
+
+<p>Start the Chukwa agent and system metrics processes on the monitored source nodes.</p>
+
+<p>The Chukwa startup scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
+
+<p>Run both of these commands on all monitored source nodes: </p>
+
+<ul>
+<li> Start the Chukwa agent script
+</li></ul> 
+<source>CHUKWA&#95;HOME /tools/init.d/chukwa-agent start</source> <ul>
+<li> Start the Chukwa system metrics script
+</li></ul> 
+<source>CHUKWA&#95;HOME /tools/init.d/chukwa-system-metrics start</source>
+</section>
+
+
+<section>
+<title>5. Validate the Chukwa Processes </title>
+
+<p>The Chukwa status scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
+
+<p>Verify that that agent and system metrics processes are running on all source nodes: </p>
+
+<ul>
+<li> To obtain the status for the Chukwa agent, run:
+</li></ul> 
+<source>CHUKWA&#95;HOME/tools/init.d/chukwa-agent status </source> <ul>
+<li> To obtain the status for the system metrics, run:
+</li></ul> 
+<source>CHUKWA&#95;HOME/tools/init.d/chukwa-system-metrics status </source>
+</section>
+
+</section>
+
+
+<section>
+<title>Troubleshooting Tips</title>
+
+<section>
+<title>UNIX Processes For Chukwa Agents</title>
+<p>The system metrics data loader process names are uniquely defined by:</p>
+<ul>
+<li> org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec sar -q -r -n ALL 55
+</li> <li> org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec iostat -x -k 55 2
+</li> <li> org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec top -b -n 1 -c
+</li> <li> org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec df -l
+</li> <li> org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec CHUKWA_HOME/bin/../bin/netstat.sh
+</li> <li> org.apache.hadoop.chukwa.inputtools.mdl.torqueDataLoader - (Only exist in the designated data loading node)
+</li> <li> org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec /grid/0/torque/current/bin/pbsnodes - (Only exist in the designated data loading node)
+</li></ul> 
+<p>The Chukwa agent process name is identified by:</p>
+<ul>
+<li> org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent
+</li></ul> 
+<p>Command line to use to search for the process name:</p>
+<ul>
+<li> ps ax | grep org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent
+</li></ul> 
+</section>
+
+<section>
+<title>UNIX Processes For Chukwa Collectors</title>
+<p>Chukwa Collector name is identified by:</p>
+<ul>
+<li> <strong>org.apache.hadoop.chukwa.datacollection.collector.CollectorStub</strong>
+</li></ul> 
+</section>
+
+<section>
+<title>UNIX Processes For Chukwa Data Processes</title>
+<p>Chukwa Data Processors are identified by:</p>
+<ul>
+<li> org.apache.hadoop.chukwa.extraction.demux.Demux
+</li> <li>org.apache.hadoop.chukwa.extraction.database.DatabaseLoader
+</li> <li>org.apache.hadoop.chukwa.extraction.archive.ChukwaArchiveBuilder
+</li></ul> 
+<p>The processes are scheduled execution, therefore they are not always visible from the process list.</p>
+</section>
+
+
+<section>
+<title>Checks for MySQL Replication </title>
+<p>At slave server, mysql prompt, run:</p>
+<source>
+show slave status\G
+</source>
+<p>Make sure both <strong>Slave_IO_Running</strong> and <strong>Slave_SQL_Running</strong> are both "Yes".</p>
+<p>Things to check if mysql replication fails:</p>
+<ul>
+<li> Make sure grant permission has been enabled on master mysql server.
+</li> <li> Check disk space availability.  
+</li> <li> Check Error status in slave status.
+</li></ul> 
+<p>To reset mysql replication, run these commands on mysql:</p>
+<source>
+STOP SLAVE;
+CHANGE MASTER TO
+  MASTER&#95;HOST&#61;&#39;hostname&#39;,
+  MASTER&#95;USER&#61;&#39;gmetrics&#39;,
+  MASTER&#95;PASSWORD&#61;&#39;gmetrics&#39;,
+  MASTER&#95;PORT&#61;3306,
+  MASTER&#95;LOG&#95;FILE&#61;&#39;master2-bin.001&#39;,
+  MASTER&#95;LOG&#95;POS&#61;4,
+  MASTER&#95;CONNECT&#95;RETRY&#61;10;
+START SLAVE;
+</source>
+</section>
+
+
+<section>
+<title> Checks For Disk Full </title>
+<p>If anything is wrong, use /etc/init.d/chukwa-agent and CHUKWA_HOME/tools/init.d/chukwa-system-metrics stop to shutdown Chukwa.  
+Look at agent.log and collector.log file to determine the problems. </p> 
+<p>The most common problem is the log files are growing unbounded. Set up a cron job to remove old log files:  </p>
+<source>
+ 0 12 &#42; &#42; &#42; /grid/0/chukwa/tools/expiration.sh 10 !CHUKWA&#95;HOME/var/log nowait
+</source>     
+<p>This will setup log file expiration for CHUKWA_HOME/var/log for log files older than 10 days.</p>
+</section>
+
+
+<section>
+<title>Emergency Shutdown Procedure</title>
+<p>If the system is misbehaving, and there is nothing else to try from the Administraion Guide, execute the following command:</p>
+<source>
+kill -3 &#60;pid&#62;
+</source>
+<p>This will write the current state of the java process to the log files.  Chukwa team will analyze this information to determine the cause of the crash.  
+After this has been completed, execute:</p>
+<source>
+sudo gmon
+crontab -r
+kill -9 -1
+</source>
+<p>This will shutdown watchdog and all chukwa processes on the running machine.  </p>
+</section>
+</section>
+
+</body>
+</document>
