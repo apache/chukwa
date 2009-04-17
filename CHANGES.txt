@@ -32,6 +32,10 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-141. Updated Chukwa Docs overview page for 0.1.2. (Corinne Chandel via Eric Yang)
+
+    CHUKWA-138. Updated Chukwa Admin Guide. (Corinne Chandel via Eric Yang)
+
     CHUKWA-128.  Added tools to compute aggregation in database. (Eric Yang)
 
     CHUKWA-112.  Updated README file.  (Corinne Chandel via Eric Yang)
@@ -90,6 +94,8 @@ Trunk (unreleased changes)
   OPTIMIZATIONS
 
   BUG FIXES
+
+    CHUKWA-139. Rewrite collector bail out code.  (Cheng Zhang via Eric Yang)
 
     CHUKWA-119.  Removed dependency of ChukwaAgent from ChunkImpl for preventing multiple
                  MetricsContext to be initialized in the same VM. (Jerome Boulon via Eric Yang)
