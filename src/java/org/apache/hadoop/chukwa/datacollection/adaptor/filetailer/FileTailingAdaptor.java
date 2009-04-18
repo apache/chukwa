@@ -135,8 +135,12 @@ public class FileTailingAdaptor implements Adaptor {
   public void hardStop() throws AdaptorException {
     tailer.stopWatchingFile(this);
     try {
-    reader.close();
-    } catch(IOException e) {
+      if (reader != null) {
+        reader.close();
+      }
+      reader = null;
+    } catch(Throwable e) {
+      // do nothing
     }
   }
 
@@ -225,7 +229,10 @@ public class FileTailingAdaptor implements Adaptor {
         len = reader.length();
         long newLength = newReader.length();
         if (newLength < len && fileReadOffset >= len) {
-          reader.close();
+          if (reader != null) {
+            reader.close();
+          }
+          
           reader = newReader;
           fileReadOffset = 0L;
           log.debug("Adaptor|" + adaptorID
@@ -233,8 +240,11 @@ public class FileTailingAdaptor implements Adaptor {
               + toWatch.getAbsolutePath());
         } else {
           try {
-            newReader.close();
-          } catch (IOException e) {
+            if (newReader != null) {
+              newReader.close();
+            }
+            newReader =null;
+          } catch (Throwable e) {
             // do nothing.
           }
         }
@@ -316,7 +326,10 @@ public class FileTailingAdaptor implements Adaptor {
 
       } else {
         // file has rotated and no detection
-        reader.close();
+        if (reader != null) {
+          reader.close();
+        }
+        
         reader = null;
         fileReadOffset = 0L;
         offsetOfFirstByte = 0L;
