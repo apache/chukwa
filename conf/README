@@ -27,10 +27,10 @@ alert.template
 chukwa-collector-conf.xml.template 
 > Modify? yes   
 > The name node address, used by collectors to write data to HDFS 
-> (eg: write.hdf.filesystem = hdfs://localhost:9000/)
+> eg: write.hdf.filesystem = hdfs://localhost:9000/
 --------------------------------------------
 jdbc.conf.template
-> Modify? yes, optional      			
+> Modify? yes     			
 > URL for the MySQL database 
 > eg: jdbc:mysql://localhost:3306?user-root
 ---------------------------------------------
