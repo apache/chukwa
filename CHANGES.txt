@@ -1,17 +1,21 @@
-Trunk (unreleased changes)
+Chukwa Change Log
 
-  INCOMPATIBLE CHANGES
+Trunk (unrelease changes)
+
+Release 0.1.2 - 2009-04-24
 
   NEW FEATURES
 
-    CHUKWA-78.  Added down sample SQL aggregation for job data, task data and utilization data. (Eric Yang)
+    CHUKWA-100. Added ability to run aggregation by command line utility. (Eric Yang)
+
+    CHUKWA-78. Added down sample SQL aggregation for job data, task data and utilization data. (Eric Yang)
 
     CHUKWA-17. Collect PS output every 10 minutes and parse into key/value pairs sequence file. (Cheng Zhang via Eric Yang)
 
     CHUKWA-55. Aggregate data from HDFS bytes usage, and Mapreduce Job slot time to compute user usage of the cluster. (Eric Yang)
 
-    CHUKWA-50.  Added parser for extract Job History and Job Conf into key value pairs, 
-                and database loader dictionary file. (Contribute by Cheng Zhang via Eric Yang)
+    CHUKWA-50. Added parser for extract Job History and Job Conf into key value pairs, 
+    and database loader dictionary file. (Contribute by Cheng Zhang via Eric Yang)
 
     CHUKWA-69.  Calculate trapezoid area for a given series of data.  (Contribute by Cheng Zhang via Eric Yang)
 
@@ -23,10 +27,10 @@ Trunk (unreleased changes)
 
     CHUKWA-45.  Added docs to folder structure. (Corinne Chandel via asrabkin)
 
-    CHUKWA-13.  * Create a new Macro class for macro substitution. (Eric Yang)
-                * Changed Aggregator to use Macro class.
-                * Added macro substitution support to Chukwa Charting.
-                * Added Macro test case.
+    CHUKWA-13.  Create a new Macro class for macro substitution.
+                Changed Aggregator to use Macro class.
+                Added macro substitution support to Chukwa Charting.
+                Added Macro test case. (Eric Yang)
 
     HADOOP-4989. Added capability to add scatter chart. (Eric Yang)
 
@@ -38,21 +42,21 @@ Trunk (unreleased changes)
 
     CHUKWA-140. Updated Chukwa Docs tab for 0.1.2. (Corinne Chandel via Eric Yang)
 
-    CHUKWA-112.  Updated README file.  (Corinne Chandel via Eric Yang)
+    CHUKWA-112. Updated README file.  (Corinne Chandel via Eric Yang)
 
     CHUKWA-134. Add release audit target. (Giridharan Kesavan via Eric Yang)
 
-    CHUKWA-80.  Extracted rpm spec file from build.xml file.  Fix start up script, and config script. (Eric Yang)
+    CHUKWA-80. Extracted rpm spec file from build.xml file.  Fix start up script, and config script. (Eric Yang)
 
-    CHUKWA-26.  * DemuxManager, ArchiveManager and PostProcessorManager are now a single daemon process each.
-                * Each one working independently from others, as soon as something is available.
-                * Start-data-processor is now using those new daemons instead of pocessSink.sh
-                * Daily will process a daily compaction only when all hourly would have been done.
-                * Demux is now able to send NSCA commands to Nagios. (Jerome Boulon via Eric Yang)
+    CHUKWA-26. DemuxManager, ArchiveManager and PostProcessorManager are now a single daemon process each.
+               Each one working independently from others, as soon as something is available.
+               Start-data-processor is now using those new daemons instead of pocessSink.sh
+               Daily will process a daily compaction only when all hourly would have been done.
+               Demux is now able to send NSCA commands to Nagios. (Jerome Boulon via Eric Yang)
 
-    CHUKWA-81.  Fix file descriptor leak.  (asrabkin)
+    CHUKWA-81. Fix file descriptor leak.  (asrabkin)
 
-    CHUKWA-29.  Added TaskTracker and DataNode client trace log parser and database loader.  (Chris Douglas via Eric Yang)
+    CHUKWA-29. Added TaskTracker and DataNode client trace log parser and database loader.  (Chris Douglas via Eric Yang)
 
     CHUKWA-86. Improved JDBC compatibility layer (Cheng Zhang via Eric Yang)
 
@@ -60,7 +64,7 @@ Trunk (unreleased changes)
 
     CHUKWA-59. Collect HDFS Usage information for users. (Contribute by Cheng Zhang via Eric Yang)
 
-    CHUKWA-54. Filters web based input from HICC to prevent cross site scripting attack.
+    CHUKWA-54. Filters web based input from HICC to prevent cross site scripting attack. (Eric Yang)
 
     CHUKWA-31. Added duration logging for SQL statements. (Eric Yang)
  
@@ -70,9 +74,9 @@ Trunk (unreleased changes)
 
     HADOOP-5228. Chukwa tests shouldn't write to /tmp. (asrabkin)
 
-    HADOOP-5035. * Improved Y axis ticker labelling. (Eric Yang) 
-                 * Used TreeMap to build non-time series data for charting. 
-                 * Improved handling of "not a number "values.
+    HADOOP-5035. Improved Y axis ticker labelling.
+                 Used TreeMap to build non-time series data for charting. 
+                 Improved handling of "not a number "values. (Eric Yang)
 
     HADOOP-5030. Changed RPM install location to the value specified by build.properties file. (Eric Yang)
 
@@ -80,14 +84,18 @@ Trunk (unreleased changes)
 
     HADOOP-4843. Enable job history log file streaming into Chukwa by using JobTrackerInstrumentation API. (Eric Yang)
 
-    HADOOP-4827. * Replace Consolidator with Aggregator macros 
-                 * Updated database table schema 
-                 * Fix interval for aggregation execute 
-                 * Improved SQL macros support, add group_avg() and past_*_minutes key word (Eric Yang)
+    HADOOP-4827. Replace Consolidator with Aggregator macros 
+                 Updated database table schema 
+                 Fix interval for aggregation execute 
+                 Improved SQL macros support, add group_avg() and past_*_minutes key word (Eric Yang)
 
   OPTIMIZATIONS
 
   BUG FIXES
+
+    CHUKWA-156. Test Macro testcase changed to use timestamp check for the generated macros. (Eric Yang)
+
+    CHUKWA-154.  Handle adaptor exception, close file pointers on failure condition.  (Jerome Boulon via Eric Yang)
 
     CHUKWA-139. Rewrite collector bail out code.  (Cheng Zhang via Eric Yang)
 
@@ -200,7 +208,7 @@ Trunk (unreleased changes)
     HADOOP-4791. Add build configuration parameter to specify where Chukwa will be installed for RPM packaging. (Eric Yang)
 
 
-Release 0.19.0 - Unreleased
+Release 0.1.1 - Unreleased
 
   IMPROVEMENTS
 
@@ -213,7 +221,6 @@ Release 0.19.0 - Unreleased
     HADOOP-5205.  Change the value of CHUKWA_IDENT_STRING from demo to TODO-AGENTS-INSTANCE-NAME in chukwa-env.sh.template (Jerome Boulon via asrabkin)
 
     HADOOP-5033.  Simplified ChukwaWriter API.  (asrabkin)
-
 
   NEW FEATURES
 

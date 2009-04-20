@@ -17,278 +17,359 @@
    limitations under the License.
 -->
 
-<project name="chukwa" default="main" 
-	xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="chukwa" default="main" xmlns:ivy="antlib:org.apache.ivy.ant">
 
-	<property name="name" value="chukwa"/>
-        <property name="chukwaVersion" value="0.1.2"/>
-        <property name="chukwaRelease" value="alpha"/>
-	<property name="final.name" value="${name}-${chukwaVersion}"/>
+	<property name="name" value="chukwa" />
+	<property name="chukwaVersion" value="0.1.2" />
+	<property name="chukwaRelease" value="alpha" />
+	<property name="final.name" value="${name}-${chukwaVersion}" />
 
-        <import file="../build-contrib.xml" optional="true"/>
-        <available file="../build-contrib.xml" property="present"/>
+	<import file="../build-contrib.xml" optional="true" />
+	<available file="../build-contrib.xml" property="present" />
 
-        <property file="build.properties"/>
-        <property file="default.properties"/>
+	<property file="build.properties" />
+	<property file="default.properties" />
 
-        <condition property="standaloneMode">
-                <and><not><available file="../build-contrib.xml" property="present"/></not></and>
-        </condition>
+	<condition property="standaloneMode">
+		<and>
+			<not>
+				<available file="../build-contrib.xml" property="present" />
+			</not>
+		</and>
+	</condition>
 
-        <condition property="hadoopMode">
-                <and><available file="../build-contrib.xml" property="present"/></and>
-        </condition>
+	<condition property="hadoopMode">
+		<and>
+			<available file="../build-contrib.xml" property="present" />
+		</and>
+	</condition>
 
-        <target name="init-standalone" depends="ivy-retrieve" if="standaloneMode">
-          <echo>Standalone Mode</echo>
-          <property environment="env"/>
-	  <property name="basedir" value="."/>
-          <!--SET UP HADOOP JARS-->
-          <property name="hadoop.home.dir" value="${env.HADOOP_HOME}"/>
-          <echo message="HADOOP_HOME set to: ${hadoop.home.dir}"/>
-          <property name="hadoop.default.jars.dir" value="${basedir}/hadoopjars"/>
+	<target name="init-standalone" depends="ivy-retrieve" if="standaloneMode">
+		<echo>Standalone Mode</echo>
+		<property environment="env" />
+		<property name="basedir" value="." />
+		<!--SET UP HADOOP JARS-->
+		<property name="hadoop.home.dir" value="${env.HADOOP_HOME}" />
+		<echo message="HADOOP_HOME set to: ${hadoop.home.dir}" />
+		<property name="hadoop.default.jars.dir" value="${basedir}/hadoopjars" />
 
-          <condition property="hadoop.home.jars.dir" value="${hadoop.home.dir}/build" else="${basedir}/hadoopjars">
-                <available file="${hadoop.home.dir}/build"/>
-          </condition>
-          <echo message="hadoop.home.jars.dir set to ${hadoop.home.jars.dir}"/>
+		<condition property="hadoop.home.jars.dir" value="${hadoop.home.dir}/build" else="${basedir}/hadoopjars">
+			<available file="${hadoop.home.dir}/build" />
+		</condition>
+		<echo message="hadoop.home.jars.dir set to ${hadoop.home.jars.dir}" />
 
-          <property name="build.dir" value="${basedir}/build"/>
-          <property name="build.classes" value="${basedir}/build/classes"/>
-          <property name="test.build.dir" value="${build.dir}/test"/>
-          <property name="test.build.classes" value="${test.build.dir}/classes"/>
-          <property name="lib.dir" value="${basedir}/lib"/>
-          <path id="classpath">
-                  <fileset dir="${lib.dir}">
-                          <include name="**/*.jar" />
-                          <exclude name="**/excluded/" />
-                  </fileset>
-                  <fileset dir="${hadoop.default.jars.dir}">   <!-- ASR -->
-                          <include name="**/*.jar" />
-                          <exclude name="**/*core*.jar" />
-                  </fileset>
-                  <fileset dir="${hadoop.home.jars.dir}">   <!-- ASR -->
-                          <include name="**/hadoop-0.2*-core.jar" />
-                  </fileset>
-                  <fileset dir="${common.ivy.lib.dir}">
-                          <include name="**/*.jar" />
-                  </fileset>
-                  <path refid="contrib-classpath"/>
-          </path>
-	  <path id="dp-classpath">
-                  <fileset dir="${lib.dir}">
-                          <include name="**/*.jar" />
-                          <exclude name="**/excluded/" />
-                  </fileset>
-		  <pathelement location="${build.classes}"/>
-                  <fileset dir="${hadoop.default.jars.dir}">   <!-- ASR -->
-                          <include name="**/*.jar" />
-                          <exclude name="**/*core*.jar" />
-                  </fileset>
-                  <fileset dir="${hadoop.default.jars.dir}">   <!-- ASR -->
-                          <include name="**/hadoop-0.18.0-core.jar" />
-                  </fileset>
-                  <fileset dir="${common.ivy.lib.dir}">
-                          <include name="**/*.jar" />
-                  </fileset>
-		  <pathelement location="${conf.dir}"/>
-	  </path>
-          <path id="testClasspath">
-                  <pathelement location="${build.classes}"/>
-                  <pathelement location="${test.build.classes}"/>
-                  <fileset dir="${lib.dir}">
-                          <include name="**/*.jar" />
-                          <exclude name="**/excluded/" />
-                  </fileset>
-                  <fileset dir="${hadoop.default.jars.dir}">   <!-- ASR -->
-                          <include name="**/*.jar" />
-                          <exclude name="**/*core*.jar" />
-                  </fileset>
-                  <fileset dir="${hadoop.home.jars.dir}">   <!-- ASR -->
-                          <include name="**/hadoop-0.20*.jar" />
-                  </fileset>
-                  <path refid="contrib-classpath"/>
-          </path>
-          <path id="testDemuxClasspath">
-                  <pathelement location="${build.classes}"/>
-                  <pathelement location="${test.build.classes}"/>
-                  <fileset dir="${hadoop.default.jars.dir}">   <!-- ASR -->
-                          <include name="**/*.jar" />
-                          <exclude name="**/hadoop-0.2*-core.jar" />
-                  </fileset>
-                  <fileset dir="${hadoop.home.jars.dir}">   <!-- ASR -->
-                          <include name="**/*core*.jar" />
-                  </fileset>
-                  <fileset dir="${lib.dir}">
-                          <include name="**/*.jar" />
-                          <exclude name="**/excluded/" />
-                  </fileset>
-                  <path refid="contrib-classpath"/>
-          </path>
-        </target>
+		<property name="build.dir" value="${basedir}/build" />
+		<property name="build.classes" value="${basedir}/build/classes" />
+		<property name="build.docs" value="${build.dir}/docs" />
+		<property name="build.javadoc" value="${build.docs}/api" />
+		<property name="build.javadoc.timestamp" value="${build.javadoc}/index.html" />
+		<property name="build.javadoc.dev" value="${build.docs}/dev-api" />
+
+		<property name="test.build.dir" value="${build.dir}/test" />
+		<property name="test.build.classes" value="${test.build.dir}/classes" />
+		<property name="lib.dir" value="${basedir}/lib" />
+		<path id="classpath">
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+				<exclude name="**/excluded/" />
+			</fileset>
+			<fileset dir="${hadoop.default.jars.dir}">
+				<!-- ASR -->
+				<include name="**/*.jar" />
+				<exclude name="**/*core*.jar" />
+			</fileset>
+			<fileset dir="${hadoop.home.jars.dir}">
+				<!-- ASR -->
+				<include name="**/hadoop-0.2*-core.jar" />
+			</fileset>
+			<fileset dir="${common.ivy.lib.dir}">
+				<include name="**/*.jar" />
+			</fileset>
+			<path refid="contrib-classpath" />
+		</path>
+		<path id="dp-classpath">
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+				<exclude name="**/excluded/" />
+			</fileset>
+			<pathelement location="${build.classes}" />
+			<fileset dir="${hadoop.default.jars.dir}">
+				<!-- ASR -->
+				<include name="**/*.jar" />
+				<exclude name="**/*core*.jar" />
+			</fileset>
+			<fileset dir="${hadoop.default.jars.dir}">
+				<!-- ASR -->
+				<include name="**/hadoop-0.18.0-core.jar" />
+			</fileset>
+			<fileset dir="${common.ivy.lib.dir}">
+				<include name="**/*.jar" />
+			</fileset>
+			<pathelement location="${conf.dir}" />
+		</path>
+		<path id="testClasspath">
+			<pathelement location="${build.classes}" />
+			<pathelement location="${test.build.classes}" />
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+				<exclude name="**/excluded/" />
+			</fileset>
+			<fileset dir="${hadoop.default.jars.dir}">
+				<!-- ASR -->
+				<include name="**/*.jar" />
+				<exclude name="**/*core*.jar" />
+			</fileset>
+			<fileset dir="${hadoop.home.jars.dir}">
+				<!-- ASR -->
+				<include name="**/hadoop-0.20*.jar" />
+			</fileset>
+			<path refid="contrib-classpath" />
+		</path>
+		<path id="testDemuxClasspath">
+			<pathelement location="${build.classes}" />
+			<pathelement location="${test.build.classes}" />
+			<fileset dir="${hadoop.default.jars.dir}">
+				<!-- ASR -->
+				<include name="**/*.jar" />
+				<exclude name="**/hadoop-0.2*-core.jar" />
+			</fileset>
+			<fileset dir="${hadoop.home.jars.dir}">
+				<!-- ASR -->
+				<include name="**/*core*.jar" />
+			</fileset>
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+				<exclude name="**/excluded/" />
+			</fileset>
+			<path refid="contrib-classpath" />
+		</path>
+	</target>
 
 	<target name="ivy-init-properties-local" description="to initiate ivy properties">
 		<property name="ivy.dir" location="ivy" />
-	  	<property name="ivysettings.xml" location="${ivy.dir}/ivysettings.xml"/>
-	  	<loadproperties srcfile="${ivy.dir}/libraries.properties"/>
-	  	<loadproperties srcfile="${ivy.dir}/libraries.properties"/>
-	  	<property name="ivy.jar" location="${ivy.dir}/ivy-${ivy.version}.jar"/>
-                <property name="ivy_repo_url" 
-			  value="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.version}/ivy-${ivy.version}.jar" />
-	  	<property name="build.dir" location="build" />
-	  	<property name="build.ivy.dir" location="${build.dir}/ivy" />
-	  	<property name="build.ivy.lib.dir" location="${build.ivy.dir}/lib" />
+		<property name="ivysettings.xml" location="${ivy.dir}/ivysettings.xml" />
+		<loadproperties srcfile="${ivy.dir}/libraries.properties" />
+		<loadproperties srcfile="${ivy.dir}/libraries.properties" />
+		<property name="ivy.jar" location="${ivy.dir}/ivy-${ivy.version}.jar" />
+		<property name="ivy_repo_url" value="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.version}/ivy-${ivy.version}.jar" />
+		<property name="build.dir" location="build" />
+		<property name="build.ivy.dir" location="${build.dir}/ivy" />
+		<property name="build.ivy.lib.dir" location="${build.ivy.dir}/lib" />
 		<property name="build.ivy.report.dir" location="${build.ivy.dir}/report" />
-	  	<property name="common.ivy.lib.dir" location="${build.ivy.lib.dir}/${ant.project.name}/common"/> 
-                <property name="rat.reporting.classname" value="rat.Report"/> 
-	  	<!--this is the naming policy for artifacts we want pulled down-->
-	  	<property name="ivy.artifact.retrieve.pattern"
-    			value="${ant.project.name}/[conf]/[artifact]-[revision].[ext]"/>
-	</target>  
+		<property name="common.ivy.lib.dir" location="${build.ivy.lib.dir}/${ant.project.name}/common" />
+		<property name="rat.reporting.classname" value="rat.Report" />
+		<property name="jdiff.build.dir" value="${build.docs}/jdiff" />
+		<property name="jdiff.xml.dir" value="${build.ivy.lib.dir}/${name}/jdiff" />
+		<property name="jdiff.stable" value="0.1.2" />
+		<property name="jdiff.stable.javadoc" value="http://hadoop.apache.org/core/docs/r${jdiff.stable}/api/" />
 
-        <target name="ivy-download-local" description="To download ivy"
-		unless="offline">
-    		<get src="${ivy_repo_url}" dest="${ivy.jar}" usetimestamp="true"/>
+		<!--this is the naming policy for artifacts we want pulled down-->
+		<property name="ivy.artifact.retrieve.pattern" value="${ant.project.name}/[conf]/[artifact]-[revision].[ext]" />
+		<property name="jdiff.home" value="${build.ivy.lib.dir}/${ant.project.name}/jdiff" />
+		<property name="jdiff.jar" value="${jdiff.home}/jdiff-${jdiff.version}.jar" />
+		<property name="xerces.jar" value="${jdiff.home}/xerces-${xerces.version}.jar" />
+
+		<property name="clover.jar" location="${clover.home}/lib/clover.jar" />
+		<available property="clover.present" file="${clover.jar}" />
+
+	</target>
+
+	<target name="ivy-download-local" description="To download ivy" unless="offline">
+		<get src="${ivy_repo_url}" dest="${ivy.jar}" usetimestamp="true" />
 	</target>
 
 	<target name="ivy-init-dirs-local" depends="ivy-init-properties-local">
-    		<mkdir dir="${build.ivy.dir}" />
-    		<mkdir dir="${build.ivy.lib.dir}" />
-    		<mkdir dir="${build.ivy.report.dir}" />
+		<mkdir dir="${build.ivy.dir}" />
+		<mkdir dir="${build.ivy.lib.dir}" />
+		<mkdir dir="${build.ivy.report.dir}" />
 	</target>
 
-  	<target name="ivy-probe-antlib-local" >
-    		<condition property="ivy.found.local">
-      			<typefound uri="antlib:org.apache.ivy.ant" name="cleancache"/>
-    		</condition>
+	<target name="ivy-probe-antlib-local">
+		<condition property="ivy.found.local">
+			<typefound uri="antlib:org.apache.ivy.ant" name="cleancache" />
+		</condition>
 	</target>
 
 	<target name="ivy-init-antlib-local" depends="ivy-init-dirs-local,ivy-download-local,ivy-probe-antlib-local" unless="ivy.found.local">
-    		<typedef uri="antlib:org.apache.ivy.ant" onerror="fail" loaderRef="ivyLoader">
+		<typedef uri="antlib:org.apache.ivy.ant" onerror="fail" loaderRef="ivyLoader">
 			<classpath>
-        			<pathelement location="${ivy.jar}"/>
-		      	</classpath>
-    		</typedef>
-    		<fail>
-      		<condition>
-		        <not>
-          			<typefound uri="antlib:org.apache.ivy.ant" name="cleancache"/>
-		        </not>
-		</condition>
+				<pathelement location="${ivy.jar}" />
+			</classpath>
+		</typedef>
+		<fail>
+			<condition>
+				<not>
+					<typefound uri="antlib:org.apache.ivy.ant" name="cleancache" />
+				</not>
+			</condition>
 			      You need Apache Ivy 2.0 or later from http://ant.apache.org/
 			      It could not be loaded from ${ivy_repo_url}
 		 </fail>
 	</target>
 
-  	<target name="ivy-init-local" depends="ivy-init-antlib-local">
-    		<ivy:configure settingsid="${ant.project.name}.ivy.settings" file="${ivysettings.xml}" override="true"/>
+	<target name="ivy-init-local" depends="ivy-init-antlib-local">
+		<ivy:configure settingsid="${ant.project.name}.ivy.settings" file="${ivysettings.xml}" override="true" />
+	</target>
+
+	<target name="ivy-retrieve" depends="ivy-resolve" description="Retrieve Ivy-managed artifacts for the compile/test configurations">
+		<ivy:retrieve settingsRef="${ant.project.name}.ivy.settings" pattern="${build.ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" sync="true" />
+		<ivy:cachepath pathid="contrib-classpath" conf="common" />
 	</target>
 
 	<target name="ivy-resolve" depends="ivy-init-local">
-    		<ivy:resolve settingsRef="${ant.project.name}.ivy.settings" conf="common"/>
-  	</target>
-
-	<target name="ivy-retrieve" depends="ivy-resolve"
-		    description="Retrieve Ivy-managed artifacts for the compile/test configurations">
-		<ivy:retrieve settingsRef="${ant.project.name}.ivy.settings" 
-		 pattern="${build.ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" sync="true" />
-		<ivy:cachepath pathid="contrib-classpath" conf="common" />
+		<ivy:resolve settingsRef="${ant.project.name}.ivy.settings" />
 	</target>
-        
 
-<target name="init-hadoop" if="hadoopMode">
-		<antcall target="ivy-retrieve-common"/>
-                <echo>Hadoop Mode</echo>
-	        <property name="build.dir" value="${basedir}/build"/>
-	        <property name="build.classes" value="${basedir}/build/classes"/>
-                <property name="test.build.dir" value="${build.dir}/test"/>
-                <property name="test.build.classes" value="${test.build.dir}/classes"/>
-                <delete file="${build.dir}/${final.name}/hadoop-*-core.jar" />
-	        <property name="lib.dir" value="${basedir}/lib"/>
-	        <path id="classpath">
-		        <fileset dir="${lib.dir}">
-			        <include name="**/*.jar" />
-			        <exclude name="**/excluded/" />
-		        </fileset>
-		        <fileset dir="${hadoop.root}/lib">
-			        <include name="**/*.jar" />
-			        <exclude name="**/excluded/" />
-		        </fileset>
-                        <pathelement location="${hadoop.root}/build/classes"/>
- 			<path refid="contrib-classpath"/>
-	        </path>
-                <path id="testClasspath">
-                        <pathelement location="${build.classes}"/>
-                        <pathelement location="${test.build.classes}"/>
- 			<path refid="contrib-classpath"/>
-                        <fileset dir="${lib.dir}">
-                                <include name="**/*.jar" />
-                                <exclude name="**/excluded/" />
-                        </fileset>
-		        <fileset dir="${hadoop.root}/lib">
-			        <include name="**/*.jar" />
-                                <exclude name="**/excluded/" />
-                        </fileset>
-                        <pathelement location="${hadoop.root}/build/classes"/>
-                        <pathelement location="${hadoop.root}/build/test/classes"/>
-                        <pathelement location="${clover.jar}"/>
-                </path>
+	<target name="ivy-resolve-javadoc" depends="ivy-init-local">
+		<ivy:resolve settingsRef="${ant.project.name}.ivy.settings" conf="javadoc" />
+	</target>
 
-                <path id="testDemuxClasspath">
-                        <pathelement location="${build.classes}"/>
-                        <pathelement location="${test.build.classes}"/>
- 			<path refid="contrib-classpath"/>
-                        <fileset dir="${hadoop.root}/lib">
-                                <include name="**/*.jar" />
-                                <exclude name="**/excluded/" />
-                        </fileset>
-                        <fileset dir="${lib.dir}">
-                                <include name="**/*.jar" />
-                                <exclude name="**/excluded/" />
-                        </fileset>
-                        <pathelement location="${hadoop.root}/build/classes"/>
-                        <pathelement location="${hadoop.root}/build/test/classes"/>
-                </path>
+	<target name="ivy-resolve-checkstyle" depends="ivy-init-local">
+		<ivy:resolve settingsRef="${ant.project.name}.ivy.settings" conf="checkstyle" />
+	</target>
 
-        </target>
+	<target name="ivy-retrieve-checkstyle" depends="ivy-resolve-checkstyle" description="Retrieve Ivy-managed artifacts for the checkstyle configurations">
+		<ivy:retrieve settingsRef="${ant.project.name}.ivy.settings" pattern="${build.ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" />
+		<ivy:cachepath pathid="checkstyle-classpath" conf="checkstyle" />
+	</target>
+
+	<target name="ivy-resolve-test" depends="ivy-init-local">
+		<ivy:resolve settingsRef="${ant.project.name}.ivy.settings" conf="test" />
+	</target>
+
+	<target name="ivy-resolve-common" depends="ivy-init-local">
+		<ivy:resolve settingsRef="${ant.project.name}.ivy.settings" conf="common" />
+	</target>
+
+	<target name="ivy-resolve-jdiff" depends="ivy-init-local">
+		<ivy:resolve settingsRef="${ant.project.name}.ivy.settings" conf="jdiff" />
+	</target>
+
+	<target name="ivy-retrieve-jdiff" depends="ivy-resolve-jdiff" description="Retrieve Ivy-managed artifacts for the javadoc configurations">
+		<ivy:retrieve settingsRef="${ant.project.name}.ivy.settings" pattern="${build.ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" />
+		<ivy:cachepath pathid="jdiff-classpath" conf="jdiff" />
+	</target>
+
+	<target name="ivy-retrieve-javadoc" depends="ivy-resolve-javadoc" description="Retrieve Ivy-managed artifacts for the javadoc configurations">
+		<ivy:retrieve settingsRef="${ant.project.name}.ivy.settings" pattern="${build.ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" />
+		<ivy:cachepath pathid="javadoc-classpath" conf="javadoc" />
+	</target>
+
+	<target name="ivy-retrieve-test" depends="ivy-resolve-test" description="Retrieve Ivy-managed artifacts for the test configurations">
+		<ivy:retrieve settingsRef="${ant.project.name}.ivy.settings" pattern="${build.ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" />
+		<ivy:cachepath pathid="test.classpath" conf="test" />
+	</target>
+
+	<target name="ivy-retrieve-common" depends="ivy-resolve-common" description="Retrieve Ivy-managed artifacts for the compile configurations">
+		<ivy:retrieve settingsRef="${ant.project.name}.ivy.settings" pattern="${build.ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" />
+		<ivy:cachepath pathid="ivy-common.classpath" conf="common" />
+	</target>
+
+	<target name="ivy-report" depends="ivy-resolve-releaseaudit" description="Generate">
+		<ivy:report todir="${build.ivy.report.dir}" settingsRef="${ant.project.name}.ivy.settings" />
+		<echo>
+      Reports generated:${build.ivy.report.dir}
+    </echo>
+	</target>
+
+	<target name="init-hadoop" if="hadoopMode">
+		<antcall target="ivy-retrieve-common" />
+		<echo>Hadoop Mode</echo>
+		<property name="build.dir" value="${basedir}/build" />
+		<property name="build.classes" value="${basedir}/build/classes" />
+		<property name="test.build.dir" value="${build.dir}/test" />
+		<property name="test.build.classes" value="${test.build.dir}/classes" />
+		<delete file="${build.dir}/${final.name}/hadoop-*-core.jar" />
+		<property name="lib.dir" value="${basedir}/lib" />
+		<path id="classpath">
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+				<exclude name="**/excluded/" />
+			</fileset>
+			<fileset dir="${hadoop.root}/lib">
+				<include name="**/*.jar" />
+				<exclude name="**/excluded/" />
+			</fileset>
+			<pathelement location="${hadoop.root}/build/classes" />
+			<path refid="contrib-classpath" />
+		</path>
+		<path id="testClasspath">
+			<pathelement location="${build.classes}" />
+			<pathelement location="${test.build.classes}" />
+			<path refid="contrib-classpath" />
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+				<exclude name="**/excluded/" />
+			</fileset>
+			<fileset dir="${hadoop.root}/lib">
+				<include name="**/*.jar" />
+				<exclude name="**/excluded/" />
+			</fileset>
+			<pathelement location="${hadoop.root}/build/classes" />
+			<pathelement location="${hadoop.root}/build/test/classes" />
+			<pathelement location="${clover.jar}" />
+		</path>
+
+		<path id="testDemuxClasspath">
+			<pathelement location="${build.classes}" />
+			<pathelement location="${test.build.classes}" />
+			<path refid="contrib-classpath" />
+			<fileset dir="${hadoop.root}/lib">
+				<include name="**/*.jar" />
+				<exclude name="**/excluded/" />
+			</fileset>
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+				<exclude name="**/excluded/" />
+			</fileset>
+			<pathelement location="${hadoop.root}/build/classes" />
+			<pathelement location="${hadoop.root}/build/test/classes" />
+		</path>
+
+	</target>
 
 	<target name="init" depends="init-standalone,init-hadoop">
-                <property name="src.dir" value="${basedir}/src"/>
-                <property name="build.classes" value="${build.dir}/classes"/>
-                <property name="conf.dir" value="${basedir}/conf"/>
-                <property name="docs.dir" value="${basedir}/docs"/>
-                <property name="tools.dir" value="${basedir}/tools"/>
-                <property name="dist.dir" value="${basedir}/dist"/>
-                <property name="opt.dir" value="${basedir}/opt"/>
-                <property name="javac.debug" value="on"/>
-                <property name="javac.version" value="1.6"/>
-                <property name="test.src.dir" value="${basedir}/src/test"/>
-                <property name="test.lib.dir" value="${basedir}/src/test/lib"/>
-                <property name="test.build.dir" value="${build.dir}/test"/>
-                <property name="test.generated.dir" value="${test.build.dir}/src"/>
-                <property name="test.build.data" value="${test.build.dir}/data"/>
-                <property name="test.cache.data" value="${test.build.dir}/cache"/>
-                <property name="test.debug.data" value="${test.build.dir}/debug"/>
-                <property name="test.log.dir" value="${test.build.dir}/logs"/>
-                <property name="test.build.classes" value="${test.build.dir}/classes"/>
-                <property name="test.build.testjar" value="${test.build.dir}/testjar"/>
-                <property name="test.include" value="Test*"/>
-                <property name="test.classpath.id" value="test.classpath"/>
-                <property name="test.output" value="no"/>
-                <property name="test.timeout" value="900000"/>
-                <property name="test.junit.output.format" value="plain"/>
-                <property name="test.junit.fork.mode" value="perTest" />
-                <property name="test.junit.printsummary" value="yes" />
-                <property name="test.junit.haltonfailure" value="yes" />
-                <property name="test.junit.maxmemory" value="256m" />
-		<mkdir dir="${build.dir}"/>
-		<mkdir dir="${build.classes}"/>
-		<mkdir dir="${build.dir}/test"/>
+		<property name="src.dir" value="${basedir}/src" />
+		<property name="build.classes" value="${build.dir}/classes" />
+		<property name="conf.dir" value="${basedir}/conf" />
+		<property name="docs.src" value="${basedir}/src/docs" />
+		<property name="docs.dir" value="${basedir}/docs" />
+		<property name="changes.src" value="${docs.src}/changes" />
+		<property name="tools.dir" value="${basedir}/tools" />
+		<property name="opt.dir" value="${basedir}/opt" />
+		<property name="javac.debug" value="on" />
+		<property name="javac.version" value="1.6" />
+		<property name="test.src.dir" value="${basedir}/src/test" />
+		<property name="test.lib.dir" value="${basedir}/src/test/lib" />
+		<property name="test.build.dir" value="${build.dir}/test" />
+		<property name="test.generated.dir" value="${test.build.dir}/src" />
+		<property name="test.build.data" value="${test.build.dir}/data" />
+		<property name="test.cache.data" value="${test.build.dir}/cache" />
+		<property name="test.debug.data" value="${test.build.dir}/debug" />
+		<property name="test.log.dir" value="${test.build.dir}/logs" />
+		<property name="test.build.classes" value="${test.build.dir}/classes" />
+		<property name="test.build.testjar" value="${test.build.dir}/testjar" />
+		<property name="test.build.javadoc" value="${test.build.dir}/docs/api" />
+		<property name="test.build.javadoc.dev" value="${test.build.dir}/docs/dev-api" />
+		<property name="test.include" value="Test*" />
+		<property name="test.classpath.id" value="test.classpath" />
+		<property name="test.output" value="no" />
+		<property name="test.timeout" value="900000" />
+		<property name="test.junit.output.format" value="plain" />
+		<property name="test.junit.fork.mode" value="perTest" />
+		<property name="test.junit.printsummary" value="yes" />
+		<property name="test.junit.haltonfailure" value="yes" />
+		<property name="test.junit.maxmemory" value="256m" />
+		<property name="javadoc.link.java" value="http://java.sun.com/javase/6/docs/api/" />
+		<property name="javadoc.packages" value="org.apache.hadoop.*" />
+		<property name="javadoc.maxmemory" value="512m" />
+
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.classes}" />
+		<mkdir dir="${build.dir}/test" />
 		<exec executable="echo" output="${basedir}/bin/VERSION">
 			<arg line="${chukwaVersion}" />
 		</exec>
-
-		<mkdir dir="${dist.dir}"/>
 
 	</target>
 
@@ -303,116 +384,110 @@
 
 	<target name="compile-common" depends="init" description="Compilation target">
 		<javac srcdir="src/java" destdir="${build.classes}" debug="${javac.debug}">
-                        <exclude name="org/apache/hadoop/chukwa/datacollection/**" />
-                        <exclude name="org/apache/hadoop/chukwa/extraction/**" />
-                        <exclude name="org/apache/hadoop/chukwa/inputtools/**" />
-                        <exclude name="org/apache/hadoop/mapred/**" />
-                        <compilerarg value="-Xlint"/>
+			<exclude name="org/apache/hadoop/chukwa/datacollection/**" />
+			<exclude name="org/apache/hadoop/chukwa/extraction/**" />
+			<exclude name="org/apache/hadoop/chukwa/inputtools/**" />
+			<exclude name="org/apache/hadoop/mapred/**" />
+			<compilerarg value="-Xlint" />
 			<classpath refid="classpath" />
 		</javac>
 	</target>
 
 	<target name="compile-inputtools" depends="init,compile-common" description="Compile Input Tools">
 		<javac srcdir="src/java" destdir="${build.classes}" excludes="**/ChukwaTTInstru.java" debug="${javac.debug}">
-                        <compilerarg value="-Xlint"/>
-                        <exclude name="org/apache/hadoop/*" />
-                        <include name="org/apache/hadoop/chukwa/inputtools/**" />
+			<compilerarg value="-Xlint" />
+			<exclude name="org/apache/hadoop/*" />
+			<include name="org/apache/hadoop/chukwa/inputtools/**" />
 			<classpath refid="classpath" />
 		</javac>
 	</target>
 
 	<target name="compile-datacollection" depends="init,compile-common" description="Compilation Data Collection Framework">
 		<javac srcdir="src/java" destdir="${build.classes}" debug="${javac.debug}">
-                        <compilerarg value="-Xlint"/>
+			<compilerarg value="-Xlint" />
 			<classpath refid="classpath" />
-                        <exclude name="org/apache/hadoop/mapred/**" />
-                        <include name="org/apache/hadoop/chukwa/datacollection/**" />
-                        <include name="org/apache/hadoop/metrics/spi/**" />
+			<exclude name="org/apache/hadoop/mapred/**" />
+			<include name="org/apache/hadoop/chukwa/datacollection/**" />
+			<include name="org/apache/hadoop/metrics/spi/**" />
 		</javac>
 	</target>
 
 	<target name="compile-extraction" depends="init,compile-common" description="Compilation Data Processing Framework">
 		<javac srcdir="src/java" destdir="${build.classes}" debug="${javac.debug}">
-                        <compilerarg value="-Xlint"/>
+			<compilerarg value="-Xlint" />
 			<classpath refid="dp-classpath" />
-                        <exclude name="org/apache/hadoop/chukwa/*" />
-                        <include name="org/apache/hadoop/chukwa/database/**" />
-                        <include name="org/apache/hadoop/chukwa/extraction/**" />
+			<exclude name="org/apache/hadoop/chukwa/*" />
+			<include name="org/apache/hadoop/chukwa/database/**" />
+			<include name="org/apache/hadoop/chukwa/extraction/**" />
 		</javac>
 	</target>
 
 	<target name="compile-hicc" depends="init" description="Compilation HICC Framework">
 		<javac srcdir="src/java" destdir="${build.classes}" debug="${javac.debug}">
-                        <compilerarg value="-Xlint"/>
+			<compilerarg value="-Xlint" />
 			<classpath refid="classpath" />
-                        <exclude name="org/apache/hadoop/chukwa/*" />
-                        <include name="org/apache/hadoop/chukwa/hicc/**" />
+			<exclude name="org/apache/hadoop/chukwa/*" />
+			<include name="org/apache/hadoop/chukwa/hicc/**" />
 		</javac>
 	</target>
 
 	<target name="compile-test" depends="init" description="Test target">
-	                      
-           <delete dir="${test.build.dir}"/>
-           <mkdir dir="${test.build.dir}"/>
-           <delete dir="${test.log.dir}"/>
-           <mkdir dir="${test.log.dir}"/>
-           <delete dir="${test.build.classes}"/>
-           <mkdir dir="${test.build.classes}"/>
 
-            <javac srcdir="${test.src.dir}" destdir="${test.build.dir}/classes"  debug="${javac.debug}">
-                 <classpath refid="testClasspath" />
-                 <classpath refid="testDemuxClasspath" />
-            </javac>
+		<delete dir="${test.build.dir}" />
+		<mkdir dir="${test.build.dir}" />
+		<delete dir="${test.log.dir}" />
+		<mkdir dir="${test.log.dir}" />
+		<delete dir="${test.build.classes}" />
+		<mkdir dir="${test.build.classes}" />
 
-            <copy todir="${test.build.dir}/classes/org/apache/hadoop/chukwa/inputtools/log4j/">
-                  <fileset dir="${basedir}/src/test/org/apache/hadoop/chukwa/inputtools/log4j/">
-                     <include name="late-log4j.properties" />
-                  </fileset>
-            </copy>
+		<javac srcdir="${test.src.dir}" destdir="${test.build.dir}/classes" debug="${javac.debug}">
+			<classpath refid="testClasspath" />
+			<classpath refid="testDemuxClasspath" />
+		</javac>
 
-        </target>
+		<copy todir="${test.build.dir}/classes/org/apache/hadoop/chukwa/inputtools/log4j/">
+			<fileset dir="${basedir}/src/test/org/apache/hadoop/chukwa/inputtools/log4j/">
+				<include name="late-log4j.properties" />
+			</fileset>
+		</copy>
 
-            <!--printsummary="${test.junit.printsummary}" -->
+	</target>
+
+	<!--printsummary="${test.junit.printsummary}" -->
 
 	<target name="test-chukwa" depends="compile,compile-test" description="Run Chukwa unit tests">
-          <mkdir dir="${basedir}/var"/>
-          <junit showoutput="${test.output}"
-            fork="yes"
-            printsummary="withOutAndErr"
-            forkmode="${test.junit.fork.mode}"
-            maxmemory="${test.junit.maxmemory}"
-            dir="${test.build.dir}/classes/" timeout="${test.timeout}"
-            errorProperty="tests.failed" failureProperty="tests.failed">
-           <classpath refid="testClasspath"/>
-           <env key="DATACONFIG" value="${build.dir}/conf"/>
-           <sysproperty key="test.src.dir" value="${test.src.dir}"/>
-           <formatter type="${test.junit.output.format}" />
-           <batchtest todir="${test.build.dir}" unless="testcase">
-            <fileset dir="${test.src.dir}">
-              <include name="**/${test.include}.java"/>
-              <exclude name="**/${test.exclude}.java"/>
-              <exclude name="**/TestAgentConfig.java"/>
-              <exclude name="**/TestDemux.java"/>
-            </fileset>
-           </batchtest>
-           <batchtest todir="${test.build.dir}" if="testcase">
-            <fileset dir="${test.src.dir}" includes="**/${testcase}.java">
-              <exclude name="**/TestDemux.java"/>
-            </fileset>
-           </batchtest>
-         </junit>
-         <fail if="tests.failed">Tests failed!</fail>
-         <delete>
-            <fileset dir="${basedir}/var" includes="*"/>
-         </delete>
-        </target>
+		<mkdir dir="${basedir}/var" />
+		<junit showoutput="${test.output}" fork="yes" printsummary="withOutAndErr" forkmode="${test.junit.fork.mode}" maxmemory="${test.junit.maxmemory}" dir="${test.build.dir}/classes/" timeout="${test.timeout}" errorProperty="tests.failed" failureProperty="tests.failed">
+			<classpath refid="testClasspath" />
+			<env key="DATACONFIG" value="${build.dir}/conf" />
+			<sysproperty key="test.src.dir" value="${test.src.dir}" />
+			<formatter type="${test.junit.output.format}" />
+			<batchtest todir="${test.build.dir}" unless="testcase">
+				<fileset dir="${test.src.dir}">
+					<include name="**/${test.include}.java" />
+					<exclude name="**/${test.exclude}.java" />
+					<exclude name="**/TestAgentConfig.java" />
+					<exclude name="**/TestDemux.java" />
+				</fileset>
+			</batchtest>
+			<batchtest todir="${test.build.dir}" if="testcase">
+				<fileset dir="${test.src.dir}" includes="**/${testcase}.java">
+					<exclude name="**/TestDemux.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+		<fail if="tests.failed">Tests failed!</fail>
+		<delete>
+			<fileset dir="${basedir}/var" includes="*" />
+		</delete>
+	</target>
 
 	<target name="collector" depends="compile" description="Prepare collector.war">
-		<mkdir dir="${build.dir}/collector"/>
-		<mkdir dir="${build.dir}/collector/WEB-INF"/>
-		<mkdir dir="${build.dir}/collector/WEB-INF/classes"/>
-		<mkdir dir="${build.dir}/collector/WEB-INF/lib"/>
-		<mkdir dir="${build.dir}/collector/META-INF"/>
+		<mkdir dir="${build.dir}/collector" />
+		<mkdir dir="${build.dir}/collector/WEB-INF" />
+		<mkdir dir="${build.dir}/collector/WEB-INF/classes" />
+		<mkdir dir="${build.dir}/collector/WEB-INF/lib" />
+		<mkdir dir="${build.dir}/collector/META-INF" />
 		<copy todir="${build.dir}/collector/WEB-INF/classes">
 			<fileset dir="${build.classes}">
 				<include name="org/apache/hadoop/chukwa/conf/**/*.class" />
@@ -463,153 +538,153 @@
 	<target name="tools_jar" depends="compile, collector" description="Create tools jar">
 		<jar jarfile="${build.dir}/tools-${chukwaVersion}.jar" basedir="${build.classes}" includes="org/apache/hadoop/chukwa/inputtools/**/*.class">
 			<fileset dir="${basedir}/src/java">
-				<include name="org/apache/hadoop/chukwa/inputtools/**/*.java"/>
+				<include name="org/apache/hadoop/chukwa/inputtools/**/*.java" />
 			</fileset>
 		</jar>
 	</target>
 
 	<target name="agent_jar" depends="compile, collector" description="Create agent jar">
-		<jar jarfile="${build.dir}/chukwa-agent-${chukwaVersion}.jar" basedir="${build.classes}" includes="org/apache/hadoop/chukwa/client/**/*.class" >
+		<jar jarfile="${build.dir}/chukwa-agent-${chukwaVersion}.jar" basedir="${build.classes}" includes="org/apache/hadoop/chukwa/client/**/*.class">
 			<fileset dir="${build.dir}">
-				<include name="org/apache/hadoop/chukwa/conf/**/*.class"/>
+				<include name="org/apache/hadoop/chukwa/conf/**/*.class" />
 			</fileset>
-                        <fileset dir="${build.classes}">
-                                <include name="org/apache/hadoop/metrics/**/*.class"/>
-                        </fileset>
+			<fileset dir="${build.classes}">
+				<include name="org/apache/hadoop/metrics/**/*.class" />
+			</fileset>
 
 			<fileset dir="${build.classes}">
-				<include name="org/apache/hadoop/chukwa/util/**/*.class"/>
+				<include name="org/apache/hadoop/chukwa/util/**/*.class" />
 			</fileset>
 			<fileset dir="${build.classes}">
-				<include name="org/apache/hadoop/chukwa/inputtools/**/*.class"/>
+				<include name="org/apache/hadoop/chukwa/inputtools/**/*.class" />
 			</fileset>
 			<fileset dir="${build.classes}">
-                                <exclude name="org/apache/hadoop/chukwa/datacollection/collector/**/*.class"/>
-                                <exclude name="org/apache/hadoop/chukwa/datacollection/writer/**/*.class"/>
-				<include name="org/apache/hadoop/chukwa/datacollection/**/*.class"/>
+				<exclude name="org/apache/hadoop/chukwa/datacollection/collector/**/*.class" />
+				<exclude name="org/apache/hadoop/chukwa/datacollection/writer/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/datacollection/**/*.class" />
 			</fileset>
 
-                        <fileset dir="${basedir}/src/java">
-                                <include name="org/apache/hadoop/metrics/**/*.java"/>
-                        </fileset>
 			<fileset dir="${basedir}/src/java">
-				<include name="org/apache/hadoop/chukwa/client/**/*.java"/>
+				<include name="org/apache/hadoop/metrics/**/*.java" />
 			</fileset>
 			<fileset dir="${basedir}/src/java">
-				<include name="org/apache/hadoop/chukwa/util/**/*.java"/>
+				<include name="org/apache/hadoop/chukwa/client/**/*.java" />
 			</fileset>
 			<fileset dir="${basedir}/src/java">
-				<include name="org/apache/hadoop/chukwa/inputtools/**/*.java"/>
+				<include name="org/apache/hadoop/chukwa/util/**/*.java" />
 			</fileset>
 			<fileset dir="${basedir}/src/java">
-				<include name="org/apache/hadoop/chukwa/inputtools/**/*.java"/>
+				<include name="org/apache/hadoop/chukwa/inputtools/**/*.java" />
 			</fileset>
 			<fileset dir="${basedir}/src/java">
-				<include name="org/apache/hadoop/chukwa/datacollection/**/*.java"/>
-				<exclude name="org/apache/hadoop/chukwa/datacollection/collector/**/*.java"/>
-				<exclude name="org/apache/hadoop/chukwa/datacollection/writer/**/*.java"/>
+				<include name="org/apache/hadoop/chukwa/inputtools/**/*.java" />
+			</fileset>
+			<fileset dir="${basedir}/src/java">
+				<include name="org/apache/hadoop/chukwa/datacollection/**/*.java" />
+				<exclude name="org/apache/hadoop/chukwa/datacollection/collector/**/*.java" />
+				<exclude name="org/apache/hadoop/chukwa/datacollection/writer/**/*.java" />
 			</fileset>
 
 		</jar>
 	</target>
 
 	<target name="chukwa_jar" depends="compile, collector" description="Create chukwa-core jar">
-		<jar jarfile="${build.dir}/chukwa-core-${chukwaVersion}.jar" basedir="${build.classes}" includes="org/apache/hadoop/chukwa/datacollection/**/*.class" >
-                        <manifest>
-                            <section name="org/apache/hadoop/chukwa">
-                                <attribute name="Implementation-Title" value="Chukwa"/>
-                                <attribute name="Implementation-Version" value="${version}"/>
-                                <attribute name="Implementation-Vendor" value="Apache"/>
-                            </section>
-                        </manifest>
+		<jar jarfile="${build.dir}/chukwa-core-${chukwaVersion}.jar" basedir="${build.classes}" includes="org/apache/hadoop/chukwa/datacollection/**/*.class">
+			<manifest>
+				<section name="org/apache/hadoop/chukwa">
+					<attribute name="Implementation-Title" value="Chukwa" />
+					<attribute name="Implementation-Version" value="${version}" />
+					<attribute name="Implementation-Vendor" value="Apache" />
+				</section>
+			</manifest>
 
 			<fileset dir="${build.classes}">
-				<include name="org/apache/hadoop/chukwa/**/*.class"/>
+				<include name="org/apache/hadoop/chukwa/**/*.class" />
 			</fileset>
 			<fileset dir="${basedir}/src/java">
-				<include name="org/apache/hadoop/chukwa/**/*.java"/>
+				<include name="org/apache/hadoop/chukwa/**/*.java" />
 			</fileset>
 		</jar>
 	</target>
 
 	<target name="chukwa-hadoop_jar" depends="compile" description="Create chukwa_hadoop jar for use with getting hadoop to use chukwa">
-                <mkdir dir="${build.dir}/conf"/>
+		<mkdir dir="${build.dir}/conf" />
 		<jar jarfile="${build.dir}/chukwa-hadoop-${chukwaVersion}-client.jar" basedir="${build.classes}" includes="org/apache/hadoop/chukwa/inputtools/log4j/**/*.class">
 			<fileset dir="${basedir}/src/java">
-				<include name="org/apache/hadoop/mapred/**/*.java"/>
-				<include name="org/apache/hadoop/chukwa/inputtools/log4j/**/*.java"/>
-		                <include name="org/apache/hadoop/chukwa/datacollection/client/**/*.java"/>
-		                <include name="org/apache/hadoop/chukwa/util/**/*.java"/>
+				<include name="org/apache/hadoop/mapred/**/*.java" />
+				<include name="org/apache/hadoop/chukwa/inputtools/log4j/**/*.java" />
+				<include name="org/apache/hadoop/chukwa/datacollection/client/**/*.java" />
+				<include name="org/apache/hadoop/chukwa/util/**/*.java" />
 			</fileset>
 			<fileset dir="${build.classes}">
-				<include name="org/apache/hadoop/mapred/**/*.class"/>
-				<include name="org/apache/hadoop/chukwa/datacollection/client/**/*.class"/>
-				<include name="org/apache/hadoop/chukwa/util/**/*.class"/>
-				<include name="org/apache/hadoop/chukwa/datacollection/controller/*.class"/>
+				<include name="org/apache/hadoop/mapred/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/datacollection/client/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/util/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/datacollection/controller/*.class" />
 			</fileset>
 		</jar>
 	</target>
 
-        <target name="hicc" depends="compile, chukwa_jar, package-hadoop, package-standalone" description="Prepare hicc.war">
-                <mkdir dir="${build.dir}/hicc"/>
-                <mkdir dir="${build.dir}/hicc/WEB-INF"/>
-                <mkdir dir="${build.dir}/hicc/WEB-INF/classes"/>
-                <mkdir dir="${build.dir}/hicc/WEB-INF/lib"/>
-                <mkdir dir="${build.dir}/hicc/META-INF"/>
-                <copy todir="${build.dir}/hicc">
-                        <fileset dir="${basedir}/src/web/hicc">
-                                <include name="**" />
-                        </fileset>
-                </copy>
-                <copy todir="${build.dir}/hicc/WEB-INF/classes">
-                        <fileset dir="${build.classes}">
-                                <include name="org/apache/hadoop/chukwa/hicc/**/*.class" />
-                                <include name="org/apache/hadoop/chukwa/conf/**/*.class" />
-                                <include name="org/apache/hadoop/chukwa/database/**/*.class" />
-                                <include name="org/apache/hadoop/chukwa/datacollection/**/*.class" />
-                                <include name="org/apache/hadoop/chukwa/extraction/engine/**/*.class" />
-                                <include name="org/apache/hadoop/chukwa/inputtools/*.class" />
-                                <include name="org/apache/hadoop/chukwa/util/**/*.class" />
-                        </fileset>
+	<target name="hicc" depends="compile, chukwa_jar, package-hadoop, package-standalone" description="Prepare hicc.war">
+		<mkdir dir="${build.dir}/hicc" />
+		<mkdir dir="${build.dir}/hicc/WEB-INF" />
+		<mkdir dir="${build.dir}/hicc/WEB-INF/classes" />
+		<mkdir dir="${build.dir}/hicc/WEB-INF/lib" />
+		<mkdir dir="${build.dir}/hicc/META-INF" />
+		<copy todir="${build.dir}/hicc">
+			<fileset dir="${basedir}/src/web/hicc">
+				<include name="**" />
+			</fileset>
+		</copy>
+		<copy todir="${build.dir}/hicc/WEB-INF/classes">
+			<fileset dir="${build.classes}">
+				<include name="org/apache/hadoop/chukwa/hicc/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/conf/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/database/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/datacollection/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/extraction/engine/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/inputtools/*.class" />
+				<include name="org/apache/hadoop/chukwa/util/**/*.class" />
+			</fileset>
 
-                        <fileset dir="${basedir}/src/java">
-                                <include name="org/apache/hadoop/chukwa/hicc/**/*.java" />
-                                <include name="org/apache/hadoop/chukwa/conf/**/*.java" />
-                                <include name="org/apache/hadoop/chukwa/datacollection/**/*.java" />
-                                <include name="org/apache/hadoop/chukwa/extraction/engine/**/*.java" />
-                                <include name="org/apache/hadoop/chukwa/inputtools/*.java" />
-                                <include name="org/apache/hadoop/chukwa/util/**/*.java" />
-                        </fileset>
+			<fileset dir="${basedir}/src/java">
+				<include name="org/apache/hadoop/chukwa/hicc/**/*.java" />
+				<include name="org/apache/hadoop/chukwa/conf/**/*.java" />
+				<include name="org/apache/hadoop/chukwa/datacollection/**/*.java" />
+				<include name="org/apache/hadoop/chukwa/extraction/engine/**/*.java" />
+				<include name="org/apache/hadoop/chukwa/inputtools/*.java" />
+				<include name="org/apache/hadoop/chukwa/util/**/*.java" />
+			</fileset>
 
-                </copy>
-                <copy todir="${build.dir}/hicc/WEB-INF/lib">
-                        <fileset dir="${basedir}/lib">
-                                <include name="json.jar" />
-                                <include name="html-filter-1.0.jar" />
-                        </fileset>
-                        <fileset dir="${common.ivy.lib.dir}">
-                                <include name="*.jar" />
-                                <exclude name="jetty-*.jar" />
-                                <exclude name="jsp-api*.jar" />
-                                <exclude name="junit-*.jar" />
-                        </fileset>
-                        <fileset dir="${build.dir}">
-                                <include name="${name}-core-${chukwaVersion}.jar" />
-                        </fileset>
-                        <fileset dir="${build.dir}/${final.name}/hadoopjars">
-                                <include name="*.jar" />
-                                <exclude name="hadoop-0.2*-core.jar" />
-                                <exclude name="jasper-*.jar" />
-                                <exclude name="jetty-*.jar" />
-                                <exclude name="jsp-api*.jar" />
-                        </fileset>
-                </copy>
-        </target>
+		</copy>
+		<copy todir="${build.dir}/hicc/WEB-INF/lib">
+			<fileset dir="${basedir}/lib">
+				<include name="json.jar" />
+				<include name="html-filter-1.0.jar" />
+			</fileset>
+			<fileset dir="${common.ivy.lib.dir}">
+				<include name="*.jar" />
+				<exclude name="jetty-*.jar" />
+				<exclude name="jsp-api*.jar" />
+				<exclude name="junit-*.jar" />
+			</fileset>
+			<fileset dir="${build.dir}">
+				<include name="${name}-core-${chukwaVersion}.jar" />
+			</fileset>
+			<fileset dir="${build.dir}/${final.name}/hadoopjars">
+				<include name="*.jar" />
+				<exclude name="hadoop-0.2*-core.jar" />
+				<exclude name="jasper-*.jar" />
+				<exclude name="jetty-*.jar" />
+				<exclude name="jsp-api*.jar" />
+			</fileset>
+		</copy>
+	</target>
 
-        <target name="hicc_war" depends="compile, hicc" description="Create hicc jar">
-                <jar jarfile="${build.dir}/hicc.war" basedir="${build.dir}/hicc">
-                </jar>
-        </target>
+	<target name="hicc_war" depends="compile, hicc" description="Create hicc jar">
+		<jar jarfile="${build.dir}/hicc.war" basedir="${build.dir}/hicc">
+		</jar>
+	</target>
 
 	<target name="compress" depends="compile,collector,collector_jar,hicc_war,tools_jar,agent_jar,chukwa_jar,chukwa-hadoop_jar" description="Compression target">
 		<copy todir="." includeEmptyDirs="false">
@@ -623,26 +698,121 @@
 	<target name="test" depends="compile,compile-test,test-chukwa" description="Automated Test Framework">
 	</target>
 
-        <!-- ================================================================== -->
-        <!-- Clean.  Delete the build files, and their directories              -->
-        <!-- ================================================================== -->
-        <target name="clean" depends="init" description="Clean.  Delete the build files, and their directories">
-            <delete dir="${build.dir}"/>
-            <delete dir="${build.ivy.lib.dir}/${ant.project.home}"/>
-            <delete dir="build"/>
-	    <delete file="${ivy.jar}"/>	
-            <delete dir="${docs.src}/build"/>
-        </target>
+	<!-- ================================================================== -->
+	<!-- Documentation                                                      -->
+	<!-- ================================================================== -->
+
+	<target name="docs" depends="init,javadoc">
+		<copy file="${docs.src}/releasenotes.html" todir="${build.docs}" />
+		<copy file="${docs.src}/src/documentation/resources/images/chukwa_logo_small.jpg" todir="${build.docs}/images" />
+		<antcall target="changes-to-html" />
+	</target>
+
+	<target name="javadoc-uptodate" depends="compile, ivy-retrieve-javadoc">
+		<uptodate property="javadoc.is.uptodate">
+			<srcfiles dir="${src.dir}/java">
+				<include name="**/*.java" />
+				<exclude name="org/apache/hadoop/chukwa/inputtools/ChukwaTTInstru.java" />
+				<include name="**/*.html" />
+			</srcfiles>
+			<mapper type="merge" to="${build.javadoc.timestamp}" />
+		</uptodate>
+	</target>
+
+	<target name="javadoc" description="Generate javadoc" depends="javadoc-uptodate" unless="javadoc.is.uptodate">
+		<mkdir dir="${build.javadoc}" />
+		<javadoc overview="${src.dir}/docs/overview.html" packagenames="org.apache.hadoop.chukwa.*" destdir="${build.javadoc}" author="true" version="true" use="true" windowtitle="${name} ${chukwaVersion} API" doctitle="${name} ${chukwaVersion} API" bottom="Copyright &amp;copy; ${year} The Apache Software Foundation" maxmemory="${javadoc.maxmemory}">
+			<packageset dir="${src.dir}/java">
+				<exclude name="org/apache/hadoop/mapred/**" />
+				<exclude name="org/apache/hadoop/chukwa/inputtools/ChukwaTTInstru" />
+			</packageset>
+
+			<link href="${javadoc.link.java}" />
+
+			<classpath>
+				<path refid="classpath" />
+				<path refid="javadoc-classpath" />
+				<pathelement path="${java.class.path}" />
+				<pathelement location="${build.tools}" />
+			</classpath>
+
+			<group title="Chukwa" packages="org.apache.*" />
+		</javadoc>
+	</target>
+
+	<target name="api-xml" depends="ivy-retrieve-jdiff,javadoc,write-null">
+		<mkdir dir="${jdiff.build.dir}" />
+		<javadoc maxmemory="${javadoc.maxmemory}">
+			<doclet name="jdiff.JDiff" path="${jdiff.jar}:${xerces.jar}">
+				<param name="-apidir" value="${jdiff.xml.dir}" />
+				<param name="-apiname" value="${name} ${chukwaVersion}" />
+			</doclet>
+			<packageset dir="${src.dir}/java">
+				<exclude name="org/apache/hadoop/mapred/**" />
+			</packageset>
+			<classpath>
+				<path refid="classpath" />
+				<path refid="jdiff-classpath" />
+				<pathelement path="${java.class.path}" />
+			</classpath>
+		</javadoc>
+	</target>
+
+	<target name="write-null">
+		<exec executable="touch">
+			<arg value="${jdiff.home}/Null.java" />
+		</exec>
+	</target>
+
+	<target name="api-report" depends="ivy-retrieve-jdiff,api-xml">
+		<mkdir dir="${jdiff.build.dir}" />
+		<javadoc sourcepath="src/core,src/hdfs,src,mapred,src/tools" destdir="${jdiff.build.dir}" sourceFiles="${jdiff.home}/Null.java" maxmemory="${javadoc.maxmemory}">
+			<doclet name="jdiff.JDiff" path="${jdiff.jar}:${xerces.jar}">
+				<param name="-oldapi" value="chukwa ${jdiff.stable}" />
+				<param name="-newapi" value="chukwa ${chukwaVersion}" />
+				<param name="-oldapidir" value="${jdiff.xml.dir}" />
+				<param name="-newapidir" value="${jdiff.xml.dir}" />
+				<param name="-javadocold" value="${jdiff.stable.javadoc}" />
+				<param name="-javadocnew" value="../../api/" />
+				<param name="-stats" />
+			</doclet>
+			<classpath>
+				<path refid="classpath" />
+				<path refid="jdiff-classpath" />
+				<pathelement path="${java.class.path}" />
+			</classpath>
+		</javadoc>
+	</target>
+
+	<target name="changes-to-html" description="Convert CHANGES.txt into an html file">
+		<mkdir dir="${build.docs}" />
+		<exec executable="perl" input="CHANGES.txt" output="${build.docs}/changes.html" failonerror="true">
+			<arg value="${changes.src}/changes2html.pl" />
+		</exec>
+		<copy todir="${build.docs}">
+			<fileset dir="${changes.src}" includes="*.css" />
+		</copy>
+	</target>
+
+	<!-- ================================================================== -->
+	<!-- Clean.  Delete the build files, and their directories              -->
+	<!-- ================================================================== -->
+	<target name="clean" depends="init" description="Clean.  Delete the build files, and their directories">
+		<delete dir="${build.dir}" />
+		<delete dir="${build.ivy.lib.dir}/${ant.project.home}" />
+		<delete dir="build" />
+		<delete file="${ivy.jar}" />
+		<delete dir="${docs.src}/build" />
+	</target>
 	<!-- ====================================================== -->
 	<!-- Macro definitions                                      -->
 	<!-- ====================================================== -->
 	<macrodef name="macro_tar" description="Worker Macro for tar">
-		<attribute name="param.destfile"/>
-		<element name="param.listofitems"/>
+		<attribute name="param.destfile" />
+		<element name="param.listofitems" />
 		<sequential>
-			<tar compression="gzip" longfile="gnu"
-          destfile="@{param.destfile}">
-				<param.listofitems/>
+			<tar compression="gzip" longfile="gnu" destfile="@{param.destfile}">
+				<param.listofitems />
 			</tar>
 		</sequential>
 	</macrodef>
@@ -653,49 +823,50 @@
 	<!--                                                                    -->
 	<!-- ================================================================== -->
 
-        <target name="package-hadoop" description="package hadoop from hadoop source" if="hadoopMode">
-		<mkdir dir="${build.dir}/${final.name}/hadoopjars"/>
-                <copy toDir="${build.dir}/${final.name}/hadoopjars">
-                        <fileset dir="${hadoop.root}/build">
-                                <include name="hadoop-*-core.jar" />
-                        </fileset>
+	<target name="package-hadoop" description="package hadoop from hadoop source" if="hadoopMode">
+		<mkdir dir="${build.dir}/${final.name}/hadoopjars" />
+		<copy toDir="${build.dir}/${final.name}/hadoopjars">
+			<fileset dir="${hadoop.root}/build">
+				<include name="hadoop-*-core.jar" />
+			</fileset>
 			<fileset dir="${build.ivy.lib.dir}\Hadoop\common">
-				
-                                <include name="jetty-*.jar" />
-                                <include name="commons-httpclient-*.jar" />
-                                <include name="commons-logging-*.jar" />
-                                <include name="commons-net-*.jar" />
-                                <include name="jasper-*.jar" />
-                                <include name="commons-el.jar" />
-                                <include name="commons-codec-*.jar" />
+
+				<include name="jetty-*.jar" />
+				<include name="commons-httpclient-*.jar" />
+				<include name="commons-logging-*.jar" />
+				<include name="commons-net-*.jar" />
+				<include name="jasper-*.jar" />
+				<include name="commons-el.jar" />
+				<include name="commons-codec-*.jar" />
 			</fileset>
 			<fileset dir="lib">
-                                <include name="jsp-api.jar"/>
+				<include name="jsp-api.jar" />
 			</fileset>
-                        <fileset dir="${hadoop.root}/lib">
-                                <include name="commons-cli-*.jar"/>
-                        </fileset>
-                </copy>
-        </target>
+			<fileset dir="${hadoop.root}/lib">
+				<include name="commons-cli-*.jar" />
+			</fileset>
+		</copy>
+	</target>
 
-        <target name="package-standalone" description="package hadoop from hadoop source" if="standaloneMode">
-		<mkdir dir="${build.dir}/${final.name}/hadoopjars"/>
+	<target name="package-standalone" description="package hadoop from hadoop source" if="standaloneMode">
+		<mkdir dir="${build.dir}/${final.name}/hadoopjars" />
 		<copy todir="${build.dir}/${final.name}/hadoopjars" includeEmptyDirs="false">
 			<fileset dir="${basedir}/hadoopjars">
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>
-        </target>
+	</target>
 
-	<target name="package" depends="compress,package-hadoop,package-standalone" description="Build distribution">
-		<mkdir dir="${build.dir}/${final.name}"/>
-		<mkdir dir="${build.dir}/${final.name}/lib"/>
-		<mkdir dir="${build.dir}/${final.name}/bin"/>
-		<mkdir dir="${build.dir}/${final.name}/opt"/>
-		<mkdir dir="${build.dir}/${final.name}/tools"/>
-		<mkdir dir="${build.dir}/${final.name}/var"/>
-		<mkdir dir="${build.dir}/${final.name}/var/run"/>
-		<mkdir dir="${build.dir}/${final.name}/logs"/>
+	<target name="package" depends="compress,docs,package-hadoop,package-standalone" description="Build distribution">
+		<mkdir dir="${build.dir}/${final.name}" />
+		<mkdir dir="${build.dir}/${final.name}/lib" />
+		<mkdir dir="${build.dir}/${final.name}/bin" />
+		<mkdir dir="${build.dir}/${final.name}/docs" />
+		<mkdir dir="${build.dir}/${final.name}/opt" />
+		<mkdir dir="${build.dir}/${final.name}/tools" />
+		<mkdir dir="${build.dir}/${final.name}/var" />
+		<mkdir dir="${build.dir}/${final.name}/var/run" />
+		<mkdir dir="${build.dir}/${final.name}/logs" />
 
 		<copy todir="${build.dir}/${final.name}" includeEmptyDirs="false">
 			<fileset dir="${build.dir}">
@@ -703,38 +874,32 @@
 				<include name="**/*.war" />
 			</fileset>
 		</copy>
+
 		<copy todir="${build.dir}/${final.name}/lib" includeEmptyDirs="false">
 			<fileset dir="lib">
-				<exclude name="**/native/**"/>
+				<exclude name="**/native/**" />
 			</fileset>
 			<fileset dir="${common.ivy.lib.dir}">
-				<include name="*.jar"/>
+				<include name="*.jar" />
 			</fileset>
 		</copy>
 
-		<exec dir="${dist.dir}" executable="sh" failonerror="true">
-			<env key="BASE_NATIVE_LIB_DIR" value="${lib.dir}/native"/>
-			<env key="BUILD_NATIVE_DIR" value="${build.dir}/native"/>
-			<env key="DIST_LIB_DIR" value="${dist.dir}/lib/native"/>
-		</exec>
-
 		<copy todir="${build.dir}/${final.name}/bin">
-			<fileset dir="${basedir}/bin"/>
+			<fileset dir="${basedir}/bin" />
 		</copy>
 
 		<copy todir="${build.dir}/${final.name}/conf">
 			<fileset dir="${basedir}/conf">
-                                <exclude name="hadoop-metrics.properties" />
-                        </fileset>
+				<exclude name="hadoop-metrics.properties" />
+			</fileset>
 		</copy>
-                <copy file="${basedir}/conf/hadoop-metrics.properties"
-                            tofile="${build.dir}/${final.name}/conf/hadoop-metrics.properties">
-                        <filterchain>
-                                <replacetokens>
-                                        <token key="CHUKWA_LOG_DIR" value="${CHUKWA_LOG_DIR}"/>
-                                </replacetokens>
-                        </filterchain>
-                </copy>
+		<copy file="${basedir}/conf/hadoop-metrics.properties" tofile="${build.dir}/${final.name}/conf/hadoop-metrics.properties">
+			<filterchain>
+				<replacetokens>
+					<token key="CHUKWA_LOG_DIR" value="${CHUKWA_LOG_DIR}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
 
 		<copy todir="${build.dir}/${final.name}/opt" failonerror="false">
 			<fileset dir="${opt.dir}" />
@@ -765,10 +930,14 @@
 		</copy>
 
 		<copy todir="${build.dir}/${final.name}/src" includeEmptyDirs="true">
-			<fileset dir="src" excludes="**/*.template **/docs/build/**/*"/>
+			<fileset dir="src" excludes="**/*.template **/docs/build/**/*" />
 		</copy>
 
-		<copy todir="${build.dir}/${final.name}" file="build.xml"/>
+		<copy todir="${build.dir}/${final.name}/docs" includeEmptyDirs="true">
+			<fileset dir="${build.docs}" excludes="**/*.template **/docs/build/**/*" />
+		</copy>
+
+		<copy todir="${build.dir}/${final.name}" file="build.xml" />
 
 	</target>
 
@@ -817,51 +986,48 @@
 		</macro_tar>
 	</target>
 
-        <target name="rpm" depends="tar" description="Make release rpm">
-		<mkdir dir="${build.dir}/BUILD"/>
-		<mkdir dir="${build.dir}/RPMS"/>
-		<mkdir dir="${build.dir}/SOURCES"/>
-		<mkdir dir="${build.dir}/SPECS"/>
+	<target name="rpm" depends="tar" description="Make release rpm">
+		<mkdir dir="${build.dir}/BUILD" />
+		<mkdir dir="${build.dir}/RPMS" />
+		<mkdir dir="${build.dir}/SOURCES" />
+		<mkdir dir="${build.dir}/SPECS" />
 		<copy todir="${build.dir}/SOURCES">
 			<fileset dir="${build.dir}">
-			        <include name="${final.name}.tar.gz" />
-                        </fileset>
-                </copy>
-                <copy file="${basedir}/tools/specs/chukwa.spec"
-                            tofile="${build.dir}/SPECS/chukwa.spec" >
-                        <filterchain>
-                                <replacetokens>
-                                        <token key="chukwaVersion" value="${chukwaVersion}"/>
-                                        <token key="chukwaRelease" value="${chukwaRelease}"/>
-                                        <token key="build.dir" value="${build.dir}"/>
-                                        <token key="rpm.prefix" value="${rpm.prefix}"/>
-                                        <token key="rpm.conf.dir" value="${rpm.conf.dir}"/>
-                                        <token key="rpm.uid" value="${rpm.uid}"/>
-                                        <token key="rpm.gid" value="${rpm.gid}"/>
-                                </replacetokens>
-                        </filterchain>
-                </copy>
-		<rpm specFile="chukwa.spec" topDir="${build.dir}" cleanBuildDir="true" failOnError="true"/>
-        </target>
+				<include name="${final.name}.tar.gz" />
+			</fileset>
+		</copy>
+		<copy file="${basedir}/tools/specs/chukwa.spec" tofile="${build.dir}/SPECS/chukwa.spec">
+			<filterchain>
+				<replacetokens>
+					<token key="chukwaVersion" value="${chukwaVersion}" />
+					<token key="chukwaRelease" value="${chukwaRelease}" />
+					<token key="build.dir" value="${build.dir}" />
+					<token key="rpm.prefix" value="${rpm.prefix}" />
+					<token key="rpm.conf.dir" value="${rpm.conf.dir}" />
+					<token key="rpm.uid" value="${rpm.uid}" />
+					<token key="rpm.gid" value="${rpm.gid}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+		<rpm specFile="chukwa.spec" topDir="${build.dir}" cleanBuildDir="true" failOnError="true" />
+	</target>
 
-        <!-- ================================================================== -->
+	<!-- ================================================================== -->
 	<!-- Perform audit activities for the release                           -->
-  	<!-- ================================================================== -->
-  	<target name="releaseaudit" depends="package,ivy-retrieve-releaseaudit" description="Release Audit activities">
-    		<java classname="${rat.reporting.classname}" fork="true">
-      			<classpath refid="releaseaudit-classpath"/>
-      			<arg value="${build.dir}/${final.name}"/>
-    		</java>
-  	</target>
+	<!-- ================================================================== -->
+	<target name="releaseaudit" depends="package,ivy-retrieve-releaseaudit" description="Release Audit activities">
+		<java classname="${rat.reporting.classname}" fork="true">
+			<classpath refid="releaseaudit-classpath" />
+			<arg value="${build.dir}/${final.name}" />
+		</java>
+	</target>
 
-	<target name="ivy-retrieve-releaseaudit" depends="ivy-resolve-releaseaudit"
-    		description="Retrieve Ivy-managed artifacts for the compile configurations">
-    		<ivy:retrieve settingsRef="${ant.project.name}.ivy.settings"
-      			pattern="${build.ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" />
-    		<ivy:cachepath pathid="releaseaudit-classpath" conf="releaseaudit"/>
-  	</target>
+	<target name="ivy-retrieve-releaseaudit" depends="ivy-resolve-releaseaudit" description="Retrieve Ivy-managed artifacts for the compile configurations">
+		<ivy:retrieve settingsRef="${ant.project.name}.ivy.settings" pattern="${build.ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" />
+		<ivy:cachepath pathid="releaseaudit-classpath" conf="releaseaudit" />
+	</target>
 
 	<target name="ivy-resolve-releaseaudit" depends="ivy-init-local">
-    		<ivy:resolve settingsRef="${ant.project.name}.ivy.settings" conf="releaseaudit"/>
-  	</target>
+		<ivy:resolve settingsRef="${ant.project.name}.ivy.settings" conf="releaseaudit" />
+	</target>
 </project>
