@@ -20,19 +20,29 @@ package org.apache.hadoop.chukwa.database;
 import junit.framework.TestCase;
 import java.util.TreeMap;
 import java.util.ArrayList;
+import java.util.Date;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 
 public class TestMacro extends TestCase {
 
   public void testPastXIntervals() {
     Macro m = new Macro(1234567890000L, "select '[past_5_minutes]';");
-    System.out.println(m.toString());
-    assertTrue(m.toString().intern()=="select '2009-02-13 15:25:00';".intern());
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    long time = 0;
+    Date result = null;
+    result = format.parse(m.toString(), new ParsePosition(8));
+    time = result.getTime()+300000L;
+    assertTrue(time<=1234567890000L);
     m = new Macro(1234567890000L, "select '[past_hour]';");
-    System.out.println(m.toString());
-    assertTrue(m.toString().intern()=="select '2009-02-13 14:31:30';".intern());
+    result = format.parse(m.toString(), new ParsePosition(8));
+    time = result.getTime()+3600000L;
+    assertTrue(time<=1234567890000L);
     m = new Macro(1234567890000L, "select '[start]';");
-    System.out.println(m.toString());
-    assertTrue(m.toString().intern()=="select '2009-02-13 15:31:30';".intern());
+    result = format.parse(m.toString(), new ParsePosition(8));
+    time = result.getTime();
+    assertTrue(time==1234567890000L);
   }
 
   public void testPartitions() {
