@@ -21,7 +21,7 @@
 # Environment Variables
 #
 #   CHUKWA_SLAVES    File naming remote hosts.
-#     Default is ${CHUKWA_CONF_DIR}/chukwa-agents.
+#     Default is ${CHUKWA_CONF_DIR}/agents.
 #   CHUKWA_CONF_DIR  Alternate conf dir. Default is ${CHUKWA_HOME}/conf.
 #   CHUKWA_SLAVE_SLEEP Seconds to sleep between spawning remote commands.
 #   CHUKWA_SSH_OPTS Options passed to ssh when running remote commands.
@@ -51,7 +51,7 @@ fi
 
 if [ "$HOSTLIST" = "" ]; then
   if [ "$CHUKWA_SLAVES" = "" ]; then
-    export HOSTLIST="${CHUKWA_CONF_DIR}/chukwa-agents"
+    export HOSTLIST="${CHUKWA_CONF_DIR}/agents"
   else
     export HOSTLIST="${CHUKWA_SLAVES}"
   fi

@@ -7,8 +7,8 @@ stop-collectors.sh - stop the chukwa collector daemon (jettyCollector.sh) on hos
 
 jettyCollector.sh - start the chukwa collector daemon on the current host
 
-start-agents.sh - start chukwa agent daemon (agent.sh) on all hosts listed in conf/chukwa-agents
-stop-agents.sh - stop chukwa agent daemon (agent.sh) on all hosts listed in conf/chukwa-agents
+start-agents.sh - start chukwa agent daemon (agent.sh) on all hosts listed in conf/agents
+stop-agents.sh - stop chukwa agent daemon (agent.sh) on all hosts listed in conf/agents
 
 agent.sh - start the chukwa agent on the current host
 
