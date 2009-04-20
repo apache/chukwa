@@ -22,6 +22,7 @@ package org.apache.hadoop.chukwa.database;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import java.util.*;
+import java.io.File;
 
 public class DatabaseConfig {
   private Configuration config = null;
@@ -32,6 +33,7 @@ public class DatabaseConfig {
   public final static long MONTH = 30 * 24 * 60 * 60 * 1000L;
   public final static long WEEK = 7 * 24 * 60 * 60 * 1000L;
   public final static long DAY = 24 * 60 * 60 * 1000L;
+  public final static String MDL_XML = "mdl.xml";
 
   public DatabaseConfig(String path) {
     Path fileResource = new Path(path);
@@ -40,7 +42,13 @@ public class DatabaseConfig {
   }
 
   public DatabaseConfig() {
-    Path fileResource = new Path(System.getenv("DATACONFIG"));
+    String dataConfig = System.getenv("CHUKWA_CONF_DIR");
+    if (dataConfig == null) {
+      dataConfig = MDL_XML;
+    } else {
+      dataConfig += File.separator + MDL_XML;
+    }
+    Path fileResource = new Path(dataConfig);
     config = new Configuration();
     config.addResource(fileResource);
   }

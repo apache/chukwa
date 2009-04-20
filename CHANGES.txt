@@ -36,6 +36,10 @@ Release 0.1.2 - 2009-04-24
 
   IMPROVEMENTS
 
+    CHUKWA-163. Updated reference to mdl.xml file. (Terence Kwan via Eric Yang)
+
+    CHUKWA-157. Added javadoc target, api-xml, api-report, and change log 2 html. (Eric Yang)
+
     CHUKWA-141. Updated Chukwa Docs overview page for 0.1.2. (Corinne Chandel via Eric Yang)
 
     CHUKWA-138. Updated Chukwa Admin Guide. (Corinne Chandel via Eric Yang)

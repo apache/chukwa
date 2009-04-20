@@ -26,10 +26,11 @@ import org.apache.hadoop.fs.Path;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Map;
+import java.io.File;
 
 public class DataConfig {
   private static Configuration config;
-  final static String DATACONFIG = "mdl.xml";
+  final static String MDL_XML = "mdl.xml";
   private Log log = LogFactory.getLog(DataConfig.class);
 
   public DataConfig(String path) {
@@ -39,9 +40,11 @@ public class DataConfig {
   }
 
   public DataConfig() {
-    String dataConfig = System.getenv("DATACONFIG");
+    String dataConfig = System.getenv("CHUKWA_CONF_DIR");
     if (dataConfig == null) {
-      dataConfig = DATACONFIG;
+      dataConfig = MDL_XML;
+    } else {
+      dataConfig += File.separator + MDL_XML;
     }
     log.debug("DATACONFIG=" + dataConfig);
     if (config == null) {
