@@ -1,4 +1,8 @@
+Chukwa Change Log
+
 Trunk (unreleased changes)
+
+Release 0.1.2 - 2009-04-24
 
   INCOMPATIBLE CHANGES
 
@@ -23,10 +27,10 @@ Trunk (unreleased changes)
 
     CHUKWA-45.  Added docs to folder structure. (Corinne Chandel via asrabkin)
 
-    CHUKWA-13.  * Create a new Macro class for macro substitution. (Eric Yang)
-                * Changed Aggregator to use Macro class.
-                * Added macro substitution support to Chukwa Charting.
-                * Added Macro test case.
+    CHUKWA-13.  Create a new Macro class for macro substitution.
+                Changed Aggregator to use Macro class.
+                Added macro substitution support to Chukwa Charting.
+                Added Macro test case. (Eric Yang)
 
     HADOOP-4989. Added capability to add scatter chart. (Eric Yang)
 
@@ -66,7 +70,7 @@ Trunk (unreleased changes)
 
     CHUKWA-59. Collect HDFS Usage information for users. (Contribute by Cheng Zhang via Eric Yang)
 
-    CHUKWA-54. Filters web based input from HICC to prevent cross site scripting attack.
+    CHUKWA-54. Filters web based input from HICC to prevent cross site scripting attack. (Eric Yang)
 
     CHUKWA-31. Added duration logging for SQL statements. (Eric Yang)
  
@@ -76,9 +80,9 @@ Trunk (unreleased changes)
 
     HADOOP-5228. Chukwa tests shouldn't write to /tmp. (asrabkin)
 
-    HADOOP-5035. * Improved Y axis ticker labelling. (Eric Yang) 
-                 * Used TreeMap to build non-time series data for charting. 
-                 * Improved handling of "not a number "values.
+    HADOOP-5035. Improved Y axis ticker labelling.
+                 Used TreeMap to build non-time series data for charting. 
+                 Improved handling of "not a number "values. (Eric Yang)
 
     HADOOP-5030. Changed RPM install location to the value specified by build.properties file. (Eric Yang)
 
@@ -95,7 +99,11 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
-    CHUKWA-139. Rewrite collector bail out code.  (Cheng Zhang via Eric Yang)
+    CHUKWA-156. Test Macro testcase changed to use timestamp check for the generated macros. (Eric Yang)
+
+    CHUKWA-154.  Handle adaptor exception, close file pointers on failure condition.  (Jerome Boulon via Eric Yang)
+
+    CHUKWA-139.  Rewrite collector bail out code.  (Cheng Zhang via Eric Yang)
 
     CHUKWA-119.  Removed dependency of ChukwaAgent from ChunkImpl for preventing multiple
                  MetricsContext to be initialized in the same VM. (Jerome Boulon via Eric Yang)
@@ -207,7 +215,7 @@ Trunk (unreleased changes)
     HADOOP-4791. Add build configuration parameter to specify where Chukwa will be installed for RPM packaging. (Eric Yang)
 
 
-Release 0.19.0 - Unreleased
+Release 0.1.1 - Unreleased
 
   IMPROVEMENTS
 
