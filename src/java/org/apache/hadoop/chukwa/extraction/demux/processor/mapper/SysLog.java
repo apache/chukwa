@@ -57,6 +57,9 @@ public class SysLog extends AbstractProcessor {
       int year = convertDate.get(Calendar.YEAR);
       convertDate.setTime(d);
       convertDate.set(Calendar.YEAR, year);
+      if(convertDate.getTimeInMillis() > Calendar.getInstance().getTimeInMillis()) {
+        convertDate.set(Calendar.YEAR, year - 1);
+      }
 
       ChukwaRecord record = new ChukwaRecord();
       buildGenericRecord(record, recordEntry, convertDate.getTime().getTime(),
