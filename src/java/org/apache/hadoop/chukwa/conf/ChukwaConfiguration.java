@@ -55,7 +55,7 @@ public class ChukwaConfiguration extends Configuration {
       String hadoopConfDir = System.getenv("HADOOP_CONF_DIR");
       if (hadoopConfDir != null) {        
         super.addResource(new Path(hadoopConfDir + "/hadoop-site.xml"));
-        log.debug("added " + hadoopConfDir"/hadoop-site.xml to ChukwaConfiguration");
+        log.debug("added " + hadoopConfDir + "/hadoop-site.xml to ChukwaConfiguration");
       } else {
         String hadoopHome = System.getenv("HADOOP_HOME");
         if (hadoopHome != null) {
