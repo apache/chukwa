@@ -5,18 +5,56 @@
 
 <configuration>
 
+<!-- Chukwa Job parameters -->
+	<property>
+	  <name>io.sort.mb</name>
+	  <value>256</value>
+	  <description>The total amount of buffer memory to use while sorting
+	  files, in megabytes.  By default, gives each merge stream 1MB, which
+	  should minimize seeks.</description>
+	</property>
 
+	<property>
+	  <name>fs.inmemory.size.mb</name>
+	  <value>256</value>
+	  <description>The size of the in-memory filsystem instance in MB</description>
+	</property>
 
+	<property>
+	  <name>io.sort.factor</name>
+	  <value>100</value>
+	  <description>The number of streams to merge at once while sorting
+	  files.  This determines the number of open file handles.</description>
+	</property>
+
+<!-- -->
+
+<!-- PostProcessorManager config -->
   <property>
     <name>postProcessorManager.dbloader.ds</name>
     <value>SystemMetrics,Df,Hadoop_dfs,Hadoop_jvm,Hadoop_mapred,Hadoop_rpc,MSSRGraph,MRJobCounters,NodeActivity,HodJob,HodMachine,Hadoop_dfs_FSDirectory,Hadoop_dfs_FSNamesystem,Hadoop_dfs_datanode,Hadoop_dfs_namenode,Hadoop_jvm_metrics,Hadoop_mapred_job,Hadoop_mapred_jobtracker,Hadoop_mapred_shuffleOutput,Hadoop_mapred_tasktracker,Hadoop_rpc_metrics,JobData,TaskData,HDFSUsage</value>
     <description>Reduce count </description>
   </property>
+
+<!-- -->
+
+<!-- ArchiveManager config -->
   
   <property>
     <name>chukwaArchiveBuilder.reduceCount</name>
     <value>5</value>
     <description>Reduce count </description>
+  </property>
+
+<!-- -->
+
+
+<!-- Demux aliases -->
+
+  <property>
+    <name>HadoopMetricsProcessor</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopMetricsProcessor</value>
+    <description>Parser class for Hadoop Metrics </description>
   </property>
 
   <property>
@@ -42,7 +80,6 @@
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopMetricsProcessor</value>
     <description>Parser class for </description>
   </property>
-
   
   <property>
     <name>SysLog</name>
@@ -129,3 +166,4 @@
    </property>
 
 </configuration>
+ 
