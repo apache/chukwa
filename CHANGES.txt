@@ -8,6 +8,8 @@ Release 0.1.2 - 2009-04-24
 
   NEW FEATURES
 
+    CHUKWA-91.  Additional test case for acks. (asrabkin)
+
     CHUKWA-78.  Added down sample SQL aggregation for job data, task data and utilization data. (Eric Yang)
 
     CHUKWA-17. Collect PS output every 10 minutes and parse into key/value pairs sequence file. (Cheng Zhang via Eric Yang)
