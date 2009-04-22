@@ -439,10 +439,13 @@ create table if not exists mr_job_template (
     reduce_input_records bigint default 0,
     reduce_output_records bigint default 0,
     jobconf  text, 
-    finished_maps default 0,
-    finished_reduces default 0,
-    failed_maps default 0,
-    failed_reduces default 0,
+    finished_maps bigint default 0,
+    finished_reduces bigint default 0,
+    failed_maps bigint default 0,
+    failed_reduces bigint default 0,
+    total_maps bigint default 0,
+    total_reduces bigint default 0,
+    reduce_shuffle_bytes bigint default 0,
     primary key(job_id),
     index(submit_time, finish_time, user, queue)
 ) ENGINE=InnoDB;
@@ -471,6 +474,12 @@ create table if not exists mr_task_template (
     reduce_output_records bigint default 0,
     reduce_input_bytes bigint default 0,
     reduce_output_bytes bigint default 0,
+    type VARCHAR(20),
+    reduce_shuffle_bytes bigint default 0,
+    hostname VARCHAR(80),
+    shuffle_finished timestamp default 0,
+    sort_finished timestamp default 0,
+    spilts bigint default 0,
     primary key(task_id),
     index(start_time, finish_time, job_id)
 ) ENGINE=InnoDB;
@@ -621,4 +630,3 @@ create table if not exists ClientTrace_template (
     primary key(timestamp),
      index(timestamp)
 ) ENGINE=InnoDB;
-
