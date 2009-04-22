@@ -443,6 +443,9 @@ create table if not exists mr_job_template (
     finished_reduces bigint default 0,
     failed_maps bigint default 0,
     failed_reduces bigint default 0,
+    total_maps bigint default 0,
+    total_reduces bigint default 0,
+    reduce_shuffle_bytes bigint default 0,
     primary key(job_id),
     index(submit_time, finish_time, user, queue)
 ) ENGINE=InnoDB;
@@ -471,6 +474,12 @@ create table if not exists mr_task_template (
     reduce_output_records bigint default 0,
     reduce_input_bytes bigint default 0,
     reduce_output_bytes bigint default 0,
+    type VARCHAR(20),
+    reduce_shuffle_bytes bigint default 0,
+    hostname VARCHAR(80),
+    shuffle_finished timestamp default 0,
+    sort_finished timestamp default 0,
+    spilts bigint default 0,
     primary key(task_id),
     index(start_time, finish_time, job_id)
 ) ENGINE=InnoDB;

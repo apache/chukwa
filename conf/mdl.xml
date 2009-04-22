@@ -1139,26 +1139,6 @@
   <value>NumOfMachines</value>
 </property>
 
-<!-- MSSRGraph -->
-<property>
-  <name>report.db.primary.key.mssrgraph</name>
-  <value>timestamp</value>
-</property>
-
-<property>
-  <name>metric.mssrgraph.jobid</name>
-  <value>job_id</value>
-</property>
-<property>
-  <name>metric.mssrgraph.count</name>
-  <value>count</value>
-</property>
-
-<property>
-  <name>metric.mssrgraph.type</name>
-  <value>type</value>
-</property>
-
 <!-- Map Reduce Job Counters -->
 <property>
   <name>report.db.primary.key.mrjobcounters</name>
@@ -1376,7 +1356,7 @@
 </property>
 
 <property>
-  <name>metric.jobdata.job_status</name>
+  <name>metric.jobdata.job_final_status</name>
   <value>status</value>
 </property>
 
@@ -1418,6 +1398,21 @@
 <property>
   <name>metric.jobdata.failed_reduces</name>
   <value>failed_reduces</value>
+</property>
+
+<property>
+  <name>metric.jobdata.total_maps</name>
+  <value>total_maps</value>
+</property>
+
+<property>
+  <name>metric.jobdata.total_reduces</name>
+  <value>total_reduces</value>
+</property>
+
+<property>
+  <name>metric.jobdata.reduce_shuffle_bytes</name>
+  <value>reduce_shuffle_bytes</value>
 </property>
 
 <!-- for hadoop 0.20 -->
@@ -1658,6 +1653,26 @@
   <value>attempts</value>
 </property>
 
+<property>
+  <name>metric.taskdata.hostname</name>
+  <value>hostname</value>
+</property>
+
+<property>
+  <name>metric.taskdata.shuffle_finished</name>
+  <value>shuffle_finished</value>
+</property>
+
+<property>
+  <name>metric.taskdata.sort_finished</name>
+  <value>sort_finished</value>
+</property>
+
+<property>
+  <name>metric.taskdata.spilts</name>
+  <value>spilts</value>
+</property>
+
 <!-- for hadoop 20 -->
 <property>
   <name>metric.taskdata.counter:filesystemcounters:hdfs_bytes_read</name>
@@ -1743,6 +1758,11 @@
   <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:reduce_output_records</name>
   <value>reduce_output_records</value>
 </property>
+
+<property>
+  <name>metric.taskdata.counter:org.apache.hadoop.mapred.task$counter:reduce_shuffle_bytes</name>
+  <value>reduce_shuffle_bytes</value>
+</property>
 <!-- end for hadoop 20 -->
 
 <!-- for hadoop 18 -->
@@ -1819,6 +1839,11 @@
 <property>
   <name>metric.taskdata.counter:hadoop18:map-reduce-framework.reduce-output-records</name>
   <value>reduce_output_records</value>
+</property>
+
+<property>
+  <name>metric.taskdata.counter:hadoop18:map-reduce-framework.reduce_shuffle_bytes</name>
+  <value>reduce_shuffle_bytes</value>
 </property>
 <!-- end for hadoop 18 -->
 
