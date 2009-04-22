@@ -8,7 +8,7 @@
   
   <property>
     <name>chukwaAgent.tags</name>
-    <value>cluster="demo"</value>
+    <value>cluster="@TODO-CLUSTER-NAME@"</value>
     <description>The cluster's name for this agent</description>
   </property>
   
