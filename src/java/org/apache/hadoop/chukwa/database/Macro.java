@@ -116,6 +116,12 @@ public class Macro {
                         first=false;
                     } else if(type==java.sql.Types.TIMESTAMP) {
                         // Skip the column
+                        if(macro.indexOf("sum(")==0) {
+                            meta=meta+"sum("+name+")";	            			
+                        } else {
+                            meta=meta+"avg("+name+")";
+                        }
+                        first=false;
                     } else {
                         if(macro.indexOf("sum(")==0) {
                             meta=meta+"SUM("+name+")";

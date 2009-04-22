@@ -1,1 +1,1 @@
-unknown=jdbc:://localhost:3306/demo?user=example
+demo=jdbc:mysql://localhost:3306/test?user=root

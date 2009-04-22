@@ -79,7 +79,6 @@ public class Aggregator {
     try {
       Macro macroProcessor = new Macro(start, end, query);
       query = macroProcessor.toString();
-      log.info(query);
       db.execute(query);
     } catch (Exception e) {
       log.error(query);
@@ -91,6 +90,10 @@ public class Aggregator {
     long start = current;
     long end = current;
     process(current, current, query);
+  }
+
+  public void setWriter(DatabaseWriter dbw) {
+    db = dbw;
   }
 
   public static void main(String[] args) {
