@@ -30,7 +30,7 @@ CLASS_OPTS="-classpath ${CLASSPATH}:${CHUKWA_CORE}:${COMMON}:${HADOOP_JAR}:${CHU
 JVM_OPTS="-DAPP=dbAdmin -Dlog4j.configuration=chukwa-log4j.properties ${CHUKWA_OPTS} ${CLASS_OPTS}"
 
 if [ $# -lt 3 ]; then
-  echo "$0: [cluster] [command] [date]"
+  echo "$0: [command] [cluster] [date]"
   echo "[cluster] - cluster name in jdbc.conf"
   echo "[command] - create/aggregate"
   echo "            create    : create database partition for given date"
@@ -38,9 +38,9 @@ if [ $# -lt 3 ]; then
   exit 0
 fi
 
-CLUSTER=$1
-shift
 CMD=$1
+shift
+CLUSTER=$1
 shift
 
 if [ $CMD = "create" ]; then
