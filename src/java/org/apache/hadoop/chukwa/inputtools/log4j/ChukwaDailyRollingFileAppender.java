@@ -551,11 +551,6 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
 
             chukwaClientIsNull = false;
 
-            // FIXME: Hack to make the log file readable by chukwa user. 
-            if(System.getProperty("os.name").intern()=="Linux".intern()) {
-              Runtime.getRuntime().exec("chmod g+rw "+getFile());
-            }
-            
             // Watchdog is watching for ChukwaAgent only once every 5 minutes,
             // so there's no point in retrying more than once every 5 mins.
             // In practice, if the watchdog is not able to automatically restart
