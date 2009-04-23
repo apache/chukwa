@@ -36,6 +36,16 @@ Release 0.1.2 - 2009-04-24
 
   IMPROVEMENTS
 
+    CHUKWA-176. Rearrange the parameter order for aggregator.sh. (Eric Yang)
+
+    CHUKWA-174. Added test cases to test database partitioning, database aggregation, and data loading. (Eric Yang)
+
+    CHUKWA-173. Parameterize configuration, and enable substitution at build time. (Jerome Boulon via Eric Yang)
+
+    CHUKWA-131. Added additional Mapred job/task metrics.  (Eric Yang)
+
+    CHUKWA-145. Tuned hadoop parameters for demux. (Jerome Boulon via Eric Yang)
+
     CHUKWA-163. Updated reference to mdl.xml file. (Terence Kwan via Eric Yang)
 
     CHUKWA-157. Added javadoc target, api-xml, api-report, and change log 2 html. (Eric Yang)
@@ -97,11 +107,21 @@ Release 0.1.2 - 2009-04-24
 
   BUG FIXES
 
-    CHUKWA-156. Test Macro testcase changed to use timestamp check for the generated macros. (Eric Yang)
+    CHUKWA-168. Added watchdog for database. (Eric Yang)
+
+    CHUKWA-175.  Removed error message for shutting down data processors. (Eric Yang)
+
+    CHUKWA-155.  Store final job status only (Cheng Zhang via Eric Yang)
+
+    CHUKWA-164.  Use year corresponding to the sender time stamp. (Cheng Zhang via Eric Yang)
+
+    CHUKWA-166.  Handle null parameter case for XSSFilter. (Terence Kwan via Eric Yang)
+
+    CHUKWA-156.  Test Macro testcase changed to use timestamp check for the generated macros. (Eric Yang)
 
     CHUKWA-154.  Handle adaptor exception, close file pointers on failure condition.  (Jerome Boulon via Eric Yang)
 
-    CHUKWA-139. Rewrite collector bail out code.  (Cheng Zhang via Eric Yang)
+    CHUKWA-139.  Rewrite collector bail out code.  (Cheng Zhang via Eric Yang)
 
     CHUKWA-119.  Removed dependency of ChukwaAgent from ChunkImpl for preventing multiple 
                  MetricsContext to be initialized in the same VM. (Jerome Boulon via Eric Yang)
