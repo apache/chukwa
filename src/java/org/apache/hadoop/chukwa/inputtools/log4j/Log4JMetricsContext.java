@@ -109,18 +109,6 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
                 + ".log");
           }
 
-          try {
-            File fooLogFile = new File(appender.getFile());
-            if (!fooLogFile.exists()) {
-              fooLogFile.createNewFile();
-            }
-            fooLogFile.setReadable(true, false);
-            fooLogFile.setWritable(true, false);
-            fooLogFile = null;
-          }catch (Exception e) {
-            log.warn("Exception while trying to set file permission," , e);
-          }
-          
           appender.setRecordType( contextName);
           appender.setDatePattern(".yyyy-MM-dd");
           
