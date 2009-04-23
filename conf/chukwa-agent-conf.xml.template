@@ -32,7 +32,7 @@
   
   <property>
     <name>chukwaAgent.checkpoint.dir</name>
-    <value>${CHUKWA_HOME}/var/tmp/</value>
+    <value>${CHUKWA_LOG_DIR}/</value>
     <description>the location to put the agent's checkpoint file(s)</description>
   </property>
 
