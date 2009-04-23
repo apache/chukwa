@@ -38,6 +38,8 @@ Release 0.1.2 - 2009-04-24
 
   IMPROVEMENTS
 
+    CHUKWA-104. Remove permission setting code for Log4JMetricsContext and ChukwaDailyRollingFileAppender.  (Jerome Boulon via Eric Yang)
+
     CHUKWA-178. Extend aggregation by 5 minutes for cluster metrics. (Eric Yang)
 
     CHUKWA-176. Rearrange the parameter order for aggregator.sh. (Eric Yang)
@@ -114,6 +116,14 @@ Release 0.1.2 - 2009-04-24
   OPTIMIZATIONS
 
   BUG FIXES
+
+    CHUKWA-183. Added HICC startup script. (Eric Yang)
+
+    CHUKWA-177. Added test case for verify the value between JSON values and database values. (Terence Kwan via Eric Yang)
+
+    CHUKWA-181. Changed chukwa check point file to $CHUKWA_LOG_DIR. (Jerome Boulon via Eric Yang)
+
+    CHUKWA-182. Added nagios appender configuration. (Eric Yang)
 
     CHUKWA-158. Consolidate namenode address to a single configuration object. (Eric Yang)
 
