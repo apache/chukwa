@@ -39,7 +39,7 @@
 <p>Required software for Linux include:</p>
 <ol>
 <li> Java 1.6.10, preferably from Sun, installed (see <a href="http://java.sun.com/">http://java.sun.com/</a>)
-</li> <li> MySQL 5.1.30 (see below)
+</li> <li> MySQL 5.1.30 (see <a href="#4.+Set+Up+the+Database">Set Up the Database)</a>
 </li> <li> Hadoop cluster, installed (see <a href="http://hadoop.apache.org/" >http://hadoop.apache.org/</a>)
 </li> <li> ssh must be installed and sshd must be running to use the Chukwa scripts that manage remote Chukwa daemons 
 </li></ol> 
@@ -70,7 +70,7 @@
 <li> Create a directory for the Chukwa installation (Chukwa will automatically set the  environment variable <strong>CHUKWA_HOME</strong> to point to this directory during the install)
 </li> <li> Move to the new directory
 </li> <li> Download and un-tar the Chukwa binary
-</li> <li> Configure the components for the Chukwa cluster (see Chukwa Cluster Deployment)
+</li> <li> Configure the components for the Chukwa cluster (see <a href="#Chukwa+Cluster+Deployment">Chukwa Cluster Deployment</a>)
 </li> <li> Zip the directory and deploy to all nodes in the Chukwa cluster
 </li></ul> 
 <p></p>
@@ -80,7 +80,7 @@
 <li> Create a directory for the Chukwa installation (Chukwa will set the environment variable <strong>CHUKWA_HOME</strong> to point to this directory)
 </li> <li> Move to the new directory
 </li> <li> Download and un-tar the Chukwa binary
-</li> <li> Configure the components for the source nodes (see Monitored Source Node Deployment)
+</li> <li> Configure the components for the source nodes (see <a href="#Monitored+Source+Node+Deployment">Monitored Source Node Deployment</a>))
 </li> <li> Zip the directory and deploy to all source nodes to be monitored
 </li></ul> 
 </section>
@@ -243,8 +243,8 @@ expire&#95;logs&#95;days &#61; 3
 #
 #server-id       &#61; 5
 #master-host     &#61;   &#60;hostname&#62;
-#master-user     &#61;   gmetrics
-#master-password &#61;   gmetrics
+#master-user     &#61;   &#60;username&#62;
+#master-password &#61;   &#60;password&#62;
 #master-port     &#61;  3306
 #log-bin&#61;mysql-bin
 
@@ -297,10 +297,10 @@ mysql -u root -p
 Enter password:
 </source>
 
-<p>From the MySQL shell, enter these commands (replace <em>some_password</em> with an actual password):</p>
+<p>From the MySQL shell, enter these commands (replace &#60;username&#62; and &#60;password&#62; with actual values):</p>
 
 <source>
-GRANT REPLICATION SLAVE ON &#42;.&#42; TO &#39;gmetrics&#39;&#64;&#39;&#37;&#39; IDENTIFIED BY &#39;&#60;some&#95;password&#62;&#39;;
+GRANT REPLICATION SLAVE ON &#42;.&#42; TO &#39;&#60;username&#62;&#39;&#64;&#39;&#37;&#39; IDENTIFIED BY &#39;&#60;password&#62;&#39;;
 FLUSH PRIVILEGES; 
 </source>
 </section>
@@ -374,7 +374,7 @@ export JDBC&#95;URL&#95;PREFIX&#61;jdbc:mysql://
   &#60;/property&#62;
 </source>
 
-<p>Edit the CHUKWA_HOME/conf/chukwa-current/agents (or chukwa-agents) configuration file. </p>
+<p>Edit the CHUKWA_HOME/conf/chukwa-current/agents configuration file. </p>
 <p>Create a list of hosts that are running the Chukwa agent:</p>
 
 <source>
@@ -516,8 +516,8 @@ show slave status\G
 STOP SLAVE;
 CHANGE MASTER TO
   MASTER&#95;HOST&#61;&#39;hostname&#39;,
-  MASTER&#95;USER&#61;&#39;gmetrics&#39;,
-  MASTER&#95;PASSWORD&#61;&#39;gmetrics&#39;,
+  MASTER&#95;USER&#61;&#39;username&#39;,
+  MASTER&#95;PASSWORD&#61;&#39;password&#39;,
   MASTER&#95;PORT&#61;3306,
   MASTER&#95;LOG&#95;FILE&#61;&#39;master2-bin.001&#39;,
   MASTER&#95;LOG&#95;POS&#61;4,
@@ -541,18 +541,12 @@ Look at agent.log and collector.log file to determine the problems. </p>
 
 <section>
 <title>Emergency Shutdown Procedure</title>
-<p>If the system is misbehaving, and there is nothing else to try from the Administraion Guide, execute the following command:</p>
+<p>If the system is not functioning properly and you cannot find an answer in the Administration Guide, execute the kill command. 
+The current state of the java process will be written to the log files. You can analyze these files to determine the cause of the problem.</p>
 <source>
 kill -3 &#60;pid&#62;
 </source>
-<p>This will write the current state of the java process to the log files.  Chukwa team will analyze this information to determine the cause of the crash.  
-After this has been completed, execute:</p>
-<source>
-sudo gmon
-crontab -r
-kill -9 -1
-</source>
-<p>This will shutdown watchdog and all chukwa processes on the running machine.  </p>
+
 </section>
 </section>
 
