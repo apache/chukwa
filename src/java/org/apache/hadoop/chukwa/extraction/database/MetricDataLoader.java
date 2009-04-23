@@ -70,9 +70,8 @@ public class MetricDataLoader {
 
   static {
     conf = new ChukwaConfiguration();
-    String fsName = conf.get("writer.hdfs.filesystem");
     try {
-      fs = FileSystem.get(new URI(fsName), conf);
+      fs = FileSystem.get(conf);
     } catch (Exception e) {
       e.printStackTrace();
       log.warn("Exception during HDFS init, Bailing out!", e);
