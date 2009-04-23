@@ -452,13 +452,13 @@
 		</copy>
 		<delete dir="${test.build.dir}/conf" />
 		<mkdir dir="${test.build.dir}/conf" />
-		<copy file="${conf.dir}/jdbc.conf.template" tofile="${test.build.dir}/conf/jdbc.conf"/>
-		<copy file="${conf.dir}/mdl.xml" tofile="${test.build.dir}/conf/mdl.xml"/>
-		<copy file="${conf.dir}/aggregator.sql" tofile="${test.build.dir}/conf/aggregator.sql"/>
-		<copy file="${conf.dir}/database_create_tables.sql" tofile="${test.build.dir}/conf/database_create_tables.sql"/>
+		<copy file="${conf.dir}/jdbc.conf.template" tofile="${test.build.dir}/conf/jdbc.conf" />
+		<copy file="${conf.dir}/mdl.xml" tofile="${test.build.dir}/conf/mdl.xml" />
+		<copy file="${conf.dir}/aggregator.sql" tofile="${test.build.dir}/conf/aggregator.sql" />
+		<copy file="${conf.dir}/database_create_tables.sql" tofile="${test.build.dir}/conf/database_create_tables.sql" />
 		<copy todir="${test.build.dir}/var">
-                        <fileset dir="${basedir}/test/samples" />
-                </copy>
+			<fileset dir="${basedir}/test/samples" />
+		</copy>
 	</target>
 
 	<!--printsummary="${test.junit.printsummary}" -->
@@ -712,7 +712,24 @@
 	<!-- Documentation                                                      -->
 	<!-- ================================================================== -->
 
-	<target name="docs" depends="init,javadoc">
+	<target name="forrest.check" depends="java5.check" if="forrest.home">
+		<fail unless="forrest.home" message="'forrest.home' is not defined. Please pass -Dforrest.home=&lt;base of Apache Forrest installation&gt; to Ant on the command-line." />
+	</target>
+
+	<target name="java5.check" if="forrest.home">
+		<fail unless="java5.home" message="'java5.home' is not defined.  Forrest requires Java 5.  Please pass -Djava5.home=&lt;base of Java 5 distribution&gt; to Ant on the command-line." />
+	</target>
+
+	<target name="forrest-docs" depends="forrest.check" description="Generate forrest-based documentation. To use, specify -Dforrest.home=&lt;base of Apache Forrest installation&gt; on the command line." if="forrest.home">
+		<exec dir="${docs.src}" executable="${forrest.home}/bin/forrest" failonerror="true">
+			<env key="JAVA_HOME" value="${java5.home}" />
+		</exec>
+		<copy todir="${build.docs}">
+			<fileset dir="${docs.src}/build/site/" />
+		</copy>
+	</target>
+
+	<target name="docs" depends="init,javadoc,forrest-docs" description="Generate javadoc, and release notes." if="forrest.home">
 		<copy file="${docs.src}/releasenotes.html" todir="${build.docs}" />
 		<copy file="${docs.src}/src/documentation/resources/images/chukwa_logo_small.jpg" todir="${build.docs}/images" />
 		<antcall target="changes-to-html" />
@@ -867,83 +884,90 @@
 		</copy>
 	</target>
 
-	<target name="chukwa-config" description="create real files based on templates" depends="init" >
-	
+	<target name="chukwa-config" description="create real files based on templates" depends="init">
+
 		<copy todir="${build.dir}/conf">
-		 <fileset dir="${basedir}/conf">
-		 	<exclude name="*.template" />
-		 </fileset>
-		</copy>
-	
-	    <copy file="${basedir}/conf/alert.template" tofile="${build.dir}/conf/alert">
-	            <filterchain>
-	                    <replacetokens>
-	                            <token key="TODO-ALERT-EMAIL" value="${TODO-ALERT-EMAIL}" />
-	                    </replacetokens>
-	            </filterchain>
-	    </copy>
-	
-		<copy file="${basedir}/conf/hadoop-metrics.properties.template" tofile="${build.dir}/conf/hadoop-metrics.properties">
-		        <filterchain>
-		                <replacetokens>
-		                        <token key="TODO-CHUKWA_LOG_DIR" value="${TODO-CHUKWA_LOG_DIR}" />
-		                </replacetokens>
-		        </filterchain>
-		</copy>
-		<copy file="${basedir}/conf/chukwa-agent-conf.xml.template" tofile="${build.dir}/conf/chukwa-agent-conf.xml">
-		        <filterchain>
-		                <replacetokens>
-		                        <token key="TODO-CLUSTER-NAME" value="${TODO-CLUSTER-NAME}" />
-		                </replacetokens>
-		        </filterchain>
-		</copy>
-		
-		<copy file="${basedir}/conf/chukwa-collector-conf.xml.template" tofile="${build.dir}/conf/chukwa-collector-conf.xml">
-		        <filterchain>
-		                <replacetokens>
-		                        <token key="TODO-COLLECTORS-NAMENODE" value="${TODO-COLLECTORS-NAMENODE}" />
-		                </replacetokens>
-		                <replacetokens>
-		                        <token key="TODO-COLLECTORS-ROTATEINTERVAL" value="${TODO-COLLECTORS-ROTATEINTERVAL}" />
-		                </replacetokens>
-		                <replacetokens>
-		                        <token key="TODO-COLLECTORS-PORT" value="${TODO-COLLECTORS-PORT}" />
-		                </replacetokens>
-		
-		        </filterchain>
-		</copy>
-		
-		<copy file="${basedir}/conf/chukwa-env.sh.template" tofile="${build.dir}/conf/chukwa-env.sh">
-		        <filterchain>
-		                <replacetokens>
-		                        <token key="TODO-JAVA-HOME" value="${TODO-JAVA-HOME}" />
-		                </replacetokens>
-		                <replacetokens>
-		                        <token key="TODO-HADOOP-HOME" value="${TODO-HADOOP-HOME}" />
-		                </replacetokens>
-		                <replacetokens>
-		                        <token key="TODO-HADOOP-CONF-DIR" value="${TODO-HADOOP-CONF-DIR}" />
-		                </replacetokens>
-		                <replacetokens>
-		                        <token key="TODO-CHUKWA_PID_DIR" value="${TODO-CHUKWA_PID_DIR}" />
-		                </replacetokens>
-		                <replacetokens>
-		                        <token key="TODO-CHUKWA_LOG_DIR" value="${TODO-CHUKWA_LOG_DIR}" />
-		                </replacetokens>
-		                <replacetokens>
-		                        <token key="TODO-AGENTS-INSTANCE-NAME" value="${TODO-AGENTS-INSTANCE-NAME}" />
-		                </replacetokens>
-		                <replacetokens>
-		                        <token key="TODO_CHUKWA_JDBC_DRIVER" value="${TODO_CHUKWA_JDBC_DRIVER}" />
-		                </replacetokens>
-		              <replacetokens>
-		                        <token key="TODO_CHUKWA_JDBC_URL_PREFIX" value="${TODO_CHUKWA_JDBC_URL_PREFIX}" />
-		                </replacetokens>
-		
-		        </filterchain>
+			<fileset dir="${basedir}/conf">
+				<exclude name="*.template" />
+			</fileset>
 		</copy>
 
-</target>
+		<copy file="${basedir}/conf/alert.template" tofile="${build.dir}/conf/alert">
+			<filterchain>
+				<replacetokens>
+					<token key="TODO-ALERT-EMAIL" value="${TODO-ALERT-EMAIL}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+
+		<copy file="${basedir}/conf/hadoop-metrics.properties.template" tofile="${build.dir}/conf/hadoop-metrics.properties">
+			<filterchain>
+				<replacetokens>
+					<token key="TODO-CHUKWA_LOG_DIR" value="${TODO-CHUKWA_LOG_DIR}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+		<copy file="${basedir}/conf/chukwa-agent-conf.xml.template" tofile="${build.dir}/conf/chukwa-agent-conf.xml">
+			<filterchain>
+				<replacetokens>
+					<token key="TODO-CLUSTER-NAME" value="${TODO-CLUSTER-NAME}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+		<copy file="${basedir}/conf/nagios.properties.template" tofile="${build.dir}/conf/nagios.properties">
+			<filterchain>
+				<replacetokens>
+					<token key="TODO-NAGIOS-SERVER" value="${TODO-NAGIOS-SERVER}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+
+		<copy file="${basedir}/conf/chukwa-collector-conf.xml.template" tofile="${build.dir}/conf/chukwa-collector-conf.xml">
+			<filterchain>
+				<replacetokens>
+					<token key="TODO-COLLECTORS-NAMENODE" value="${TODO-COLLECTORS-NAMENODE}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO-COLLECTORS-ROTATEINTERVAL" value="${TODO-COLLECTORS-ROTATEINTERVAL}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO-COLLECTORS-PORT" value="${TODO-COLLECTORS-PORT}" />
+				</replacetokens>
+
+			</filterchain>
+		</copy>
+
+		<copy file="${basedir}/conf/chukwa-env.sh.template" tofile="${build.dir}/conf/chukwa-env.sh">
+			<filterchain>
+				<replacetokens>
+					<token key="TODO-JAVA-HOME" value="${TODO-JAVA-HOME}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO-HADOOP-HOME" value="${TODO-HADOOP-HOME}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO-HADOOP-CONF-DIR" value="${TODO-HADOOP-CONF-DIR}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO-CHUKWA_PID_DIR" value="${TODO-CHUKWA_PID_DIR}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO-CHUKWA_LOG_DIR" value="${TODO-CHUKWA_LOG_DIR}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO-AGENTS-INSTANCE-NAME" value="${TODO-AGENTS-INSTANCE-NAME}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO_CHUKWA_JDBC_DRIVER" value="${TODO_CHUKWA_JDBC_DRIVER}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO_CHUKWA_JDBC_URL_PREFIX" value="${TODO_CHUKWA_JDBC_URL_PREFIX}" />
+				</replacetokens>
+
+			</filterchain>
+		</copy>
+
+	</target>
 
 	<target name="package" depends="compress,docs,chukwa-config,package-hadoop,package-standalone" description="Build distribution">
 		<mkdir dir="${build.dir}/${final.name}" />
@@ -958,8 +982,8 @@
 
 		<copy todir="${build.dir}/${final.name}" includeEmptyDirs="false">
 			<fileset dir="${build.dir}">
-				<include name="**/*.jar" />
-				<include name="**/*.war" />
+				<include name="*.jar" />
+				<include name="*.war" />
 			</fileset>
 		</copy>
 
