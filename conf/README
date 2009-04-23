@@ -74,6 +74,14 @@ Configuration File (CC, SN)
 chukwa-env.sh.template
 > Modify? yes			
 > Environment variables.
+--------------------------------------------
+default.properties
+> Modify? no			
+> Default settings.
+--------------------------------------------
+build.properties
+> Modify? yes, optional			
+> Override default settings using this file.
 
 
 ================================================================================
@@ -116,7 +124,7 @@ hadoop-metrics-log4j.properties
 > Metrics logging for Chukwa cluster.	
 > Metrics logging for source nodes, if set up as a Hadoop cluster.
 --------------------------------------------
-hadoop-metrics.properties
+hadoop-metrics.properties.template
 > Modify? no	
 > Sample metrics for Chukwa cluster.  
 > Sample metrics for source nodes, if set up as a Hadoop cluster.
