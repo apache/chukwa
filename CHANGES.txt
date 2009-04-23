@@ -36,6 +36,8 @@ Release 0.1.2 - 2009-04-24
 
   IMPROVEMENTS
 
+    CHUKWA-178. Extend aggregation by 5 minutes for cluster metrics. (Eric Yang)
+
     CHUKWA-176. Rearrange the parameter order for aggregator.sh. (Eric Yang)
 
     CHUKWA-174. Added test cases to test database partitioning, database aggregation, and data loading. (Eric Yang)
@@ -106,6 +108,8 @@ Release 0.1.2 - 2009-04-24
   OPTIMIZATIONS
 
   BUG FIXES
+
+    CHUKWA-158. Consolidate namenode address to a single configuration object. (Eric Yang)
 
     CHUKWA-168. Added watchdog for database. (Eric Yang)
 
