@@ -1,0 +1,183 @@
+log4j.rootLogger=debug,CONSOLE,NAGIOS
+
+log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
+log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
+log4j.appender.CONSOLE.layout.ConversionPattern=%d [%t] %-5p (%F:%L) - %m%n
+log4j.logger.org.apache.hadoop.chukwa.MySQLWriter=ERROR, CONSOLE
+
+# our custom handler for nagios
+log4j.appender.NAGIOS=org.apache.log4j.nagios.NagiosAppender
+log4j.appender.NAGIOS.Host=@TODO-NAGIOS-SERVER@
+log4j.appender.NAGIOS.Port=5667
+
+# -------------------------------------------------------------------------------------------
+# Nagios Message Structure
+#
+#   This appender will send a structured message via the Nagios native protocol to the 
+#   nagios server.  A nagios message is made up of the following components.
+#
+#   HOST
+#   SERVICE NAME
+#   RETURN CODE
+#   MESSAGE
+#
+#   The majority of what you need to think about when using this appender is  ...
+# 
+#      1. How to assign the value for HOST (options allow hardcoding or programmatic lookup)
+#      2. How to assign the value for SERVICE (options similar to 1.)
+#      3. The mapping between log4j levels and Nagios levels that matches your needs.
+#      4. The layout for the raw MESSAGE
+#
+# -------------------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------------------
+#
+# Nagios Enryption
+#
+# The config file tells us how to encrypt the data.  As of version 0.0.3, the 
+# NagiosAppender supports XOR encryption (thanks to Bob Ingraham!!)  If you 
+# are sending messages in the clear, simply leave the following setting commented
+# out, and the appender will assume the default (no encryption).
+#
+# Future versions are expected to support more of the available choices 
+# (anyone with encryption experience willing to help out here?)
+#
+# NOTE: the config file will be read only once ... if you need to change the encryption
+# method, you will need to restart your application for the change to take affect.
+#
+# -------------------------------------------------------------------------------------------
+# If send_nsca was installed on this system, maybe we just want to point to it ....
+#log4j.appender.NAGIOS.ConfigFile=/usr/local/nagios/nsca-2.4/send_nsca.cfg
+# or, we can just include our own version with our application
+log4j.appender.NAGIOS.ConfigFile=/grid/0/gs/conf/chukwa-current/nsca_send_clear.cfg
+
+# -------------------------------------------------------------------------------------------
+# Nagios SERVICE_NAME
+# -------------------------------------------------------------------------------------------
+
+# You can either hardcode the nagios service name in this file ....
+log4j.appender.NAGIOS.ServiceNameDefault=MDL
+
+# ... or you can override the above and set it programatically, using something like the following ...
+#  org.apache.log4j.MDC.put("instance", "APPLICATION_FOOBAR");
+#  ... or ....
+#  org.apache.log4j.MDC.put("instance", System.getProperty("APP_NAME","UNKNOWN"));
+# ... in which case, all you need to do in this file is specify the key you used
+#log4j.appender.NAGIOS.useMDCServiceName=true
+#log4j.appender.NAGIOS.MDCServiceNameKey=instance
+
+# -------------------------------------------------------------------------------------------
+# Nagios HOST
+# -------------------------------------------------------------------------------------------
+
+# Dynamic Assignment
+# 
+# You can control whether your hostname shows up as a fully qualified domain name, 
+# or just the first portion of the fqdn:
+
+# For example .... if the fully qualified domain name is 'www1.amazon.com' .....
+
+# www1
+#log4j.appender.NAGIOS.useShortHostName=true
+# www1.amazon.com
+log4j.appender.NAGIOS.useShortHostName=false
+
+# Static Assignment
+# 
+# You can take all the guess work out of the interface name
+# that will be sent upstream vi nsca, and just tell us what key in MDC has the appropriate
+# name
+#log4j.appender.NAGIOS.useMDCHostName=true
+#log4j.appender.NAGIOS.MDCHostNameKey=nagios_host_name
+#log4j.appender.NAGIOS.InitializeMDCHostNameValue=www1
+
+# -------------------------------------------------------------------------------------------
+# Nagios RETURN CODES
+# -------------------------------------------------------------------------------------------
+#
+# This section is where you control the mappings between the log4j logging levels, 
+# versus the Nagios alert levels.  To make things clear, I've designed the appender to 
+# NOT assume any default mappings.  This way, you have total control over which messages
+# get passed on up to nagios.  For example, most users will want to avoid sending
+# debug and info messages to nagios, but they probably will want to send on warnings,
+# errors, and fatals.  The following mappings reflect this convention.
+#
+# NOTE: if you don't declare the mapping, the appender WILL NOT SEND THE MESSAGE TO NAGIOS
+
+#log4j.appender.NAGIOS.Log4j_Level_DEBUG=NAGIOS_UNKNOWN
+log4j.appender.NAGIOS.Log4j_Level_INFO=NAGIOS_OK
+log4j.appender.NAGIOS.Log4j_Level_WARN=NAGIOS_WARN
+log4j.appender.NAGIOS.Log4j_Level_ERROR=NAGIOS_CRITICAL
+log4j.appender.NAGIOS.Log4j_Level_FATAL=NAGIOS_CRITICAL
+
+# -------------------------------------------------------------------------------------------
+# Option: Filtering
+#
+# Filters are very useful when introducing Nagios into a backroom with legacy applications.
+#
+# Rather than sending on ALL error messages to your nagios server, you might want to consider 
+# turning on IncludeFilters, and speficically identifying the handfull of problem messages you 
+# need to keep an eye on.  Unless a message passes one of your include filters, it won't get
+# sent.
+# 
+# The same applies if you are interested in MOST of the messages, but want to suppress the ones
+# that duplicate information you already know.  But turning on ExcludeFilters, you can suppress 
+# these annoying messages ...
+# 
+# Filters are defined by Java regex patterns (see http://java.sun.com/docs/books/tutorial/essential/regex)
+#
+# See the file NagiosIncludeExcludeFilters.properties for example entries
+#
+# -------------------------------------------------------------------------------------------
+# 
+# Filtering
+#log4j.appender.NAGIOS.IncludeFilterEnabled=true
+#log4j.appender.NAGIOS.ExcludeFilterEnabled=true
+#log4j.appender.NAGIOS.PatternFilterFile=conf/NagiosIncludeExcludeFilters.properties
+
+# -------------------------------------------------------------------------------------------
+# Option: Custom Message at Startup
+# -------------------------------------------------------------------------------------------
+# 
+# This is an optional message that will get sent as soon as the appender gets
+# instantiated.  This can be helpful in identifying problems where the application dies quietly, and 
+# gets restarted by someone (or some automated process).
+#
+# Simply choose the level that fits your use case, and assign the appropriate message.
+#
+
+#log4j.appender.NAGIOS.SendStartupMessageOK=Application Starting
+#log4j.appender.NAGIOS.SendStartupMessageUNKNOWN=Application restarted for some reason
+#log4j.appender.NAGIOS.SendStartupMessageWARN=Application Errors Cleared
+#log4j.appender.NAGIOS.SendStartupMessageCRITICAL=Application Restarted ... Sound the Alarm!!!
+
+# -------------------------------------------------------------------------------------------
+# Option: Layout
+# -------------------------------------------------------------------------------------------
+
+# Here is the key the appender will use to populate with the value of the
+# system's canonical hostname .... look at the layout usage at the end of this file
+# to see how you might want to use it 
+log4j.appender.NAGIOS.MDCCanonicalHostNameKey=nagios_canonical_hostname
+
+# -------------------------------------------------------------------------------------------
+# Option: Layout
+# -------------------------------------------------------------------------------------------
+#
+# The Nagios appender supports standard layouts
+# 
+
+log4j.appender.NAGIOS.layout=org.apache.log4j.PatternLayout
+
+# Here is a rather typical definition ....
+log4j.appender.NAGIOS.layout.ConversionPattern=%d{ABSOLUTE} %5p %c{1}:%L - %m%n
+
+# Here is a layout that embeds the server name into the message delivered to Nagios ... not really
+# necessary if we're already using the HOST parameter for this information, but if we're using the
+# HOST parameter for a virtual name .... like 'APP_SERVER', then we can add a little context by
+# including the physical hostname in the message.  The resulting message sent to nagios would
+# then contain the physical hostname pre-pended to the raw message.
+#log4j.appender.NAGIOS.layout.ConversionPattern=%X{nagios_canonical_hostname}: %m%n
+
+log4j.appender.NAGIOS.SendStartupMessageOK=Application Starting
+
