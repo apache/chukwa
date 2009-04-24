@@ -63,6 +63,9 @@ export CHUKWA_LOG_DIR=@TODO-CHUKWA_LOG_DIR@
 # Instance name for chukwa deployment
 export CHUKWA_IDENT_STRING=@TODO-AGENTS-INSTANCE-NAME@
 
+export JAVA_PLATFORM=Linux-i386-32
+export JAVA_LIBRARY_PATH=${HADOOP_HOME}/lib/native/${JAVA_PLATFORM}
+
 # Datatbase driver name for storing Chukwa Data.
 export JDBC_DRIVER=@TODO_CHUKWA_JDBC_DRIVER@
 
