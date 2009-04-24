@@ -175,7 +175,7 @@ public class JobLog extends AbstractProcessor {
 				put("TASK_ATTEMPT_TIMES", "" + getAttempts());
 			}
 			
-			if(get(JobHistory.Keys.FINISH_TIME.toString())!=null) {
+			if(logType.equals("Job") && get(JobHistory.Keys.FINISH_TIME.toString())!=null) {
 			  put("JOB_FINAL_STATUS", get("JOB_STATUS"));
 			}
 		}
