@@ -111,6 +111,10 @@ Release 0.1.2 - 2009-04-24
 
   BUG FIXES
 
+    CHUKWA-186. Remove duplicated timestamp from aggregation script. (Eric Yang)
+
+    CHUKWA-187. Correction to status for job and task status. (Cheng Zhang via Eric Yang)
+
     CHUKWA-183. Added HICC startup script. (Eric Yang)
 
     CHUKWA-177. Added test case for verify the value between JSON values and database values. (Terence Kwan via Eric Yang)
