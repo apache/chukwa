@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
@@ -51,6 +53,7 @@ public class JobLog extends AbstractProcessor {
     }
     
     if(recordEntry.startsWith("Job") 
+        || recordEntry.startsWith("Meta") 
         || recordEntry.startsWith("Task") 
         || recordEntry.startsWith("MapAttempt") 
         || recordEntry.startsWith("ReduceAttempt")) 
@@ -66,16 +69,32 @@ public class JobLog extends AbstractProcessor {
     JobLogLine line = new JobLogLine(savedLines);
     return line;
   }
-
+  
 	@Override
 	protected void parse(String recordEntry,
 			OutputCollector<ChukwaRecordKey, ChukwaRecord> output,
 			Reporter reporter) throws Throwable 
 	{
 	  JobLogLine line = getJobLogLine(recordEntry);
-	  if(line == null) {
+	  if(line == null || (!line.getLogType().equals("Meta") 
+	                      && !line.getLogType().equals("JobData") 
+	                      && !line.getLogType().equals("TaskData"))) 
+	  {
 	    return;
 	  }
+	  
+    if(line.getLogType().equals("Meta")) {
+      String streamName = chunk.getStreamName();
+      if(streamName == null) {
+        return;
+      }
+      String jobId = JobLogFileName.getJobIdFromFileName(streamName);
+      if(jobId == null) {
+        return;
+      }
+      line.setLogType("JobData");
+    }
+    
 		key = new ChukwaRecordKey();
 		ChukwaRecord record = new ChukwaRecord();
 		this.buildGenericRecord(record, null, -1l, line.getLogType());
@@ -96,6 +115,9 @@ public class JobLog extends AbstractProcessor {
 	
 	private String getKey(long ts, String jobId) {
 		long unit = 60 * 60 * 1000;
+		if(ts == 0) {
+		  ts = archiveKey.getTimePartition();
+		}
 		long rounded = (ts / unit) * unit;
 		return rounded + "/" + jobId + "/" + ts;
 	}
@@ -180,9 +202,13 @@ public class JobLog extends AbstractProcessor {
 			}
 		}
 
-		public String getLogType() {
-			return logType;
-		}
+    public String getLogType() {
+      return logType;
+    }
+
+    public void setLogType(String logType) {
+      this.logType = logType;
+    }
 
 		public String getJobId() {
 			return jobId;
@@ -308,4 +334,19 @@ public class JobLog extends AbstractProcessor {
 		}
 		return result;
 	}
+
+	private static class JobLogFileName {
+    private static final Pattern pattern = Pattern.compile("job_[0-9]+_[0-9]+");
+    
+    public static String getJobIdFromFileName(String name) {
+      Matcher matcher = pattern.matcher(name);
+      if (matcher.find()) {
+        return matcher.group(0);
+      }
+      else {
+        return null;
+      }
+    }
+	}
+
 }

@@ -2,7 +2,7 @@ Chukwa Change Log
 
 Trunk (unreleased changes)
 
-Release 0.1.2 - 2009-04-24
+Release 0.1.2 - 2009-04-28
 
   INCOMPATIBLE CHANGES
 
@@ -116,6 +116,8 @@ Release 0.1.2 - 2009-04-24
   OPTIMIZATIONS
 
   BUG FIXES
+
+    CHUKWA-193. Remove unrecognized tag from Job History Log file parser. (Cheng Zhang via Eric Yang)
 
     CHUKWA-189. Added JAVA_LIBRARY_PATH to chukwa-env.sh for enabling compression. (Jerome Boulon via Eric Yang)
 
