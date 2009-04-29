@@ -117,6 +117,8 @@ Release 0.1.2 - 2009-04-28
 
   BUG FIXES
 
+    CHUKWA-201. Removed sourcing of Timeline widget from simile.mit.edu. (Eric Yang)
+
     CHUKWA-193. Remove unrecognized tag from Job History Log file parser. (Cheng Zhang via Eric Yang)
 
     CHUKWA-189. Added JAVA_LIBRARY_PATH to chukwa-env.sh for enabling compression. (Jerome Boulon via Eric Yang)

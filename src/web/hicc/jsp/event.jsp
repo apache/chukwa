@@ -39,14 +39,14 @@
 %>
 <html>
   <head>
-    <link rel='stylesheet' href='/hicc/css/timeline.css' type='text/css' />
-    <script src="http://simile.mit.edu/timeline/api/timeline-api.js" type="text/javascript"></script>
-    <script src="http://simile.mit.edu/timeline/examples/examples.js" type="text/javascript"></script>
+    <link rel='stylesheet' href='/hicc/lib/timeline/bundle.css' type='text/css' />
+    <script src="/hicc/lib/timeline/timeline-api.js?bundle=true" type="text/javascript"></script>
+    <script src="/hicc/lib/timeline/search.js" type="text/javascript"></script>
     <script type="text/javascript">
         var theme = Timeline.ClassicTheme.create();
-        theme.event.label.width = 250; // px
-        theme.event.bubble.width = 250;
-        theme.event.bubble.height = 200;
+        theme.event.label.width = 220; // px
+        theme.event.bubble.width = 400;
+        theme.event.bubble.height = 80;
         function onLoad() {
           var eventSource = new Timeline.DefaultEventSource();
           var bandInfos = [
@@ -59,7 +59,7 @@
                 width:          "100%", 
                 intervalUnit:   Timeline.DateTime.<%= intervalUnit2 %>, 
                 intervalPixels: 200,
-                theme: theme
+                theme: theme,
             })
           ];
           bandInfos[0].highlight = true;

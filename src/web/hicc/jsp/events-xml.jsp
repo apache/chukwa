@@ -17,137 +17,86 @@
  * limitations under the License.
  */
 %><?xml version="1.0" encoding="UTF-8"?>
-<%@ page import = "java.util.Calendar, java.util.Date, java.sql.*, java.text.SimpleDateFormat, java.util.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.database.DatabaseConfig" %>
+<%@ page import = "java.util.Calendar, java.util.Date, java.sql.*, java.text.SimpleDateFormat, java.util.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.util.DatabaseWriter, org.apache.hadoop.chukwa.database.Macro, org.apache.hadoop.chukwa.database.DatabaseConfig, org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
     response.setContentType("text/xml");
+    XssFilter xf = new XssFilter(request);
     TimeHandler time = new TimeHandler(request, (String)session.getAttribute("time_zone"));
+    long start = time.getStartTime();
+    long end = time.getEndTime();
     String cluster = (String) session.getAttribute("cluster");
-    String startS = time.getStartTimeText();
-    String endS = time.getEndTimeText();
-    DatabaseConfig dbc = new DatabaseConfig();
-    String[] database = dbc.findTableName("HodJob",time.getStartTime(),time.getEndTime());
-    String[] timefield = new String[3];
-    timefield[0]="StartTime";
-    //timefield[1]="LAUNCH_TIME";
-    //timefield[2]="timestamp";
+    String table = "mr_job";
+    if(xf.getParameter("event_type")!=null) {
+      table = xf.getParameter("event_type");
+    }
+    String query = "select job_id,user,submit_time,launch_time,finish_time,status from ["+table+"] where finish_time between '[start]' and '[end]'";
+    Macro mp = new Macro(start,end,query, request);
+    query = mp.toString();
+
     ArrayList<HashMap<String, Object>> events = new ArrayList<HashMap<String, Object>>();
-    int q=0;  
 
-        String dateclause = timefield[q]+" >= '"+startS+"' and "+timefield[q]+" <= '"+endS+"'";
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
+    Connection conn = null;
+    Statement stmt = null;
+    ResultSet rs = null;
 
-               ClusterConfig cc = new ClusterConfig();
-               String jdbc = cc.getURL(cluster);
-               try {
-                   conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc);
-                   stmt = conn.createStatement();
-                   String query = "";
-                   query = "select * from "+database[q]+" where "+dateclause+";";
-                   // or alternatively, if you don't know ahead of time that
-                   // the query will be a SELECT...
-                   if (stmt.execute(query)) {
-                       rs = stmt.getResultSet();
-                       ResultSetMetaData rmeta = rs.getMetaData();
-                       int col = rmeta.getColumnCount();
-                       while (rs.next()) {
-                           String cell="";
-                           HashMap<String, Object> event = new HashMap<String, Object>();
-                           long event_time=0;
-                           for(int i=1;i<col;i++) {
-                               String value = rs.getString(i);
-                               if(value!=null) {
-                                   cell=cell+" "+rmeta.getColumnName(i)+":"+value;
-                               }
-                               event.put(rmeta.getColumnName(i),value);
-                               if(rmeta.getColumnName(i).equals("EndTime")) {
-                                   try {
-                                       event.put(rmeta.getColumnName(i), rs.getTimestamp(i).getTime());
-                                   } catch(SQLException ex) {
-                                       Calendar now = Calendar.getInstance();
-                                       event.put(rmeta.getColumnName(i),now.getTime());
-                                   }
-                               }
-                               if(rmeta.getColumnName(i).equals("LAUNCH_TIME")) {
-                                   try {
-                                       event.put(rmeta.getColumnName(i), rs.getTimestamp(i).getTime());
-                                   } catch(SQLException ex) {
-                                       Calendar now = Calendar.getInstance();
-                                       event.put(rmeta.getColumnName(i),now.getTime());
-                                   }
-                               }
-                               if(rmeta.getColumnName(i).equals("StartTime")) {
-                                   try {
-                                       event.put(rmeta.getColumnName(i), rs.getTimestamp(i).getTime());
-                                   } catch(SQLException ex) {
-                                       Calendar now = Calendar.getInstance();
-                                       event.put(rmeta.getColumnName(i),now.getTime());
-                                   }
-                               }
-                               if(rmeta.getColumnName(i).equals("Timestamp")) {
-                                   try {
-                                       event.put(rmeta.getColumnName(i), rs.getTimestamp(i).getTime());
-                                   } catch(SQLException ex) {
-                                       Calendar now = Calendar.getInstance();
-                                       event.put(rmeta.getColumnName(i),now.getTime());
-                                   }
-                               }
-                           }
-                           event.put("_event",cell);
-                           events.add(event);
-                       }
-                   }
-                   // Now do something with the ResultSet ....
-               } catch (SQLException ex) {
-                   // handle any errors
-                   //out.println("SQLException: " + ex.getMessage());
-                   //out.println("SQLState: " + ex.getSQLState());
-                   //out.println("VendorError: " + ex.getErrorCode());
-               } finally {
-                   // it is a good idea to release
-                   // resources in a finally{} block
-                   // in reverse-order of their creation
-                   // if they are no-longer needed
-                   if (rs != null) {
-                       try {
-                           rs.close();
-                       } catch (SQLException sqlEx) {
-                           // ignore
-                       }
-                       rs = null;
-                   }
-                   if (stmt != null) {
-                       try {
-                           stmt.close();
-                       } catch (SQLException sqlEx) {
-                           // ignore
-                       }
-                       stmt = null;
-                   }
-                   if (conn != null) {
-                       try {
-                           conn.close();
-                       } catch (SQLException sqlEx) {
-                           // ignore
-                       }
-                       conn = null;
-                   }
-               }
-//        }
+    DatabaseWriter dbw = new DatabaseWriter(cluster);
+    try {
+        rs = dbw.query(query);
+        ResultSetMetaData rmeta = rs.getMetaData();
+        int col = rmeta.getColumnCount();
+        while (rs.next()) {
+          HashMap<String, Object> event = new HashMap<String, Object>();
+          long event_time=0;
+          for(int i=1;i<=col;i++) {
+            if(rmeta.getColumnType(i)==java.sql.Types.TIMESTAMP) {
+              event.put(rmeta.getColumnName(i),rs.getTimestamp(i).getTime());
+            } else {
+              event.put(rmeta.getColumnName(i),rs.getString(i));
+            }
+          }
+          events.add(event);
+        }
+    // Now do something with the ResultSet ....
+    } catch (SQLException ex) {
+      // handle any errors
+      //out.println("SQLException: " + ex.getMessage());
+      //out.println("SQLState: " + ex.getSQLState());
+      //out.println("VendorError: " + ex.getErrorCode());
+    } finally {
+      // it is a good idea to release
+      // resources in a finally{} block
+      // in reverse-order of their creation
+      // if they are no-longer needed
+      dbw.close();
+    }
 %>
 <data>
 <%
-        SimpleDateFormat format = new SimpleDateFormat("MMM dd yyyy HH:mm:ss");
-        for(int i=0;i<events.size();i++) {
-            HashMap<String, Object> event = events.get(i);
-            long start=(Long)event.get("StartTime");
-            long end=(Long)event.get("EndTime");
-            String event_time = format.format(start);
-            String event_end_time = format.format(end);
-            String cell = (String) event.get("_event");
+    SimpleDateFormat format = new SimpleDateFormat("MMM dd yyyy HH:mm:ss");
+    for(int i=0;i<events.size();i++) {
+      HashMap<String, Object> event = events.get(i);
+      start=(Long)event.get("submit_time");
+      end=(Long)event.get("finish_time");
+      String event_time = format.format(start);
+      String launch_time = format.format(event.get("launch_time"));
+      String event_end_time = format.format(end);
+      String cell = (String) event.get("_event");
+      if(event.get("status").toString().intern()=="failed".intern()) {
 %>
-	    <event start="<%= event_time %> GMT" end="<%= event_end_time %> GMT" title="Hod Job: <%= event.get("HodID") %> User: <%= event.get("UserID") %>" link="" isDuration="true"><%= cell %></event>
+      <event start="<%= event_time %> GMT" latestStart="<%= launch_time %> GMT" end="<%= event_end_time %> GMT" title="Job ID: <%= event.get("job_id") %>" link="/hicc/jsp/job_viewer.jsp?job_id=<%= event.get("job_id") %>" isDuration="true" color="#f00">
+      Job ID: <%= event.get("job_id") %>
+      User: <%= event.get("user") %>
+      Status: <%= event.get("status") %>
+      </event>
 <%
-        } %>
+      } else {
+%>
+      <event start="<%= event_time %> GMT" latestStart="<%= launch_time %> GMT" end="<%= event_end_time %> GMT" title="Job ID: <%= event.get("job_id") %>" link="/hicc/jsp/job_viewer.jsp?job_id=<%= event.get("job_id") %>" isDuration="true">
+      Job ID: <%= event.get("job_id") %>
+      User: <%= event.get("user") %>
+      Status: <%= event.get("status") %>
+      </event>
+<%
+      }
+    } %>
 </data>
