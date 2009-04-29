@@ -192,7 +192,7 @@
         out.println("</td></tr>");
 
         out.println("</table>");
-        JSONObject job = new JSONObject(rs.getString(col));
+        JSONObject job = new JSONObject(rs.getString(27));
         Iterator<String> keys = job.keys();
         out.println("<table id=\"job_conf\">");
         while(keys.hasNext()) {
