@@ -49,7 +49,7 @@ log4j.appender.NAGIOS.Port=5667
 # If send_nsca was installed on this system, maybe we just want to point to it ....
 #log4j.appender.NAGIOS.ConfigFile=/usr/local/nagios/nsca-2.4/send_nsca.cfg
 # or, we can just include our own version with our application
-log4j.appender.NAGIOS.ConfigFile=/grid/0/gs/conf/chukwa-current/nsca_send_clear.cfg
+log4j.appender.NAGIOS.ConfigFile=@TODO_CHUKWA_CONF_DIR@/nsca_send_clear.cfg
 
 # -------------------------------------------------------------------------------------------
 # Nagios SERVICE_NAME

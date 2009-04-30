@@ -33,7 +33,7 @@ import org.apache.hadoop.mapred.Reporter;
 
 import junit.framework.TestCase;
 
-public class JobLogEntryTest extends TestCase {
+public class TestJobLogEntry extends TestCase {
 	private ArrayList<String> testLogList = new ArrayList<String>();
 
 	protected void setUp() throws Exception {
@@ -66,7 +66,7 @@ public class JobLogEntryTest extends TestCase {
 		
 		log = jobLog.getJobLogLine(testLogList.get(1));
 		assertEquals("JobData", log.getLogType());
-		assertEquals("hdfs://gs301033/grid/0/tmp/hadoop-gmon/mapred/system/job_200903062215_0577/job\\.xml", log.get("JOBCONF"));
+		assertEquals("hdfs://test33/tmp/hadoop-gmon/mapred/system/job_200903062215_0577/job\\.xml", log.get("JOBCONF"));
 		assertEquals("job_200903062215_0577", log.get("JOBID"));
 		assertEquals("grep-search", log.get("JOBNAME"));
 		assertEquals("gmon", log.get("USER"));
