@@ -141,19 +141,14 @@ cp $HADOOP&#95;HOME/lib hadoop-&#42;-core.jar file $CHUKWA&#95;HOME/hadoopjars
 <section>
 <title>Install MySQL</title>
 
-<section>
-<title>Download MySQL</title>
 <p>Download MySQL 5.1 from the <a href="http://dev.mysql.com/downloads/mysql/5.1.html#downloads">MySQL site</a>. </p>
 <source>
 tar fxvz mysql-&#42;.tar.gz -C $CHUKWA&#95;HOME/opt
 cd $CHUKWA&#95;HOME/opt/mysql-&#42;
 </source>
-</section>
 
-<section>
-<title>Set Up my.cnf</title>
 <p>
-Copy the my.cnf file (see below) to the CHUKWA_HOME/opt/mysql-* directory.
+Configure and then copy the my.cnf file to the CHUKWA_HOME/opt/mysql-* directory.
 </p>
 <source>
 ./scripts/mysql&#95;install&#95;db
@@ -161,133 +156,19 @@ Copy the my.cnf file (see below) to the CHUKWA_HOME/opt/mysql-* directory.
 ./bin/mysqladmin -u root create &#60;clustername&#62;
 ./bin/mysql -u root &#60;clustername&#62; &#60; $CHUKWA&#95;HOME/conf/database&#95;create&#95;table
 </source>
-</section>
 
-
-<section>
-<title>Set Up the Database URL </title>
 <p>Edit the CHUKWA_HOME/conf/jdbc.conf configuration file. </p>
 <p>Set the clustername to the MYSQL root URL.</p>
 <source>
 &#60;clustername&#62;&#61;jdbc:mysql://localhost:3306/&#60;clustername&#62;?user&#61;root
 </source>
-</section>
 
-<section>
-<title>Download MySQL Connector/J</title>
 <p>Download the MySQL Connector/J 5.1 from the  <a href="http://dev.mysql.com/downloads/connector/j/5.1.html">MySQL site</a>, 
 and place the jar file in $CHUKWA_HOME/lib.</p>
-</section>
-</section>
-
-<section>
-<title>Configure my.cnf File</title>
-
-<p>Create my.cnf file which contains the following:</p>
-<source>
-&#91;mysqld]
-tempdir&#61;/grid/0/tmp
-datadir&#61;/var/lib/mysql
-socket&#61;/var/lib/mysql/mysql.sock
-# Default to using old password format for compatibility with mysql 3.x
-# clients (those using the mysqlclient10 compatibility package).
-old&#95;passwords&#61;1
-
-&#91;mysql.server]
-user&#61;mysql
-basedir&#61;/var/lib
-
-&#91;mysqld&#95;safe]
-log-error&#61;/var/log/mysqld.log
-pid-file&#61;/var/run/mysqld/mysqld.pid
-
-# 16GB Database Configuration
-skip-locking
-key&#95;buffer &#61; 4096M
-max&#95;allowed&#95;packet &#61; 16M
-table&#95;cache &#61; 4096
-sort&#95;buffer&#95;size &#61; 32M
-read&#95;buffer&#95;size &#61; 32M
-read&#95;rnd&#95;buffer&#95;size &#61; 128M
-myisam&#95;sort&#95;buffer&#95;size &#61; 256M
-thread&#95;cache&#95;size &#61; 128
-query&#95;cache&#95;size &#61; 4096M
-# Try number of CPU&#39;s&#42;2 for thread&#95;concurrency
-thread&#95;concurrency &#61; 16
-skip-federated
-
-# 8GB Database Configuration
-#skip-locking
-#key&#95;buffer &#61; 2048M
-#max&#95;allowed&#95;packet &#61; 8M
-#table&#95;cache &#61; 2048
-#sort&#95;buffer&#95;size &#61; 16M
-#read&#95;buffer&#95;size &#61; 16M
-#read&#95;rnd&#95;buffer&#95;size &#61; 64M
-#myisam&#95;sort&#95;buffer&#95;size &#61; 128M
-#thread&#95;cache&#95;size &#61; 64
-#query&#95;cache&#95;size &#61; 2048M
-#thread&#95;concurrency &#61; 16
-#skip-federated
-
-
-#master configuration
-log-bin&#61;mysql-bin
-server-id       &#61; 3
-expire&#95;logs&#95;days &#61; 3
-
-#slave configuration
-#
-#server-id       &#61; 5
-#master-host     &#61;   &#60;hostname&#62;
-#master-user     &#61;   &#60;username&#62;
-#master-password &#61;   &#60;password&#62;
-#master-port     &#61;  3306
-#log-bin&#61;mysql-bin
-
-&#91;mysqldump]
-quick
-max&#95;allowed&#95;packet &#61; 16M
-
-&#91;mysql]
-no-auto-rehash
-
-# 16 GB Configuration
-&#91;isamchk]
-key&#95;buffer &#61; 4064M
-sort&#95;buffer&#95;size &#61; 4064M
-read&#95;buffer &#61; 32M
-write&#95;buffer &#61; 32M
-
-&#91;myisamchk]
-key&#95;buffer &#61; 4064M
-sort&#95;buffer&#95;size &#61; 4064M
-read&#95;buffer &#61; 32M
-write&#95;buffer &#61; 32M
-
-# 8 GB configuration
-#&#91;isamchk]
-#key&#95;buffer &#61; 4064M
-#sort&#95;buffer&#95;size &#61; 4064M
-#read&#95;buffer &#61; 32M
-#write&#95;buffer &#61; 32M
-
-#&#91;myisamchk]
-#key&#95;buffer &#61; 4064M
-#sort&#95;buffer&#95;size &#61; 4064M
-#read&#95;buffer &#61; 32M
-#write&#95;buffer &#61; 32M
-
-&#91;mysqlhotcopy]
-interactive-timeout
-</source>
-
-<p>Uncomment the configuration base on database master or database slave hardware. For slave, make sure the master's hostname is added to master-host.</p>
 </section>
 
 <section>
 <title>Setup MySQL for Replication </title>
-
 <p>Start the MySQL shell:</p>
 <source>
 mysql -u root -p
@@ -321,14 +202,29 @@ FLUSH PRIVILEGES;
 
 <p>The Chukwa status scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
 <ul>
-<li> To obtain the status for the Chukwa collector, run:
-</li></ul> 
+<li> To obtain the status for the Chukwa collector, run:</li>
+</ul> 
 <source>CHUKWA&#95;HOME/tools/init.d/chukwa-collector status </source> <ul>
-<li> To verify that the data processors are functioning correctly: 
-</li></ul> 
+<li> To verify that the data processors are functioning correctly: </li>
+</ul> 
 <source>Visit the Chukwa hadoop cluster&#39;s Job Tracker UI for job status. 
 Refresh to the Chukwa Cluster Configuration page for the Job Tracker URL. </source>
 </section>
+
+<section>
+<title>7. Deploy HICC Portal</title>
+<p>The Hadoop Infrastructure Care Center (HICC) is the Chukwa web user interface. To deploy HICC, do the following:</p>
+<ul>
+<li>Download apache-tomcat 6.0.18+ from <a href="http://tomcat.apache.org/download-60.cgi">Apache Tomcat</a> and decompress the tarball to CHUKWA_HOME/opt. </li> 
+<li>Copy CHUKWA_HOME/hicc.war to apache-tomcat-6.0.18/webapps. </li> 
+<li>Start up HICC by running: </li> 
+</ul>
+<source>CHUKWA_HOME/bin/hicc.sh start</source>
+<ul>
+<li>Point your favorite browser to: http://&#60;server&#62;:8080/hicc  </li> 
+</ul>
+</section>
+
 </section>
 
 <section>
