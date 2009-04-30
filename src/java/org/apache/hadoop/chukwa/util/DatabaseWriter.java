@@ -79,32 +79,6 @@ public class DatabaseWriter {
     }
   }
 
-  public DatabaseWriter() {
-    DataConfig mdlConfig = new DataConfig();
-    String jdbc_url = "jdbc:mysql://" + mdlConfig.get("jdbc.host") + "/"
-        + mdlConfig.get("jdbc.db");
-    if (mdlConfig.get("jdbc.user") != null) {
-      jdbc_url = jdbc_url + "?user=" + mdlConfig.get("jdbc.user");
-      if (mdlConfig.get("jdbc.password") != null) {
-        jdbc_url = jdbc_url + "&password=" + mdlConfig.get("jdbc.password");
-      }
-    }
-    try {
-      // The newInstance() call is a work around for some
-      // broken Java implementations
-      DriverManagerUtil.loadDriver().newInstance();
-    } catch (Exception ex) {
-      // handle the error
-      log.error(ex, ex);
-    }
-    try {
-      conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc_url);
-      log.debug("Initialized JDBC URL: " + jdbc_url);
-    } catch (SQLException ex) {
-      log.error(ex, ex);
-    }
-  }
-
   public void execute(String query) {
     try {
       stmt = conn.createStatement();

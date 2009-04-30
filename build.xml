@@ -450,6 +450,11 @@
 				<include name="late-log4j.properties" />
 			</fileset>
 		</copy>
+		<copy todir="${test.build.dir}/classes">
+			<fileset dir="${basedir}/src/test">
+				<include name="**/*.txt" />
+			</fileset>
+		</copy>
 		<delete dir="${test.build.dir}/conf" />
 		<mkdir dir="${test.build.dir}/conf" />
 		<copy file="${conf.dir}/jdbc.conf.template" tofile="${test.build.dir}/conf/jdbc.conf" />
@@ -918,6 +923,7 @@
 			<filterchain>
 				<replacetokens>
 					<token key="TODO-NAGIOS-SERVER" value="${TODO-NAGIOS-SERVER}" />
+					<token key="TODO_CHUKWA_CONF_DIR" value="${rpm.conf.dir}" />
 				</replacetokens>
 			</filterchain>
 		</copy>

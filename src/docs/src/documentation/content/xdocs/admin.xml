@@ -240,12 +240,8 @@ Refresh to the Chukwa Cluster Configuration page for the Job Tracker URL. </sour
 </li></ul> 
 
 <source>
-export JAVA&#95;HOME&#61;/grid/0/java/jdk
-export HADOOP&#95;HOME&#61;/grid/0/hadoop/current
-export nodeActivityCmde&#61;&#34;/grid/0/torque/current/bin/pbsnodes &#34;
-export TORQUE&#95;HOME&#61;/grid/0/torque
-export TORQUE&#95;SERVER&#61;gs302291
-export DOMAIN&#61;inktomisearch.com
+export JAVA&#95;HOME&#61;/path/to/java
+export HADOOP&#95;HOME&#61;/path/to/hadoop
 export chuwaRecordsRepository&#61;&#34;/chukwa/repos/&#34;
 export JDBC&#95;DRIVER&#61;com.mysql.jdbc.Driver
 export JDBC&#95;URL&#95;PREFIX&#61;jdbc:mysql://
@@ -358,8 +354,6 @@ add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAd
 </li> <li> org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec top -b -n 1 -c
 </li> <li> org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec df -l
 </li> <li> org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec CHUKWA_HOME/bin/../bin/netstat.sh
-</li> <li> org.apache.hadoop.chukwa.inputtools.mdl.torqueDataLoader - (Only exist in the designated data loading node)
-</li> <li> org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec /grid/0/torque/current/bin/pbsnodes - (Only exist in the designated data loading node)
 </li></ul> 
 <p>The Chukwa agent process name is identified by:</p>
 <ul>
@@ -426,7 +420,7 @@ START SLAVE;
 Look at agent.log and collector.log file to determine the problems. </p> 
 <p>The most common problem is the log files are growing unbounded. Set up a cron job to remove old log files:  </p>
 <source>
- 0 12 &#42; &#42; &#42; /grid/0/chukwa/tools/expiration.sh 10 !CHUKWA&#95;HOME/var/log nowait
+ 0 12 &#42; &#42; &#42; CHUKWA&#95;HOME/tools/expiration.sh 10 !CHUKWA&#95;HOME/var/log nowait
 </source>     
 <p>This will setup log file expiration for CHUKWA_HOME/var/log for log files older than 10 days.</p>
 </section>

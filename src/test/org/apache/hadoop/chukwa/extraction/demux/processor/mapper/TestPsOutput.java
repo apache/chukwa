@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.chukwa.extraction.demux.processor.mapper.ps;
+package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,36 +29,7 @@ import org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Ps.PsOutput;
 
 import junit.framework.TestCase;
 
-public class PsOutputTest extends TestCase {
-
-  public void testGetRecordListFromPsCmd() throws IOException, InvalidPsRecord {
-    Runtime runtime = Runtime.getRuntime();
-    Process process = runtime
-        .exec("ps axo pid,user,vsize,size,pcpu,pmem,time,start_time,start,cmd");
-    StringBuffer sb = new StringBuffer();
-    InputStream is = process.getInputStream();
-    byte[] buffer = new byte[1024];
-    while (true) {
-      int len = is.read(buffer);
-      if (len == -1)
-        break;
-      sb.append(new String(buffer, 0, len));
-    }
-    String output = sb.toString();
-
-    PsOutput pso = new PsOutput(output);
-
-    // search init process
-    for (HashMap<String, String> processInfo : pso.getProcessList()) {
-      for (Entry<String, String> entry : processInfo.entrySet()) {
-        if (entry.getKey().equals("CMD") && entry.getValue().startsWith("init")) {
-          return;
-        }
-      }
-    }
-
-    throw new InvalidPsRecord(output);
-  }
+public class TestPsOutput extends TestCase {
 
   public void testGetRecordList() throws IOException, InvalidPsRecord {
     // below is from command
