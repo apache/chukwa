@@ -461,7 +461,7 @@
 		<copy file="${conf.dir}/mdl.xml" tofile="${test.build.dir}/conf/mdl.xml" />
 		<copy file="${conf.dir}/aggregator.sql" tofile="${test.build.dir}/conf/aggregator.sql" />
 		<copy file="${conf.dir}/database_create_tables.sql" tofile="${test.build.dir}/conf/database_create_tables.sql" />
-		<copy todir="${test.build.dir}/var">
+		<copy todir="${test.build.dir}/var" failonerror="false">
 			<fileset dir="${basedir}/test/samples" />
 		</copy>
 	</target>

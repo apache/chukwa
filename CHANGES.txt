@@ -117,6 +117,8 @@ Release 0.1.2 - 2009-04-28
 
   BUG FIXES
 
+    CHUKWA-208. Skip copying of test/sample directory if it doesn't exist. (Eric Yang)
+
     CHUKWA-206. Removed hard coded path from configuration files, and sample data. (Eric Yang)
 
     CHUKWA-201. Removed sourcing of Timeline widget from simile.mit.edu. (Eric Yang)
