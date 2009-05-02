@@ -729,13 +729,16 @@
 		<exec dir="${docs.src}" executable="${forrest.home}/bin/forrest" failonerror="true">
 			<env key="JAVA_HOME" value="${java5.home}" />
 		</exec>
+		<copy file="${docs.src}/releasenotes.html" todir="${docs.src}/build/site" />
 		<copy todir="${build.docs}">
 			<fileset dir="${docs.src}/build/site/" />
 		</copy>
 	</target>
 
 	<target name="docs" depends="init,javadoc,forrest-docs" description="Generate javadoc, and release notes." if="forrest.home">
-		<copy file="${docs.src}/releasenotes.html" todir="${build.docs}" />
+		<copy todir="${build.docs}">
+			<fileset dir="${docs.src}/build/site/" />
+		</copy>
 		<copy file="${docs.src}/src/documentation/resources/images/chukwa_logo_small.jpg" todir="${build.docs}/images" />
 		<antcall target="changes-to-html" />
 	</target>
