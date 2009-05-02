@@ -42,10 +42,14 @@ See http://forrest.apache.org/docs/linking.html for more info
  <docs label="Overview"> 
     <index      label="Overview"       href="index.html" />
     <admin      label="Admin Guide"    href="admin.html" />
-    <api        label="API Docs"       href="api"/>
+    <api        label="API Docs"       href="ext:api/index"/>
     <wiki       label="Wiki"           href="ext:wiki" />
     <faq        label="FAQ"            href="ext:faq" />
+ </docs>
+
+ <docs label="Miscellaneous">
     <relnotes   label="Release Notes"  href="ext:relnotes" />
+    <changes    label="Change Log"     href="ext:changes" />
  </docs>
 
  <external-refs> 
@@ -53,6 +57,10 @@ See http://forrest.apache.org/docs/linking.html for more info
     <lists    	href="http://hadoop.apache.org/chukwa/mailing_lists.html"/>
     <wiki      	href="http://wiki.apache.org/hadoop/Chukwa/" />
     <faq       	href="http://wiki.apache.org/hadoop/Chukwa/FAQ" />
+    <api href="api/">
+      <index href="index.html" />
+    </api>
     <relnotes   href="releasenotes.html" />
+    <changes href="changes.html" />
  </external-refs>
 </site>
