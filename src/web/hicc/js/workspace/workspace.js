@@ -3246,7 +3246,7 @@ function save_host(boxId) {
         "/hicc/jsp/session.jsp",
         {
             asynchronous: false,
-            method: 'get',
+            method: 'post',
             parameters: "hosts="+cookie
         }
     );
@@ -3254,6 +3254,49 @@ function save_host(boxId) {
         _currentView.getCurrentPage().refresh_all();
     }
 
+}
+
+function save_host_user(boxId) {
+    var obj = document.getElementById(boxId+"group_items").value;
+    var hosts = obj.replace(/\n/g,",");
+    var myAjax=new Ajax.Request(
+        "/hicc/jsp/session.jsp",
+        {
+            asynchronous: false,
+            method: 'post',
+            parameters: {"hosts":hosts}
+        }
+    );
+    if (myAjax.success()) {
+        _currentView.getCurrentPage().refresh_all();
+    }
+}
+
+function save_host_role(boxId) {
+    var parameters = "save=true";
+    if(document.getElementById(boxId+"namenode").checked) {
+      parameters = parameters + "&namenode=true";
+    }
+    if(document.getElementById(boxId+"datanode").checked) {
+      parameters = parameters + "&datanode=true";
+    }
+    if(document.getElementById(boxId+"jobtracker").checked) {
+      parameters = parameters + "&jobtracker=true";
+    }
+    if(document.getElementById(boxId+"tasktracker").checked) {
+      parameters = parameters + "&tasktracker=true";
+    }
+    var myAjax=new Ajax.Request(
+        "/hicc/jsp/host_selector_role.jsp",
+        {
+            asynchronous: false,
+            method: 'post',
+            parameters: parameters
+        }
+    );
+    if (myAjax.success()) {
+        _currentView.getCurrentPage().refresh_all();
+    }
 }
 
 function save_hod(HodID) {

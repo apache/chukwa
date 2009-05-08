@@ -120,6 +120,9 @@ function toggle_view_all() {
   <li><select class="formSelect" id="currentpage" onChange="changeView(this);"></select></li>
 </ul>
 <ul>
+  <li><a href="#" onClick="javascript:manage_content(); return false;"><img src="/hicc/images/table.png" border="0" align="absmiddle"> Dashboard Builder</a></li>
+</ul>
+<ul>
   <li><a href="#" onClick="return false;"><img src="/hicc/images/application.png" border="0" align="absmiddle"> Options</a>
     <ul>
       <table>
@@ -131,9 +134,6 @@ function toggle_view_all() {
       </table>
     </ul>
   </li>
-</ul>
-<ul>
-  <li><a href="#" onClick="javascript:manage_content(); return false;"><img src="/hicc/images/table.png" border="0" align="absmiddle"> Workspace Builder</a></li>
 </ul>
 <ul>
   <li><a href="#" onClick="saveView(); return false;"><img src="/hicc/images/drive.png" border="0" align="absmiddle"> Save Dashboard</a></li>
@@ -149,12 +149,12 @@ function toggle_view_all() {
 <div id="manage_view" style="display:none;overflow:hidden;width:100%;">
 <table cellspacing="10" cellpadding="0" width="100%" class="ppsmenu">
 <tr><td>
-<table width="100%" class="titlebar"><tr><td>Workspace</td><td align="right"><span class="glossy_icon"><a href="#" onClick="manage_content('close');"><img src="images/close.png" align="absmiddle"></a></span></td></tr></table>
+<table width="100%" class="titlebar"><tr><td>Dashboard</td><td align="right"><span class="glossy_icon"><a href="#" onClick="manage_content('close');"><img src="images/close.png" align="absmiddle"></a></span></td></tr></table>
 <div id="views_list_div">
 </div>
 </td></tr>
 <tr><td colspan="2">
-<input class="formButton" type="button" name="new_workspace" value="Create New Workspace" onClick="createNewView();"/>
+<input class="formButton" type="button" name="new_workspace" value="Create New Dashboard" onClick="createNewView();"/>
 </td></tr>
 </table>
 </div>
