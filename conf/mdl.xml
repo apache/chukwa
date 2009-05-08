@@ -1894,5 +1894,64 @@
   <value>5,30,180,720</value>
 </property>
 
+<!-- for agent metrics chunkqueue -->
+<property><name>report.db.name.chunkqueue</name><value>chunkqueue</value></property>
+<property><name>consolidator.table.chunkqueue</name><value>5,30,180,720</value></property>
+<property><name>metric.chunkqueue.chukwa_timestamp</name><value>chukwa_timestamp</value></property>
+<property><name>metric.chunkqueue.recordname</name><value>recordname</value></property>
+<property><name>metric.chunkqueue.hostname</name><value>hostname</value></property>
+<property><name>metric.chunkqueue.contextname</name><value>contextname</value></property>
+<property><name>metric.chunkqueue.removedchunk</name><value>removedchunk</value></property>
+<property><name>metric.chunkqueue.queuesize</name><value>queuesize</value></property>
+<property><name>metric.chunkqueue.removedchunk_raw</name><value>removedchunk_raw</value></property>
+<property><name>metric.chunkqueue.datasize</name><value>datasize</value></property>
+<property><name>metric.chunkqueue.fullqueue</name><value>fullqueue</value></property>
+<property><name>metric.chunkqueue.addedchunk_rate</name><value>addedchunk_rate</value></property>
+<property><name>metric.chunkqueue.addedchunk_raw</name><value>addedchunk_raw</value></property>
+<property><name>metric.chunkqueue.period</name><value>period</value></property>
+<property><name>metric.chunkqueue.addedchunk</name><value>addedchunk</value></property>
+<property><name>metric.chunkqueue.removedchunk_rate</name><value>removedchunk_rate</value></property>
+
+<!-- for agent metrics chukwaagent -->
+<property><name>report.db.name.chukwaagent</name><value>chukwaagent</value></property>
+<property><name>consolidator.table.chukwaagent</name><value>5,30,180,720</value></property>
+<property><name>metric.chukwaagent.chukwa_timestamp</name><value>chukwa_timestamp</value></property>
+<property><name>metric.chukwaagent.recordname</name><value>recordname</value></property>
+<property><name>metric.chukwaagent.hostname</name><value>hostname</value></property>
+<property><name>metric.chukwaagent.contextname</name><value>contextname</value></property>
+<property><name>metric.chukwaagent.addedadaptor_rate</name><value>addedadaptor_rate</value></property>
+<property><name>metric.chukwaagent.addedadaptor_raw</name><value>addedadaptor_raw</value></property>
+<property><name>metric.chukwaagent.removedadaptor_rate</name><value>removedadaptor_rate</value></property>
+<property><name>metric.chukwaagent.removedadaptor</name><value>removedadaptor</value></property>
+<property><name>metric.chukwaagent.period</name><value>period</value></property>
+<property><name>metric.chukwaagent.adaptorcount</name><value>adaptorcount</value></property>
+<property><name>metric.chukwaagent.removedadaptor_raw</name><value>removedadaptor_raw</value></property>
+<property><name>metric.chukwaagent.process</name><value>process</value></property>
+<property><name>metric.chukwaagent.addedadaptor</name><value>addedadaptor</value></property>
+
+<!-- for agent metrics chukwahttpsender -->
+<property><name>report.db.name.chukwahttpsender</name><value>chukwahttpsender</value></property>
+<property><name>consolidator.table.chukwahttpsender</name><value>5,30,180,720</value></property>
+<property><name>metric.chukwahttpsender.chukwa_timestamp</name><value>chukwa_timestamp</value></property>
+<property><name>metric.chukwahttpsender.recordname</name><value>recordname</value></property>
+<property><name>metric.chukwahttpsender.hostname</name><value>hostname</value></property>
+<property><name>metric.chukwahttpsender.contextname</name><value>contextname</value></property>
+<property><name>metric.chukwahttpsender.httppost_rate</name><value>httppost_rate</value></property>
+<property><name>metric.chukwahttpsender.httpthrowable_raw</name><value>httpthrowable_raw</value></property>
+<property><name>metric.chukwahttpsender.httpexception_rate</name><value>httpexception_rate</value></property>
+<property><name>metric.chukwahttpsender.httpthrowable</name><value>httpthrowable</value></property>
+<property><name>metric.chukwahttpsender.httpthrowable_rate</name><value>httpthrowable_rate</value></property>
+<property><name>metric.chukwahttpsender.collectorrollover_rate</name><value>collectorrollover_rate</value></property>
+<property><name>metric.chukwahttpsender.httppost_raw</name><value>httppost_raw</value></property>
+<property><name>metric.chukwahttpsender.period</name><value>period</value></property>
+<property><name>metric.chukwahttpsender.httpexception_raw</name><value>httpexception_raw</value></property>
+<property><name>metric.chukwahttpsender.httppost</name><value>httppost</value></property>
+<property><name>metric.chukwahttpsender.httptimeoutexception</name><value>httptimeoutexception</value></property>
+<property><name>metric.chukwahttpsender.httptimeoutexception_raw</name><value>httptimeoutexception_raw</value></property>
+<property><name>metric.chukwahttpsender.collectorrollover_raw</name><value>collectorrollover_raw</value></property>
+<property><name>metric.chukwahttpsender.collectorrollover</name><value>collectorrollover</value></property>
+<property><name>metric.chukwahttpsender.httptimeoutexception_rate</name><value>httptimeoutexception_rate</value></property>
+<property><name>metric.chukwahttpsender.httpexception</name><value>httpexception</value></property>
+
 </configuration>
 

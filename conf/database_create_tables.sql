@@ -631,3 +631,65 @@ create table if not exists ClientTrace_template (
      index(timestamp)
 ) ENGINE=InnoDB;
 
+create table if not exists chunkqueue_template (
+    chukwa_timestamp timestamp default CURRENT_TIMESTAMP,
+    hostname varchar(50),
+    recordname varchar(32),
+    contextname varchar(32),
+	removedchunk bigint,
+	queuesize int,
+	removedchunk_raw bigint,
+	datasize bigint,
+	fullqueue tinyint,
+	addedchunk_rate int,
+	addedchunk_raw bigint,
+	period bigint,
+	addedchunk bigint,
+	removedchunk_rate int,
+    primary key(chukwa_timestamp,hostname,recordname,contextname),
+    index (chukwa_timestamp)
+) ENGINE=InnoDB;
+
+create table if not exists chukwaagent_template (
+    chukwa_timestamp timestamp default CURRENT_TIMESTAMP,
+    hostname varchar(50),
+    recordname varchar(32),
+    contextname varchar(32),
+	addedadaptor_rate int,
+	addedadaptor_raw int,
+	removedadaptor_rate int,
+	removedadaptor int,
+	period int,
+	adaptorcount int,
+	removedadaptor_raw int,
+	process int,
+	addedadaptor int,
+    primary key(chukwa_timestamp,hostname,recordname,contextname),
+    index (chukwa_timestamp)
+) ENGINE=InnoDB;
+
+create table if not exists chukwahttpsender_template (
+    chukwa_timestamp timestamp default CURRENT_TIMESTAMP,
+    hostname varchar(50),
+    recordname varchar(32),
+    contextname varchar(32),
+	httppost_rate int,
+	httpthrowable_raw int,
+	httpexception_rate int,
+	httpthrowable int,
+	httpthrowable_rate int,
+	collectorrollover_rate int,
+	httppost_raw int,
+	period int,
+	httpexception_raw int,
+	httppost int,
+	httptimeoutexception int,
+	httptimeoutexception_raw int,
+	collectorrollover_raw int,
+	collectorrollover int,
+	httptimeoutexception_rate int,
+	httpexception int,
+    primary key(chukwa_timestamp,hostname,recordname,contextname),
+    index (chukwa_timestamp)
+) ENGINE=InnoDB;
+
