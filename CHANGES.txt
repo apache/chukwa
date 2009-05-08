@@ -117,6 +117,8 @@ Release 0.1.2 - 2009-04-28
 
   BUG FIXES
 
+    CHUKWA-222. Reduce Sar version dependency. (Ari Rabkin) 
+
     CHUKWA-103. Fix documentation broken link. (Eric Yang)
 
     CHUKWA-208. Skip copying of test/sample directory if it doesn't exist. (Eric Yang)
