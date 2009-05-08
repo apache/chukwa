@@ -128,7 +128,13 @@ public class Sar extends AbstractProcessor {
             log.debug("Data Length: " + data.length);
             while (j < data.length) {
               log.debug("header:" + headers[j] + " data:" + data[j]);
-              if (!headers[j].equals("Average:")) {
+              
+                //special case code to work around peculiar versions of Sar
+              if(headers[j].equals("rxkB/s")) {
+                record.add("rxbyt/s", Double.toString(Double.parseDouble(data[j]) * 1000));
+              } else if(headers[j].equals("txkB/s")){
+                record.add("txbyt/s", Double.toString(Double.parseDouble(data[j]) * 1000));
+              } else if (!headers[j].equals("Average:")) { //common case
                 record.add(headers[j], data[j]);
               }
               j++;
