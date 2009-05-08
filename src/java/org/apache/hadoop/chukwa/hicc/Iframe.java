@@ -30,8 +30,8 @@ public class Iframe extends HttpServlet {
     PrintWriter out = response.getWriter();
     StringBuffer source = new StringBuffer();
     String requestURL = request.getRequestURL().toString().replaceFirst("iframe/", "");
-    if(requestURL.indexOf("/hicc")!=-1) {
-       requestURL = requestURL.substring(requestURL.indexOf("/hicc"));
+    if(requestURL.indexOf("/hicc/")!=-1) {
+       requestURL = requestURL.substring(requestURL.indexOf("/hicc/"));
     }
     source.append(requestURL);
     source.append("?");
@@ -39,11 +39,13 @@ public class Iframe extends HttpServlet {
     while (names.hasMoreElements()) {
       String key = xf.filter((String) names.nextElement());
       String[] values = xf.getParameterValues(key);
-      for (int i = 0; i < values.length; i++) {
-        source.append(key + "=" + values[i] + "&");
-      }
-      if (key.toLowerCase().intern() == "height".intern()) {
-        height = xf.getParameter(key);
+      if(values!=null) {
+        for (int i = 0; i < values.length; i++) {
+          source.append(key + "=" + values[i] + "&");
+        }
+        if (key.toLowerCase().intern() == "height".intern()) {
+          height = xf.getParameter(key);
+        }
       }
     }
     out.println("<html><body><iframe id=\"iframe" + this.id + "\" " + "src=\""

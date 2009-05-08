@@ -4,9 +4,12 @@
 "version":"0.1",
 "categories":"Global,Utility",
 "module":"jsp\/host_selector.jsp",
-"description":"Global control to manipulate hosts across widgets",
-"screendump":"",
+"description":"Global control to manipulate host selection across widgets",
 "refresh":"15",
 "parameters":[
-]
-}
+{"name":"style","type":"select","value":"role","label":"Selector Style","options":[
+{"label":"By node type","value":"role"},
+{"label":"By drop down list","value":"dropdown"},
+{"label":"By user input","value":"user"}
+]},
+]}
