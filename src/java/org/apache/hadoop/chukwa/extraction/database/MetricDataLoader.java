@@ -19,16 +19,13 @@
 package org.apache.hadoop.chukwa.extraction.database;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -171,7 +168,7 @@ public class MetricDataLoader {
 
     log.info("StreamName: " + source.getName());
 
-    SequenceFile.Reader r = new SequenceFile.Reader(fs, source, conf);
+    SequenceFile.Reader reader = new SequenceFile.Reader(fs, source, conf);
 
     try {
       // The newInstance() call is a work around for some
@@ -193,7 +190,7 @@ public class MetricDataLoader {
     ChukwaRecord record = new ChukwaRecord();
     try {
       int batch = 0;
-      while (r.next(key, record)) {
+      while (reader.next(key, record)) {
         String sqlTime = DatabaseWriter.formatTimeStamp(record.getTime());
         log.debug("Timestamp: " + record.getTime());
         log.debug("DataType: " + key.getReduceType());
@@ -437,13 +434,16 @@ public class MetricDataLoader {
           }
           if (batchMode && batch > 20000) {
             int[] updateCounts = stmt.executeBatch();
+            log.info("batchMode insert=" + updateCounts.length);
             batch = 0;
           }
         }
 
       }
+
       if (batchMode) {
         int[] updateCounts = stmt.executeBatch();
+        log.info("batchMode insert=" + updateCounts.length);
       }
     } catch (SQLException ex) {
       // handle any errors
@@ -460,6 +460,7 @@ public class MetricDataLoader {
       if (batchMode) {
         try {
           conn.commit();
+          log.info("batchMode commit done");
         } catch (SQLException ex) {
           log.error(ex, ex);
           log.error("SQLException: " + ex.getMessage());
@@ -504,6 +505,15 @@ public class MetricDataLoader {
           log.error("VendorError: " + ex.getErrorCode());
         }
         conn = null;
+      }
+      
+      if (reader != null) {
+        try {
+          reader.close();
+        } catch (Exception e) {
+          log.warn("Could not close SequenceFile.Reader:" ,e);
+        }
+        reader = null;
       }
     }
   }
