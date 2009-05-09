@@ -9,6 +9,7 @@
 "refresh":"15",
 "parameters":[
 {"name":"y_axis_max","type":"string","value":"100","edit":"0"},
+{"name":"display_percentage","type":"string","value":"1","edit":"0"},
 {"name":"table","type":"string","value":"cluster_system_metrics","edit":"0"},
 {"name":"period","type":"select","value":"","label":"Period","options":[
 {"label":"Use Time Widget","value":""},

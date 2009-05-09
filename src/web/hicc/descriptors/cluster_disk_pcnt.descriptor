@@ -11,6 +11,7 @@
 {"name":"table","type":"string","value":"cluster_disk","edit":"0"},
 {"name":"group_override","type":"string","value":"mount","edit":"0"},
 {"name":"y_axis_max","type":"string","value":"100","edit":"0"},
+{"name":"display_percentage","type":"string","value":"1","edit":"0"},
 {"name":"metric","type":"string","value":"used_percent","edit":"0"},
 {"name":"period","type":"select","value":"","label":"Period","options":[
 {"label":"Use Time Widget","value":""},

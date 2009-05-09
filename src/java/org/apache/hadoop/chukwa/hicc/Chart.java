@@ -54,9 +54,12 @@ public class Chart {
   private String yRightLabel = "";
   private int datasetCounter = 0;
   private double max = 0;
+  private double min = 0;
   private int seriesCounter = 0;
   private List<String> rightList;
   private boolean userDefinedMax = false;
+  private boolean userDefinedMin = false;
+  private boolean displayPercentage = false;
   private String[] seriesOrder = null;
   private XssFilter xf = null;
   
@@ -80,12 +83,23 @@ public class Chart {
     this.seriesCounter = 0;
     this.rightList = new ArrayList<String>();
     this.userDefinedMax = false;
+    this.userDefinedMin = false;
+    this.displayPercentage = false;
     this.seriesOrder = null;
   }
 
   public void setYMax(double max) {
     this.max = max;
     this.userDefinedMax = true;
+  }
+
+  public void setYMin(double min) {
+    this.min = min;
+    this.userDefinedMin = true;
+  }
+
+  public void setDisplayPercentage(boolean percentage) {
+    this.displayPercentage = percentage;
   }
 
   public void setSize(int width, int height) {
@@ -202,7 +216,7 @@ public class Chart {
       output
           .append("<html><link href=\"/hicc/css/default.css\" rel=\"stylesheet\" type=\"text/css\">\n");
       output
-          .append("<body onresize=\"wholePeriod();\"><script type=\"text/javascript\" src=\"/hicc/js/jquery-1.2.6.min.js\"></script>\n");
+          .append("<body><script type=\"text/javascript\" src=\"/hicc/js/jquery-1.2.6.min.js\"></script>\n");
       output
           .append("<script type=\"text/javascript\" src=\"/hicc/js/jquery.flot.pack.js\"></script>\n");
       output
@@ -231,7 +245,7 @@ public class Chart {
     output.append("_options={\n");
     output.append("        points: { show: false },\n");
     output.append("        xaxis: { " + xAxisOptions + " },\n");
-    output.append("	  selection: { mode: \"x\" },\n");
+    output.append("	  selection: { mode: \"xy\" },\n");
     output.append("	  grid: {\n");
     output.append("	           clickable: true,\n");
     output.append("	           hoverable: true,\n");
@@ -250,7 +264,7 @@ public class Chart {
     if (stack) {
       output.append("mode: \"stack\", ");
     }
-    if (userDefinedMax) {
+    if (displayPercentage) {
       output
           .append("tickFormatter: function(val, axis) { return val.toFixed(axis.tickDecimals) + \" %\"; }");
     } else {
@@ -283,8 +297,12 @@ public class Chart {
           .append("else if (val >= 2000) return (val / 1000).toFixed(2) + \"x10<sup>3</sup>\";");
       output.append("else return val.toFixed(2) + \"\"; }");
     }
+    if (userDefinedMin) {
+      output.append(", min:");
+      output.append(this.min);
+    }
     if (userDefinedMax) {
-      output.append(", min:0, max:");
+      output.append(", max:");
       output.append(this.max);
     }
     output.append("}\n");
@@ -366,26 +384,26 @@ public class Chart {
             }
             if (xLabel.equals("Time")) {
               if (data.get(dp) == Double.NaN) {
-                output.append("[\"");
+                output.append("[");
                 output.append(dp);
-                output.append("\",NULL]");
+                output.append(",NULL]");
               } else {
-                output.append("[\"");
+                output.append("[");
                 output.append(dp);
-                output.append("\",");
+                output.append(",");
                 output.append(data.get(dp));
                 output.append("]");
               }
             } else {
               long value = xLabelRangeHash.get(dp);
               if (data.get(dp) == Double.NaN) {
-                output.append("[\"");
+                output.append("[");
                 output.append(value);
-                output.append("\",NULL]");
+                output.append(",NULL]");
               } else {
-                output.append("[\"");
+                output.append("[");
                 output.append(value);
-                output.append("\",");
+                output.append(",");
                 output.append(data.get(dp));
                 output.append("]");
               }
@@ -406,7 +424,12 @@ public class Chart {
     }
     output.append(" ];\n");
     if (request != null && xf.getParameter("format") == null) {
-      output.append(" wholePeriod();</script></body></html>\n");
+	output.append("$(document).ready(function() { \n");
+	output.append("   wholePeriod();\n");
+	output.append("   $(window).resize(function() { wholePeriod(); });\n");
+	output.append("});\n");
+	output.append("</script>\n");
+	output.append("</body></html>\n");
     } else {
       output.append("chartTitle=\"<center>" + this.title + "</center>\";");
       output.append("height=" + this.height + ";");

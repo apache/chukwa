@@ -38,6 +38,8 @@ Release 0.1.2 - 2009-04-28
 
   IMPROVEMENTS
 
+    CHUKWA-219. Improved usability of host selector, and updated caching for host list. (Eric Yang)
+
     CHUKWA-104. Remove permission setting code for Log4JMetricsContext and ChukwaDailyRollingFileAppender.  (Jerome Boulon via Eric Yang)
 
     CHUKWA-178. Extend aggregation by 5 minutes for cluster metrics. (Eric Yang)

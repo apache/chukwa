@@ -12,6 +12,7 @@
 {"name":"group","type":"string","value":"host","edit":"0"},
 {"name":"group_items","type":"string","value":"hosts","edit":"0"},
 {"name":"y_axis_max","type":"string","value":"100","edit":"0"},
+{"name":"display_percentage","type":"string","value":"1","edit":"0"},
 {"name":"period","type":"select","value":"","label":"Period","options":[
 {"label":"Use Time Widget","value":""},
 {"label":"Last 1 Hour","value":"last1hr"},
