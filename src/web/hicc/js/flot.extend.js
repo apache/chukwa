@@ -77,15 +77,16 @@ options={
          });
 	$("#placeholder").bind("selected", function (event, area) {
             zoom = true;
+	     extra_options = {};
+	     extra_options.xaxis={ min: area.x1, max: area.x2 };	       
+	     extra_options.yaxis={ min: area.y1, max: area.y2 };
 			plot = $.plot(
 				$("#placeholder"),
 				_series,
 				$.extend(
 					true, 
 					{}, 
-					_options, {
-						xaxis: { min: area.x1, max: area.x2 }
-					}
+					_options, extra_options
 				)
 			);
 		});

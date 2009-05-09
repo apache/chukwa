@@ -218,6 +218,9 @@ No time range specified.  Select a time range through widget preference, or use 
                double max = Double.parseDouble(xf.getParameter("y_axis_max"));
                c.setYMax(max);
            }
+           if(request.getParameter("display_percentage")!=null) {
+	       c.setDisplayPercentage(true);
+	   }
            if(request.getParameter("legend")!=null && xf.getParameter("legend").equals("off")) {
                c.setLegend(false);
            }

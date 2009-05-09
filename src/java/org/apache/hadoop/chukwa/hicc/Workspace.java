@@ -154,6 +154,7 @@ public class Workspace extends HttpServlet {
       HttpServletResponse response) throws IOException, ServletException {
     PrintWriter out = response.getWriter();
     String format = xf.getParameter("format");
+    genViewCache(path + "/views");
     File aFile = new File(path + "/views/workspace_view_list.cache");
     String viewsCache = getContents(aFile);
     out.println(viewsCache);
