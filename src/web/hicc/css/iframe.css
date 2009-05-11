@@ -1,0 +1,47 @@
+#statisLegend table {
+	border-collapse: collapse;
+}
+
+#statisLegend th strong {
+	color: #fff;
+}
+
+#statisLegend th {
+        padding-left: 5px;
+        padding-right: 5px;
+	background: #93BC0C;
+	color: #fff;
+	text-align: center;
+	border-left: 1px solid #B6D59A;
+	border-bottom: solid 2px #fff;
+}
+
+#statisLegend tr {
+}
+
+#statisLegend td {
+        padding-left: 5px;
+        padding-right: 5px;
+	border-left: 1px solid #fff;
+	border-bottom: 1px solid #fff;
+}
+
+#statisLegend td.first,th.first {
+	border-left: 0px;
+}
+
+#statisLegend tr.row-a {
+	background: #F8F8F8;
+}
+
+#statisLegend tr.row-b {
+	background: #EFEFEF;		
+}
+
+#statisLegend {
+    font-size: 0.85em;
+}
+
+.small_font {
+    font-size: 0.85em;
+}

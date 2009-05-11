@@ -216,9 +216,15 @@ public class Chart {
       output
           .append("<html><link href=\"/hicc/css/default.css\" rel=\"stylesheet\" type=\"text/css\">\n");
       output
+          .append("<html><link href=\"/hicc/css/iframe.css\" rel=\"stylesheet\" type=\"text/css\">\n");
+      output
+          .append("<html><link href=\"/hicc/css/flexigrid/flexigrid.css\" rel=\"stylesheet\" type=\"text/css\">\n");
+      output
           .append("<body><script type=\"text/javascript\" src=\"/hicc/js/jquery-1.2.6.min.js\"></script>\n");
       output
           .append("<script type=\"text/javascript\" src=\"/hicc/js/jquery.flot.pack.js\"></script>\n");
+      output
+          .append("<script type=\"text/javascript\" src=\"/hicc/js/flexigrid.pack.js\"></script>\n");
       output
           .append("<script type=\"text/javascript\" src=\"/hicc/js/excanvas.pack.js\"></script>\n");
       output.append("<div id=\"placeholderTitle\"><center>" + title
@@ -226,6 +232,7 @@ public class Chart {
       output.append("<div id=\"placeholder\" style=\"width:" + this.width
           + "px;height:" + this.height + "px;\"></div>\n");
       output.append("<center><div id=\"placeholderLegend\"></div></center>\n");
+      output.append("<center><div id=\"statisLegend\" style=\"display:"+(legend?"block":"none")+";\"></div></center>\n");
       output.append("<input type=\"hidden\" id=\"boxId\" value=\"iframe"
           + this.id + "\">\n");
       output
@@ -424,7 +431,8 @@ public class Chart {
     }
     output.append(" ];\n");
     if (request != null && xf.getParameter("format") == null) {
-	output.append("$(document).ready(function() { \n");
+	output.append("$(document).ready(function() { \n");	
+	output.append("   calculateStatis();\n");
 	output.append("   wholePeriod();\n");
 	output.append("   $(window).resize(function() { wholePeriod(); });\n");
 	output.append("});\n");
