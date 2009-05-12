@@ -19,6 +19,7 @@
 %define _conf_dir       @rpm.conf.dir@
 %define uid             @rpm.uid@
 %define gid             @rpm.gid@
+%define hdfsusage_uid   @rpm.hdfsusage.uid@
 %define name            chukwa
 %define summary         Distributed Computing Monitoring Framework.
 %define version         @chukwaVersion@
@@ -49,6 +50,10 @@ clusters.
 %prep
 %setup -q
 %build
+export hdfsusage_uid=%{hdfsusage_uid}
+if [ -z "${hdfsusage_uid}" ]; then
+    export hdfsusage_uid=%{uid}
+fi
 mkdir -p %{buildroot}%{_prefix}
 if [ -d %{buildroot}%{_prefix} ]; then
     rm -rf %{buildroot}%{_prefix}
@@ -138,7 +143,7 @@ sed 's:CHUKWA_CONF_DIR=/usr/local/chukwa/conf:CHUKWA_CONF_DIR=%{_conf_dir}:' \
 mv %{buildroot}%{_prefix}/tools/service/chukwa-torque/run.new %{buildroot}%{_prefix}/tools/service/chukwa-torque/run
 
 cat %{buildroot}%{_prefix}/tools/service/chukwa-hdfsusage/run | \
-sed 's:CHUKWA_USER=chukwa:CHUKWA_USER=%{uid}:' | \
+sed "s:CHUKWA_USER=chukwa:CHUKWA_USER=${hdfsusage_uid}:" | \
 sed 's:CHUKWA_HOME=/usr/local/chukwa:CHUKWA_HOME=%{_prefix}:' | \
 sed 's:CHUKWA_CONF_DIR=/usr/local/chukwa/conf:CHUKWA_CONF_DIR=%{_conf_dir}:' \
 > %{buildroot}%{_prefix}/tools/service/chukwa-hdfsusage/run.new
