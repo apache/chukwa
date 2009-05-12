@@ -25,6 +25,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.json.JSONObject;
 
+/**
+ * Runs external command-line tools, captures output.
+ * 
+ * Subclasses are responsible for implementing getCmde(), which determines the
+ * command to be invoked.
+ * 
+ */
 public abstract class ExecPlugin implements IPlugin {
   public final int statusOK = 100;
   public final int statusKO = -100;
@@ -66,6 +73,7 @@ public abstract class ExecPlugin implements IPlugin {
       int exitValue = process.waitFor();
       stdOut.join();
       stdErr.join();
+      process.getInputStream().close(); //otherwise this implicitly stays open
       result.put("exitValue", exitValue);
       result.put("stdout", stdOut.output.toString());
       result.put("stderr", stdErr.output.toString());
