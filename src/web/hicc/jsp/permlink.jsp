@@ -37,7 +37,9 @@
    StringBuffer buf = new StringBuffer();
    for (Enumeration e = session.getAttributeNames() ; e.hasMoreElements() ;) {
        String name = (String) e.nextElement();
-       buf.append("_session."+name+"="+URLEncoder.encode(session.getAttribute(name).toString(),"UTF-8"));
+       if(name.indexOf("_session.cache.")==-1) {
+           buf.append("_session."+name+"="+URLEncoder.encode(session.getAttribute(name).toString(),"UTF-8"));
+       }
        buf.append("&");
    }
    out.println(buf.toString());

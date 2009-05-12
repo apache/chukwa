@@ -40,8 +40,8 @@
 <select id="<%= boxId %>group_items" name="<%= boxId %>group_items" MULTIPLE size=10 class="formSelect" style="width:200px;">
 <%
     JSONArray machineNames = null;
-    if(session.getAttribute("machine_names")!=null) {
-        machineNames = new JSONArray(session.getAttribute("machine_names").toString());
+    if(session.getAttribute("cache.machine_names")!=null) {
+        machineNames = new JSONArray(session.getAttribute("cache.machine_names").toString());
     }
     String cluster=xf.getParameter("cluster");
     if(cluster!=null && !cluster.equals("null")) {
@@ -108,7 +108,7 @@
                        i++;
                    }
                    if(jobId==null || jobId.equals("null") || jobId.equals("")) {
-                       session.setAttribute("machine_names",machineNames.toString());
+                       session.setAttribute("cache.machine_names",machineNames.toString());
                    }
                }
            } else {
