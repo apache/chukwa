@@ -3221,7 +3221,7 @@ function save_cluster(boxId) {
         {
             asynchronous: false,
             method: 'get',
-            parameters: "cluster="+cluster+"&_delete=machine_names"
+            parameters: "cluster="+cluster+"&_delete=cache.machine_names"
         }
     );
     if (myAjax.success()) {
