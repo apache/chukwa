@@ -1119,6 +1119,7 @@
 					<token key="rpm.prefix" value="${rpm.prefix}" />
 					<token key="rpm.conf.dir" value="${rpm.conf.dir}" />
 					<token key="rpm.uid" value="${rpm.uid}" />
+					<token key="rpm.hdfsusage.uid" value="${rpm.hdfsusage.uid}" />
 					<token key="rpm.gid" value="${rpm.gid}" />
 				</replacetokens>
 			</filterchain>
