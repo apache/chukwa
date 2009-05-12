@@ -38,6 +38,10 @@ Release 0.1.2 - 2009-04-28
 
   IMPROVEMENTS
 
+    CHUKWA-226. Changed HDFS usage collection frequency from 10 minutes to 60 minutes. (Cheng Zhang via Eric Yang)
+
+    CHUKWA-82.  Added min,max,average to HICC Charting widget. (Terence Kwan via Eric Yang)
+
     CHUKWA-219. Improved usability of host selector, and updated caching for host list. (Eric Yang)
 
     CHUKWA-104. Remove permission setting code for Log4JMetricsContext and ChukwaDailyRollingFileAppender.  (Jerome Boulon via Eric Yang)
@@ -118,6 +122,16 @@ Release 0.1.2 - 2009-04-28
   OPTIMIZATIONS
 
   BUG FIXES
+
+    CHUKWA-228.  Added rpm.hdfsusage.uid option to run HDFS usage as a separate user. (Cheng Zhang via Eric Yang)
+
+    CHUKWA-227. Improved the user privilege for reading HDFS usage.  (Cheng Zhang via Eric Yang)
+
+    CHUKWA-229. Fix descriptor leak for ExecPlugin. (Ari Rabkin via Eric Yang)
+
+    CHUKWA-212. Fix file descriptor leak in MDL.  (Jerome Boulon via Eric Yang)
+
+    CHUKWA-220. Correct min, max settings for yaxis charting. (Terence Kwan via Eric Yang)
 
     CHUKWA-222. Reduce Sar version dependency. (Ari Rabkin) 
 
