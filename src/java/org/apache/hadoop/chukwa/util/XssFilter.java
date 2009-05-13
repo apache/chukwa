@@ -38,17 +38,22 @@ public class XssFilter {
 
     public XssFilter(HttpServletRequest request) {
       this.request = request;
-      this.session = request.getSession();
-      for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
-        Pattern p = Pattern.compile("_session\\.(.*)");
-        String name = (String) e.nextElement();
-        Matcher matcher = p.matcher(name);
-        if(matcher.find()) {
+      try {
+        this.session = request.getSession();
+        for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
+          Pattern p = Pattern.compile("_session\\.(.*)");
+          String name = (String) e.nextElement();
+          Matcher matcher = p.matcher(name);
+          if(matcher.find()) {
             String realName = matcher.group(1);
-            session.setAttribute(realName,filter(request.getParameter(name)));
+            if(session!=null) {
+              session.setAttribute(realName,filter(request.getParameter(name)));
+            }
+          }
         }
+      } catch(NullPointerException ex) {
+        // Do nothing if session does not exist.
       }
-
     }
     
     public String getParameter(String key) {
