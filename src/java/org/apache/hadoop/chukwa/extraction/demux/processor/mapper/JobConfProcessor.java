@@ -47,7 +47,8 @@ public class JobConfProcessor extends AbstractProcessor {
         if(matcher.matches()) {
           jobID=matcher.group(2);
         }
-    ChukwaRecord record = new ChukwaRecord();
+        ChukwaRecord record = new ChukwaRecord();
+        ChukwaRecord jobConfRecord = new ChukwaRecord();
       DocumentBuilderFactory docBuilderFactory 
         = DocumentBuilderFactory.newInstance();
       //ignore all comments inside the xml file
@@ -98,20 +99,25 @@ public class JobConfProcessor extends AbstractProcessor {
                 if(attr.intern()=="mapred.job.queue.name".intern()) {
                     queue=value;
                 }
+                jobConfRecord.add("job_conf." + attr, value);
             }
         }
-            record.add("JOBCONF-JSON", json.toString());
-            record.add("mapred.job.queue.name", queue);
-            record.add("JOBID", "job_"+jobID);
-        buildGenericRecord(record,null, time,"JobData");
-      calendar.setTimeInMillis(time);
-      calendar.set(Calendar.MINUTE, 0);
-      calendar.set(Calendar.SECOND, 0);
-      calendar.set(Calendar.MILLISECOND, 0);      
-      key.setKey(""+ calendar.getTimeInMillis() + "/job_" + jobID + "/" + time);
-                
-            output.collect(key,record);
-            tmp.delete();
+        record.add("JOBCONF-JSON", json.toString());
+        record.add("mapred.job.queue.name", queue);
+        record.add("JOBID", "job_" + jobID);
+        buildGenericRecord(record, null, time, "JobData");
+        calendar.setTimeInMillis(time);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        key.setKey("" + calendar.getTimeInMillis() + "/job_" + jobID + "/" + time);
+        output.collect(key, record);
+
+        jobConfRecord.add("JOBID", "job_" + jobID);
+        buildGenericRecord(jobConfRecord, null, time, "JobConfData");
+        output.collect(key, jobConfRecord);
+            
+        tmp.delete();
       } catch(Exception e) {
           e.printStackTrace();  
           throw e;

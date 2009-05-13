@@ -32,7 +32,7 @@
 <!-- PostProcessorManager config -->
   <property>
     <name>postProcessorManager.dbloader.ds</name>
-    <value>SystemMetrics,Df,Hadoop_dfs,Hadoop_jvm,Hadoop_mapred,Hadoop_rpc,MSSRGraph,MRJobCounters,NodeActivity,HodJob,HodMachine,Hadoop_dfs_FSDirectory,Hadoop_dfs_FSNamesystem,Hadoop_dfs_datanode,Hadoop_dfs_namenode,Hadoop_jvm_metrics,Hadoop_mapred_job,Hadoop_mapred_jobtracker,Hadoop_mapred_shuffleOutput,Hadoop_mapred_tasktracker,Hadoop_rpc_metrics,JobData,TaskData,HDFSUsage,chunkQueue,chukwaAgent,chukwaHttpSender</value>
+    <value>SystemMetrics,Df,Hadoop_dfs,Hadoop_jvm,Hadoop_mapred,Hadoop_rpc,MSSRGraph,MRJobCounters,NodeActivity,HodJob,HodMachine,Hadoop_dfs_FSDirectory,Hadoop_dfs_FSNamesystem,Hadoop_dfs_datanode,Hadoop_dfs_namenode,Hadoop_jvm_metrics,Hadoop_mapred_job,Hadoop_mapred_jobtracker,Hadoop_mapred_shuffleOutput,Hadoop_mapred_tasktracker,Hadoop_rpc_metrics,JobData,TaskData,HDFSUsage,chunkQueue,chukwaAgent,chukwaHttpSender,JobConfData</value>
     <description>Reduce count </description>
   </property>
 

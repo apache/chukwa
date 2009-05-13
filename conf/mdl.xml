@@ -1953,5 +1953,16 @@
 <property><name>metric.chukwahttpsender.httptimeoutexception_rate</name><value>httptimeoutexception_rate</value></property>
 <property><name>metric.chukwahttpsender.httpexception</name><value>httpexception</value></property>
 
+<!-- for job conf parameters -->
+<property><name>report.db.name.jobconfdata</name><value>mr_job_conf</value></property>
+<property><name>consolidator.table.mr_job_conf</name><value>5,30,180,720</value></property>
+<property><name>metric.jobconfdata.job_conf.mapred.output.key.class</name><value>mr_output_key_cls</value></property>
+<property><name>metric.jobconfdata.job_conf.mapred.map.runner.class</name><value>mr_runner_cls</value></property>
+<property><name>metric.jobconfdata.job_conf.mapred.output.value.class</name><value>mr_output_value_cls</value></property>
+<property><name>metric.jobconfdata.job_conf.mapred.input.format.class</name><value>mr_input_fmt_cls</value></property>
+<property><name>metric.jobconfdata.job_conf.mapred.output.format.class</name><value>mr_output_fmt_cls</value></property>
+<property><name>metric.jobconfdata.job_conf.mapred.reducer.class</name><value>mr_reducer_cls</value></property>
+<property><name>metric.jobconfdata.job_conf.mapred.mapper.class</name><value>mr_mapper_cls</value></property>
+
 </configuration>
 

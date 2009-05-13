@@ -693,3 +693,17 @@ create table if not exists chukwahttpsender_template (
     index (chukwa_timestamp)
 ) ENGINE=InnoDB;
 
+create table if not exists mr_job_conf_template (
+	ts  timestamp default CURRENT_TIMESTAMP,
+    job_id varchar(80),
+	mr_output_key_cls varchar(128) null,
+	mr_runner_cls varchar(128) null,
+	mr_output_value_cls varchar(128) null,
+	mr_input_fmt_cls varchar(128) null,
+	mr_output_fmt_cls varchar(128) null,
+	mr_reducer_cls varchar(128) null,
+	mr_mapper_cls varchar(128) null,
+    primary key(job_id),
+    index (ts)
+) ENGINE=InnoDB;
+
