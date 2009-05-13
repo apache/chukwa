@@ -23,7 +23,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
 import java.text.SimpleDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +35,7 @@ public class DatabaseWriter {
   private static Log log = LogFactory.getLog(DatabaseWriter.class);
   private Connection conn = null;
   private Statement stmt = null;
+  private PreparedStatement pstmt = null;
   private ResultSet rs = null;
 
   public DatabaseWriter(String host, String user, String password) {
@@ -104,6 +107,27 @@ public class DatabaseWriter {
 
   public Connection getConnection() {
     return conn;
+  }
+
+  public ResultSet query(String query, List<Object> parameters) throws SQLException {
+    try {
+      pstmt = conn.prepareStatement(query);
+      for(int i=0;i<parameters.size();i++) {
+        int index = i+1;
+        pstmt.setObject(index,parameters.get(i));
+      }
+      rs = pstmt.executeQuery();
+    } catch (SQLException ex) {
+      // handle any errors
+      log.debug(ex, ex);
+      log.debug("SQL Statement:" + query);
+      log.debug("SQLException: " + ex.getMessage());
+      log.debug("SQLState: " + ex.getSQLState());
+      log.debug("VendorError: " + ex.getErrorCode());
+      throw ex;
+    } finally {
+    }
+    return rs;
   }
 
   public ResultSet query(String query) throws SQLException {

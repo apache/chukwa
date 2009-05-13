@@ -17,17 +17,28 @@
  * limitations under the License.
  */
 %>
-<%@ page import = "java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.hicc.Chart, org.apache.hadoop.chukwa.hicc.DatasetMapper, org.apache.hadoop.chukwa.database.DatabaseConfig, org.apache.hadoop.chukwa.database.Macro, org.apache.hadoop.chukwa.util.XssFilter"  %> 
+<%@ page import = "java.sql.*" %>
+<%@ page import = "java.io.*" %>
+<%@ page import = "java.util.Calendar" %>
+<%@ page import = "java.util.Date" %>
+<%@ page import = "java.text.SimpleDateFormat" %>
+<%@ page import = "java.util.*" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.ClusterConfig" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.TimeHandler" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.Chart" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.DatasetMapper" %>
+<%@ page import = "org.apache.hadoop.chukwa.database.DatabaseConfig" %>
+<%@ page import = "org.apache.hadoop.chukwa.database.Macro" %>
+<%@ page import = "org.apache.hadoop.chukwa.util.XssFilter" %> 
 <%
-   XssFilter xf = new XssFilter(request);
-   response.setHeader("boxId", xf.getParameter("boxId"));
-   response.setContentType("text/html; chartset=UTF-8//IGNORE");
-%>
-<%
+    XssFilter xf = new XssFilter(request);
+    response.setHeader("boxId", xf.getParameter("boxId"));
+    response.setContentType("text/html; chartset=UTF-8//IGNORE");
     String boxId=xf.getParameter("boxId");
     String render="line";
     String cluster = (String) session.getAttribute("cluster");
     String graphType = xf.getParameter("graph_type");
+    ArrayList<Object> parms = new ArrayList<Object>();
     int width=300;
     int height=200;
     if(request.getParameter("width")!=null) {
@@ -42,16 +53,6 @@
     }
     String match=xf.getParameter("match");
     String group = xf.getParameter("group");
-    if(match!=null) {
-        String matched = (String)session.getAttribute(match);
-        if(matched==null || matched.equals("")) {
-            match="";
-        } else {
-            match=match+"="+matched;
-        }
-    } else {
-        match="";
-    }
     ClusterConfig cc = new ClusterConfig();
     String jdbc = cc.getURL(cluster);
     String path = "";
@@ -90,20 +91,10 @@
     if(start<=0 || end<=0) { %>
 No time range specified.  Select a time range through widget preference, or use Time widget.
 <%  } else {
-       String timefield = "timestamp";
-       String dateclause = timefield+" >= '"+startS+"' and "+timefield+" <= '"+endS+"'";
+       String dateclause = " timestamp between ? and ? ";
        if(request.getParameter("period")!=null && request.getParameter("period").equals("0")) {
            dateclause = "";
        }
-       String minclause = "";
-       if(request.getParameter("minnodes")!=null) {
-           minclause="and j.NumOfMachines >= "+xf.getParameter("minnodes");
-       }
-       String whereclause = "";
-       if(request.getParameter("user")!=null && !request.getParameter("user").equals("")) {
-           whereclause="and j.UserID = "+xf.getParameter("user");
-       }
-       String mrtimeclause = "";
        try {
            org.apache.hadoop.chukwa.util.DriverManagerUtil.loadDriver().newInstance();
        } catch (Exception ex) {
@@ -117,22 +108,22 @@ No time range specified.  Select a time range through widget preference, or use 
            }
            int counter = 0;
            String[] group_items = ((String)session.getAttribute(xf.getParameter("group_items"))).split(",");
-           String appendDomain = xf.getParameter("append_domain");
-           if(appendDomain==null) {
-               appendDomain="";
-           }
            if(group_items!=null) {
+               StringBuilder matchBuilder = new StringBuilder();
                for(String item : group_items) {
                    if(counter!=0) {
-                       match = match + " or ";
+                       matchBuilder.append("or");
                    } else {
-                       match = "(";
+                       matchBuilder.append("(");
                    }
-                   match = match + group + " = '"+ item+ appendDomain +"'";
+                   matchBuilder.append(group);
+                   matchBuilder.append(" = ? ");
+                   parms.add(item);
                    counter++;
                }
-               if(!match.equals("")) {
-                   match = match + ")";
+               if(counter!=0) {
+                   matchBuilder.append(")");
+                   match = matchBuilder.toString();
                }
            }
        }
@@ -150,14 +141,29 @@ No time range specified.  Select a time range through widget preference, or use 
        TreeMap<String, TreeMap<String, Double>> dataMap = new TreeMap<String, TreeMap<String, Double>>();
        for(String tmpTable : tables) {
            String query = null;
-           if(!dateclause.equals("") && !match.equals("")) {
-               dateclause=" and "+dateclause;
-           }
+           StringBuilder q = new StringBuilder();
+           q.append("select ");
+           q.append(timestamp);
+           q.append(",");
            if(group!=null) {
-               query = "select "+timestamp+","+group+","+metrics+" from "+tmpTable+" where "+match+dateclause+" order by timestamp";
-           } else {
-               query = "select "+timestamp+","+metrics+" from "+tmpTable+" where "+match+dateclause+" order by timestamp";
+             q.append(group);
+             q.append(",");
            }
+           q.append(metrics);
+           q.append(" from ");
+           q.append(tmpTable);
+           q.append(" where ");
+           if(match!=null) {
+             q.append(match);
+           }
+           if(match!=null && match.intern()!="".intern()) {
+             q.append(" and ");
+           }
+           q.append(dateclause);
+           q.append(" order by timestamp");
+           query = q.toString();
+           parms.add(startS);
+           parms.add(endS);
            DatasetMapper dataFinder = new DatasetMapper(jdbc);
            boolean groupBySecondColumn=false;
            if(group!=null) {
@@ -172,7 +178,7 @@ No time range specified.  Select a time range through widget preference, or use 
                Macro mp = new Macro(start,end,query, request);
                query = mp.toString();
            }
-           dataFinder.execute(query,groupBySecondColumn,odometer,graphType);
+           dataFinder.execute(query,groupBySecondColumn,odometer,graphType, parms);
            List<String> tmpLabels = dataFinder.getXAxisMap();
            TreeMap<String, TreeMap<String, Double>> tmpDataMap = dataFinder.getDataset();
            for(int t=0;t<tmpLabels.size();t++) {

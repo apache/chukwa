@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 %>
-<%@ page import = "java.text.DecimalFormat,java.text.NumberFormat,java.sql.*,java.io.*, org.json.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.util.DatabaseWriter, org.apache.hadoop.chukwa.database.Macro, org.apache.hadoop.chukwa.util.XssFilter, org.apache.hadoop.chukwa.database.DatabaseConfig"  %> 
+<%@ page import = "java.text.DecimalFormat,java.text.NumberFormat,java.sql.*,java.io.*, org.json.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.util.DatabaseWriter, org.apache.hadoop.chukwa.database.Macro, org.apache.hadoop.chukwa.util.XssFilter, org.apache.hadoop.chukwa.database.DatabaseConfig, java.util.ArrayList"  %> 
 <%
     XssFilter xf = new XssFilter(request);
     NumberFormat nf = new DecimalFormat("###,###,###,##0.00");
@@ -69,12 +69,19 @@
     String query = "";
     queryBuilder.append("select * from [mr_job] where finish_time between '[start]' and '[end]' ");
     if(xf.getParameter("job_id")!=null) {
-      queryBuilder.append("and job_id='");
-      queryBuilder.append(xf.getParameter("job_id"));
-      queryBuilder.append("'");
-      mp = new Macro(start,end,queryBuilder.toString(), request);
+      queryBuilder = new StringBuilder();
+      mp = new Macro(start,end,"[mr_job]", request);
       query = mp.toString();
-      ResultSet rs = dbw.query(query);
+      queryBuilder.append("select * from ");
+      queryBuilder.append(query);
+      queryBuilder.append(" where finish_time between ? and ? ");
+      queryBuilder.append(" and job_id=?");
+      ArrayList<Object> parms = new ArrayList<Object>();
+      parms.add(new Timestamp(start));
+      parms.add(new Timestamp(end));
+      parms.add(xf.getParameter("job_id"));
+      query = queryBuilder.toString();
+      ResultSet rs = dbw.query(query, parms);
       ResultSetMetaData rmeta = rs.getMetaData();
       int col = rmeta.getColumnCount();
       JSONObject data = new JSONObject();

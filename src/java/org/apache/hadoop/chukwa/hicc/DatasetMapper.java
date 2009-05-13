@@ -41,7 +41,7 @@ public class DatasetMapper {
   }
 
   public void execute(String query, boolean groupBySecondColumn,
-      boolean calculateSlope, String formatTime) {
+      boolean calculateSlope, String formatTime, List<Object> parameters) {
     SimpleDateFormat sdf = null;
     dataset.clear();
     try {
@@ -52,7 +52,7 @@ public class DatasetMapper {
       // handle the error
     }
     Connection conn = null;
-    Statement stmt = null;
+    PreparedStatement stmt = null;
     ResultSet rs = null;
     int counter = 0;
     int size = 0;
@@ -61,9 +61,13 @@ public class DatasetMapper {
     int labelsCount = 0;
     try {
       conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc);
-      stmt = conn.createStatement();
+      stmt = conn.prepareStatement(query);
+      for(int i=0;i<parameters.size();i++) {
+        int index = i+1;
+        stmt.setObject(index,parameters.get(i));
+      }
       // rs = stmt.executeQuery(query);
-      if (stmt.execute(query)) {
+      if (stmt.execute()) {
         rs = stmt.getResultSet();
         ResultSetMetaData rmeta = rs.getMetaData();
         int col = rmeta.getColumnCount();

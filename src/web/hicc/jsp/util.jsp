@@ -17,7 +17,20 @@
  * limitations under the License.
  */
 %>
-<%@ page import = "java.text.DecimalFormat,java.text.NumberFormat,java.sql.*,java.io.*, org.json.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.util.DatabaseWriter, org.apache.hadoop.chukwa.database.Macro, org.apache.hadoop.chukwa.util.XssFilter, org.apache.hadoop.chukwa.database.DatabaseConfig"  %> 
+<%@ page import = "java.text.DecimalFormat,java.text.NumberFormat" %>
+<%@ page import = "java.sql.*" %>
+<%@ page import = "java.io.*" %>
+<%@ page import = "org.json.*" %>
+<%@ page import = "java.util.Calendar" %>
+<%@ page import = "java.util.Date" %>
+<%@ page import = "java.text.SimpleDateFormat" %>
+<%@ page import = "java.util.*" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.ClusterConfig" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.TimeHandler" %>
+<%@ page import = "org.apache.hadoop.chukwa.util.DatabaseWriter" %>
+<%@ page import = "org.apache.hadoop.chukwa.database.Macro" %>
+<%@ page import = "org.apache.hadoop.chukwa.util.XssFilter" %>
+<%@ page import = "org.apache.hadoop.chukwa.database.DatabaseConfig" %>
 <%
     XssFilter xf = new XssFilter(request);
     NumberFormat nf = new DecimalFormat("###,###,###,##0.00");
@@ -87,10 +100,12 @@
         query = queryAdd.toString();
       }
     } else {
-      query = "select count(*) from [util] where timestamp between '[start]' and '[end]' and queue='"+xf.getParameter("queue")+"' group by user;";
+      query = "select count(*) from [util] where timestamp between '[start]' and '[end]' and queue=? group by user;";
       mp = new Macro(start,end,query, request);
       query = mp.toString();
-      ResultSet rs = dbw.query(query);
+      ArrayList<Object> parms = new ArrayList<Object>();
+      parms.add(xf.getParameter("queue"));
+      ResultSet rs = dbw.query(query, parms);
       if(rs.next()) {
         total = rs.getInt(1);
       }
