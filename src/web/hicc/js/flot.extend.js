@@ -120,6 +120,8 @@ function wholePeriod() {
   document.getElementById('placeholder').style.width=cw+'px';
   document.getElementById('placeholder').style.height=ch+'px';
   $.plot($("#placeholder"), _series, _options);
+  // update statis
+  calculateStatis();
   total_height=height+$("#placeholderTitle").height();
   if (_options.legend.show) {
     total_height+=$("#placeholderLegend").height();
