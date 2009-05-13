@@ -11,18 +11,7 @@
 {"name":"table","type":"string","value":"system_metrics","edit":"0"},
 {"name":"group","type":"string","value":"host","edit":"0"},
 {"name":"group_items","type":"string","value":"hosts","edit":"0"},
-{"name":"period","type":"select","value":"","label":"Period","options":[
-{"label":"Use Time Widget","value":""},
-{"label":"Last 1 Hour","value":"last1hr"},
-{"label":"Last 2 Hours","value":"last2hr"},
-{"label":"Last 3 Hours","value":"last3hr"},
-{"label":"Last 6 Hours","value":"last6hr"},
-{"label":"Last 12 Hours","value":"last12hr"},
-{"label":"Last 24 Hours","value":"last24hr"},
-{"label":"Yesterday","value":"yesterday"},
-{"label":"Last 7 Days","value":"last7d"},
-{"label":"Last 30 Days","value":"last30d"}
-]},
+{"name":"period","type":"custom","control":"period_control","value":"","label":"Period"},
 {"name":"metric","type":"select_multiple","value":"load_1","label":"Metric","options":[
 {"label":"15 minutes load average","value":"load_15"},
 {"label":"5 minutes load average","value":"load_5"},

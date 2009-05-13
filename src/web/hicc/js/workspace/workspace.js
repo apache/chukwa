@@ -434,7 +434,7 @@ portalWidget.prototype = {
 		    label=param.label;
 		}
 		label=label;
-	        content+='<tr><td>'+label+':<\/td><td>';
+	        content+='<tr><td valign="top">'+label+':<\/td><td>';
 	        if (param.type=='string') {
 		    content+='<input type="text" id="'+param_id+'" value="' + param.value + '" size="20" maxlength="255"\/>'
 	        } else if (param.type=='text') {
@@ -536,6 +536,9 @@ portalWidget.prototype = {
 		    	content+='<option '+(param_selected ?'selected':'')+' value="'+option.value+'">'+option.label+'</option>';
 		    }
 		    content+='</select>';
+		} else if (param.type=='custom') {
+		  // build a custom widget
+		  content+=build_custom_edit(param_id, param);
 		}
 		content+='<\/td><\/tr>'
 	    }
@@ -550,7 +553,7 @@ portalWidget.prototype = {
 
    	editBox.innerHTML = content;
    
-   	parentObj.appendChild(editBox);		
+   	parentObj.appendChild(editBox);	
     },
 
     saveParameters: function() {
@@ -567,6 +570,8 @@ portalWidget.prototype = {
                 } else if (param.type=='select_multiple_callback') {
 		    selectAll(param_id);
 	            param.value=$F(param_id);
+		} else if (param.type=='custom') {
+		  param.value=get_custom_edit_value(param_id, param);
 		} else {
 	            param.value=$F(param_id);
 		}
@@ -702,6 +707,7 @@ portalWidget.prototype = {
    	}
 	this.obj=div;
 	this.parentObj=div.parentNode;
+	after_build_custom_edits(this);
     },
 
     addBoxHeader: function(parentObj) {

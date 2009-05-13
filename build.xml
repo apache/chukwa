@@ -675,6 +675,7 @@
 		<copy todir="${build.dir}/hicc/WEB-INF/lib">
 			<fileset dir="${basedir}/lib">
 				<include name="json.jar" />
+				<include name="jchronic-0.2.3.jar" />
 				<include name="html-filter-1.0.jar" />
 			</fileset>
 			<fileset dir="${common.ivy.lib.dir}">

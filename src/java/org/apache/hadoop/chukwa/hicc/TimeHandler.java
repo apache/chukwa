@@ -23,9 +23,19 @@ import javax.servlet.http.*;
 
 import org.apache.hadoop.chukwa.util.XssFilter;
 
+import java.util.Date;
 import java.util.Calendar;
 import java.util.TimeZone;
+import java.util.StringTokenizer;
 import java.text.SimpleDateFormat;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import com.mdimension.jchronic.Chronic;
+import com.mdimension.jchronic.Options;
+import com.mdimension.jchronic.tags.Pointer;
+import com.mdimension.jchronic.utils.Span;
+import com.mdimension.jchronic.utils.Time;
+
 
 public class TimeHandler {
   private HttpSession session = null;
@@ -42,6 +52,7 @@ public class TimeHandler {
   private String startS = null;
   private String endS = null;
   private XssFilter xf = null;
+    private static Log log=LogFactory.getLog(TimeHandler.class);
   
   public TimeHandler(HttpServletRequest request) {
     this.tz = TimeZone.getTimeZone("UTC");
@@ -56,6 +67,43 @@ public class TimeHandler {
     }
     init(request);
   }
+
+    /*
+     * Using the Chronic library to parse the english string
+     * and convert it to a long (millis seconds since 1970)
+     */
+    public long parseDateShorthand(String d) {
+	Calendar now = Calendar.getInstance();
+	long l=now.getTimeInMillis();
+	d=d.trim();
+	if (d.compareToIgnoreCase("now")==0) {
+	    // do nothing because it is default to now.
+	} else {
+	    Options options= new Options(false);
+	    options.setCompatibilityMode(true);
+	    options.setNow(now);
+	    try {
+		Span span = Chronic.parse(d, options);
+		l = span.getBegin()*1000;
+	    } catch (Exception e) {
+		// exception when parsing
+		log.error("parse error for: "+d);		
+	    }
+	}
+
+	/*
+	 * debug 
+	 */
+	/*
+        SimpleDateFormat sf =
+            new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	Date ld=new Date(l);
+
+	log.error("Convert:"+d+" to "+Long.toString(l)+" - "+sf.format(ld)+ "-"+ld.getTime());
+	*/
+
+	return l;
+    }
 
   public void init(HttpServletRequest request) {
     xf = new XssFilter(request);
@@ -95,6 +143,27 @@ public class TimeHandler {
         start = end - (7 * 24 * 60 * 60 * 1000);
       } else if (period.equals("last30d")) {
         start = end - (30 * 24 * 60 * 60 * 1000);
+      } else if (period.startsWith("custom;")) {
+
+	  // default value is between 2 days ago and now
+	  String startString="2 days ago";
+	  String endString="now";
+	  
+	  // tokenize the value to "custom;2 days ago;now" 
+	  StringTokenizer st=new StringTokenizer(period,";");
+	  if (st.hasMoreTokens()) {
+	      st.nextToken(); // skip the first token
+	      if (st.hasMoreTokens()) {
+		  startString=st.nextToken();
+		  if (st.hasMoreTokens()) {
+		      endString=st.nextToken();
+		  }
+	      }
+	  }
+
+	  // parse the parameter strings
+	  start = parseDateShorthand(startString);
+	  end = parseDateShorthand(endString);
       }
     } else if (request.getParameter("start") != null
         && request.getParameter("end") != null) {

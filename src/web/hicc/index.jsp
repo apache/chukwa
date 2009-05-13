@@ -83,6 +83,8 @@
 <script type="text/javascript" src="/hicc/js/workspace/scriptaculous.js"></script>
 <script type="text/javascript" src="/hicc/js/workspace/effects.js"></script>
 <script type="text/javascript" src="/hicc/js/workspace/dragdrop.js"></script>
+<script type="text/javascript" src="/hicc/js/workspace/prototype.js"></script>
+<script type="text/javascript" src="/hicc/js/workspace/custom_edits.js"></script>
 <script type="text/javascript" src="/hicc/js/workspace/workspace.js"></script>
 <script type="text/javascript" src="/hicc/js/slider.js"></script>
 <script type="text/javascript" src="/hicc/js/swfobject.js"></script>

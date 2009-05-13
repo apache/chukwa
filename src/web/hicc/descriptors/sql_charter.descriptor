@@ -10,18 +10,7 @@
 {"name":"query","type":"text","value":"select host,max(load_1),min(load_1),avg(load_1) from system_metrics_2032_week where timestamp >='2008-12-13 17:30' and timestamp <= '2008-12-13 18:30' group by host","label":"Query","edit":"1"},
 {"name":"title","type":"string","label":"Title","value":"","edit":"1"},
 {"name":"x_axis_label","type":"string","value":"Hostname","edit":"0"},
-{"name":"period","type":"select","value":"","label":"Period","options":[
-{"label":"Use Time Widget","value":""},
-{"label":"Last 1 Hour","value":"last1hr"},
-{"label":"Last 2 Hours","value":"last2hr"},
-{"label":"Last 3 Hours","value":"last3hr"},
-{"label":"Last 6 Hours","value":"last6hr"},
-{"label":"Last 12 Hours","value":"last12hr"},
-{"label":"Last 24 Hours","value":"last24hr"},
-{"label":"Yesterday","value":"yesterday"},
-{"label":"Last 7 Days","value":"last7d"},
-{"label":"Last 30 Days","value":"last30d"}
-]},
+{"name":"period","type":"custom","control":"period_control","value":"","label":"Period"},
 {"name":"width","type":"select","value":"300","label":"Width","options":[
 {"label":"300","value":"300"},
 {"label":"400","value":"400"},

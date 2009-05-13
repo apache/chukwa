@@ -10,18 +10,7 @@
 "parameters":[
 {"name":"find_slope","type":"string","value":"true","edit":"0"},
 {"name":"table","type":"string","value":"hadoop_mapred","edit":"0"},
-{"name":"period","type":"select","value":"","label":"Period","options":[
-{"label":"Use Time Widget","value":""},
-{"label":"Last 1 Hour","value":"last1hr"},
-{"label":"Last 2 Hours","value":"last2hr"},
-{"label":"Last 3 Hours","value":"last3hr"},
-{"label":"Last 6 Hours","value":"last6hr"},
-{"label":"Last 12 Hours","value":"last12hr"},
-{"label":"Last 24 Hours","value":"last24hr"},
-{"label":"Yesterday","value":"yesterday"},
-{"label":"Last 7 Days","value":"last7d"},
-{"label":"Last 30 Days","value":"last30d"}
-]},
+{"name":"period","type":"custom","control":"period_control","value":"","label":"Period"},
 {"name":"metric","type":"select_multiple","value":"heartbeat_avg_time","label":"Metric","options":[
 {"label":"jobs_completed","value":"jobs_completed"},
 {"label":"jobs_submitted","value":"jobs_submitted"},
