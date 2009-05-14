@@ -397,6 +397,7 @@
 		<javac srcdir="src/java" destdir="${build.classes}" excludes="**/ChukwaTTInstru.java" debug="${javac.debug}">
 			<compilerarg value="-Xlint" />
 			<exclude name="org/apache/hadoop/*" />
+			<include name="org/apache/hadoop/mapred/**" />
 			<include name="org/apache/hadoop/chukwa/inputtools/**" />
 			<classpath refid="classpath" />
 		</javac>
