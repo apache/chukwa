@@ -30,7 +30,7 @@
    Tabs can be embedded to a depth of two. The second level of tabs will only 
     be displayed when their parent tab is selected.    
   -->
-  <tab label="Project" href="http://hadoop.apache.org/Chukwa" type="visible" /> 
+  <tab label="Project" href="http://hadoop.apache.org/chukwa" type="visible" /> 
   <tab label="Wiki" href="http://wiki.apache.org/hadoop/Chukwa/" type="visible" /> 
   <tab label="Chukwa 0.1.2 Documentation" dir="" type="visible" /> 
 

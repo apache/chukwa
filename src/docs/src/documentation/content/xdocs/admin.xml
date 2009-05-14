@@ -87,10 +87,9 @@
 
 <section>
 <title>Chukwa Binary</title>
-<p>To get a Chukwa distribution, download a recent stable release of Hadoop from one of the Apache Download Mirrors. 
-Nightly build of Chukwa trunk is available from <a href="http://hadoopqa.yst.corp.yahoo.com:8080/hudson/job/chukwa-release/">Hudson</a>.  
+<p>To get a Chukwa distribution, download a recent stable release of Hadoop from one of the Apache Download Mirrors (see 
+ <a href="http://hadoop.apache.org/core/releases.html)./">Hadoop Core Releases</a>.  
 </p>
-<p>You want the file named: chukwa-n.n.n.nnnnnnn.tar.gz</p>
 </section>
 
 <section>
@@ -174,14 +173,32 @@ and place the jar file in $CHUKWA_HOME/lib.</p>
 mysql -u root -p
 Enter password:
 </source>
-
 <p>From the MySQL shell, enter these commands (replace &#60;username&#62; and &#60;password&#62; with actual values):</p>
-
 <source>
 GRANT REPLICATION SLAVE ON &#42;.&#42; TO &#39;&#60;username&#62;&#39;&#64;&#39;&#37;&#39; IDENTIFIED BY &#39;&#60;password&#62;&#39;;
 FLUSH PRIVILEGES; 
 </source>
 </section>
+
+
+<section>
+<title>Migrate Existing Data From Chukwa 0.1.1</title>
+<p>Start the MySQL shell:</p>
+<source>
+mysql -u root -p
+Enter password:
+</source>
+
+<p>From the MySQL shell, enter these commands (replace &#60;database_name&#62; with an actual value):</p>
+<source>
+use &#60;database_name&#62;
+source /path/to/chukwa/conf/database_create_table.sql
+source /path/to/chukwa/conf/database_upgrade.sql
+</source>
+
+
+</section>
+
 </section>
 
 <section>
