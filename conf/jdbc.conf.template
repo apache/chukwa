@@ -1,1 +1,1 @@
-demo=jdbc:mysql://localhost:3306/demo?user=root
+demo=jdbc:mysql://localhost:3306/test?user=root
