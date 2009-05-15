@@ -71,6 +71,7 @@
 </li> <li> Move to the new directory
 </li> <li> Download and un-tar the Chukwa binary
 </li> <li> Configure the components for the Chukwa cluster (see <a href="#Chukwa+Cluster+Deployment">Chukwa Cluster Deployment</a>)
+</li> <li> Configure the Hadoop configuration files (see <a href="#Hadoop+Configuration+Files">Hadoop Configuration Files</a>)
 </li> <li> Zip the directory and deploy to all nodes in the Chukwa cluster
 </li></ul> 
 <p></p>
@@ -81,6 +82,7 @@
 </li> <li> Move to the new directory
 </li> <li> Download and un-tar the Chukwa binary
 </li> <li> Configure the components for the source nodes (see <a href="#Monitored+Source+Node+Deployment">Monitored Source Node Deployment</a>))
+</li> <li> Configure the Hadoop configuration files (see <a href="#Hadoop+Configuration+Files">Hadoop Configuration Files</a>)
 </li> <li> Zip the directory and deploy to all source nodes to be monitored
 </li></ul> 
 </section>
@@ -100,6 +102,18 @@ For example, copy the chukwa-collector-conf.xml.template file to a file named ch
 </p>
 <p>The <strong>default.properties</strong> file contains default parameter settings. To override these default settings use the <strong>build.properties </strong>. 
 For example, copy the TODO-JAVA-HOME environment variable from the default.properties file to the build.properties file and change the setting.</p>
+</section>
+
+<section>
+<title>Hadoop Configuration Files</title>
+<p>The Hadoop configuration files are located in the HADOOP_HOME/conf directory. To setup Chukwa, you need to change some of the hadoop configuration files.</p>
+<ol>
+	<li>Copy CHUKWA_HOME/conf/hadoop-log4j.properties file to HADOOP_HOME/conf/log4j.properties</li>
+	<li>Copy CHUKWA_HOME/conf/hadoop-metrics.properties file to HADOOP_HOME/conf/hadoop-metrics.properties</li>
+	<li>Edit HADOOP_HOME/conf/hadoop-metrics.properties file and change @CHUKWA_LOG_DIR@ to your actual CHUKWA log dirctory (ie, CHUKWA_HOME/var/log)</li>	
+	<li>ln -s HADOOP_HOME/conf/hadoop-site.xml CHUKWA_HOME/conf/hadoop-site.xml</li>
+</ol>
+	
 </section>
 
 </section>
