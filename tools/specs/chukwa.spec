@@ -202,7 +202,9 @@ echo "Congratulation!  You have successfully installed Chukwa."
 %preun
 echo
 %postun
-rm -f /service/chukwa-*
+if [ ! -f /etc/init.d/chukwa-collector ]; then
+  rm -f /service/chukwa-*
+fi
 %files
 %defattr(-,%{uid},%{gid})
 %{_prefix}
