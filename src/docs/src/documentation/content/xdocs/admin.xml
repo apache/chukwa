@@ -51,8 +51,8 @@
 <title>Install Chukwa</title>
 <p>Chukwa is installed on: </p>
 <ul>
-<li> A hadoop cluster created specifically for Chukwa (referred to as the Chukwa cluster)</li> 
-<li> The source nodes that Chukwa monitors (referred to as the monitored source nodes)</li>
+<li> A hadoop cluster created specifically for Chukwa (referred to as the Chukwa cluster).</li> 
+<li> The source nodes that Chukwa monitors (referred to as the monitored source nodes).</li>
 </ul> 
 <p></p>
 <p></p>
@@ -67,40 +67,40 @@
 <title>General  Install Procedure </title>
 <p>1. Select one of the nodes in the Chukwa cluster: </p>
 <ul>
-<li> Create a directory for the Chukwa installation (Chukwa will automatically set the  environment variable <strong>CHUKWA_HOME</strong> to point to this directory during the install)
-</li> <li> Move to the new directory
-</li> <li> Download and un-tar the Chukwa binary
-</li> <li> Configure the components for the Chukwa cluster (see <a href="#Chukwa+Cluster+Deployment">Chukwa Cluster Deployment</a>)
-</li> <li> Configure the Hadoop configuration files (see <a href="#Hadoop+Configuration+Files">Hadoop Configuration Files</a>)
-</li> <li> Zip the directory and deploy to all nodes in the Chukwa cluster
+<li> Create a directory for the Chukwa installation (Chukwa will set the  environment variable <strong>CHUKWA_HOME</strong> to point to this directory during the the install).
+</li> <li> Move to the new directory.
+</li> <li> Download and un-tar the Chukwa binary.
+</li> <li> Configure the components for the Chukwa cluster (see <a href="#Chukwa+Cluster+Deployment">Chukwa Cluster Deployment</a>).
+</li> <li> Configure the Hadoop configuration files (see <a href="#Hadoop+Configuration+Files">Hadoop Configuration Files</a>).
+</li> <li> Zip the directory and deploy to all nodes in the Chukwa cluster.
 </li></ul> 
 <p></p>
 <p></p>
-<p>2. Select one of the source nodes to be monitored </p>
+<p>2. Select one of the source nodes to be monitored: </p>
 <ul>
-<li> Create a directory for the Chukwa installation (Chukwa will set the environment variable <strong>CHUKWA_HOME</strong> to point to this directory)
-</li> <li> Move to the new directory
-</li> <li> Download and un-tar the Chukwa binary
-</li> <li> Configure the components for the source nodes (see <a href="#Monitored+Source+Node+Deployment">Monitored Source Node Deployment</a>))
-</li> <li> Configure the Hadoop configuration files (see <a href="#Hadoop+Configuration+Files">Hadoop Configuration Files</a>)
-</li> <li> Zip the directory and deploy to all source nodes to be monitored
+<li> Create a directory for the Chukwa installation (Chukwa will set the environment variable <strong>CHUKWA_HOME</strong> to point to this directory during the install).
+</li> <li> Move to the new directory.
+</li> <li> Download and un-tar the Chukwa binary.
+</li> <li> Configure the components for the source nodes (see <a href="#Monitored+Source+Node+Deployment">Monitored Source Node Deployment</a>).
+</li> <li> Configure the Hadoop configuration files (see <a href="#Hadoop+Configuration+Files">Hadoop Configuration Files</a>).
+</li> <li> Zip the directory and deploy to all source nodes to be monitored.
 </li></ul> 
 </section>
 
 <section>
 <title>Chukwa Binary</title>
 <p>To get a Chukwa distribution, download a recent stable release of Hadoop from one of the Apache Download Mirrors (see 
- <a href="http://hadoop.apache.org/core/releases.html)./">Hadoop Core Releases</a>.  
+ <a href="http://hadoop.apache.org/chukwa/releases.html)./">Hadoop Chukwa Releases</a>.  
 </p>
 </section>
 
 <section>
 <title>Chukwa Configuration Files </title>
 <p>The Chukwa configuration files are located in the CHUKWA_HOME/conf directory. The configuration files that you modify are named <strong> *.template. </strong>
-To set up your Chukwa installation (to configure various components), copy, rename, and modify the *.template files as necessary. 
+To set up your Chukwa installation (configure various components), copy, rename, and modify the *.template files as necessary. 
 For example, copy the chukwa-collector-conf.xml.template file to a file named chukwa-collector-conf.xml and then modify the file to include the cluster/group name for the source nodes.
 </p>
-<p>The <strong>default.properties</strong> file contains default parameter settings. To override these default settings use the <strong>build.properties </strong>. 
+<p>The <strong>default.properties</strong> file contains default parameter settings. To override these default settings use the <strong>build.properties </strong> file. 
 For example, copy the TODO-JAVA-HOME environment variable from the default.properties file to the build.properties file and change the setting.</p>
 </section>
 
@@ -125,7 +125,7 @@ For example, copy the TODO-JAVA-HOME environment variable from the default.prope
 
 <section>
 <title>1. Set the Environment Variables</title>
-<p>Edit the CHUKWA_HOME/conf/chukwa-env.sh configuration file. </p> 
+<p>Edit the CHUKWA_HOME/conf/chukwa-env.sh configuration file: </p> 
 <ul>
 <li> Set JAVA_HOME to your Java installation.
 </li> <li> Set HADOOP_JAR to $CHUKWA_HOME/hadoopjars/hadoop-0.18.2.jar 
@@ -135,8 +135,9 @@ For example, copy the TODO-JAVA-HOME environment variable from the default.prope
 
 <section>
 <title>2. Set Up the Hadoop jar File </title>
+<p>Do the following:</p>
 <source>
-cp $HADOOP&#95;HOME/lib hadoop-&#42;-core.jar file $CHUKWA&#95;HOME/hadoopjars
+cp $HADOOP_HOME/lib hadoop-&#42;-core.jar file $CHUKWA&#95;HOME/hadoopjars
 </source>
 </section>
 
@@ -144,7 +145,7 @@ cp $HADOOP&#95;HOME/lib hadoop-&#42;-core.jar file $CHUKWA&#95;HOME/hadoopjars
 <section>
 <title> 3. Configure the Collector  </title>
 <p>Edit the CHUKWA_HOME/conf/chukwa-collector-conf.xml configuration file.</p>
-<p>Set the writer.hdfs.filesystem property to the HDFS root url. </p>
+<p>Set the writer.hdfs.filesystem property to the HDFS root URL. </p>
 </section>
 
 <section>
@@ -161,17 +162,17 @@ cd $CHUKWA&#95;HOME/opt/mysql-&#42;
 </source>
 
 <p>
-Configure and then copy the my.cnf file to the CHUKWA_HOME/opt/mysql-* directory.
+Configure and then copy the my.cnf file to the CHUKWA_HOME/opt/mysql-* directory:
 </p>
 <source>
-./scripts/mysql&#95;install&#95;db
-./bin/mysqld&#95;safe&#38;
+./scripts/mysql_install_db
+./bin/mysqld_safe&#38;
 ./bin/mysqladmin -u root create &#60;clustername&#62;
-./bin/mysql -u root &#60;clustername&#62; &#60; $CHUKWA&#95;HOME/conf/database&#95;create&#95;table
+./bin/mysql -u root &#60;clustername&#62; &#60; $CHUKWA&#95;HOME/conf/database_create_table
 </source>
 
 <p>Edit the CHUKWA_HOME/conf/jdbc.conf configuration file. </p>
-<p>Set the clustername to the MYSQL root URL.</p>
+<p>Set the clustername to the MYSQL root URL:</p>
 <source>
 &#60;clustername&#62;&#61;jdbc:mysql://localhost:3306/&#60;clustername&#62;?user&#61;root
 </source>
@@ -181,7 +182,7 @@ and place the jar file in $CHUKWA_HOME/lib.</p>
 </section>
 
 <section>
-<title>Setup MySQL for Replication </title>
+<title>Set Up MySQL for Replication</title>
 <p>Start the MySQL shell:</p>
 <source>
 mysql -u root -p
@@ -243,8 +244,8 @@ Refresh to the Chukwa Cluster Configuration page for the Job Tracker URL. </sour
 </section>
 
 <section>
-<title>7. Deploy HICC Portal</title>
-<p>The Hadoop Infrastructure Care Center (HICC) is the Chukwa web user interface. To deploy HICC, do the following:</p>
+<title>7. Set Up HICC </title>
+<p>The Hadoop Infrastructure Care Center (HICC) is the Chukwa web user interface. To set up HICC, do the following:</p>
 <ul>
 <li>Download apache-tomcat 6.0.18+ from <a href="http://tomcat.apache.org/download-60.cgi">Apache Tomcat</a> and decompress the tarball to CHUKWA_HOME/opt. </li> 
 <li>Copy CHUKWA_HOME/hicc.war to apache-tomcat-6.0.18/webapps. </li> 
@@ -264,10 +265,10 @@ Refresh to the Chukwa Cluster Configuration page for the Job Tracker URL. </sour
 
 <section>
 <title>1. Set the Environment Variables </title>
-<p>Edit the CHUKWA_HOME/conf/chukwa-current/chukwa-env.sh configuration file. </p>
+<p>Edit the CHUKWA_HOME/conf/chukwa-current/chukwa-env.sh configuration file: </p>
 <ul>
-<li> Set JAVA_HOME to the root of your Java installation 
-</li><li> Set other environment variables as necessary
+<li> Set JAVA_HOME to the root of your Java installation.
+</li><li> Set other environment variables as necessary.
 </li></ul> 
 
 <source>
@@ -284,7 +285,7 @@ export JDBC&#95;URL&#95;PREFIX&#61;jdbc:mysql://
 <title>2. Configure the Agent</title>
 
 <p>Edit the CHUKWA_HOME/conf/chukwa-current/chukwa-agent-conf.xml configuration file. </p>
-<p>Enter the cluster/group name that identifies the monitored source nodes.</p>
+<p>Enter the cluster/group name that identifies the monitored source nodes:</p>
 
 <source>
  &#60;property&#62;
@@ -306,14 +307,19 @@ localhost
 <p>Edit the CHUKWA_HOME/conf/collectors configuration file. </p>
 <p>The Chukwa agent needs to know about the Chukwa collectors. Create a list of hosts that are running the Chukwa collector:</p>
 
-<p>This:</p>
+<ul>
+	<li>This ...</li>
+</ul>
+
 <source>
 &#60;collector1HostName&#62;
 &#60;collector2HostName&#62;
 &#60;collector3HostName&#62;
 </source>
 
-<p>Or, this:</p>
+<ul>
+	<li>Or this ...</li>
+</ul>
 <source>
 http://&#60;collector1HostName&#62;:&#60;collector1Port&#62;/
 http://&#60;collector2HostName&#62;:&#60;collector2Port&#62;/
@@ -327,7 +333,7 @@ http://&#60;collector3HostName&#62;:&#60;collector3Port&#62;/
 <title>3. Configure the Adaptor</title>
 <p>Edit the CHUKWA_HOME/conf/initial_adaptors configuration file.</p>
 
-<p>Define the default adaptors.</p>
+<p>Define the default adaptors:</p>
 <source>
 add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped SysLog 0 /var/log/messages 0
 </source>
@@ -345,10 +351,10 @@ add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAd
 <p>Run both of these commands on all monitored source nodes: </p>
 
 <ul>
-<li> Start the Chukwa agent script
+<li> Start the Chukwa agent script:
 </li></ul> 
 <source>CHUKWA&#95;HOME /tools/init.d/chukwa-agent start</source> <ul>
-<li> Start the Chukwa system metrics script
+<li> Start the Chukwa system metrics script:
 </li></ul> 
 <source>CHUKWA&#95;HOME /tools/init.d/chukwa-system-metrics start</source>
 </section>
@@ -418,18 +424,18 @@ add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAd
 
 <section>
 <title>Checks for MySQL Replication </title>
-<p>At slave server, mysql prompt, run:</p>
+<p>At slave server, MySQL prompt, run:</p>
 <source>
 show slave status\G
 </source>
 <p>Make sure both <strong>Slave_IO_Running</strong> and <strong>Slave_SQL_Running</strong> are both "Yes".</p>
-<p>Things to check if mysql replication fails:</p>
+<p>Things to check if MySQL replication fails:</p>
 <ul>
-<li> Make sure grant permission has been enabled on master mysql server.
+<li> Make sure grant permission has been enabled on master MySQL server.
 </li> <li> Check disk space availability.  
 </li> <li> Check Error status in slave status.
 </li></ul> 
-<p>To reset mysql replication, run these commands on mysql:</p>
+<p>To reset MySQL replication, run these commands on MySQL:</p>
 <source>
 STOP SLAVE;
 CHANGE MASTER TO
@@ -453,7 +459,7 @@ Look at agent.log and collector.log file to determine the problems. </p>
 <source>
  0 12 &#42; &#42; &#42; CHUKWA&#95;HOME/tools/expiration.sh 10 !CHUKWA&#95;HOME/var/log nowait
 </source>     
-<p>This will setup log file expiration for CHUKWA_HOME/var/log for log files older than 10 days.</p>
+<p>This will set up the log file expiration for CHUKWA_HOME/var/log for log files older than 10 days.</p>
 </section>
 
 
