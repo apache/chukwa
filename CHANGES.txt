@@ -123,6 +123,8 @@ Release 0.1.2 - 2009-04-28
 
   BUG FIXES
 
+    CHUKWA-242. Fix permission bits on bin scripts. (Ari Rabkin)
+
     CHUKWA-228.  Added rpm.hdfsusage.uid option to run HDFS usage as a separate user. (Cheng Zhang via Eric Yang)
 
     CHUKWA-227. Improved the user privilege for reading HDFS usage.  (Cheng Zhang via Eric Yang)
