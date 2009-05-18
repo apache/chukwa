@@ -115,6 +115,8 @@ Release 0.1.2 - 2009-04-28
 
   BUG FIXES
 
+    CHUKWA-239. Demux settings now work out of the box. (Ari Rabkin)
+
     CHUKWA-238.  Resolve race condition in archiving. (Ari Rabkin)
 
     CHUKWA-243. Set execute permission on bin scripts.  (Ari Rabkin)

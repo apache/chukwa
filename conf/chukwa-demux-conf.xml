@@ -8,7 +8,7 @@
 <!-- Chukwa Job parameters -->
 	<property>
 	  <name>io.sort.mb</name>
-	  <value>256</value>
+	  <value>64</value>
 	  <description>The total amount of buffer memory to use while sorting
 	  files, in megabytes.  By default, gives each merge stream 1MB, which
 	  should minimize seeks.</description>
@@ -16,13 +16,13 @@
 
 	<property>
 	  <name>fs.inmemory.size.mb</name>
-	  <value>256</value>
+	  <value>64</value>
 	  <description>The size of the in-memory filsystem instance in MB</description>
 	</property>
 
 	<property>
 	  <name>io.sort.factor</name>
-	  <value>100</value>
+	  <value>10</value>
 	  <description>The number of streams to merge at once while sorting
 	  files.  This determines the number of open file handles.</description>
 	</property>
