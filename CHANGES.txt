@@ -115,6 +115,8 @@ Release 0.1.2 - 2009-04-28
 
   BUG FIXES
 
+    CHUKWA-238.  Resolve race condition in archiving. (Ari Rabkin)
+
     CHUKWA-243. Set execute permission on bin scripts.  (Ari Rabkin)
 
     CHUKWA-228.  Added rpm.hdfsusage.uid option to run HDFS usage as a separate user. (Cheng Zhang via Eric Yang)

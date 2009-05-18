@@ -138,7 +138,12 @@ public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
         long now = System.currentTimeMillis();
         int currentDay = Integer.parseInt(day.format(System.currentTimeMillis()));
         FileStatus[] daysInRawArchiveDir = fs.listStatus(pDailyRawArchivesInput);
-       
+        
+        if (daysInRawArchiveDir.length == 0 ) { 
+          log.debug( pDailyRawArchivesInput + " is empty, going to sleep for 1 minute"); 
+          Thread.sleep(1 * 60 * 1000); 
+          continue; 
+        } 
         // We don't want to process DataSink file more than once every 2 hours
         // for current day
         if (daysInRawArchiveDir.length == 1 ) {
