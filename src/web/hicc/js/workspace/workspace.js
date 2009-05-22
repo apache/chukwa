@@ -2927,7 +2927,7 @@ var autoScrollSpeed=4;				// higher = faster
 var dragObjectBorderWidth=1;			// Border size of the RSS box
 
 // images
-var rightArrowImage='/hicc/images/arrow_right.png';	// for window open
+var rightArrowImage='/hicc/images/collapse.png';	// for window open
 var downArrowImage='/hicc/images/arrow_down.png';	// for window collpase
 var refreshImage='/hicc/images/refresh.png';		// refresh window
 var linkImage='/hicc/images/server_link.png';		// permalink
