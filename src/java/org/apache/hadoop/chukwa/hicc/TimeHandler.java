@@ -105,6 +105,50 @@ public class TimeHandler {
 	return l;
     }
 
+    public void parsePeriodValue(String period) {
+	Calendar now = Calendar.getInstance();
+	this.start = now.getTimeInMillis();
+	this.end = now.getTimeInMillis();
+	if (period.equals("last1hr")) {
+	    start = end - (60 * 60 * 1000);
+	} else if (period.equals("last2hr")) {
+	    start = end - (2 * 60 * 60 * 1000);
+	} else if (period.equals("last3hr")) {
+	    start = end - (3 * 60 * 60 * 1000);
+	} else if (period.equals("last6hr")) {
+	    start = end - (6 * 60 * 60 * 1000);
+	} else if (period.equals("last12hr")) {
+	    start = end - (12 * 60 * 60 * 1000);
+	} else if (period.equals("last24hr")) {
+	    start = end - (24 * 60 * 60 * 1000);
+	} else if (period.equals("last7d")) {
+	    start = end - (7 * 24 * 60 * 60 * 1000);
+	} else if (period.equals("last30d")) {
+	    start = end - (30L * 24 * 60 * 60 * 1000);
+	} else if (period.startsWith("custom;")) {
+	    
+	    // default value is between 2 days ago and now
+	    String startString="2 days ago";
+	    String endString="now";
+	    
+	    // tokenize the value to "custom;2 days ago;now" 
+	    StringTokenizer st=new StringTokenizer(period,";");
+	    if (st.hasMoreTokens()) {
+		st.nextToken(); // skip the first token
+		if (st.hasMoreTokens()) {
+		    startString=st.nextToken();
+		    if (st.hasMoreTokens()) {
+			endString=st.nextToken();
+		    }
+		}
+	    }
+	    
+	    // parse the parameter strings
+	    start = parseDateShorthand(startString);
+	    end = parseDateShorthand(endString);
+	}
+    }
+
   public void init(HttpServletRequest request) {
     xf = new XssFilter(request);
     Calendar now = Calendar.getInstance();
@@ -125,46 +169,7 @@ public class TimeHandler {
     } else if (request.getParameter("period") != null
         && !request.getParameter("period").equals("")) {
       String period = xf.getParameter("period");
-      this.start = now.getTimeInMillis();
-      this.end = now.getTimeInMillis();
-      if (period.equals("last1hr")) {
-        start = end - (60 * 60 * 1000);
-      } else if (period.equals("last2hr")) {
-        start = end - (2 * 60 * 60 * 1000);
-      } else if (period.equals("last3hr")) {
-        start = end - (3 * 60 * 60 * 1000);
-      } else if (period.equals("last6hr")) {
-        start = end - (6 * 60 * 60 * 1000);
-      } else if (period.equals("last12hr")) {
-        start = end - (12 * 60 * 60 * 1000);
-      } else if (period.equals("last24hr")) {
-        start = end - (24 * 60 * 60 * 1000);
-      } else if (period.equals("last7d")) {
-        start = end - (7 * 24 * 60 * 60 * 1000);
-      } else if (period.equals("last30d")) {
-        start = end - (30 * 24 * 60 * 60 * 1000);
-      } else if (period.startsWith("custom;")) {
-
-	  // default value is between 2 days ago and now
-	  String startString="2 days ago";
-	  String endString="now";
-	  
-	  // tokenize the value to "custom;2 days ago;now" 
-	  StringTokenizer st=new StringTokenizer(period,";");
-	  if (st.hasMoreTokens()) {
-	      st.nextToken(); // skip the first token
-	      if (st.hasMoreTokens()) {
-		  startString=st.nextToken();
-		  if (st.hasMoreTokens()) {
-		      endString=st.nextToken();
-		  }
-	      }
-	  }
-
-	  // parse the parameter strings
-	  start = parseDateShorthand(startString);
-	  end = parseDateShorthand(endString);
-      }
+      parsePeriodValue(period);
     } else if (request.getParameter("start") != null
         && request.getParameter("end") != null) {
       start = Long.parseLong(request.getParameter("start"));
@@ -175,25 +180,7 @@ public class TimeHandler {
     } else if (session.getAttribute("time_type").equals("last")
         && session.getAttribute("period") != null) {
       String period = (String) session.getAttribute("period");
-      this.start = now.getTimeInMillis();
-      this.end = now.getTimeInMillis();
-      if (period.equals("last1hr")) {
-        start = end - (60 * 60 * 1000);
-      } else if (period.equals("last2hr")) {
-        start = end - (2 * 60 * 60 * 1000);
-      } else if (period.equals("last3hr")) {
-        start = end - (3 * 60 * 60 * 1000);
-      } else if (period.equals("last6hr")) {
-        start = end - (6 * 60 * 60 * 1000);
-      } else if (period.equals("last12hr")) {
-        start = end - (12 * 60 * 60 * 1000);
-      } else if (period.equals("last24hr")) {
-        start = end - (24 * 60 * 60 * 1000);
-      } else if (period.equals("last7d")) {
-        start = end - (7 * 24 * 60 * 60 * 1000);
-      } else if (period.equals("last30d")) {
-        start = end - (30L * 24 * 60 * 60 * 1000);
-      }
+      parsePeriodValue(period);
     }
     // if((request.getParameter("period")==null ||
     // request.getParameter("period").equals("")) &&

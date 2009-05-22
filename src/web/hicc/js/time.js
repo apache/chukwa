@@ -89,6 +89,11 @@ function save_time_range(boxId) {
     var time_machine="last";
     var obj=document.getElementById(boxId+"period").options;
     var period=obj[document.getElementById(boxId+"period").selectedIndex].value;
+    if (period == 'custom') {
+      var start_string = $F(boxId+"_start_time");
+      var end_string = $F(boxId+"_end_time");
+      period="custom;"+start_string+";"+end_string;
+    }
     var myAjax=new Ajax.Request(
         '/hicc/jsp/session.jsp',
         {
