@@ -2,9 +2,11 @@ Chukwa Change Log
 
 Trunk (unrelease changes)
 
-Release 0.1.2 - 2009-04-28
+Release 0.1.2 - 2009-05-14
 
   NEW FEATURES
+
+    CHUKWA-236. Added migration script for moving database schema for Chukwa 0.1.1 to Chukwa 0.1.2. (Eric Yang)
 
     CHUKWA-100. Added ability to run aggregation by command line utility. (Eric Yang)
 
@@ -114,6 +116,18 @@ Release 0.1.2 - 2009-04-28
   OPTIMIZATIONS
 
   BUG FIXES
+
+    CHUKWA-250. Updated hadoop jar reference in chukwa config. (Cheng Zhang via Eric Yang)
+
+    CHUKWA-211. Manage symlink correctly for RPM upgrade and uninstall. (Eric Yang)
+
+    CHUKWA-245. Includes ChukwaJobTrackerInstrumentation class as part of the input tools compilation. (Eric Yang)
+
+    CHUKWA-232. Fixed classpath for chukwa core jar file. (Eric Yang)
+
+    CHUKWA-215. Corrected postProcess.sh environment setup. (Jerome Boulon via Eric Yang)
+
+    CHUKWA-223. Renamed read only session caching object to cache.*, and skip those values for caching. (Eric Yang)
 
     CHUKWA-239. Demux settings now work out of the box. (Ari Rabkin)
 
