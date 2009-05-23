@@ -2,13 +2,25 @@ Chukwa Change Log
 
 Trunk (unreleased changes)
 
-Release 0.1.2 - 2009-04-28
+  NEW FEATURES
+
+    CHUKWA-210. Add new job conf metrics as database columns. (Cheng Zhang via Eric Yang)
+
+    CHUKWA-91.  Additional test case for acks. (asrabkin)
+
+  IMPROVEMENTS
+
+    CHUKWA-82.  Added min,max,average to HICC Charting widget. (Terence Kwan via Eric Yang)
+
+    CHUKWA-219. Improved usability of host selector, and updated caching for host list. (Eric Yang)
+
+Release 0.1.2 - 2009-05-14
 
   INCOMPATIBLE CHANGES
 
   NEW FEATURES
 
-    CHUKWA-91.  Additional test case for acks. (asrabkin)
+    CHUKWA-236. Added migration script for moving database schema for Chukwa 0.1.1 to Chukwa 0.1.2. (Eric Yang)
 
     CHUKWA-78.  Added down sample SQL aggregation for job data, task data and utilization data. (Eric Yang)
 
@@ -39,10 +51,6 @@ Release 0.1.2 - 2009-04-28
   IMPROVEMENTS
 
     CHUKWA-226. Changed HDFS usage collection frequency from 10 minutes to 60 minutes. (Cheng Zhang via Eric Yang)
-
-    CHUKWA-82.  Added min,max,average to HICC Charting widget. (Terence Kwan via Eric Yang)
-
-    CHUKWA-219. Improved usability of host selector, and updated caching for host list. (Eric Yang)
 
     CHUKWA-104. Remove permission setting code for Log4JMetricsContext and ChukwaDailyRollingFileAppender.  (Jerome Boulon via Eric Yang)
 
@@ -122,8 +130,26 @@ Release 0.1.2 - 2009-04-28
   OPTIMIZATIONS
 
   BUG FIXES
+
+    CHUKWA-257. fixed right arrow image for date picker. (Eric Yang)
+
+    CHUKWA-251. Added per widget Time range input. (Terence Kwan via Eric Yang)
  
     CHUKWA-239. Demux settings now work out of the box. (Ari Rabkin)
+
+    CHUKWA-250. Updated hadoop jar reference in chukwa config. (Cheng Zhang via Eric Yang)
+
+    CHUKWA-211. Manage symlink correctly for RPM upgrade and uninstall. (Eric Yang)
+
+    CHUKWA-245. Includes ChukwaJobTrackerInstrumentation class as part of the input tools compilation. (Eric Yang)
+
+    CHUKWA-234. Improved handling of null session for XssFilter. (Eric Yang)
+
+    CHUKWA-232. Fixed classpath for chukwa core jar file. (Eric Yang)
+
+    CHUKWA-215. Corrected postProcess.sh environment setup. (Jerome Boulon via Eric Yang)
+
+    CHUKWA-223. Renamed read only session caching object to cache.*, and skip those values for caching. (Eric Yang)
 
     CHUKWA-238.  Resolve race condition in archiving. (Ari Rabkin)
 
