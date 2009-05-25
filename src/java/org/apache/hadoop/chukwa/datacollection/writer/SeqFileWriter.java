@@ -238,7 +238,6 @@ public class SeqFileWriter implements ChukwaWriter {
     log.debug("finished rotate()");
   }
 
-  // TODO merge the 2 add functions
   @Override
   public void add(List<Chunk> chunks) throws WriterException {
     if (chunks != null) {
@@ -300,64 +299,6 @@ public class SeqFileWriter implements ChukwaWriter {
       }
     }
 
-  }
-
-  public void add(Chunk chunk) throws WriterException {
-
-    if (chunk != null) {
-      try {
-        ChukwaArchiveKey archiveKey = new ChukwaArchiveKey();
-
-        // FIXME compute this once an hour
-        synchronized (calendar) {
-          calendar.setTimeInMillis(System.currentTimeMillis());
-          calendar.set(Calendar.MINUTE, 0);
-          calendar.set(Calendar.SECOND, 0);
-          calendar.set(Calendar.MILLISECOND, 0);
-
-          archiveKey.setTimePartition(calendar.getTimeInMillis());
-        }
-
-        archiveKey.setDataType(chunk.getDataType());
-        archiveKey.setStreamName(chunk.getTags() + "/" + chunk.getSource()
-            + "/" + chunk.getStreamName());
-        archiveKey.setSeqId(chunk.getSeqID());
-
-        ClientAck localClientAck = null;
-        synchronized (lock) {
-          localClientAck = SeqFileWriter.clientAck;
-          log.info("[" + Thread.currentThread().getName()
-              + "] Client >>>>>>>>>>>> Current Ack object ===>>>>"
-              + localClientAck.toString());
-          seqFileWriter.append(archiveKey, chunk);
-
-          // compute size for stats
-          dataSize += chunk.getData().length;
-        }
-        localClientAck.wait4Ack();
-
-        if (localClientAck.getStatus() != ClientAck.OK) {
-          log
-              .warn("Exception after notyfyAll on the lock - Thread:"
-                  + Thread.currentThread().getName(), localClientAck
-                  .getException());
-          throw new WriterException(localClientAck.getException());
-        } else {
-          // sucess
-          writeChunkRetries = initWriteChunkRetries;
-        }
-      } catch (IOException e) {
-        writeChunkRetries--;
-        log.error("Could not save the chunk. ", e);
-
-        if (writeChunkRetries < 0) {
-          log
-              .fatal("Too many IOException when trying to write a chunk, Collector is going to exit!");
-          DaemonWatcher.bailout(-1);
-        }
-        throw new WriterException(e);
-      }
-    }
   }
 
   public void close() {
