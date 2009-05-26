@@ -935,6 +935,10 @@
 
 		<copy file="${basedir}/conf/chukwa-collector-conf.xml.template" tofile="${build.dir}/conf/chukwa-collector-conf.xml">
 			<filterchain>
+		
+			    <replacetokens>
+					<token key="TODO-COLLECTORS-LOCAL-OUTPUT-DIR" value="${TODO-COLLECTORS-LOCAL-OUTPUT-DIR}" />
+				</replacetokens>
 				<replacetokens>
 					<token key="TODO-COLLECTORS-NAMENODE" value="${TODO-COLLECTORS-NAMENODE}" />
 				</replacetokens>

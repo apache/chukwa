@@ -33,6 +33,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.writer.*;
+import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.log4j.Logger;
 
 public class ServletCollector extends HttpServlet {
@@ -101,11 +102,14 @@ public class ServletCollector extends HttpServlet {
 
     // We default to here if the pipeline construction failed or didn't happen.
     try {
-      if (writer == null)
-        writer = new SeqFileWriter();// default to SeqFileWriter
+      if (writer == null) {
+        writer =  new SeqFileWriter();
+      }
+      
       writer.init(conf);
-    } catch (WriterException e) {
-      throw new ServletException("Problem init-ing servlet", e);
+    } catch (Throwable e) {
+      log.warn("Exception during Servel init",e);
+      DaemonWatcher.bailout(-1);
     }
   }
 
@@ -133,17 +137,14 @@ public class ServletCollector extends HttpServlet {
       StringBuilder sb = new StringBuilder();
 
       for (int i = 0; i < numEvents; i++) {
-        // TODO: pass new data to all registered stream handler
-        // methods for this chunk's stream
-        // TODO: should really have some dynamic assignment of events to writers
-
         logEvent = ChunkImpl.read(di);
+        events.add(logEvent);
+
         sb.append("ok:");
         sb.append(logEvent.getData().length);
         sb.append(" bytes ending at offset ");
         sb.append(logEvent.getSeqID() - 1).append("\n");
 
-        events.add(logEvent);
 
         if (FANCY_DIAGNOSTICS) {
           diagnosticPage.sawChunk(logEvent, i);

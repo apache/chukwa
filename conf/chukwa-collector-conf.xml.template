@@ -5,6 +5,24 @@
 
 <configuration>
 
+
+
+<!-- LocalWriter parameters
+  <property>
+    <name>chukwaCollector.localOutputDir</name>
+    <value>@TODO-COLLECTORS-LOCAL-OUTPUT-DIR@</value>
+    <description>Chukwa local data sink directory, see LocalWriter.java</description>
+  </property>
+
+  <property>
+    <name>chukwaCollector.writerClass</name>
+    <value>org.apache.hadoop.chukwa.datacollection.writer.localfs.LocalWriter</value>
+    <description>Local chukwa writer, see LocalWriter.java</description>
+  </property>
+-->
+
+
+
   <property>
     <name>writer.hdfs.filesystem</name>
     <value>@TODO-COLLECTORS-NAMENODE@</value>

@@ -87,7 +87,7 @@ public class CollectorStub {
       Context root = new Context(jettyServer, "/", Context.SESSIONS);
       root.addServlet(new ServletHolder(new ServletCollector(conf)), "/*");
       jettyServer.start();
-      jettyServer.setStopAtShutdown(false);
+      jettyServer.setStopAtShutdown(true);
 
       System.out.println("started http collector on port number " + portNum);
 

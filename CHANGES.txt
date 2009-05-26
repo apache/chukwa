@@ -10,6 +10,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-30.  Remove HDFS flush and connection holding in Collector. (Jerome Boulon via asrabkin)
+
     CHUKWA-142. Remove add(Chunk) from SeqFileWriter.  (Jerome Boulon via asrabkin)
 
     CHUKWA-82.  Added min,max,average to HICC Charting widget. (Terence Kwan via Eric Yang)
