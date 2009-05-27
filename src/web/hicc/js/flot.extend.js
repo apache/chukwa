@@ -246,6 +246,7 @@ function setIframeHeight(ifrm, height) {
  * refresh the chart widget.
  */
 function refresh(url, parameters) {
+  bound=null;
   if(zoom) {
     wholePeriod();
     zoom=false;
