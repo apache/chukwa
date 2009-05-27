@@ -210,7 +210,7 @@ public class Chart {
       xAxisOptions.append("\",mode: \"time\"");
     } else {
       xAxisOptions
-          .append("tickFormatter: function (val, axis) { return xLabels[Math.round(val)]; }, ticks: 0");
+          .append("tickFormatter: function (val, axis) { if(val!=0) { return xLabels[Math.round(val)]; } else { return \" \"; }; }, ticks: 5");
     }
     if (request != null && xf.getParameter("format") == null) {
       output

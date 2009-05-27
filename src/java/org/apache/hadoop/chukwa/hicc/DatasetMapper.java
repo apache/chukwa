@@ -62,9 +62,11 @@ public class DatasetMapper {
     try {
       conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc);
       stmt = conn.prepareStatement(query);
-      for(int i=0;i<parameters.size();i++) {
-        int index = i+1;
-        stmt.setObject(index,parameters.get(i));
+      if(query.indexOf("?")!=-1) {
+        for(int i=0;i<parameters.size();i++) {
+          int index = i+1;
+          stmt.setObject(index,parameters.get(i));
+        }
       }
       // rs = stmt.executeQuery(query);
       if (stmt.execute()) {
