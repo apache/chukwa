@@ -38,6 +38,8 @@ Release 0.1.2 - 2009-05-14
 
   IMPROVEMENTS
 
+    CHUKWA-258. Better logging of SQL errors. (asrabkin)
+
     CHUKWA-226. Changed HDFS usage collection frequency from 10 minutes to 60 minutes. (Cheng Zhang via Eric Yang)
 
     CHUKWA-219. Improved usability of host selector, and updated caching for host list. (Eric Yang)

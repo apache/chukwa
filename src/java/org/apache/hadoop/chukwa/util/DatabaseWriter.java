@@ -112,6 +112,8 @@ public class DatabaseWriter {
       rs = stmt.executeQuery(query);
     } catch (SQLException ex) {
       // handle any errors
+      //only log at debug level because caller will still see exception
+      //only log at debug level because caller will still see exception
       log.debug(ex, ex);
       log.debug("SQL Statement:" + query);
       log.debug("SQLException: " + ex.getMessage());

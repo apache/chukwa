@@ -119,7 +119,7 @@ public class Consolidator extends Thread {
         log.debug("Query: " + query);
         rs = db.query(query);
         if (rs == null) {
-          throw new SQLException("Table is undefined.");
+          throw new SQLException("Table "+ sumTable + " is undefined.");
         }
         ResultSetMetaData rmeta = rs.getMetaData();
         boolean empty = true;
