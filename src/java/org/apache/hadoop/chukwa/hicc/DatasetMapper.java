@@ -49,6 +49,7 @@ public class DatasetMapper {
       // broken Java implementations
       org.apache.hadoop.chukwa.util.DriverManagerUtil.loadDriver().newInstance();
     } catch (Exception ex) {
+      log.error("failed to load driver", ex);
       // handle the error
     }
     Connection conn = null;
@@ -166,7 +167,7 @@ public class DatasetMapper {
       // Now do something with the ResultSet ....
     } catch (SQLException ex) {
       // handle any errors
-      log.error("SQLException: " + ex.getMessage());
+      log.error("SQLException: " + ex.getMessage() + " on query: " + query);
       log.error("SQLState: " + ex.getSQLState());
       log.error("VendorError: " + ex.getErrorCode());
     } catch (Exception ex) {

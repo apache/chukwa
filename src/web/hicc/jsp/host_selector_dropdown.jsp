@@ -63,6 +63,7 @@
     Connection conn = null;
     Statement stmt = null;
     ResultSet rs = null;
+    String query = "";
     try {
         HashMap<String, String> hosts = new HashMap<String, String>();
         try {
@@ -74,7 +75,6 @@
     }
            conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc);
            stmt = conn.createStatement();
-           String query = "";
            String jobId = (String)session.getAttribute("JobID");
            if(jobId!=null && !jobId.equals("null") && !jobId.equals("")) {
                query = "select DISTINCT Machine from HodMachine where HodID='"+jobId+"' order by Machine;";
@@ -124,9 +124,10 @@
            // Now do something with the ResultSet ....
        } catch (SQLException ex) {
            // handle any errors
-           out.println("SQLException: " + ex.getMessage());
-           out.println("SQLState: " + ex.getSQLState());
-           out.println("VendorError: " + ex.getErrorCode());
+           // FIXME: should we use Log4j here?
+           System.out.println("SQLException on query " + query +" " + ex.getMessage());
+           System.out.println("SQLState: " + ex.getSQLState());
+           System.out.println("VendorError: " + ex.getErrorCode());
        } finally {
            // it is a good idea to release
            // resources in a finally{} block

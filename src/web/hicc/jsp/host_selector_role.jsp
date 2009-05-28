@@ -62,6 +62,7 @@
          }
          roles.put(type,"checked");
        } catch(SQLException ex) {
+       	 System.out.println("SQLException "+ ex + " on query " + query);
          // Ignore if there is no data for the cluster.
        } finally {
          db.close();

@@ -10,6 +10,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-258. More detailed logging of SQL errors. (asrabkin)
+
     CHUKWA-30.  Remove HDFS flush and connection holding in Collector. (Jerome Boulon via asrabkin)
 
     CHUKWA-142. Remove add(Chunk) from SeqFileWriter.  (Jerome Boulon via asrabkin)
