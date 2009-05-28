@@ -20,6 +20,10 @@ Trunk (unreleased changes)
 
     CHUKWA-219. Improved usability of host selector, and updated caching for host list. (Eric Yang)
 
+  BUG FIXES
+
+    CHUKWA-261. Added X axis label for non Time Series graphs. (Eric Yang)
+
 Release 0.1.2 - 2009-05-14
 
   INCOMPATIBLE CHANGES
