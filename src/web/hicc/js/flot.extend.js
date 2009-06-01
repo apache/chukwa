@@ -252,13 +252,21 @@ function refresh(url, parameters) {
     zoom=false;
   } else {
     if(parameters.indexOf("render=stack")>0) {
-      throw "force iframe refresh";
+      return false;
+    }
+    if(parameters.indexOf("_force_refresh")>0) {
+      return false;
     }
     var dataURL = url+"?"+parameters;
     $.get(dataURL,{format: 'json'}, function(data){
+      try {
         eval(data);
         wholePeriod();
         document.getElementById('placeholderTitle').innerHTML=chartTitle;
-      });
+      } catch(err) {
+        return false;
+      }
+    });
   }
+  return true;
 }

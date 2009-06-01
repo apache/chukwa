@@ -547,7 +547,7 @@ portalWidget.prototype = {
 	content+='<tr><td>'+'Refresh (min)'+':<\/td><td>';
 	content+='<input type="text" id="'+this.pageid+'_'+this.boxIndex + '_refreshrate" value="' + this.block_obj.refresh + '" size="20" maxlength="255"\/><\/td><\/tr>'
 
-      	content+='<tr><td colspan="2"><input class="formButton" type="button" onclick="saveParameters(\'' + this.pageid+'_'+this.boxIndex + '\');saveView();" value="'+'Save'+'">&nbsp;<input class="formButton" type="button" onclick="resetParameters(\'' + this.pageid+'_'+this.boxIndex + '\');" value="'+'Reset'+'"><\/td><\/tr><\/table><\/form>';
+      	content+='<tr><td colspan="2"><input class="formButton" type="button" onclick="saveParameters(\'' + this.pageid+'_'+this.boxIndex + '\');" value="'+'Apply'+'">&nbsp;<input class="formButton" type="button" onclick="resetParameters(\'' + this.pageid+'_'+this.boxIndex + '\');" value="'+'Reset'+'">&nbsp;<input class="formButton" type="button" onclick="closeEditBox(\'' + this.pageid+'_'+this.boxIndex + '\');" value="'+'Close'+'"><\/td><\/tr><\/table><\/form>';
 	content+='<\/td><\/tr><\/table>';
 	content+='<br/>';
 
@@ -592,6 +592,9 @@ portalWidget.prototype = {
 	this.view.setModified(1);
 	this.reloadBoxData();
 
+    },
+
+    closeEditBox: function() {
 	// close the edit box
    	var editBox= $('dragableBoxEdit' + this.pageid+"_"+this.boxIndex);
       	editBox.style.display='none';
@@ -898,19 +901,31 @@ portalWidget.prototype = {
         parameters=this.getParametersString()+"&_s="+(d.getTime());
         if(document.getElementById('iframe'+this.pageid+"_"+this.boxIndex)) {
             var d = document.getElementById('iframe'+this.pageid+"_"+this.boxIndex);
+            var new_url=url.replace(/iframe\//,"");
+            var refresh_check = false;
             try {
-                var new_url=url.replace(/iframe\//,"");
-                d.contentWindow.refresh(new_url, parameters);
-       	        var now=new Date();
+                refresh_check = d.contentWindow.refresh(new_url, parameters);
+            } catch(err) {
+                refresh_check = false;
+            }
+            if(refresh_check) {
+ 	        var now=new Date();
                 $msg="<font style='font-size:9px;'>Updated: "+now.formatDate("H:i:s")+"&nbsp;&nbsp;</font>";
        	        $('dragableBoxStatusBar'+this.pageid+"_"+this.boxIndex).innerHTML=$msg;
                 if($('dragableBoxRefreshSource'+this.pageid+"_"+this.boxIndex)) {
                     $('dragableBoxRefreshSource'+this.pageid+"_"+this.boxIndex).setAttribute('alt','Refresh Widget. '+$msg);
                     showHeader(this.pageid+"_"+this.boxIndex, 'hidden');
                 }
-                return false;
-            } catch(err) {
+            } else {
+	        var myAjax = new Ajax.Request(
+         	    url,
+         	    { method: 'get', 
+		      parameters: parameters,
+		      onSuccess: function(request) { loadContentComplete(request); }
+		    }		
+      		  );   
             }
+            return false;
         } 
 	var myAjax = new Ajax.Request(
          	url,
@@ -1232,6 +1247,10 @@ function saveParameters(id) {
 	_currentView.pages[idsplit[0]].dragableBoxesArray[idsplit[1]].saveParameters();
 }
 
+function closeEditBox(id) {
+   var idsplit=id.split("_");
+	_currentView.pages[idsplit[0]].dragableBoxesArray[idsplit[1]].closeEditBox();
+}
 Array.prototype.exists = function (x) {
     for (var i = 0; i < this.length; i++) {
         if (this[i] == x) return true;

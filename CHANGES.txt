@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-271. Added SQL client to HICC for SQL data exploration. (Eric Yang)
+
     CHUKWA-210. Add new job conf metrics as database columns. (Cheng Zhang via Eric Yang)
 
     CHUKWA-91.  Additional test case for acks. (asrabkin)
