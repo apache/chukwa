@@ -20,8 +20,10 @@ package org.apache.hadoop.chukwa.datacollection.writer;
 
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
@@ -46,6 +48,8 @@ public class SeqFileWriter implements ChukwaWriter {
   public static final boolean ENABLE_ROTATION = true;
 
   static final int STAT_INTERVAL_SECONDS = 30;
+  static String localHostAddr = null;
+  
   static final Object lock = new Object();
 
   static Logger log = Logger.getLogger(SeqFileWriter.class);
@@ -76,9 +80,17 @@ public class SeqFileWriter implements ChukwaWriter {
   private int writeChunkRetries = initWriteChunkRetries;
   private boolean chunksWrittenThisRotate = false;
 
+  static {
+    try {
+      localHostAddr = "_" + InetAddress.getLocalHost().getHostName() + "_";
+    } catch (UnknownHostException e) {
+      localHostAddr = "-NA-";
+    }
+  }
+  
   public SeqFileWriter() throws WriterException {
   }
-
+  
   public void init(Configuration conf) throws WriterException {
     outputDir = conf.get("chukwaCollector.outputDir", "/chukwa");
 
@@ -190,7 +202,7 @@ public class SeqFileWriter implements ChukwaWriter {
 
     String newName = new java.text.SimpleDateFormat("yyyyddHHmmssSSS")
         .format(calendar.getTime());
-    newName += "_" + new java.rmi.server.UID().toString();
+    newName += localHostAddr + new java.rmi.server.UID().toString();
     newName = newName.replace("-", "");
     newName = newName.replace(":", "");
     newName = newName.replace(".", "");

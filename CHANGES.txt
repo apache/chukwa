@@ -14,6 +14,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-137. Add collector IP to the dataSink fileName. (Jerome Boulon via asrabkin)
+
     CHUKWA-258. More detailed logging of SQL errors. (asrabkin)
 
     CHUKWA-30.  Remove HDFS flush and connection holding in Collector. (Jerome Boulon via asrabkin)
