@@ -237,7 +237,7 @@ public class HourlyChukwaRecordRolling extends Configured implements Tool {
   }
 
   public int run(String[] args) throws Exception {
-    JobConf conf = new JobConf(getConf(), HourlyChukwaRecordRolling.class);
+    JobConf conf = new JobConf(new ChukwaConfiguration(), HourlyChukwaRecordRolling.class);
 
     conf.setJobName("HourlyChukwa-Rolling");
     conf.setInputFormat(SequenceFileInputFormat.class);

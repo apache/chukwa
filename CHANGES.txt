@@ -147,6 +147,8 @@ Release 0.1.2 - 2009-05-14
 
   BUG FIXES
 
+    CHUKWA-249. Use ChukwaConfiguration in Demux. (Jerome Boulon via asrabkin)
+
     CHUKWA-257. fixed right arrow image for date picker. (Eric Yang)
 
     CHUKWA-251. Added per widget Time range input. (Terence Kwan via Eric Yang)

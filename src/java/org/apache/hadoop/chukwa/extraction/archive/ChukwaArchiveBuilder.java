@@ -21,6 +21,7 @@ package org.apache.hadoop.chukwa.extraction.archive;
 
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
+import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -54,8 +55,7 @@ public class ChukwaArchiveBuilder extends Configured implements Tool {
       return printUsage();
     }
 
-    JobConf jobConf = new JobConf(getConf(), ChukwaArchiveBuilder.class);
-    jobConf.addResource(new Path("conf/chukwa-demux-conf.xml"));
+    JobConf jobConf = new JobConf(new ChukwaConfiguration(), ChukwaArchiveBuilder.class);
 
     jobConf.setInputFormat(SequenceFileInputFormat.class);
 

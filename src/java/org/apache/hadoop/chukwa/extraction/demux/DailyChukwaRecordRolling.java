@@ -275,7 +275,7 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
   }
 
   public int run(String[] args) throws Exception {
-    JobConf conf = new JobConf(getConf(), DailyChukwaRecordRolling.class);
+    JobConf conf = new JobConf(new ChukwaConfiguration(), DailyChukwaRecordRolling.class);
 
     conf.setJobName("DailyChukwa-Rolling");
     conf.setInputFormat(SequenceFileInputFormat.class);
