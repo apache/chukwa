@@ -50,21 +50,6 @@ public class ChukwaConfiguration extends Configuration {
 
       log.info("chukwaConf is " + chukwaConf);
 
-      
-      // Hadoop config
-      String hadoopConfDir = System.getenv("HADOOP_CONF_DIR");
-      if (hadoopConfDir != null) {        
-        super.addResource(new Path(hadoopConfDir + "/hadoop-site.xml"));
-        log.debug("added " + hadoopConfDir + "/hadoop-site.xml to ChukwaConfiguration");
-      } else {
-        String hadoopHome = System.getenv("HADOOP_HOME");
-        if (hadoopHome != null) {
-          super.addResource(new Path(hadoopHome + "/conf/hadoop-site.xml"));
-          log.debug("added " + hadoopHome + "/hadoop-site.xml to ChukwaConfiguration");
-        }
-      }
-
-
       super.addResource(new Path(chukwaConf + "/chukwa-agent-conf.xml"));
       log.debug("added chukwa-agent-conf.xml to ChukwaConfiguration");
 
