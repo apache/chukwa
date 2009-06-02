@@ -119,6 +119,8 @@ Release 0.1.2 - 2009-05-14
 
   BUG FIXES
 
+    CHUKWA-249. Use ChukwaConfiguration in Demux. (Jerome Boulon via asrabkin)
+
     CHUKWA-250. Updated hadoop jar reference in chukwa config. (Cheng Zhang via Eric Yang)
 
     CHUKWA-211. Manage symlink correctly for RPM upgrade and uninstall. (Eric Yang)

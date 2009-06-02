@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
+import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.demux.processor.ChukwaOutputCollector;
 import org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MapProcessor;
 import org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MapProcessorFactory;
@@ -145,8 +146,8 @@ public class Demux extends Configured implements Tool {
   }
 
   public int run(String[] args) throws Exception {
-    JobConf conf = new JobConf(getConf(), Demux.class);
-    conf.addResource(new Path("conf/chukwa-demux-conf.xml"));
+    JobConf conf = new JobConf(new ChukwaConfiguration(), Demux.class);
+    
 
     conf.setJobName("Chukwa-Demux_" + day.format(new Date()));
     conf.setInputFormat(SequenceFileInputFormat.class);
