@@ -25,9 +25,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Map;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
@@ -50,6 +52,7 @@ public class AgentControlSocketListener extends Thread {
   protected int portno;
   protected ServerSocket s = null;
   volatile boolean closing = false;
+  static final String VERSION = "0.2.0-dev";
 
   private class ListenThread extends Thread {
     Socket connection;
@@ -101,8 +104,7 @@ public class AgentControlSocketListener extends Thread {
       }
 
       if (words[0].equalsIgnoreCase("help")) {
-        out
-            .println("you're talking to the Chukwa agent.  Commands available: ");
+        out.println("you're talking to the Chukwa agent.  Commands available: ");
         out.println("add [adaptorname] [args] [offset] -- start an adaptor");
         out.println("shutdown [adaptornumber]  -- graceful stop");
         out.println("stop [adaptornumber]  -- abrupt stop");
@@ -167,6 +169,8 @@ public class AgentControlSocketListener extends Thread {
         out.println("stopping agent process.");
         connection.close();
         agent.shutdown(true);
+      } else if (words[0].equals("")) {
+        out.println(getStatusLine());
       } else {
         log.warn("unknown command " + words[0]);
         out.println("unknown command" + words[0]);
@@ -259,5 +263,22 @@ public class AgentControlSocketListener extends Thread {
     } else {
       return portno;
     }
+  }
+  
+  //FIXME: we also do this in ChunkImpl; should really do it only once
+  //and make it visible everywhere?
+  private static String localHostAddr;
+  static {
+    try {
+      localHostAddr = InetAddress.getLocalHost().getHostName();
+    } catch (UnknownHostException e) {
+      localHostAddr = "localhost";
+    }
+  }
+  
+  public String getStatusLine() {
+    int adaptorCount = agent.adaptorCount();
+    
+    return localHostAddr + ": Chukwa Agent running, version " + VERSION + ", with " + adaptorCount + " adaptors";
   }
 }
