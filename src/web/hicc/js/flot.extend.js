@@ -5,56 +5,43 @@ var bound=null;
  * calculcate the min, max, average of the data set
  */
 function getStatis(data) {
-  first=true;
-  min=0;
-  max=0;
-  average=0;
-  sum=0;
-  count=0;
-  last=0;
+  var first=true;
+  var min=0;
+  var max=0;
+  var average=0;
+  var sum=0;
+  var count=0;
+  var last=0;
+  var sum_sqr=0.0;
   for (i=0; i<data.length;i++) {
     x=data[i][0];
     y=data[i][1];
     if (bound!=null) {
-      if ((x >= bound.xmin) && (x <=bound.xmax) &&
-	  (y >= bound.ymin) && (y <=bound.ymax)) {
-	if  (first) {
-	  min=y;
-	  max=y;
-	  first=false;
-	} else {
-	  if (y < min) {
-	    min=y;
-	  }
-	  if (y > max) {
-	    max=y;
-	  }
-	}
-	sum+=y;
-	count+=1;
-	average=sum/count;
-	last=y;
+      if (!((x >= bound.xmin) && (x <=bound.xmax) &&
+	  (y >= bound.ymin) && (y <=bound.ymax))) {
+        continue;
       }
-    } else {
-      if  (first) {
-	min=y;
-	max=y;
-	first=false;
-      } else {
-	if (y < min) {
-	  min=y;
-	}
-	if (y > max) {
-	  max=y;
-	}
-      }
-      sum+=y;
-      count+=1;
-      average=sum/count;
-      last=y;
     }
+    if  (first) {
+      min=y;
+      max=y;
+      first=false;
+    } else {
+      if (y < min) {
+        min=y;
+      }
+      if (y > max) {
+        max=y;
+      }
+    }
+    sum+=y;
+    count+=1;
+    last=y;
+    sum_sqr=sum_sqr+Math.pow(y,2);
   }
-  return {min: min, max: max, average: average, sum: sum, count: count, last: last};
+  average=sum/count;
+  stdev=Math.sqrt(sum_sqr/count-Math.pow(average,2));
+  return {min: min, max: max, average: average, stdev: stdev, sum: sum, count: count, last: last};
 }
 
 /*
@@ -73,7 +60,7 @@ function calculateStatis() {
   dataTable+='<br/>';
   dataTable+='<table class="statisTable small_font">';
   dataTable+='<thead>';
-  dataTable+='<tr><th>Series</th><th>Maximum</th><th>Average</th><th>Minimum</th><th>Last</th></tr>';  
+  dataTable+='<tr><th>Series</th><th>Maximum</th><th>Average</th><th>Minimum</th><th>St. Deviation</th><th>Last</th></tr>';  
   dataTable+='</thead>';
   for (j = 0; j < _series.length; ++j) {
     statis = getStatis(_series[j].data);
@@ -82,6 +69,7 @@ function calculateStatis() {
     dataTable+='<td align="right">'+toFixed(statis.max,2)+'</td>';
     dataTable+='<td align="right">'+toFixed(statis.average,2)+'</td>';
     dataTable+='<td align="right">'+toFixed(statis.min,2)+'</td>';
+    dataTable+='<td align="right">'+toFixed(statis.stdev,2)+'</td>';
     dataTable+='<td align="right">'+toFixed(statis.last,2)+'</td>';
     dataTable+='</tr>';
   }
