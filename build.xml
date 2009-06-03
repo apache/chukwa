@@ -449,6 +449,7 @@
 		<copy todir="${test.build.dir}/classes/org/apache/hadoop/chukwa/inputtools/log4j/">
 			<fileset dir="${basedir}/src/test/org/apache/hadoop/chukwa/inputtools/log4j/">
 				<include name="late-log4j.properties" />
+				<include name="tasklog-log4j.properties" />
 			</fileset>
 		</copy>
 		<copy todir="${test.build.dir}/classes">
@@ -477,6 +478,7 @@
 			<env key="CHUKWA_CONF_DIR" value="${test.build.dir}/conf" />
 			<env key="CHUKWA_DATA_DIR" value="${test.build.dir}/var" />
 			<sysproperty key="test.src.dir" value="${test.src.dir}" />
+			<sysproperty key="test.build.classes" value="${test.build.classes}" />
 			<formatter type="${test.junit.output.format}" />
 			<batchtest todir="${test.build.dir}" unless="testcase">
 				<fileset dir="${test.src.dir}">

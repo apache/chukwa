@@ -23,6 +23,7 @@ import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
+import org.apache.hadoop.chukwa.datacollection.controller.ClientFinalizer;
 import org.apache.hadoop.chukwa.util.RecordConstants;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
@@ -460,33 +461,6 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
     }
   }
 
-  private class ClientFinalizer extends Thread {
-    private ChukwaAgentController chukwaClient = null;
-    private String recordType = null;
-    private String fileName = null;
-
-    public ClientFinalizer(ChukwaAgentController chukwaClient,
-                           String recordType, String fileName) {
-      this.chukwaClient = chukwaClient;
-      this.recordType = recordType;
-      this.fileName = fileName;
-    }
-
-    public synchronized void run() {
-      try {
-        if (chukwaClient != null) {
-          log.debug("ShutdownHook: removing:" + fileName);
-          chukwaClient.removeFile(recordType, fileName);
-        } else {
-          LogLog.warn("chukwaClient is null cannot do any cleanup");
-        }
-      } catch (Throwable e) {
-        LogLog.warn("closing the controller threw an exception:\n" + e);
-      }
-    }
-  }
-
-  
   /**
    * Fix for late-initialisation
    */
@@ -573,8 +547,7 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
                 numRetries, retryInterval);
 
             // Setup a shutdownHook for the controller
-            clientFinalizer = new ClientFinalizer(chukwaClient, recordType,
-                log4jFileName);
+            clientFinalizer = new ClientFinalizer(chukwaClient);
             Runtime.getRuntime().addShutdownHook(clientFinalizer);
 
             if (adaptorID > 0) {

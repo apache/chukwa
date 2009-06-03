@@ -186,6 +186,7 @@ public class ChukwaAgentController {
   }
 
   Map<Long, ChukwaAgentController.Adaptor> runningAdaptors = new HashMap<Long, Adaptor>();
+  Map<Long, ChukwaAgentController.Adaptor> runningInstanceAdaptors = new HashMap<Long, Adaptor>();
   Map<Long, ChukwaAgentController.Adaptor> pausedAdaptors;
   String hostname;
   int portno;
@@ -259,6 +260,7 @@ public class ChukwaAgentController {
 
         if (adaptorID > 0) {
           runningAdaptors.put(adaptorID, adaptor);
+          runningInstanceAdaptors.put(adaptorID, adaptor);
         } else {
           System.err
               .println("Failed to successfully add the adaptor in AgentClient, adaptorID returned by add() was negative.");
@@ -320,6 +322,21 @@ public class ChukwaAgentController {
         ioe.printStackTrace();
       }
       System.out.println("Successfully removed adaptor " + id);
+    }
+  }
+
+  public void removeInstanceAdaptors() {
+    // Remove adaptors created by this instance of chukwa agent controller.
+    // Instead of removing using id, this is removed by using the stream name
+    // and record type.  This prevents the system to shutdown the wrong
+    // adaptor after agent crashes.
+    for (Adaptor a : runningInstanceAdaptors.values()) {
+      try {
+        remove(a.name, a.appType, a.params);
+      } catch (IOException ioe) {
+        System.out.println("Error removing an adaptor in removeInstanceAdaptors()");
+        ioe.printStackTrace();
+      }
     }
   }
 
