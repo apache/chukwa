@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-267. Added TaskLogAppender for collecting Task Tracker Log file. (Eric Yang)
+
     CHUKWA-71. Status/version command for chukwa agent. (asrabkin)
 
     CHUKWA-271. Added SQL client to HICC for SQL data exploration. (Eric Yang)
@@ -13,6 +15,8 @@ Trunk (unreleased changes)
     CHUKWA-91.  Additional test case for acks. (asrabkin)
 
   IMPROVEMENTS
+
+    CHUKWA-274. Improve rate calculation for accumulated values for visualization. (Eric Yang)
 
     CHUKWA-275. Add standard deviation to statics calculation for HICC charts. (Eric Yang)
 
