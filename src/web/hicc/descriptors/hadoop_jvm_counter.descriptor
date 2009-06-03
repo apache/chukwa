@@ -14,13 +14,20 @@
 {"name":"group","type":"string","value":"host","edit":"0"},
 {"name":"group_items","type":"string","value":"hosts","edit":"0"},
 {"name":"period","type":"custom","control":"period_control","value":"","label":"Period"},
-{"name":"metric","type":"select","value":"gc_timemillis","label":"Metric","options":[
+{"name":"metric","type":"select_multiple","value":"gc_timemillis","label":"Metric","options":[
 {"label":"gc_timemillis","value":"gc_timemillis"},
 {"label":"gc_count","value":"gc_count"},
 {"label":"log_error","value":"log_error"},
 {"label":"log_fatal","value":"log_fatal"},
 {"label":"log_info","value":"log_info"},
 {"label":"log_warn","value":"log_warn"}
+]},
+{"name":"match","type":"select_multiple","value":"datanode","label":"Process Type","options":[
+{"label":"datanode","value":"process_name='datanode'"},
+{"label":"jobtracker","value":"process_name='jobtracker'"},
+{"label":"namenode","value":"process_name='namenode'"},
+{"label":"shuffle","value":"process_name='shuffle'"},
+{"label":"tasktracker","value":"process_name='tasktracker'"},
 ]},
 {"name":"width","type":"select","value":"300","label":"Width","options":[
 {"label":"300","value":"300"},

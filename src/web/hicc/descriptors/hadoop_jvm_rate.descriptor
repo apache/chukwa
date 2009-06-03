@@ -9,12 +9,11 @@
 "refresh":"15",
 "parameters":[
 {"name":"table","type":"string","value":"hadoop_jvm","edit":"0"},
-{"name":"normalize_time","type":"string","value":"true","edit":"0"},
 {"name":"group_override","type":"string","value":"concat(host,' ',process_name) as process","edit":"0"},
 {"name":"group","type":"string","value":"host","edit":"0"},
 {"name":"group_items","type":"string","value":"hosts","edit":"0"},
 {"name":"period","type":"custom","control":"period_control","value":"","label":"Period"},
-{"name":"metric","type":"select","value":"threads_blocked","label":"Metric","options":[
+{"name":"metric","type":"select_multiple","value":"threads_blocked","label":"Metric","options":[
 {"label":"mem_heap_committed_m","value":"mem_heap_committed_m"},
 {"label":"mem_heap_used_m","value":"mem_heap_used_m"},
 {"label":"mem_non_heap_committed_m","value":"mem_non_heap_committed_m"},
@@ -25,6 +24,13 @@
 {"label":"threads_terminated","value":"threads_terminated"},
 {"label":"threads_timed_waiting","value":"threads_timed_waiting"},
 {"label":"threads_waiting","value":"threads_waiting"},
+]},
+{"name":"match","type":"select_multiple","value":"datanode","label":"Process Type","options":[
+{"label":"datanode","value":"process_name='datanode'"},
+{"label":"jobtracker","value":"process_name='jobtracker'"},
+{"label":"namenode","value":"process_name='namenode'"},
+{"label":"shuffle","value":"process_name='shuffle'"},
+{"label":"tasktracker","value":"process_name='tasktracker'"},
 ]},
 {"name":"width","type":"select","value":"300","label":"Width","options":[
 {"label":"300","value":"300"},

@@ -60,6 +60,8 @@ public class DatasetMapper {
     labels.clear();
     double max = 0.0;
     int labelsCount = 0;
+    long timeWindowSize=0;
+    long previousTime=0;
     try {
       conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc);
       stmt = conn.prepareStatement(query);
@@ -86,6 +88,14 @@ public class DatasetMapper {
           String label = "";
           if (rmeta.getColumnType(1) == java.sql.Types.TIMESTAMP) {
             long time = rs.getTimestamp(1).getTime();
+            if(time==previousTime) {
+            } else if(timeWindowSize==0) {
+              timeWindowSize=1;
+              previousTime=time;
+            } else {
+              timeWindowSize=(time-previousTime)/60000;
+              previousTime=time;
+            }
             label = "" + time;
           } else {
             label = rs.getString(1);
@@ -108,7 +118,10 @@ public class DatasetMapper {
                 double current = rs.getDouble(j);
                 double tmp = 0L;
                 if (data.size() > 1) {
-                  tmp = current - previousHash.get(item).doubleValue();
+                  tmp = (current - previousHash.get(item).doubleValue())/timeWindowSize;
+                  if(tmp==Double.NEGATIVE_INFINITY || tmp==Double.POSITIVE_INFINITY) {
+                    tmp = Double.NaN;
+                  }
                 } else {
                   tmp = 0;
                 }
@@ -144,7 +157,10 @@ public class DatasetMapper {
               if (calculateSlope) {
                 double tmp = current;
                 if (data.size() > 1) {
-                  tmp = tmp - previousArray[j];
+                  tmp = (tmp - previousArray[j])/timeWindowSize;
+                  if(tmp==Double.NEGATIVE_INFINITY || tmp==Double.POSITIVE_INFINITY) {
+                    tmp = Double.NaN;
+                  }
                 } else {
                   tmp = 0.0;
                 }

@@ -11,7 +11,7 @@
 {"name":"find_slope","type":"string","value":"true","edit":"0"},
 {"name":"table","type":"string","value":"hadoop_mapred","edit":"0"},
 {"name":"period","type":"custom","control":"period_control","value":"","label":"Period"},
-{"name":"metric","type":"select_multiple","value":"heartbeat_avg_time","label":"Metric","options":[
+{"name":"metric","type":"select_multiple","value":"jobs_completed","label":"Metric","options":[
 {"label":"jobs_completed","value":"jobs_completed"},
 {"label":"jobs_submitted","value":"jobs_submitted"},
 {"label":"maps_completed","value":"maps_completed"},

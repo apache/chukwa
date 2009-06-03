@@ -51,7 +51,7 @@
     if(cluster==null) {
          cluster="demo";
     }
-    String match=xf.getParameter("match");
+    String[] match=xf.getParameterValues("match");
     String group = xf.getParameter("group");
     ClusterConfig cc = new ClusterConfig();
     String jdbc = cc.getURL(cluster);
@@ -78,6 +78,50 @@
             }
         }
     }
+    StringBuffer condition=new StringBuffer();
+    if(request.getParameter("group_items")!=null) {
+        if(session.getAttribute(xf.getParameter("group_items"))==null) {
+            session.setAttribute(xf.getParameter("group_items"),"");
+        }
+        int counter = 0;
+        String[] group_items = ((String)session.getAttribute(xf.getParameter("group_items"))).split(",");
+        if(group_items!=null) {
+            StringBuilder matchBuilder = new StringBuilder();
+            for(String item : group_items) {
+                if(counter!=0) {
+                    matchBuilder.append(" or ");
+                } else {
+                    matchBuilder.append("(");
+                }
+                matchBuilder.append(group);
+                matchBuilder.append(" = ?");
+                parms.add(item);
+                counter++;
+            }
+            if(counter!=0) {
+                matchBuilder.append(")");
+                if(condition.toString().intern()!="".intern()) {
+                    condition.append(" and ");
+                }
+                condition.append(matchBuilder.toString());
+            }
+        }
+    }
+    if(match!=null) {
+        if(condition.toString().intern()!="".intern()) {
+            condition.append(" and ");
+        }
+        condition.append("(");
+        boolean first=true;
+        for(String item : match) {
+            if(!first) {
+                condition.append(" or ");
+                first=false;
+            }
+            condition.append(item.replaceAll(","," or ").replaceAll("%27","'").replaceAll(";",""));
+        }
+        condition.append(")");
+    }
     String random = xf.getParameter("_s");
     TimeHandler time = new TimeHandler(request, (String)session.getAttribute("time_zone"));
     startS = time.getStartTimeText();
@@ -102,37 +146,12 @@ No time range specified.  Select a time range through widget preference, or use 
        Connection conn = null;
        Statement stmt = null;
        ResultSet rs = null;
-       if(request.getParameter("group_items")!=null) {
-           if(session.getAttribute(xf.getParameter("group_items"))==null) {
-               session.setAttribute(xf.getParameter("group_items"),"");
-           }
-           int counter = 0;
-           String[] group_items = ((String)session.getAttribute(xf.getParameter("group_items"))).split(",");
-           if(group_items!=null) {
-               StringBuilder matchBuilder = new StringBuilder();
-               for(String item : group_items) {
-                   if(counter!=0) {
-                       matchBuilder.append("or");
-                   } else {
-                       matchBuilder.append("(");
-                   }
-                   matchBuilder.append(group);
-                   matchBuilder.append(" = ? ");
-                   parms.add(item);
-                   counter++;
-               }
-               if(counter!=0) {
-                   matchBuilder.append(")");
-                   match = matchBuilder.toString();
-               }
-           }
-       }
        String table = (String)xf.getParameter("table");
        if(table==null) {
            table = "cluster_system_metrics";
        }
        if(request.getParameter("group_override")!=null) {
-           group=xf.getParameter("group_override");
+           group=(xf.getParameter("group_override").replaceAll("%27","'").replaceAll(";",""));
        }
        String[] tables = null;
        DatabaseConfig dbc = new DatabaseConfig();
@@ -153,10 +172,8 @@ No time range specified.  Select a time range through widget preference, or use 
            q.append(" from ");
            q.append(tmpTable);
            q.append(" where ");
-           if(match!=null) {
-             q.append(match);
-           }
-           if(match!=null && match.intern()!="".intern()) {
+           if(condition.toString().intern()!="".intern()) {
+             q.append(condition.toString());
              q.append(" and ");
            }
            q.append(dateclause);

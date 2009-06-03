@@ -9,7 +9,6 @@
 "refresh":"15",
 "parameters":[
 {"name":"table","type":"string","value":"dfs_datanode","edit":"0"},
-{"name":"normalize_time","type":"string","value":"true","edit":"0"},
 {"name":"find_slope","type":"string","value":"true","edit":"0"},
 {"name":"group_items","type":"string","value":"hosts","edit":"0"},
 {"name":"group","type":"string","value":"host","edit":"0"},

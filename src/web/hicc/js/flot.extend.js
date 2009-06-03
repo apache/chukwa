@@ -14,8 +14,12 @@ function getStatis(data) {
   var last=0;
   var sum_sqr=0.0;
   for (i=0; i<data.length;i++) {
-    x=data[i][0];
-    y=data[i][1];
+    try {
+      x=data[i][0];
+      y=data[i][1];
+    } catch(nullException) {
+      continue;
+    }
     if (bound!=null) {
       if (!((x >= bound.xmin) && (x <=bound.xmax) &&
 	  (y >= bound.ymin) && (y <=bound.ymax))) {
