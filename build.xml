@@ -935,6 +935,22 @@
 			</filterchain>
 		</copy>
 
+		<copy file="${basedir}/conf/chukwa-demux-conf.xml.template" tofile="${build.dir}/conf/chukwa-demux-conf.xml">
+			<filterchain>
+		
+			    <replacetokens>
+					<token key="TODO-DEMUX-IO-SORT-MB" value="${TODO-DEMUX-IO-SORT-MB}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO-DEMUX-FS-INMEMORY-SIZE_MB" value="${TODO-DEMUX-FS-INMEMORY-SIZE_MB}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO-DEMUX-IO-SORT-FACTOR" value="${TODO-DEMUX-IO-SORT-FACTOR}" />
+				</replacetokens>
+
+			</filterchain>
+		</copy>
+		
 		<copy file="${basedir}/conf/chukwa-env.sh.template" tofile="${build.dir}/conf/chukwa-env.sh">
 			<filterchain>
 				<replacetokens>
