@@ -87,26 +87,7 @@
 			</fileset>
 			<path refid="contrib-classpath" />
 		</path>
-		<path id="dp-classpath">
-			<fileset dir="${lib.dir}">
-				<include name="**/*.jar" />
-				<exclude name="**/excluded/" />
-			</fileset>
-			<pathelement location="${build.classes}" />
-			<fileset dir="${hadoop.default.jars.dir}">
-				<!-- ASR -->
-				<include name="**/*.jar" />
-				<exclude name="**/*core*.jar" />
-			</fileset>
-			<fileset dir="${hadoop.default.jars.dir}">
-				<!-- ASR -->
-				<include name="**/hadoop-0.18.0-core.jar" />
-			</fileset>
-			<fileset dir="${common.ivy.lib.dir}">
-				<include name="**/*.jar" />
-			</fileset>
-			<pathelement location="${conf.dir}" />
-		</path>
+
 		<path id="testClasspath">
 			<pathelement location="${build.classes}" />
 			<pathelement location="${test.build.classes}" />
@@ -416,7 +397,7 @@
 	<target name="compile-extraction" depends="init,compile-common" description="Compilation Data Processing Framework">
 		<javac srcdir="src/java" destdir="${build.classes}" debug="${javac.debug}">
 			<compilerarg value="-Xlint" />
-			<classpath refid="dp-classpath" />
+			<classpath refid="classpath" />
 			<exclude name="org/apache/hadoop/chukwa/*" />
 			<include name="org/apache/hadoop/chukwa/database/**" />
 			<include name="org/apache/hadoop/chukwa/extraction/**" />
