@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-279. Added swim lane visualization for Hadoop job progress. (Jiaqi Tan via Eric Yang)
+
     CHUKWA-267. Added TaskLogAppender for collecting Task Tracker Log file. (Eric Yang)
 
     CHUKWA-71. Status/version command for chukwa agent. (asrabkin)

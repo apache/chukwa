@@ -1964,5 +1964,33 @@
 <property><name>metric.jobconfdata.job_conf.mapred.reducer.class</name><value>mr_reducer_cls</value></property>
 <property><name>metric.jobconfdata.job_conf.mapred.mapper.class</name><value>mr_mapper_cls</value></property>
 
+<!-- SALSA additions -->
+
+<property><name>report.db.name.mapreduce_fsm</name><value>mapreduce_fsm</value></property>
+<property><name>report.db.primary.key.mapreduce_fsm</name><value>unique_id</value></property>
+<property><name>consolidator.table.mapreduce_fsm</name><value>5,30,180,720</value></property>
+
+<property><name>metric.mapreduce_fsm.job_id</name><value>job_id</value></property>
+<property><name>metric.mapreduce_fsm.state_uniq_id</name><value>unique_id</value></property>
+<property><name>metric.mapreduce_fsm.task_id</name><value>friendly_id</value></property>
+<property><name>metric.mapreduce_fsm.state_name</name><value>state_name</value></property>
+<property><name>metric.mapreduce_fsm.host</name><value>hostname</value></property>
+<property><name>metric.mapreduce_fsm.host_other</name><value>other_host</value> </property>
+<property><name>metric.mapreduce_fsm.time_start</name><value>start_time</value></property>
+<property><name>metric.mapreduce_fsm.time_end</name><value>finish_time</value></property>
+<property><name>metric.mapreduce_fsm.time_start_millis</name><value>start_time_millis</value></property>
+<property><name>metric.mapreduce_fsm.time_end_millis</name><value>finish_time_millis</value></property>
+<property><name>metric.mapreduce_fsm.state_string</name><value>status</value></property>
+<property><name>metric.mapreduce_fsm.counter_file_bytes_read</name><value>file_bytes_read</value></property>
+<property><name>metric.mapreduce_fsm.counter_file_bytes_written</name><value>file_bytes_written</value></property>
+<property><name>metric.mapreduce_fsm.counter_combine_input_records</name><value>combine_input_records</value></property>
+<property><name>metric.mapreduce_fsm.counter_combine_output_records</name><value>combine_output_records</value></property>
+<property><name>metric.mapreduce_fsm.counter_input_records</name><value>input_records</value></property>
+<property><name>metric.mapreduce_fsm.counter_output_records</name><value>output_records</value></property>
+<property><name>metric.mapreduce_fsm.counter_input_bytes</name><value>input_bytes</value></property>
+<property><name>metric.mapreduce_fsm.counter_output_bytes</name><value>output_bytes</value></property>
+<property><name>metric.mapreduce_fsm.counter_input_groups</name><value>input_groups</value></property>
+<property><name>metric.mapreduce_fsm.counter_spilled_records</name><value>spilled_records</value></property>	
+
 </configuration>
 

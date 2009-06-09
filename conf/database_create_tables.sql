@@ -22,6 +22,7 @@ drop table if exists hod_job_digest_template;
 drop table if exists user_util_template;
 drop table if exists hdfs_usage_template;
 drop table if exists QueueInfo;
+drop table if exists mapreduce_fsm_template;
 
 create table if not exists node_activity_template (
     timestamp  timestamp default CURRENT_TIMESTAMP,
@@ -707,3 +708,28 @@ create table if not exists mr_job_conf_template (
     index (ts)
 ) ENGINE=InnoDB;
 
+create table if not exists mapreduce_fsm_template (
+    job_id VARCHAR(80),
+    unique_id VARCHAR(80),
+    friendly_id VARCHAR(80),
+    state_name VARCHAR(80),
+    hostname VARCHAR(80),
+    other_host VARCHAR(80),
+    start_time timestamp default 0,
+    finish_time timestamp default 0,
+    start_time_millis bigint default 0,
+    finish_time_millis bigint default 0,
+    status varchar(10) default 0,
+    file_bytes_read bigint default 0,
+    file_bytes_written bigint default 0,
+    combine_input_records bigint default 0,
+    combine_output_records bigint default 0,
+    input_records bigint default 0,
+    output_records bigint default 0,
+    input_bytes bigint default 0,
+    output_bytes bigint default 0,
+    input_groups bigint default 0,
+    spilled_records bigint default 0,
+    primary key(unique_id),
+    index(start_time, finish_time, job_id)
+) ENGINE=InnoDB;

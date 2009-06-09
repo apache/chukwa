@@ -1,0 +1,21 @@
+{
+"id":"swimlanes_viewer",
+"title":"Swimlanes",
+"version":"0.1",
+"categories":"Hadoop,Status",
+"module":"iframe/jsp/swimlanes_viewer.jsp",
+"description":"Display Time sorted events",
+"screendump":"\/images\/start.png",
+"refresh":"15",
+"parameters":[
+{"name":"height","type":"select","value":"450","label":"Height","options":[
+{"label":"300","value":"300"},
+{"label":"450","value":"400"},
+{"label":"600","value":"500"},
+{"label":"800","value":"800"},
+{"label":"1000","value":"1000"},
+{"label":"1200","value":"1200"}
+]}
+]
+}
+
