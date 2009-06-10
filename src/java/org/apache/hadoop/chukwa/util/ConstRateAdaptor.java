@@ -24,6 +24,7 @@ import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.*;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
+import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 
 public class ConstRateAdaptor extends Thread implements Adaptor {
 
@@ -43,7 +44,7 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
   }
 
   public void start(long adaptor, String type, String bytesPerSecParam,
-      long offset, ChunkReceiver dest) throws AdaptorException {
+      long offset, ChunkReceiver dest, AdaptorManager c) throws AdaptorException {
     try {
       bytesPerSec = Integer.parseInt(bytesPerSecParam.trim());
     } catch (NumberFormatException e) {

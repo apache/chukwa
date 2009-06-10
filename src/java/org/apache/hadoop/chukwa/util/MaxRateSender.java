@@ -22,6 +22,7 @@ package org.apache.hadoop.chukwa.util;
 import java.util.Random;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.*;
+import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
 
@@ -41,7 +42,7 @@ public class MaxRateSender extends Thread implements Adaptor {
   }
 
   public void start(long adaptor, String type, String status, long offset,
-      ChunkReceiver dest) throws AdaptorException {
+      ChunkReceiver dest, AdaptorManager c) throws AdaptorException {
     this.setName("MaxRateSender adaptor");
     this.adaptorID = adaptor;
     this.offset = offset;
