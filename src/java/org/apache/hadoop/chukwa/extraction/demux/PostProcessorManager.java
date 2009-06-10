@@ -49,7 +49,7 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
   
   final private static PathFilter POST_PROCESS_DEMUX_DIR_FILTER = new PathFilter() {
     public boolean accept(Path file) {
-      return file.getName().startsWith("demuxOutputDir");
+      return ( file.getName().startsWith("demuxOutputDir") || file.getName().startsWith("pigOutputDir"));
     }     
   };
 

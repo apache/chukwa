@@ -23,7 +23,8 @@
 	<property name="chukwaVersion" value="0.1.2" />
 	<property name="chukwaRelease" value="alpha" />
 	<property name="final.name" value="${name}-${chukwaVersion}" />
-
+	<property name="contrib.dir" value="${basedir}/contrib"/>
+	
 	<import file="../build-contrib.xml" optional="true" />
 	<available file="../build-contrib.xml" property="present" />
 
@@ -354,13 +355,13 @@
 
 	</target>
 
-	<target name="main" depends="init, compile, compress" description="Main target">
+	<target name="main" depends="init, compile, compile-contrib,compress" description="Main target">
 		<echo>
             Building the .jar files.
         </echo>
 	</target>
 
-	<target name="compile" depends="compile-common,compile-inputtools,compile-datacollection,compile-extraction,compile-hicc" description="Compilation target">
+	<target name="compile" depends="compile-common,compile-inputtools,compile-datacollection,compile-extraction,compile-hicc,compile-contrib" description="Compilation target">
 	</target>
 
 	<target name="compile-common" depends="init" description="Compilation target">
@@ -449,6 +450,14 @@
 		</copy>
 	</target>
 
+	  <target name="compile-contrib" depends="compile-common,compile-datacollection,compile-extraction">
+	     <subant target="compile">
+	        <property name="version" value="${version}"/>
+	        <fileset file="${contrib.dir}/build.xml"/>
+	     </subant>  	
+	  </target>
+	
+	
 	<!--printsummary="${test.junit.printsummary}" -->
 
 	<target name="test-chukwa" depends="compile,compile-test" description="Run Chukwa unit tests">
@@ -695,9 +704,15 @@
 		</copy>
 	</target>
 
-	<target name="test" depends="compile,compile-test,test-chukwa" description="Automated Test Framework">
+	<target name="test" depends="compile,compile-test,test-chukwa,test-contrib" description="Automated Test Framework">
 	</target>
 
+	  <target name="test-contrib" depends="chukwa_jar" description="Run contrib unit tests">
+	    <subant target="test">
+	       <property name="version" value="${version}"/>
+	       <fileset file="${contrib.dir}/build.xml"/>
+	    </subant> 
+	  </target>
 	<!-- ================================================================== -->
 	<!-- Documentation                                                      -->
 	<!-- ================================================================== -->
@@ -817,13 +832,24 @@
 	<!-- ================================================================== -->
 	<!-- Clean.  Delete the build files, and their directories              -->
 	<!-- ================================================================== -->
-	<target name="clean" depends="init" description="Clean.  Delete the build files, and their directories">
+	<target name="clean" depends="init,clean-contrib" description="Clean.  Delete the build files, and their directories">
 		<delete dir="${build.dir}" />
 		<delete dir="${build.ivy.lib.dir}/${ant.project.home}" />
 		<delete dir="build" />
 		<delete file="${ivy.jar}" />
 		<delete dir="${docs.src}/build" />
 	</target>
+	
+	<!-- ================================================================== -->
+	  <!-- Clean contrib target. For now, must be called explicitly           -->
+	  <!-- Using subant instead of ant as a workaround for 30569              -->
+	  <!-- ================================================================== -->
+	  <target name="clean-contrib">
+	     <subant target="clean">        
+	        <fileset file="${contrib.dir}/build.xml"/>
+	     </subant>  	
+	  </target>
+	
 	<!-- ====================================================== -->
 	<!-- Macro definitions                                      -->
 	<!-- ====================================================== -->
@@ -1024,6 +1050,10 @@
 			<fileset dir="${opt.dir}" />
 		</copy>
 
+		<copy todir="${build.dir}/${final.name}/contrib/chukwa-pig" failonerror="false">
+			<fileset dir="${basedir}/contrib/chukwa-pig" />
+		</copy>
+		
 		<copy todir="${build.dir}/${final.name}/tools">
 			<fileset dir="${tools.dir}" />
 		</copy>
