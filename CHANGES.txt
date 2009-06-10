@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-20. Added pig support for ChukwaRecords. (Jerome Boulon via Eric Yang)
+
     CHUKWA-279. Added swim lane visualization for Hadoop job progress. (Jiaqi Tan via Eric Yang)
 
     CHUKWA-267. Added TaskLogAppender for collecting Task Tracker Log file. (Eric Yang)
