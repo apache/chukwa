@@ -411,6 +411,7 @@
 			<classpath refid="classpath" />
 			<exclude name="org/apache/hadoop/chukwa/*" />
 			<include name="org/apache/hadoop/chukwa/hicc/**" />
+			<include name="org/apache/hadoop/chukwa/rest/**" />
 		</javac>
 	</target>
 
@@ -647,6 +648,7 @@
 		<copy todir="${build.dir}/hicc/WEB-INF/classes">
 			<fileset dir="${build.classes}">
 				<include name="org/apache/hadoop/chukwa/hicc/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/rest/**/*.class" />
 				<include name="org/apache/hadoop/chukwa/conf/**/*.class" />
 				<include name="org/apache/hadoop/chukwa/database/**/*.class" />
 				<include name="org/apache/hadoop/chukwa/datacollection/**/*.class" />
@@ -657,6 +659,7 @@
 
 			<fileset dir="${basedir}/src/java">
 				<include name="org/apache/hadoop/chukwa/hicc/**/*.java" />
+				<include name="org/apache/hadoop/chukwa/rest/**/*.java" />
 				<include name="org/apache/hadoop/chukwa/conf/**/*.java" />
 				<include name="org/apache/hadoop/chukwa/datacollection/**/*.java" />
 				<include name="org/apache/hadoop/chukwa/extraction/engine/**/*.java" />
@@ -668,7 +671,74 @@
 		<copy todir="${build.dir}/hicc/WEB-INF/lib">
 			<fileset dir="${basedir}/lib">
 				<include name="json.jar" />
+				<include name="json-lib-2.2.3-jdk15.jar" />
 				<include name="jchronic-0.2.3.jar" />
+				<include name="asm-3.1.jar" />
+				<include name="jersey-bundle-1.1.0-ea.jar" />
+				<include name="jsr311-api-1.0.jar" />
+				<include name="html-filter-1.0.jar" />
+			</fileset>
+			<fileset dir="${common.ivy.lib.dir}">
+				<include name="*.jar" />
+				<exclude name="jetty-*.jar" />
+				<exclude name="jsp-api*.jar" />
+				<exclude name="junit-*.jar" />
+			</fileset>
+			<fileset dir="${build.dir}">
+				<include name="${name}-core-${chukwaVersion}.jar" />
+			</fileset>
+			<fileset dir="${build.dir}/${final.name}/hadoopjars">
+				<include name="*.jar" />
+				<exclude name="hadoop-0.2*-core.jar" />
+				<exclude name="jasper-*.jar" />
+				<exclude name="jetty-*.jar" />
+				<exclude name="jsp-api*.jar" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="chukwa" depends="compile, chukwa_jar, package-hadoop, package-standalone" description="Prepare chukwa.war">
+		<mkdir dir="${build.dir}/chukwa" />
+		<mkdir dir="${build.dir}/chukwa/WEB-INF" />
+		<mkdir dir="${build.dir}/chukwa/WEB-INF/classes" />
+		<mkdir dir="${build.dir}/chukwa/WEB-INF/lib" />
+		<mkdir dir="${build.dir}/chukwa/META-INF" />
+		<copy todir="${build.dir}/chukwa">
+			<fileset dir="${basedir}/src/web/hicc">
+				<include name="**" />
+			</fileset>
+		</copy>
+		<copy todir="${build.dir}/chukwa/WEB-INF/classes">
+			<fileset dir="${build.classes}">
+				<include name="org/apache/hadoop/chukwa/hicc/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/rest/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/conf/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/database/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/datacollection/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/extraction/engine/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/inputtools/*.class" />
+				<include name="org/apache/hadoop/chukwa/util/**/*.class" />
+			</fileset>
+
+			<fileset dir="${basedir}/src/java">
+				<include name="org/apache/hadoop/chukwa/hicc/**/*.java" />
+				<include name="org/apache/hadoop/chukwa/rest/**/*.java" />
+				<include name="org/apache/hadoop/chukwa/conf/**/*.java" />
+				<include name="org/apache/hadoop/chukwa/datacollection/**/*.java" />
+				<include name="org/apache/hadoop/chukwa/extraction/engine/**/*.java" />
+				<include name="org/apache/hadoop/chukwa/inputtools/*.java" />
+				<include name="org/apache/hadoop/chukwa/util/**/*.java" />
+			</fileset>
+
+		</copy>
+		<copy todir="${build.dir}/chukwa/WEB-INF/lib">
+			<fileset dir="${basedir}/lib">
+				<include name="json.jar" />
+				<include name="json-lib-2.2.3-jdk15.jar" />
+				<include name="jchronic-0.2.3.jar" />
+				<include name="asm-3.1.jar" />
+				<include name="jersey-bundle-1.1.0-ea.jar" />
+				<include name="jsr311-api-1.0.jar" />
 				<include name="html-filter-1.0.jar" />
 			</fileset>
 			<fileset dir="${common.ivy.lib.dir}">
@@ -695,7 +765,12 @@
 		</jar>
 	</target>
 
-	<target name="compress" depends="compile,collector,collector_jar,hicc_war,tools_jar,agent_jar,chukwa_jar,chukwa-hadoop_jar" description="Compression target">
+	<target name="chukwa_war" depends="compile, chukwa" description="Create chukwa jar file for REST API">
+		<jar jarfile="${build.dir}/chukwa.war" basedir="${build.dir}/chukwa">
+		</jar>
+	</target>
+
+	<target name="compress" depends="compile,collector,collector_jar,hicc_war,chukwa_war,tools_jar,agent_jar,chukwa_jar,chukwa-hadoop_jar" description="Compression target">
 		<copy todir="." includeEmptyDirs="false">
 			<fileset dir="${build.dir}">
 				<exclude name="**" />

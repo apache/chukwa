@@ -137,10 +137,18 @@
     <dependency org="commons-lang"
       name="commons-lang"
       rev="${commons-lang.version}"
-      conf="releaseaudit->default"/>
+      conf="common->default"/>
     <dependency org="commons-collections"
       name="commons-collections"
       rev="${commons-collections.version}"
-      conf="releaseaudit->default"/>
+      conf="common->default"/>
+    <dependency org="net.sf.ezmorph"
+      name="ezmorph"
+      rev="${ezmorph.version}"
+      conf="common->default"/>
+    <dependency org="commons-beanutils"
+      name="commons-beanutils"
+      rev="${commons-beanutils.version}"
+      conf="common->default"/>
   </dependencies>
 </ivy-module>

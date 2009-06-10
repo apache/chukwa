@@ -23,8 +23,12 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import java.util.*;
 import java.io.File;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 public class DatabaseConfig {
+    private static Log log = LogFactory.getLog(DatabaseConfig.class);
   private Configuration config = null;
   public final static long CENTURY = 36500 * 24 * 60 * 60 * 1000L;
   public final static long DECADE = 3650 * 24 * 60 * 60 * 1000L;
@@ -91,7 +95,6 @@ public class DatabaseConfig {
       tableNames[0] = tableName;
       return tableNames;
     }
-
     if (timeWindow <= 0) {
       timeWindow = 1;
     }
@@ -206,6 +209,7 @@ public class DatabaseConfig {
       partitionSize = WEEK;
     }
 
+
     long currentPartition = now / partitionSize;
     long startPartition = start / partitionSize;
     long endPartition = end / partitionSize;
@@ -248,6 +252,7 @@ public class DatabaseConfig {
       tableNames = new String[1];
       tableNames[0] = tableName + "_" + startPartition + tableType;
     }
+
     return tableNames;
   }
 

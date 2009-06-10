@@ -34,62 +34,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class TestDatabaseAggregator extends TestCase {
+    public TestDatabaseSetup dbSetup = new TestDatabaseSetup();
 
-  long[] timeWindow = {7, 30, 91, 365, 3650};
-  String[] tables = {"system_metrics","disk","cluster_system_metrics","cluster_disk","mr_job","mr_task","dfs_namenode","dfs_datanode","dfs_fsnamesystem","dfs_throughput","hadoop_jvm","hadoop_mapred","hdfs_usage"};
-  String cluster = "demo";
-  long current = Calendar.getInstance().getTimeInMillis();
+    public void setUp() {
+	dbSetup.setUpDatabase();
+    }
 
-  public void setUp() {
-    System.setProperty("CLUSTER","demo");
-    DatabaseWriter db = new DatabaseWriter(cluster);
-    String buffer = "";
-    File aFile = new File(System.getenv("CHUKWA_CONF_DIR")
-                 + File.separator + "database_create_tables.sql");
-    buffer = readFile(aFile);
-    String tables[] = buffer.split(";");
-    for(String table : tables) {
-      if(table.length()>5) {
-        db.execute(table);
-      }
+    public void tearDown() {
+	dbSetup.tearDownDatabase();
     }
-    db.close();
-    for(int i=0;i<timeWindow.length;i++) {
-      TableCreator tc = new TableCreator();
-      long start = current;
-      long end = current + (timeWindow[i]*1440*60*1000);
-      tc.createTables(start, end);
-    }
-  }
-
-  public void tearDown() {
-    DatabaseWriter db = null;
-    try {
-      db = new DatabaseWriter(cluster);
-      ResultSet rs = db.query("show tables");
-      ArrayList<String> list = new ArrayList<String>();
-      while(rs.next()) {
-        String table = rs.getString(1);
-        list.add(table);
-      }
-      for(String table : list) {
-        db.execute("drop table "+table);
-      }
-    } catch(Throwable ex) {
-    } finally {
-      if(db!=null) {
-        db.close();
-      }
-    }
-  }
 
   public void verifyTable(String table) {
     ChukwaConfiguration cc = new ChukwaConfiguration();
     String query = "select * from ["+table+"];";
-    Macro mp = new Macro(current,query);
+    Macro mp = new Macro(dbSetup.current,query);
     query = mp.toString();
     try {
-      DatabaseWriter db = new DatabaseWriter(cluster);
+      DatabaseWriter db = new DatabaseWriter(dbSetup.cluster);
       ResultSet rs = db.query(query);
       while(rs.next()) {
         int i = 1;
@@ -101,28 +62,9 @@ public class TestDatabaseAggregator extends TestCase {
     }
   }
 
-  public String readFile(File aFile) {
-    StringBuffer contents = new StringBuffer();
-    try {
-      BufferedReader input = new BufferedReader(new FileReader(aFile));
-      try {
-        String line = null; // not declared within while loop
-        while ((line = input.readLine()) != null) {
-          contents.append(line);
-          contents.append(System.getProperty("line.separator"));
-        }
-      } finally {
-        input.close();
-      }
-    } catch (IOException ex) {
-      ex.printStackTrace();
-    }
-    return contents.toString();
-  }
-
   public void testAggregator() {
     Aggregator dba = new Aggregator();
-    DatabaseWriter db = new DatabaseWriter(cluster);
+    DatabaseWriter db = new DatabaseWriter(dbSetup.cluster);
     dba.setWriter(db);
     String queries = Aggregator.getContents(new File(System
         .getenv("CHUKWA_CONF_DIR")

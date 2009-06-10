@@ -26,4 +26,19 @@
         <servlet-name>Iframe</servlet-name> 
         <url-pattern>/iframe/*</url-pattern> 
     </servlet-mapping>
+
+    <servlet>
+      <servlet-name>REST_API</servlet-name>
+      <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer
+      </servlet-class>
+      <init-param>
+	<param-name>com.sun.jersey.config.property.packages</param-name>
+	<param-value>org.apache.hadoop.chukwa.rest.actions</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>REST_API</servlet-name>
+      <url-pattern>/v1/*</url-pattern>
+    </servlet-mapping>    
 </web-app>
