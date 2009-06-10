@@ -24,6 +24,12 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-278. Improve post process manager and metric data loader to support data loading from pig aggregation. (Eric Yang)
+
+    CHUKWA-263. Added ability to configure demux parameters during build time. (Jerome Boulon via Eric Yang)
+
+    CHUKWA-195. Update demux compilation to use Hadoop 0.20 jar file. (Jerome Boulon via Eric Yang)
+
     CHUKWA-268. Expose adaptor manager interface, refactor Agent class hierarchy. (asrabkin)
 
     CHUKWA-259. More flexible CollectorStub. (asrabkin)

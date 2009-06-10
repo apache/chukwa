@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.chukwa.extraction.database;
+package org.apache.hadoop.chukwa.dataloader;
 
 import junit.framework.TestCase;
 import java.util.Calendar;
@@ -23,8 +23,8 @@ import org.apache.hadoop.chukwa.database.Macro;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
-import org.apache.hadoop.chukwa.extraction.database.MetricDataLoader;
 import org.apache.hadoop.chukwa.database.TableCreator;
+import org.apache.hadoop.chukwa.dataloader.MetricDataLoader;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -112,9 +112,9 @@ public class TestDatabaseMetricDataLoader extends TestCase {
       ChukwaConfiguration conf = new ChukwaConfiguration();
       FileSystem fs = FileSystem.get(conf);
       FileStatus[] sources = fs.listStatus(new Path(srcDir));
-      MetricDataLoader mdl = new MetricDataLoader(cluster);
       for (FileStatus sequenceFile : sources) {
-        mdl.process(sequenceFile.getPath());
+        MetricDataLoader mdl = new MetricDataLoader(conf, fs, sequenceFile.getPath().toUri().toString());
+        mdl.call();
       }
     } catch (Throwable ex) {
       fail("SQL Exception: "+ExceptionUtil.getStackTrace(ex));

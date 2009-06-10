@@ -431,11 +431,6 @@
 </property>
 
 <property>
-  <name>metric.systemmetrics.%memused</name>
-  <value>mem_used_pcnt</value>
-</property>
-
-<property>
   <name>metric.systemmetrics.eth0_busy_pcnt</name>
   <value>eth0_busy_pcnt</value>
 </property>

@@ -52,5 +52,6 @@ public interface CHUKWA_CONSTANT {
   public static final String DEFAULT_ARCHIVES_MR_OUTPUT_DIR_NAME     = "mrOutput/";
   public static final String DEFAULT_ARCHIVES_MR_INPUT_DIR_NAME      = "mrInput/";
   public static final String DEFAULT_ARCHIVES_IN_ERROR_DIR_NAME      = "inError/";
-  
+
+  public static final String POST_DEMUX_DATA_LOADER = "chukwa.post.demux.data.loader";  
 }

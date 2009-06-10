@@ -83,7 +83,7 @@
                long end = time.getEndTime(); 
                String table = "system_metrics";
                DatabaseConfig dbc = new DatabaseConfig();
-               String[] tables = dbc.findTableName(table, start, end);
+               String[] tables = dbc.findTableNameForCharts(table, start, end);
                table=tables[0];
                query="select DISTINCT host from "+table+" order by host";
            }

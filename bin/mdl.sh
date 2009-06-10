@@ -18,8 +18,8 @@ bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 . "$bin"/chukwa-config.sh
 
-if [ $# -lt 2 ]; then
-    echo "Usage: mdl.sh <cluster name> <chukwa sequence file>"
+if [ $# -lt 1 ]; then
+    echo "Usage: mdl.sh <chukwa sequence file>"
     echo ""
     exit 1
 fi

@@ -27,9 +27,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
+import org.apache.hadoop.chukwa.dataloader.DataLoaderFactory;
 import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
-import org.apache.hadoop.chukwa.extraction.database.DatabaseLoader;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -55,7 +56,7 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
 
   
   public PostProcessorManager() throws Exception {
-    conf = new ChukwaConfiguration();
+    this.conf = new ChukwaConfiguration();
     init();
   }
   
@@ -102,17 +103,6 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
     }
  
     dataSources = new HashMap<String, String>();
-    String[] datasources = conf.getStrings("postProcessorManager.dbloader.ds");
-    if (datasources == null || datasources.length == 0) {
-      log.warn("Cannot read postProcessorManager.dbloader.ds from configuration, bail out!");
-      DaemonWatcher.bailout(-1);
-    }
-    for(String ds: datasources) {
-      dataSources.put(ds.trim(), "");
-      log.info("Add " + ds + " to PostProcessorManager");
-    }
-
-    
     Path postProcessDirectory = new Path(postProcessDir);
     while (isRunning) {
       
@@ -135,8 +125,6 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
         }
         
         Collections.sort(directories);
-        
-        System.out.println(directories);
         
         String directoryToBeProcessed = null;
         long start = 0;
@@ -174,9 +162,29 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
   
   public boolean processDemuxOutput(String directory) throws IOException {
     long start = System.currentTimeMillis();
-    DatabaseLoader.loadData(fs,directory, dataSources);
+    try {
+      String[] classes = conf.get(POST_DEMUX_DATA_LOADER).split(",");
+      for(String dataLoaderName : classes) {
+        Class<? extends DataLoaderFactory> dl = (Class<? extends DataLoaderFactory>) Class.forName(dataLoaderName);
+        java.lang.reflect.Constructor<? extends DataLoaderFactory> c =
+            dl.getConstructor();
+        DataLoaderFactory dataloader = c.newInstance();
+        
+          //DataLoaderFactory dataLoader = (DataLoaderFactory) Class.
+          //    forName(dataLoaderName).getConstructor().newInstance();
+        log.info(dataLoaderName+" processing: "+directory);
+        StringBuilder dirSearch = new StringBuilder();
+        dirSearch.append(directory);
+        dirSearch.append("/*/*/*.evt");
+        Path demuxDir = new Path(dirSearch.toString());
+        FileStatus[] events = fs.globStatus(demuxDir);
+        dataloader.load(conf, fs, events);
+      }
+    } catch(Exception e) {
+      log.error(ExceptionUtil.getStackTrace(e));
+      return false;
+    }
     log.info("loadData Duration:" + (System.currentTimeMillis() - start));
-    
     return true;
   }
   

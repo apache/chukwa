@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.chukwa.extraction.database;
+package org.apache.hadoop.chukwa.dataloader;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,7 +47,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.SequenceFile;
 
-public class MetricDataLoader {
+public class MetricDataLoader implements Callable {
   private static Log log = LogFactory.getLog(MetricDataLoader.class);
 
   private Statement stmt = null;
@@ -60,32 +61,20 @@ public class MetricDataLoader {
   private String newSpace = "-";
   private boolean batchMode = true;
   private Connection conn = null;
+  private Path source = null;
 
   private static ChukwaConfiguration conf = null;
   private static FileSystem fs = null;
   private String jdbc_url = "";
 
-  static {
-    conf = new ChukwaConfiguration();
-    try {
-      fs = FileSystem.get(conf);
-    } catch (Exception e) {
-      e.printStackTrace();
-      log.warn("Exception during HDFS init, Bailing out!", e);
-      System.exit(-1);
-    }
-  }
-
   /** Creates a new instance of DBWriter */
-  public MetricDataLoader() {
-    initEnv("");
+  public MetricDataLoader(ChukwaConfiguration conf, FileSystem fs, String fileName) {
+    source = new Path(fileName);
+    this.conf = conf;
+    this.fs = fs;
   }
 
-  public MetricDataLoader(String cluster) {
-    initEnv(cluster);
-  }
-
-  private void initEnv(String cluster) {
+  private void initEnv(String cluster) throws Exception {
     mdlConfig = new DatabaseConfig();
     transformer = mdlConfig.startWith("metric.");
     conversion = new HashMap<String, Float>();
@@ -109,27 +98,44 @@ public class MetricDataLoader {
       ClusterConfig cc = new ClusterConfig();
       jdbc_url = cc.getURL(cluster);
     }
+    try {
+      DatabaseWriter dbWriter = new DatabaseWriter(cluster);
+      conn = dbWriter.getConnection();
+    } catch(Exception ex) {
+      throw new Exception("JDBC URL does not exist for:"+jdbc_url);
+    }
+    log.debug("Initialized JDBC URL: " + jdbc_url);
     HashMap<String, String> dbNames = mdlConfig.startWith("report.db.name.");
     Iterator<String> ki = dbNames.keySet().iterator();
     dbSchema = new HashMap<String, HashMap<String, Integer>>();
-    DatabaseWriter dbWriter = new DatabaseWriter(cluster);
     while (ki.hasNext()) {
-      String table = dbNames.get(ki.next().toString());
-      String query = "select * from " + table + "_template limit 1";
+      String recordType = ki.next().toString();
+      String table = dbNames.get(recordType);
       try {
-        ResultSet rs = dbWriter.query(query);
-        ResultSetMetaData rmeta = rs.getMetaData();
+        ResultSet rs = conn.getMetaData().getColumns(null, null, table+"_template", null);
         HashMap<String, Integer> tableSchema = new HashMap<String, Integer>();
-        for (int i = 1; i <= rmeta.getColumnCount(); i++) {
-          tableSchema.put(rmeta.getColumnName(i), rmeta.getColumnType(i));
+        while(rs.next()) {
+          String name = rs.getString("COLUMN_NAME");
+          int type = rs.getInt("DATA_TYPE");
+          tableSchema.put(name, type);
+          StringBuilder metricName = new StringBuilder();
+          metricName.append("metric.");
+          metricName.append(recordType.substring(15));
+          metricName.append(".");
+          metricName.append(name);
+          if(!transformer.containsKey(metricName.toString())) {
+            transformer.put(metricName.toString(), name);
+          }          
         }
+        rs.close();
         dbSchema.put(table, tableSchema);
       } catch (SQLException ex) {
         log.debug("table: " + table
           + " template does not exist, MDL will not load data for this table.");
       }
     }
-    dbWriter.close();
+    stmt = conn.createStatement();
+    conn.setAutoCommit(false);
   }
 
   public void interrupt() {
@@ -161,27 +167,21 @@ public class MetricDataLoader {
       }
     }
     return( sb.toString()); 
-  } 
-
-  public void process(Path source) throws IOException, URISyntaxException,
-      SQLException {
-
+  }
+  
+  public boolean run() {
+    boolean first=true;
     log.info("StreamName: " + source.getName());
-
-    SequenceFile.Reader reader = new SequenceFile.Reader(fs, source, conf);
+    SequenceFile.Reader reader = null;
 
     try {
       // The newInstance() call is a work around for some
       // broken Java implementations
-      org.apache.hadoop.chukwa.util.DriverManagerUtil.loadDriver().newInstance();
-      log.debug("Initialized JDBC URL: " + jdbc_url);
+      reader = new SequenceFile.Reader(fs, source, conf);
     } catch (Exception ex) {
       // handle the error
       log.error(ex, ex);
     }
-    conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc_url);
-    stmt = conn.createStatement();
-    conn.setAutoCommit(false);
     long currentTimeMillis = System.currentTimeMillis();
     boolean isSuccessful = true;
     String recordType = null;
@@ -189,8 +189,18 @@ public class MetricDataLoader {
     ChukwaRecordKey key = new ChukwaRecordKey();
     ChukwaRecord record = new ChukwaRecord();
     try {
+      Pattern p = Pattern.compile("(.*)-\\d+$");
       int batch = 0;
       while (reader.next(key, record)) {
+        if(first) { 
+          try {
+            initEnv(RecordUtil.getClusterName(record));
+            first=false;
+          } catch(Exception ex) {
+            log.error("Initialization failed for: "+RecordUtil.getClusterName(record)+".  Please check jdbc configuration.");
+            return false;
+          }
+        }
         String sqlTime = DatabaseWriter.formatTimeStamp(record.getTime());
         log.debug("Timestamp: " + record.getTime());
         log.debug("DataType: " + key.getReduceType());
@@ -203,10 +213,39 @@ public class MetricDataLoader {
         String node = record.getValue("csource");
         recordType = key.getReduceType().toLowerCase();
         String dbKey = "report.db.name." + recordType;
+        Matcher m = p.matcher(recordType);
         if (dbTables.containsKey(dbKey)) {
           String[] tmp = mdlConfig.findTableName(mdlConfig.get(dbKey), record
               .getTime(), record.getTime());
           table = tmp[0];
+        } else if(m.matches()) {
+          String timePartition = "_week";
+          int timeSize = Integer.parseInt(m.group(2));
+          if(timeSize == 5) {
+            timePartition = "_month";
+          } else if(timeSize == 30) {
+            timePartition = "_quarter";
+          } else if(timeSize == 180) {
+            timePartition = "_year";
+          } else if(timeSize == 720) {
+            timePartition = "_decade";
+          }
+          int partition = (int) (record.getTime() / timeSize);
+          StringBuilder tmpDbKey = new StringBuilder();
+          tmpDbKey.append("report.db.name.");
+          tmpDbKey.append(m.group(1));
+          if(dbTables.containsKey(tmpDbKey.toString())) {
+            StringBuilder tmpTable = new StringBuilder();
+            tmpTable.append(dbTables.get(tmpDbKey.toString()));
+            tmpTable.append("_");
+            tmpTable.append(partition);
+            tmpTable.append("_");
+            tmpTable.append(timePartition);
+            table = tmpTable.toString();
+          } else {
+            log.debug(tmpDbKey.toString() + " does not exist.");
+            continue;            
+          }
         } else {
           log.debug(dbKey + " does not exist.");
           continue;
@@ -311,7 +350,7 @@ public class MetricDataLoader {
           StringBuilder sqlValues = new StringBuilder();
           boolean firstValue = true;
           while (fi.hasNext()) {
-            String fieldKey = (String) fi.next();
+            String fieldKey = fi.next();
             if (transformer.containsKey(fieldKey)) {
               if (!firstValue) {
                 sqlValues.append(", ");
@@ -338,7 +377,7 @@ public class MetricDataLoader {
                   SimpleDateFormat formatter = new SimpleDateFormat(
                       "yyyy-MM-dd HH:mm:ss");
                   Date recordDate = new Date();
-                  recordDate.setTime((long) Long.parseLong(recordSet
+                  recordDate.setTime(Long.parseLong(recordSet
                       .get(fieldKey)));
                   sqlValues.append(transformer.get(fieldKey));
                   sqlValues.append("=\"");
@@ -455,9 +494,8 @@ public class MetricDataLoader {
     } catch (Exception e) {
       isSuccessful = false;
       log.error(ExceptionUtil.getStackTrace(e));
-      e.printStackTrace();
     } finally {
-      if (batchMode) {
+      if (batchMode && conn!=null) {
         try {
           conn.commit();
           log.info("batchMode commit done");
@@ -516,12 +554,20 @@ public class MetricDataLoader {
         reader = null;
       }
     }
+    return true;
   }
+
+  public Boolean call() {
+    return run();  
+  }
+  
 
   public static void main(String[] args) {
     try {
-      MetricDataLoader mdl = new MetricDataLoader(args[0]);
-      mdl.process(new Path(args[1]));
+      conf = new ChukwaConfiguration();
+      fs = FileSystem.get(conf);
+      MetricDataLoader mdl = new MetricDataLoader(conf, fs, args[0]);
+      mdl.run();
     } catch (Exception e) {
       e.printStackTrace();
     }
