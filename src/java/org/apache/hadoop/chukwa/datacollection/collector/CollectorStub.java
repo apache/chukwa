@@ -26,6 +26,8 @@ import org.apache.hadoop.chukwa.datacollection.collector.servlet.ServletCollecto
 import org.apache.hadoop.chukwa.datacollection.writer.*;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
+import javax.servlet.http.HttpServlet;
+import java.util.*;
 
 public class CollectorStub {
 
@@ -36,10 +38,12 @@ public class CollectorStub {
 
     DaemonWatcher.createInstance("Collector");
     try {
-      if (args.length >= 1 && args[0].equalsIgnoreCase("-help")) {
-        System.out.println("usage:  CollectorStub [portno] [pretend]");
-        System.out.println("note: if no portno defined, "
-            + "defaults to value in chukwa-site.xml");
+      if (args.length > 0 && args[0].equalsIgnoreCase("help")|| args[0].equalsIgnoreCase("-help")) {
+        System.out.println("usage: Normally you should just invoke CollectorStub without arguments.");
+        System.out.println("A number of options can be specified here for debugging or special uses.  e.g.: ");
+        System.out.println("Options include:\n\tportno=<#> \n\t" + "writer=pretend | <classname>"
+                    + "\n\tservlet=<classname>@path");
+        System.out.println("Command line options will override normal configuration.");
         System.exit(0);
       }
 
@@ -47,49 +51,67 @@ public class CollectorStub {
       int portNum = conf.getInt("chukwaCollector.http.port", 9999);
       THREADS = conf.getInt("chukwaCollector.http.threads", 80);
 
-      if (args.length != 0)
-        portNum = Integer.parseInt(args[0]);
-
       // pick a writer.
       ChukwaWriter w = null;
-      if (args.length > 1) {
-        if (args[1].equals("pretend"))
-          w = new ConsoleWriter(true);
-        else if (args[1].equals("pretend-quietly"))
-          w = new ConsoleWriter(false);
-        else if (args[1].equals("-classname")) {
-          if (args.length < 3)
-            System.err.println("need to specify a writer class");
-          else {
-            conf.set("chukwaCollector.writerClass", args[2]);
-          }
-        } else
-          System.out.println("WARNING: unknown command line arg " + args[1]);
-      }
-      if (w != null) {
-        w.init(conf);
-        ServletCollector.setWriter(w);
+      Map<String, HttpServlet> servletsToAdd = new TreeMap<String, HttpServlet>();
+      
+      for(String arg: args) {
+        if(arg.startsWith("writer=")) {       //custom writer class
+          String writerCmd = arg.substring("writer=".length());
+          if (writerCmd.equals("pretend") || writerCmd.equals("pretend-quietly")) {
+            boolean verbose = !writerCmd.equals("pretend-quietly");
+            w = new ConsoleWriter(verbose);
+            w.init(conf);
+            ServletCollector.setWriter(w);
+          } else 
+            conf.set("chukwaCollector.writerClass", writerCmd);
+        } else if(arg.startsWith("servlet=")) {     //adding custom servlet
+           String servletCmd = arg.substring("servlet=".length()); 
+           String[] halves = servletCmd.split("@");
+           try {
+             Class<?> servletClass = Class.forName(halves[0]);
+             HttpServlet srvlet = (HttpServlet) servletClass.newInstance();
+             if(!halves[1].startsWith("/"))
+               halves[1] = "/" + halves[1];
+             servletsToAdd.put(halves[1], srvlet);
+           } catch(Exception e) {
+             e.printStackTrace();
+           }
+        } else if(arg.startsWith("portno=")) {
+          portNum = Integer.parseInt(arg.substring("portno=".length()));
+        } else { //unknown arg
+          System.out.println("WARNING: unknown command line arg " + arg);
+          System.out.println("Invoke collector with command line arg 'help' for usage");
+        }
       }
 
-      // set up jetty connector
+      // Set up jetty connector
       SelectChannelConnector jettyConnector = new SelectChannelConnector();
       jettyConnector.setLowResourcesConnections(THREADS - 10);
       jettyConnector.setLowResourceMaxIdleTime(1500);
       jettyConnector.setPort(portNum);
-      // set up jetty server
+      
+      // Set up jetty server proper, using connector
       jettyServer = new Server(portNum);
-
       jettyServer.setConnectors(new Connector[] { jettyConnector });
       org.mortbay.thread.BoundedThreadPool pool = new org.mortbay.thread.BoundedThreadPool();
       pool.setMaxThreads(THREADS);
       jettyServer.setThreadPool(pool);
-      // and add the servlet to it
+      
+      // Add the cCllector servlet to server
       Context root = new Context(jettyServer, "/", Context.SESSIONS);
-      root.addServlet(new ServletHolder(new ServletCollector(conf)), "/*");
+      root.addServlet(new ServletHolder(new ServletCollector(conf)), "/chukwa");
+
+      // Add in any user-specified servlets
+      for(Map.Entry<String, HttpServlet> e: servletsToAdd.entrySet()) {
+        root.addServlet(new ServletHolder(e.getValue()), e.getKey());
+      }
+      
+      // And finally, fire up the server
       jettyServer.start();
       jettyServer.setStopAtShutdown(true);
 
-      System.out.println("started http collector on port number " + portNum);
+      System.out.println("started Chukwa http collector on port " + portNum);
 
     } catch (Exception e) {
       e.printStackTrace();

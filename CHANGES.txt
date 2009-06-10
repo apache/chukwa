@@ -18,6 +18,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-259. More flexible CollectorStub. (asrabkin)
+
     CHUKWA-274. Improve rate calculation for accumulated values for visualization. (Eric Yang)
 
     CHUKWA-275. Add standard deviation to statics calculation for HICC charts. (Eric Yang)
