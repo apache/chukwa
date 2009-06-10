@@ -41,9 +41,17 @@ public class RestController  {
 		String fldName = fld.getName();
 		String functionName = "get"+ fldName.substring(0,1).toUpperCase() + fldName.substring(1);
 		String value = "";
-                @SuppressWarnings("unchecked")
-		Method meth=cls.getMethod(functionName);
-		Object oret = meth.invoke(obj);
+                Object oret = null;
+		try {
+		    @SuppressWarnings("unchecked")
+		    Method meth=cls.getMethod(functionName);
+		    if (meth == null) {
+			continue;
+		    }
+		    oret = meth.invoke(obj);
+                } catch (Exception e) {
+	  	   continue;
+		}
 		if (oret == null) {
 		    value="";
 		} else if ((oret instanceof Date) || (oret instanceof java.sql.Timestamp)) {
@@ -110,12 +118,21 @@ public class RestController  {
 		Method m = methlist[i];
 		if (m.getName().startsWith("get")) {
 		    String name=m.getName();
-                    @SuppressWarnings("unchecked")
-		    Method meth=cls.getMethod(name);
-		    Object oret = meth.invoke(obj);
+		    Object oret = null;
+		    try {
+			@SuppressWarnings("unchecked")
+			Method meth=cls.getMethod(name);
+			if (meth == null) {
+			    continue;
+			}
+			oret = meth.invoke(obj);
+		    } catch (Exception e) {
+			continue;
+		    }
 		    if (count!=0) {
 			s.append(",");
 		    }
+
 		    count+=1;
 		    if (oret == null) {
 			s.append("\"\"");
