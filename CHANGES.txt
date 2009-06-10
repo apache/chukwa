@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-281. Created pig scripts to perform down sampling. (Cheng Zhang via Eric Yang)
+
     CHUKWA-20. Added pig support for ChukwaRecords. (Jerome Boulon via Eric Yang)
 
     CHUKWA-279. Added swim lane visualization for Hadoop job progress. (Jiaqi Tan via Eric Yang)

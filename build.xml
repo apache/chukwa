@@ -1088,6 +1088,8 @@
 		<mkdir dir="${build.dir}/${final.name}" />
 		<mkdir dir="${build.dir}/${final.name}/lib" />
 		<mkdir dir="${build.dir}/${final.name}/bin" />
+    <mkdir dir="${build.dir}/${final.name}/script" />
+    <mkdir dir="${build.dir}/${final.name}/script/pig" />
 		<mkdir dir="${build.dir}/${final.name}/docs" />
 		<mkdir dir="${build.dir}/${final.name}/opt" />
 		<mkdir dir="${build.dir}/${final.name}/tools" />
@@ -1114,6 +1116,10 @@
 		<copy todir="${build.dir}/${final.name}/bin">
 			<fileset dir="${basedir}/bin" />
 		</copy>
+
+    <copy todir="${build.dir}/${final.name}/script/pig">
+      <fileset dir="${basedir}/script/pig" />
+    </copy>
 
 		<copy todir="${build.dir}/${final.name}/conf">
 			<fileset dir="${build.dir}/conf">
