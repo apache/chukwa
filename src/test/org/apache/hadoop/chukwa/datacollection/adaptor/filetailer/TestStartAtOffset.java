@@ -52,7 +52,7 @@ public class TestStartAtOffset extends TestCase {
     File testFile = makeTestFile();
     int startOffset = 0; // skip first line
     long adaptorId = agent
-        .processCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8 "
+        .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8 "
             + "lines " + startOffset + " " + testFile + " " + startOffset);
     assertTrue(adaptorId != -1);
     System.out.println("getting a chunk...");
@@ -90,7 +90,7 @@ public class TestStartAtOffset extends TestCase {
     File testFile = makeTestFile();
     int startOffset = 0;
     long adaptorId = agent
-        .processCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8 "
+        .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8 "
             + "lines "
             + startOffset
             + " "

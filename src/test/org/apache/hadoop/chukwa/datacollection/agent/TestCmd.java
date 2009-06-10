@@ -34,9 +34,9 @@ public class TestCmd extends TestCase {
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
       long l = agent
-          .processCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor  chukwaTestAdaptorType 0 my param1 param2 /var/log/messages 114027");
+          .processAddCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor  chukwaTestAdaptorType 0 my param1 param2 /var/log/messages 114027");
       assertTrue(l != -1);
-      Adaptor adaptor = agent.getAdaptorList().get(l);
+      Adaptor adaptor = agent.getAdaptor(l);
       ChukwaTestAdaptor chukwaTestAdaptor = (ChukwaTestAdaptor) adaptor;
       assertTrue("error in type",
           "chukwaTestAdaptorType".intern() == chukwaTestAdaptor.getType()
@@ -64,9 +64,9 @@ public class TestCmd extends TestCase {
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
       long l = agent
-          .processCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor  chukwaTestAdaptorType 114027");
+          .processAddCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor  chukwaTestAdaptorType 114027");
       assertTrue(l != -1);
-      Adaptor adaptor = agent.getAdaptorList().get(l);
+      Adaptor adaptor = agent.getAdaptor(l);
       ChukwaTestAdaptor chukwaTestAdaptor = (ChukwaTestAdaptor) adaptor;
       assertTrue("error in type",
           "chukwaTestAdaptorType".intern() == chukwaTestAdaptor.getType()
@@ -93,10 +93,10 @@ public class TestCmd extends TestCase {
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
       long l = agent
-          .processCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor"
+          .processAddCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor"
               + "  chukwaTestAdaptorType 0  114027");
       assertTrue(l != -1);
-      Adaptor adaptor = agent.getAdaptorList().get(l);
+      Adaptor adaptor = agent.getAdaptor(l);
       ChukwaTestAdaptor chukwaTestAdaptor = (ChukwaTestAdaptor) adaptor;
       assertTrue("error in type",
           "chukwaTestAdaptorType".intern() == chukwaTestAdaptor.getType()

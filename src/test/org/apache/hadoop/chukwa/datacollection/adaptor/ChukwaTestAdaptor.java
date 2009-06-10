@@ -21,10 +21,8 @@ package org.apache.hadoop.chukwa.datacollection.adaptor;
 
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
 
-public class ChukwaTestAdaptor implements Adaptor {
+public class ChukwaTestAdaptor extends AbstractAdaptor {
 
-  private long adaptorId = 0l;
-  private String type = null;
   private String params = null;
   private long startOffset = 0l;
   private ChunkReceiver dest = null;
@@ -54,26 +52,14 @@ public class ChukwaTestAdaptor implements Adaptor {
   }
 
   @Override
-  public void start(long adaptorID, String type, String params, long offset,
-      ChunkReceiver dest) throws AdaptorException {
-    this.adaptorId = adaptorID;
-    this.type = type;
+  public void start(String params, long offset) throws AdaptorException {
     this.params = params;
     this.startOffset = offset;
-    this.dest = dest;
-    System.out.println("adaptorId [" + adaptorId + "]");
+    System.out.println("adaptorId [" + adaptorID + "]");
     System.out.println("type [" + type + "]");
     System.out.println("params [" + params + "]");
     System.out.println("startOffset [" + startOffset + "]");
 
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public void setType(String type) {
-    this.type = type;
   }
 
   public String getParams() {
@@ -88,24 +74,5 @@ public class ChukwaTestAdaptor implements Adaptor {
     return startOffset;
   }
 
-  public void setStartOffset(long startOffset) {
-    this.startOffset = startOffset;
-  }
-
-  public long getAdaptorId() {
-    return adaptorId;
-  }
-
-  public void setAdaptorId(long adaptorId) {
-    this.adaptorId = adaptorId;
-  }
-
-  public ChunkReceiver getDest() {
-    return dest;
-  }
-
-  public void setDest(ChunkReceiver dest) {
-    this.dest = dest;
-  }
 
 }

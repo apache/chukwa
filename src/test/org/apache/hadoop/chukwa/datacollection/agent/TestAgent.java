@@ -66,7 +66,7 @@ public class TestAgent extends TestCase {
 
         for (int i = 1; i < 7; ++i) {
           long l = agent
-              .processCommand("add  org.apache.hadoop.chukwa.util.ConstRateAdaptor  raw"
+              .processAddCommand("add  org.apache.hadoop.chukwa.util.ConstRateAdaptor  raw"
                   + i + " 2000" + i + " 0");
           assertTrue(l != -1);
           runningAdaptors.add(l);

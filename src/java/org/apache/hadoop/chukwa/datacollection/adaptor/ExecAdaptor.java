@@ -39,19 +39,33 @@ import java.util.*;
  * 0
  * 
  */
-public class ExecAdaptor extends ExecPlugin implements Adaptor {
+public class ExecAdaptor extends  AbstractAdaptor {
+  
+  static class EmbeddedExec extends ExecPlugin {
 
+    String cmd;
+    
+    public EmbeddedExec(String c) {
+      cmd = c;
+    }
+    
+    @Override
+    public String getCmde() {
+      return cmd;
+    }
+  }
+  
+  EmbeddedExec exec;
   static final boolean FAKE_LOG4J_HEADER = true;
   static final boolean SPLIT_LINES = false;
-  protected long adaptorID = 0;
   static Logger log = Logger.getLogger(ExecAdaptor.class);
-
+  
   class RunToolTask extends TimerTask {
     public void run() {
-      JSONObject o = execute();
+      JSONObject o = exec.execute();
       try {
 
-        if (o.getInt("status") == statusKO)
+        if (o.getInt("status") == ExecPlugin.statusKO)
           hardStop();
 
         // FIXME: downstream customers would like timestamps here.
@@ -97,8 +111,6 @@ public class ExecAdaptor extends ExecPlugin implements Adaptor {
   };
 
   String cmd;
-  String type;
-  ChunkReceiver dest;
   final java.util.Timer timer;
   long period = 5 * 1000;
   volatile long sendOffset = 0;
@@ -118,7 +130,7 @@ public class ExecAdaptor extends ExecPlugin implements Adaptor {
 
   @Override
   public void hardStop() throws AdaptorException {
-    super.stop();
+    exec.stop();
     timer.cancel();
   }
 
@@ -126,7 +138,7 @@ public class ExecAdaptor extends ExecPlugin implements Adaptor {
   public long shutdown() throws AdaptorException {
     try {
       timer.cancel();
-      super.waitFor(); // wait for last data to get pushed out
+      exec.waitFor(); // wait for last data to get pushed out
     } catch (InterruptedException e) {
       return sendOffset;
     }
@@ -134,8 +146,7 @@ public class ExecAdaptor extends ExecPlugin implements Adaptor {
   }
 
   @Override
-  public void start(long adaptorID, String type, String status, long offset,
-      ChunkReceiver dest) throws AdaptorException {
+  public void start(String status, long offset) throws AdaptorException {
 
     int spOffset = status.indexOf(' ');
     if (spOffset > 0) {
@@ -149,23 +160,13 @@ public class ExecAdaptor extends ExecPlugin implements Adaptor {
       }
     } else
       cmd = status;
-    this.adaptorID = adaptorID;
-    this.type = type;
-    this.dest = dest;
     this.sendOffset = offset;
 
-    TimerTask exec = new RunToolTask();
-    timer.schedule(exec, 0L, period);
+    this.exec = new EmbeddedExec(cmd);
+    TimerTask execTimer = new RunToolTask();
+    timer.schedule(execTimer, 0L, period);
   }
 
-  @Override
-  public String getCmde() {
-    return cmd;
-  }
 
-  @Override
-  public String getType() {
-    return type;
-  }
 
 }

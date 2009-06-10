@@ -20,6 +20,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-268. Expose adaptor manager interface, refactor Agent class hierarchy. (asrabkin)
+
     CHUKWA-259. More flexible CollectorStub. (asrabkin)
 
     CHUKWA-274. Improve rate calculation for accumulated values for visualization. (Eric Yang)

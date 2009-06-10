@@ -78,6 +78,7 @@ public class AgentControlSocketListener extends Thread {
         while ((cmd = br.readLine()) != null) {
           processCommand(cmd, out);
         }
+        connection.close();
         if (log.isDebugEnabled()) {
           log.debug("control connection closed");
         }
@@ -86,6 +87,9 @@ public class AgentControlSocketListener extends Thread {
           log.info("control socket closed");
       } catch (IOException e) {
         log.warn("a control connection broke", e);
+        try {
+          connection.close();
+        } catch(Exception ex) {}
       }
     }
 
@@ -117,7 +121,7 @@ public class AgentControlSocketListener extends Thread {
       } else if (words[0].equalsIgnoreCase("close")) {
         connection.close();
       } else if (words[0].equalsIgnoreCase("add")) {
-        long newID = agent.processCommand(cmd);
+        long newID = agent.processAddCommand(cmd);
         if (newID != -1)
           out.println("OK add completed; new ID is " + newID);
         else
@@ -146,25 +150,20 @@ public class AgentControlSocketListener extends Thread {
         agent.getConnector().reloadConfiguration();
         out.println("OK reloadCollectors done");
       } else if (words[0].equalsIgnoreCase("list")) {
-        Map<Long, Adaptor> adaptorsByNumber = agent.getAdaptorList();
+        java.util.Map<Long, String> adaptorList = agent.getAdaptorList();
 
         if (log.isDebugEnabled()) {
-          log.debug("number of adaptors: " + adaptorsByNumber.size());
+          log.debug("number of adaptors: " + adaptorList.size());
         }
 
-        synchronized (adaptorsByNumber) {
-          for (Map.Entry<Long, Adaptor> a : adaptorsByNumber.entrySet()) {
-            try {
-              out.print(a.getKey());
-              out.print(") ");
-              out.print(" ");
-              out.println(formatAdaptorStatus(a.getValue()));
-            } catch (AdaptorException e) {
-              log.error(e);
-            }
+        for (Map.Entry<Long, String> a: adaptorList.entrySet()) {
+            out.print(a.getKey());
+            out.print(") ");
+            out.print(" ");
+            out.println(a.getValue());
           }
           out.println("");
-        }
+        
       } else if (words[0].equalsIgnoreCase("stopagent")) {
         out.println("stopping agent process.");
         connection.close();
@@ -196,9 +195,7 @@ public class AgentControlSocketListener extends Thread {
     this.setName("control socket listener");
   }
 
-  public String formatAdaptorStatus(Adaptor a) throws AdaptorException {
-    return a.getClass().getCanonicalName() + " " + a.getCurrentStatus();
-  }
+
 
   /**
    * Binds to socket, starts looping listening for commands

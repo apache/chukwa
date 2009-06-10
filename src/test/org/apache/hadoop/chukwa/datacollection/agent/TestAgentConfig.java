@@ -45,8 +45,8 @@ public class TestAgentConfig extends TestCase {
       conn.start();
       assertEquals(1, agent.adaptorCount());// check that we processed initial
                                             // adaptors
-      assertNotNull(agent.getAdaptorList().get(1L));
-      assertTrue(agent.getAdaptorList().get(1L).getStreamName().contains("foo"));
+      assertNotNull(agent.getAdaptor(1L));
+      assertTrue(agent.getAdaptor(1L).getStreamName().contains("foo"));
 
       System.out
           .println("---------------------done with first run, now stopping");
@@ -69,8 +69,8 @@ public class TestAgentConfig extends TestCase {
       conn.start();
       assertEquals(1, agent.adaptorCount());// check that we processed initial
                                             // adaptors
-      assertNotNull(agent.getAdaptorList().get(1L));
-      assertTrue(agent.getAdaptorList().get(1L).getStreamName().contains("foo"));
+      assertNotNull(agent.getAdaptor(1L));
+      assertTrue(agent.getAdaptor(1L).getStreamName().contains("foo"));
       agent.shutdown();
       System.out.println("---------------------done");
 
@@ -117,7 +117,7 @@ public class TestAgentConfig extends TestCase {
       agent = new ChukwaAgent(conf);
       assertEquals(0, agent.getAdaptorList().size());
       agent
-          .processCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor testdata  0");
+          .processAddCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor testdata  0");
       agent.shutdown();
       assertTrue(new File(NONCE_DIR, "chukwa_checkpoint_1").exists());
 

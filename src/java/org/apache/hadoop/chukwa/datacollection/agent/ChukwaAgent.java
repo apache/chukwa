@@ -30,10 +30,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,9 +52,9 @@ import org.apache.log4j.Logger;
  * be embeddable, for use in testing.
  * 
  */
-public class ChukwaAgent {
+public class ChukwaAgent implements AdaptorManager {
   // boolean WRITE_CHECKPOINTS = true;
-  static final AgentMetrics agentMetrics = new AgentMetrics("ChukwaAgent", "chukwaAgent");;
+  static final AgentMetrics agentMetrics = new AgentMetrics("ChukwaAgent", "chukwaAgent");
   static Logger log = Logger.getLogger(ChukwaAgent.class);
   static ChukwaAgent agent = null;
 
@@ -91,6 +88,7 @@ public class ChukwaAgent {
   private final Map<Adaptor, Offset> adaptorPositions;
 
   // basically only used by the control socket thread.
+  //must be locked before access
   private final Map<Long, Adaptor> adaptorsByNumber;
 
   private File checkpointDir; // lock this object to indicate checkpoint in
@@ -174,8 +172,11 @@ public class ChukwaAgent {
   /**
    * @return the number of running adaptors inside this local agent
    */
+  @Override
   public int adaptorCount() {
-    return adaptorsByNumber.size();
+    synchronized(adaptorsByNumber) {
+      return adaptorsByNumber.size();
+    }
   }
 
   public ChukwaAgent() throws AlreadyRunningException {
@@ -272,7 +273,7 @@ public class ChukwaAgent {
   // but can be arbitrarily many space
   // delimited agent specific params )
   // 4) offset
-  Pattern addCmdPattern = Pattern.compile("[aA][dD][dD]\\s+" // command "add",
+  private Pattern addCmdPattern = Pattern.compile("[aA][dD][dD]\\s+" // command "add",
                                                              // any case, plus
                                                              // at least one
                                                              // space
@@ -284,7 +285,14 @@ public class ChukwaAgent {
       + ")?" // end non-matching group for params; group is optional
       + "(\\d+)\\s*"); // finally, an offset and some trailing whitespace
 
-  public long processCommand(String cmd) {
+  /**
+   * Most of the Chukwa wire protocol is implemented in @link{AgentControlSocketListener}
+   * 
+   * Unlike the rest of the chukwa wire protocol, add commands can appear in
+   * initial_adaptors and checkpoint files. So it makes sense to handle them here.
+   * 
+   */
+  public long processAddCommand(String cmd) {
     Matcher m = addCmdPattern.matcher(cmd);
     if (m.matches()) {
       long offset; // check for obvious errors first
@@ -321,7 +329,7 @@ public class ChukwaAgent {
         needNewCheckpoint = true;
         try {
           adaptor.start(adaptorID, dataType, params, offset, DataFactory
-              .getInstance().getEventQueue());
+              .getInstance().getEventQueue(), this);
           log.info("started a new adaptor, id = " + adaptorID);
           ChukwaAgent.agentMetrics.adaptorCount.set(adaptorsByNumber.size());
           ChukwaAgent.agentMetrics.addedAdaptor.inc();
@@ -351,7 +359,7 @@ public class ChukwaAgent {
    * @return true if the restore succeeded
    * @throws IOException
    */
-  public boolean restoreFromCheckpoint() throws IOException {
+  private boolean restoreFromCheckpoint() throws IOException {
     synchronized (checkpointDir) {
       String[] checkpointNames = checkpointDir.list(new FilenameFilter() {
         public boolean accept(File dir, String name) {
@@ -398,7 +406,7 @@ public class ChukwaAgent {
         new FileInputStream(checkpoint)));
     String cmd = null;
     while ((cmd = br.readLine()) != null)
-      processCommand(cmd);
+      processAddCommand(cmd);
     br.close();
   }
 
@@ -407,7 +415,7 @@ public class ChukwaAgent {
    * 
    * @throws IOException
    */
-  public void writeCheckpoint() throws IOException {
+  private void writeCheckpoint() throws IOException {
     needNewCheckpoint = false;
     synchronized (checkpointDir) {
       log.info("writing checkpoint " + checkpointNumber);
@@ -417,14 +425,8 @@ public class ChukwaAgent {
       PrintWriter out = new PrintWriter(new BufferedWriter(
           new OutputStreamWriter(fos)));
 
-      for (Map.Entry<Adaptor, Offset> stat : adaptorPositions.entrySet()) {
-        try {
-          Adaptor a = stat.getKey();
-          out.print("ADD " + a.getClass().getCanonicalName());
-          out.println(" " + a.getCurrentStatus());
-        } catch (AdaptorException e) {
-          e.printStackTrace();
-        }// don't try to recover from bad adaptor yet
+      for (Map.Entry<Long, String> stat : getAdaptorList().entrySet()) {
+          out.print("ADD " + stat.getValue());
       }
 
       out.close();
@@ -450,12 +452,12 @@ public class ChukwaAgent {
       log.info("got commit up to " + uuid + " on " + src + " = " + o.id);
     } else {
       log.warn("got commit up to " + uuid + "  for adaptor " + src
-          + " that doesn't appear to be running: " + adaptorsByNumber.size()
+          + " that doesn't appear to be running: " + adaptorCount()
           + " total");
     }
   }
 
-  class CheckpointTask extends TimerTask {
+  private class CheckpointTask extends TimerTask {
     public void run() {
       try {
         if (needNewCheckpoint) {
@@ -467,9 +469,28 @@ public class ChukwaAgent {
     }
   }
 
-  // for use only by control socket.
-  public Map<Long, Adaptor> getAdaptorList() {
-    return adaptorsByNumber;
+  
+  private String formatAdaptorStatus(Adaptor a) throws AdaptorException {
+    return a.getClass().getCanonicalName() + " " + a.getCurrentStatus();
+  }
+  
+/**
+ * Expose the adaptor list.  Keys are adaptor ID numbers, values are the 
+ * adaptor status strings.
+ * @return
+ */
+  public Map<Long, String> getAdaptorList() {
+    Map<Long, String> adaptors = new HashMap<Long, String>();
+    synchronized (adaptorsByNumber) {
+      for (Map.Entry<Long, Adaptor> a : adaptorsByNumber.entrySet()) {
+        try {
+          adaptors.put(a.getKey(), formatAdaptorStatus(a.getValue()));
+        } catch (AdaptorException e) {
+          log.error(e);
+        }
+      }
+    }
+    return adaptors;
   }
 
   /**
@@ -521,15 +542,23 @@ public class ChukwaAgent {
     return offset;
   }
 
+  @Override
   public Configuration getConfiguration() {
     return conf;
   }
+  
+  @Override
+  public Adaptor getAdaptor(long l) {
+    synchronized(adaptorsByNumber) {
+      return adaptorsByNumber.get(l);
+    }
+  }
 
-  public Connector getConnector() {
+  Connector getConnector() {
     return connector;
   }
 
-  protected static Configuration readConfig() {
+  private static Configuration readConfig() {
     Configuration conf = new Configuration();
 
     String chukwaHomeName = System.getenv("CHUKWA_HOME");
@@ -600,14 +629,14 @@ public class ChukwaAgent {
    * @param a the adaptor in question
    * @return that adaptor's last-checkpointed offset
    */
-  public long getOffset(Adaptor a) {
+  long getOffset(Adaptor a) { //FIXME: do we need this method?
     return adaptorPositions.get(a).offset;
   }
 
   /**
    * Returns the control socket for this agent.
    */
-  AgentControlSocketListener getControlSock() {
+  private AgentControlSocketListener getControlSock() {
     return controlSock;
   }
 }

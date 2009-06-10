@@ -60,7 +60,7 @@ class FileAdaptorTailer extends Thread {
     // iterations are much more common than adding a new adaptor
     adaptors = new CopyOnWriteArrayList<FileAdaptor>();
 
-    this.setDaemon(true);
+    setDaemon(true);
     start();// start the FileAdaptorTailer thread
   }
   @Override
@@ -111,7 +111,7 @@ class FileAdaptorTailer extends Thread {
 /**
  * File Adaptor push small size file in one chunk to collector
  */
-public class FileAdaptor implements Adaptor {
+public class FileAdaptor extends AbstractAdaptor {
 
   static Logger log = Logger.getLogger(FileAdaptor.class);
   static FileAdaptorTailer tailer = null;
@@ -139,9 +139,6 @@ public class FileAdaptor implements Adaptor {
   protected File toWatch;
   protected RandomAccessFile reader = null;
   protected long fileReadOffset;
-  protected String type;
-  protected ChunkReceiver dest;
-  protected long adaptorID;
   protected boolean shutdownCalled = false;
   
   /**
@@ -149,14 +146,10 @@ public class FileAdaptor implements Adaptor {
    */
   private long offsetOfFirstByte = 0;
 
-  public void start(long adaptorID, String type, String params, long bytes,
-      ChunkReceiver dest) {
+  public void start(String params, long bytes) {
     // in this case params = filename
     log.info("adaptor id: " + adaptorID + " started file adaptor on file "
         + params);
-    this.adaptorID = adaptorID;
-    this.type = type;
-    this.dest = dest;
     this.startTime = System.currentTimeMillis();
     this.timeOut = startTime + TIMEOUT_PERIOD;
     
@@ -193,7 +186,7 @@ public class FileAdaptor implements Adaptor {
          long fileTime = toWatch.lastModified();
          int bytesUsed = extractRecords(dest, 0, buf, fileTime);
          this.fileReadOffset = bytesUsed;
-         unregisterFromAgent();
+         deregisterAndStop(false);
          cleanUp();
        }catch(Exception e) {
          log.warn("Exception while trying to read: " + toWatch.getAbsolutePath(),e);
@@ -212,7 +205,7 @@ public class FileAdaptor implements Adaptor {
     } else {
       if (now > timeOut) {
         log.warn("Couldn't read this file: " + toWatch.getAbsolutePath());
-        unregisterFromAgent();
+        deregisterAndStop(false);
         cleanUp() ;
       }
     }
@@ -228,17 +221,6 @@ public class FileAdaptor implements Adaptor {
      }
       reader = null;
     } 
-  }
-  
-  private void unregisterFromAgent() {
-    ChukwaAgent agent = ChukwaAgent.getAgent();
-    if (agent != null) {
-      agent.stopAdaptor(adaptorID, false);
-      
-    } else {
-      log.warn("Agent is null, cannot unregister " + toWatch.getAbsolutePath());
-    }
- 
   }
   
   
@@ -284,11 +266,6 @@ public class FileAdaptor implements Adaptor {
     eq.add(chunk);
     log.info( toWatch.getAbsolutePath() + " added to the queue");
     return buf.length;
-  }
-
-  @Override
-  public String getType() {
-    return type;
   }
 
   @Override

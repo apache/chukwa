@@ -36,7 +36,7 @@ public class TestExecAdaptor extends TestCase {
     try {
       ChukwaAgent agent = new ChukwaAgent();
       agent
-          .processCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.ExecAdaptor ps ps aux 0");
+          .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.ExecAdaptor ps ps aux 0");
 
       Chunk c = chunks.waitForAChunk();
       System.out.println(new String(c.getData()));

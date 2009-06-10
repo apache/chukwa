@@ -49,7 +49,7 @@ public class TestLogRotate extends TestCase {
     Thread.sleep(5000);
     File testFile = makeTestFile("chukwaLogRotateTest", 80);
     long adaptorId = agent
-        .processCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8"
+        .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8"
             + " lines " + testFile + " 0");
     assertTrue(adaptorId != -1);
     System.out.println("getting a chunk...");

@@ -1,5 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
-
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,15 +46,15 @@ public class TestFileExpirationPolicy extends TestCase {
       FileTailingAdaptor.GRACEFUL_PERIOD = 30 * 1000;
 
       long adaptorId = agent
-          .processCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped MyType 0 /myWrongPath"
+          .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped MyType 0 /myWrongPath"
               + System.currentTimeMillis() + " 0");
 
       assertTrue(adaptorId != -1);
 
-      assertTrue(agent.getAdaptorList().containsKey(adaptorId) == true);
+      assertNotNull(agent.getAdaptor(adaptorId));
 
       Thread.sleep(FileTailingAdaptor.GRACEFUL_PERIOD + 10000);
-      assertTrue(agent.getAdaptorList().containsKey(adaptorId) == false);
+      assertNull(agent.getAdaptor(adaptorId));
 
     } catch (Exception e) {
       Assert.fail("Exception in TestFileExpirationPolicy");
@@ -76,18 +92,18 @@ public class TestFileExpirationPolicy extends TestCase {
 
       FileTailingAdaptor.GRACEFUL_PERIOD = 30 * 1000;
       long adaptorId = agent
-          .processCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped MyType 0 "
+          .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped MyType 0 "
               + logFile + " 0");
 
       assertTrue(adaptorId != -1);
 
-      assertTrue(agent.getAdaptorList().containsKey(adaptorId) == true);
+      assertNotNull(agent.getAdaptor(adaptorId));
 
       Thread.sleep(10000);
       testFile.delete();
 
       Thread.sleep(FileTailingAdaptor.GRACEFUL_PERIOD + 10000);
-      assertTrue(agent.getAdaptorList().containsKey(adaptorId) == false);
+      assertNull(agent.getAdaptor(adaptorId));
       agent.shutdown();
     } catch (Exception e) {
       Assert.fail("Exception in TestFileExpirationPolicy");

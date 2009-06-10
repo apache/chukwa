@@ -26,8 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
-import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
-import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
+import org.apache.hadoop.chukwa.datacollection.adaptor.*;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
@@ -38,7 +37,7 @@ import org.apache.log4j.Logger;
  * file. Subclasses can alter this behavior by overriding extractRecords().
  * 
  */
-public class FileTailingAdaptor implements Adaptor {
+public class FileTailingAdaptor extends AbstractAdaptor {
 
   static Logger log;
 
@@ -61,10 +60,7 @@ public class FileTailingAdaptor implements Adaptor {
    * next PHYSICAL offset to read
    */
   protected long fileReadOffset;
-  protected String type;
-  private ChunkReceiver dest;
   protected RandomAccessFile reader = null;
-  protected long adaptorID;
 
   /**
    * The logical offset of the first byte of the file
@@ -78,12 +74,8 @@ public class FileTailingAdaptor implements Adaptor {
     log = Logger.getLogger(FileTailingAdaptor.class);
   }
 
-  public void start(long adaptorID, String type, String params, long bytes,
-      ChunkReceiver dest) {
+  public void start(String params, long bytes) {
     // in this case params = filename
-    this.adaptorID = adaptorID;
-    this.type = type;
-    this.dest = dest;
     this.attempts = 0;
 
     Pattern cmd = Pattern.compile("(\\d+)\\s+(.+)\\s?");
@@ -191,14 +183,8 @@ public class FileTailingAdaptor implements Adaptor {
           return false;
         }
 
-        ChukwaAgent agent = ChukwaAgent.getAgent();
-        if (agent != null) {
-          agent.stopAdaptor(adaptorID, false);
-        } else {
-          log.info("Agent is null, running in default mode");
-        }
+        deregisterAndStop(false);
         return false;
-
       } else if (!toWatch.exists() || !toWatch.canRead()) {
         if (adaptorInError == false) {
           long now = System.currentTimeMillis();
@@ -309,8 +295,7 @@ public class FileTailingAdaptor implements Adaptor {
         // So log.warn, and drop current buffer so we can keep moving
         // instead of being stopped at that point for ever
         if (bytesUsed == 0 && bufferRead == MAX_READ_SIZE) {
-          log
-              .warn("bufferRead == MAX_READ_SIZE AND bytesUsed == 0, droping current buffer: startOffset="
+          log.warn("bufferRead == MAX_READ_SIZE AND bytesUsed == 0, droping current buffer: startOffset="
                   + curOffset
                   + ", MAX_READ_SIZE="
                   + MAX_READ_SIZE
@@ -363,9 +348,5 @@ public class FileTailingAdaptor implements Adaptor {
     return buf.length;
   }
 
-  @Override
-  public String getType() {
-    return type;
-  }
 
 }

@@ -20,6 +20,7 @@ package org.apache.hadoop.chukwa.datacollection.adaptor;
 
 
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
+import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 
 /**
  * An adaptor is a component that runs within the Local Agent, producing chunks
@@ -47,7 +48,7 @@ public interface Adaptor {
    * @throws AdaptorException
    */
   public void start(long adaptorID, String type, String status, long offset,
-      ChunkReceiver dest) throws AdaptorException;
+      ChunkReceiver dest, AdaptorManager c) throws AdaptorException;
 
   /**
    * Return the adaptor's state Should not include class name, datatype or byte
