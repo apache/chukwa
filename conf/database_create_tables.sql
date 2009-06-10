@@ -23,6 +23,7 @@ drop table if exists user_util_template;
 drop table if exists hdfs_usage_template;
 drop table if exists QueueInfo;
 drop table if exists mapreduce_fsm_template;
+drop table if exists user_job_summary_template;
 
 create table if not exists node_activity_template (
     timestamp  timestamp default CURRENT_TIMESTAMP,
@@ -732,4 +733,20 @@ create table if not exists mapreduce_fsm_template (
     spilled_records bigint default 0,
     primary key(unique_id),
     index(start_time, finish_time, job_id)
+) ENGINE=InnoDB;
+
+create table if not exists user_job_summary_template (
+    timestamp timestamp default CURRENT_TIMESTAMP,
+    userid varchar(32),
+    totalJobs double null, 
+    dataLocalMaps double null, 
+    rackLocalMaps double null, 
+    remoteMaps double null, 
+    mapInputBytes double null, 
+    reduceOutputRecords double null, 
+    mapSlotHours double null, 
+    reduceSlotHours double null, 
+    totalMaps double null, 
+    totalReduces double null,
+    primary key(userid, timestamp)
 ) ENGINE=InnoDB;

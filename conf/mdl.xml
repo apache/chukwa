@@ -1987,5 +1987,9 @@
 <property><name>metric.mapreduce_fsm.counter_input_groups</name><value>input_groups</value></property>
 <property><name>metric.mapreduce_fsm.counter_spilled_records</name><value>spilled_records</value></property>	
 
+<!-- for user daily aggregation -->
+<property><name>report.db.name.userdailysummary</name><value>user_job_summary</value></property>
+<property><name>consolidator.table.user_job_summary</name><value>5,30,180,720</value></property>
+
 </configuration>
 
