@@ -107,7 +107,7 @@ public class HttpConnector implements Connector, Runnable {
 
     // build a list of our destinations from collectors
     try {
-      destinations = DataFactory.getInstance().getCollectorURLs();
+      destinations = DataFactory.getInstance().getCollectorURLs(agent.getConfiguration());
     } catch (IOException e) {
       log.error("Failed to retreive list of collectors from "
           + "conf/collectors file", e);
@@ -190,7 +190,7 @@ public class HttpConnector implements Connector, Runnable {
 
     // build a list of our destinations from collectors
     try {
-      destinations = DataFactory.getInstance().getCollectorURLs();
+      destinations = DataFactory.getInstance().getCollectorURLs(agent.getConfiguration());
     } catch (IOException e) {
       log.error(
           "Failed to retreive list of collectors from conf/collectors file", e);

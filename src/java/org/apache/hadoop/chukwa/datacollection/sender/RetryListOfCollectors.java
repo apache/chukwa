@@ -43,12 +43,12 @@ public class RetryListOfCollectors implements Iterator<String> {
   private String portNo;
   Configuration conf;
 
-  public RetryListOfCollectors(File collectorFile, int maxRetryRateMs)
+  public RetryListOfCollectors(File collectorFile, int maxRetryRateMs, Configuration conf)
       throws IOException {
     this.maxRetryRateMs = maxRetryRateMs;
     lastLookAtFirstNode = 0;
     collectors = new ArrayList<String>();
-    conf = new Configuration();
+    this.conf = conf;
     portNo = conf.get("chukwaCollector.http.port", "8080");
 
     try {
@@ -57,18 +57,17 @@ public class RetryListOfCollectors implements Iterator<String> {
       while ((line = br.readLine()) != null) {
         if (!line.contains("://")) {
           // no protocol, assume http
-          if (line.matches(":\\d+")) {
+          if (line.matches(".*:\\d+")) {
             collectors.add("http://" + line);
           } else {
-            collectors.add("http://" + line + ":" + portNo + "/");
+            collectors.add("http://" + line + ":" + portNo);
           }
         } else {
-          if (line.matches(":\\d+")) {
+          if (line.matches(".*:\\d+")) {
             collectors.add(line);
           } else {
-            collectors.add(line + ":" + portNo + "/");
+            collectors.add(line + ":" + portNo);
           }
-          collectors.add(line);
         }
       }
       br.close();
@@ -83,6 +82,12 @@ public class RetryListOfCollectors implements Iterator<String> {
     shuffleList();
   }
 
+  /**
+   * This is only used for debugging. Possibly it should sanitize urls the same way the other
+   * constructor does.
+   * @param collectors
+   * @param maxRetryRateMs
+   */
   public RetryListOfCollectors(final List<String> collectors, int maxRetryRateMs) {
     this.maxRetryRateMs = maxRetryRateMs;
     lastLookAtFirstNode = 0;

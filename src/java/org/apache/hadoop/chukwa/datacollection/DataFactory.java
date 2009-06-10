@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.apache.hadoop.conf.*;
 import org.apache.hadoop.chukwa.datacollection.agent.MemLimitQueue;
 import org.apache.hadoop.chukwa.datacollection.sender.RetryListOfCollectors;
 import org.apache.log4j.Logger;
@@ -66,7 +67,7 @@ public class DataFactory {
    * @return empty list if file does not exist
    * @throws IOException on other error
    */
-  public Iterator<String> getCollectorURLs() throws IOException {
+  public Iterator<String> getCollectorURLs(Configuration conf) throws IOException {
     String chukwaHome = System.getenv("CHUKWA_HOME");
     if (chukwaHome == null) {
       chukwaHome = ".";
@@ -88,7 +89,7 @@ public class DataFactory {
         + COLLECTORS_FILENAME);
     File collectors = new File(chukwaConf + File.separator + "collectors");
     try {
-      return new RetryListOfCollectors(collectors, 1000 * 15);// time is ms
+      return new RetryListOfCollectors(collectors, 1000 * 15, conf);// time is ms
                                                               // between tries
     } catch (java.io.IOException e) {
       log.error("failed to read collectors file: ", e);

@@ -19,8 +19,10 @@ package org.apache.hadoop.chukwa.datacollection.sender;
 
 
 import junit.framework.TestCase;
+import java.io.*;
 import java.util.*;
 import org.apache.hadoop.chukwa.datacollection.sender.RetryListOfCollectors;
+import org.apache.hadoop.conf.Configuration;
 
 public class TestRetryListOfCollectors extends TestCase {
 
@@ -45,7 +47,54 @@ public class TestRetryListOfCollectors extends TestCase {
       System.out.println("saw unexpected collector " + s);
       fail();
     }
+  }
+  
+  public void testCollectorsFile() {
+    
+    try {
+    File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"),
+        "collectors_test");
+    PrintWriter out = new PrintWriter(new FileOutputStream(tmpOutput));
+    
+    HashSet<String> validHosts = new HashSet<String>();
+    validHosts.add("http://host1:5052");
+    validHosts.add("http://host2:5050");
+    validHosts.add("http://host3:5052");
+    validHosts.add("http://host4:5050");
+    validHosts.add("http://host5:5052");
+    validHosts.add("http://host6:5052");
+    
+    out.println("host1");
+    out.println("host2:5050");
+    out.println("http://host3");
+    out.println("http://host4:5050");
+    out.println("http://host5:5052");
+    out.println("host6:5052");
+    out.close();
+    
+    Configuration conf = new Configuration();
+    conf.setInt("chukwaCollector.http.port", 5052);
+    RetryListOfCollectors rloc = new RetryListOfCollectors(tmpOutput, 2000, conf);
+    for (int i = 0; i < validHosts.size(); ++i) {
+      assertTrue(rloc.hasNext());
+      String s = rloc.next();
+      assertTrue(s != null);
+      
+      System.out.println("host: " + s);
+      assertTrue(validHosts.contains(s));
+    }
+    
+    if (rloc.hasNext()) {
+      String s = rloc.next();
+      System.out.println("saw unexpected collector " + s);
+      fail();
+    }
 
+    } catch(IOException e) {
+      e.printStackTrace();
+      fail();
+    }
+    
   }
 
 }

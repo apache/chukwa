@@ -36,6 +36,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-273. Agents correctly use configured collector port numbers. (asrabkin)
+
     CHUKWA-216. postProcess.sh should use HADOOP_CONF_DIR to find hadoop-site.xml. (Jerome Boulon via asrabkin)
 
     CHUKWA-261. Added X axis label for non Time Series graphs. (Eric Yang)
