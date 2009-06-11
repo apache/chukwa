@@ -44,11 +44,25 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
   private transient Adaptor initiator;
   long seqID;
 
-  ChunkImpl() {
+  private static String localHostAddr;
+  static {
+    try {
+      setHostAddress(InetAddress.getLocalHost().getHostName());
+    } catch (UnknownHostException e) {
+      setHostAddress("localhost");
+    }
   }
-
+  
+  public static void setHostAddress(String host) {
+    ChunkImpl.localHostAddr = host;
+  }
+  
+  
   public static ChunkImpl getBlankChunk() {
     return new ChunkImpl();
+  }
+
+  ChunkImpl() {
   }
 
   public ChunkImpl(String dataType, String streamName, long seq, byte[] data,
@@ -237,14 +251,7 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
     return source + ":" + application + ":" + new String(data) + "/" + seqID;
   }
 
-  private static String localHostAddr;
-  static {
-    try {
-      localHostAddr = InetAddress.getLocalHost().getHostName();
-    } catch (UnknownHostException e) {
-      localHostAddr = "localhost";
-    }
-  }
+
 
   /**
    * @see org.apache.hadoop.chukwa.Chunk#getSerializedSizeEstimate()

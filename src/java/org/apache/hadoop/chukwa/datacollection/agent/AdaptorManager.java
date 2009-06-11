@@ -17,6 +17,7 @@
  */
 package org.apache.hadoop.chukwa.datacollection.agent;
 
+import java.util.Collections;
 import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
@@ -27,6 +28,7 @@ import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
  */
 public interface AdaptorManager {
   
+
   Configuration getConfiguration();
   int adaptorCount();
   long stopAdaptor(long number, boolean gracefully);
@@ -34,4 +36,37 @@ public interface AdaptorManager {
   long processAddCommand(String cmd);
   Map<Long, String> getAdaptorList();
 
+  static AdaptorManager NULL = new AdaptorManager() {
+
+    @Override
+    public int adaptorCount() {
+      return 0;
+    }
+
+    @Override
+    public Adaptor getAdaptor(long id) {
+      return null;
+    }
+
+    @Override
+    public Map<Long, String> getAdaptorList() {
+      return Collections.emptyMap();
+    }
+
+    @Override
+    public Configuration getConfiguration() {
+      return new Configuration();
+    }
+
+    @Override
+    public long processAddCommand(String cmd) {
+      return 0;
+    }
+
+    @Override
+    public long stopAdaptor(long number, boolean gracefully) {
+      return 0;
+    }
+  };
+  
 }

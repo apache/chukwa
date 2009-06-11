@@ -72,14 +72,25 @@ public interface Adaptor {
    * Signals this adaptor to come to an orderly stop. The adaptor ought to push
    * out all the data it can before exiting.
    * 
-   * This method is synchronous: In other words, after shutdown() returns, no
-   * new data should be written.
+   * This method is synchronous up to 60 seconds
    * 
    * @return the logical offset at which the adaptor stops
    * @throws AdaptorException
    */
+  @Deprecated
   public long shutdown() throws AdaptorException;
 
+  
+  /**
+   * Signals this adaptor to come to an orderly stop. The adaptor ought to push
+   * out all the data it can before exiting depending of the shutdown policy
+   * 
+   * @return the logical offset at which the adaptor was when the method return
+   * @throws AdaptorException
+   */
+  public long shutdown(AdaptorShutdownPolicy shutdownPolicy) throws AdaptorException;
+  
+  
   /**
    * Signals this adaptor to come to an abrupt stop, as quickly as it can. The
    * use case here is "Whups, I didn't mean to start that adaptor tailing a
@@ -94,6 +105,7 @@ public interface Adaptor {
    * 
    * @throws AdaptorException
    */
+  @Deprecated
   public void hardStop() throws AdaptorException;
 
 }

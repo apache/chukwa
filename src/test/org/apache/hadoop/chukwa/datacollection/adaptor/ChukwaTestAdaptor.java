@@ -75,4 +75,11 @@ public class ChukwaTestAdaptor extends AbstractAdaptor {
   }
 
 
+  @Override
+  public long shutdown(AdaptorShutdownPolicy shutdownPolicy)
+      throws AdaptorException {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
 }

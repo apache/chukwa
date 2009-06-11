@@ -36,8 +36,7 @@ public class TerminatorThread extends Thread {
           endTime = System.currentTimeMillis() + (10 * 60 * 1000); // now + 10
                                                                    // mins
           if (count > 3) {
-            log
-                .warn("TerminatorThread should have been finished by now, stopping it now! count="
+            log.warn("TerminatorThread should have been finished by now, stopping it now! count="
                     + count);
             break;
           }
@@ -47,8 +46,7 @@ public class TerminatorThread extends Thread {
       log.info("InterruptedException on Terminator thread:"
           + adaptor.toWatch.getPath(), e);
     } catch (Throwable e) {
-      log
-          .warn("Exception on Terminator thread:" + adaptor.toWatch.getPath(),
+      log.warn("Exception on Terminator thread:" + adaptor.toWatch.getPath(),
               e);
     }
 

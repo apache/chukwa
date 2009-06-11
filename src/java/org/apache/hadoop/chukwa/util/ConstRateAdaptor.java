@@ -22,8 +22,8 @@ package org.apache.hadoop.chukwa.util;
 import java.util.Random;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.*;
-import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
-import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
+import org.apache.hadoop.chukwa.datacollection.adaptor.*;
+import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 
 public class ConstRateAdaptor extends Thread implements Adaptor {
@@ -89,13 +89,14 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
     return "const rate " + type;
   }
 
+  @Deprecated
   public void hardStop() throws AdaptorException {
-    stopping = true;
+    shutdown(AdaptorShutdownPolicy.HARD_STOP);
   }
 
+  @Deprecated
   public long shutdown() throws AdaptorException {
-    stopping = true;
-    return offset;
+    return shutdown(AdaptorShutdownPolicy.GRACEFULLY);
   }
 
   @Override
@@ -103,4 +104,17 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
     return type;
   }
 
+
+    @Override
+    public long shutdown(AdaptorShutdownPolicy shutdownPolicy) {
+      
+      switch(shutdownPolicy) {
+        case HARD_STOP :
+        case GRACEFULLY : 
+        case WAIT_TILL_FINISHED :
+          stopping = true;
+        break;
+      }
+      return offset;
+    }
 }

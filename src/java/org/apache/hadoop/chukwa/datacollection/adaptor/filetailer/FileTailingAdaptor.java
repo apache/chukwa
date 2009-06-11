@@ -98,44 +98,76 @@ public class FileTailingAdaptor extends AbstractAdaptor {
    * 
    * @see org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor#shutdown()
    */
+  @Deprecated
   public long shutdown() throws AdaptorException {
-    try {
-      if (toWatch.exists()) {
-        int retry = 0;
-        tailer.stopWatchingFile(this);
-        TerminatorThread lastTail = new TerminatorThread(this, tailer.eq);
-        lastTail.setDaemon(true);
-        lastTail.start();
-        while (lastTail.isAlive() && retry < 60) {
-          try {
-            log.info("Retry:" + retry);
-            Thread.currentThread().sleep(1000);
-            retry++;
-          } catch (InterruptedException ex) {
-          }
-        }
-      }
-    } finally {
-      return fileReadOffset + offsetOfFirstByte;
-    }
-
+    return shutdown(AdaptorShutdownPolicy.GRACEFULLY);
   }
 
   /**
    * Stop tailing the file, effective immediately.
    */
+  @Deprecated
   public void hardStop() throws AdaptorException {
-    tailer.stopWatchingFile(this);
-    try {
-      if (reader != null) {
-        reader.close();
-      }
-      reader = null;
-    } catch(Throwable e) {
-      // do nothing
-    }
+    shutdown(AdaptorShutdownPolicy.HARD_STOP);
   }
 
+  
+  @Override
+  public long shutdown(AdaptorShutdownPolicy shutdownPolicy) {
+    
+    log.info("Enter Shutdown:" + shutdownPolicy.name() + " - ObjectId:" + this);
+    
+    switch(shutdownPolicy) {
+      case HARD_STOP :
+        tailer.stopWatchingFile(this);
+        try {
+          if (reader != null) {
+            reader.close();
+          }
+          reader = null;
+        } catch(Throwable e) {
+         log.warn("Exception while closing reader:",e);
+        }
+        break;
+      case GRACEFULLY : 
+      case WAIT_TILL_FINISHED :{
+        if (toWatch.exists()) {
+          int retry = 0;
+          tailer.stopWatchingFile(this);
+          TerminatorThread lastTail = new TerminatorThread(this, tailer.eq);
+          lastTail.setDaemon(true);
+          lastTail.start();
+          
+          if (shutdownPolicy.ordinal() == AdaptorShutdownPolicy.GRACEFULLY.ordinal()) {
+            while (lastTail.isAlive() && retry < 60) {
+              try {
+                log.info("GRACEFULLY Retry:" + retry);
+                Thread.sleep(1000);
+                retry++;
+              } catch (InterruptedException ex) {
+              }
+            }
+          } else {
+            while (lastTail.isAlive()) {
+              try {
+                if (retry%100 == 0) {
+                  log.info("WAIT_TILL_FINISHED Retry:" + retry);
+                }
+                Thread.sleep(1000);
+                retry++;
+              } catch (InterruptedException ex) {
+              }
+            } 
+          }          
+        }
+      }
+      break;
+    }
+    log.info("Exist Shutdown:" + shutdownPolicy.name()+ " - ObjectId:" + this);
+    return fileReadOffset + offsetOfFirstByte;
+  }
+  
+  
   /**
    * @see org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor#getCurrentStatus()
    */
@@ -264,9 +296,11 @@ public class FileTailingAdaptor extends AbstractAdaptor {
                   + MAX_READ_SIZE);
             } else {
               log.info("Conf is null, running in default mode");
+              conf = new Configuration();
             }
           } else {
             log.info("Agent is null, running in default mode");
+            conf = new Configuration();
           }
         }
 
