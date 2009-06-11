@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-280. Added end to end test to detect iostat overflow. (Eric Yang)
+
     CHUKWA-194.  Backfilling tools.  (Jerome Boulon via asrabkin)
 
     CHUKWA-253. Added aggregations by user. (Cheng Zhang via Eric Yang)
@@ -27,6 +29,8 @@ Trunk (unreleased changes)
     CHUKWA-91.  Additional test case for acks. (asrabkin)
 
   IMPROVEMENTS
+
+    CHUKWA-280. Added end to end test to detect iostat overflow. (Eric Yang)
 
     CHUKWA-278. Improve post process manager and metric data loader to support data loading from pig aggregation. (Eric Yang)
 

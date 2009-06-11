@@ -464,10 +464,23 @@
 	<target name="test-chukwa" depends="compile,compile-test" description="Run Chukwa unit tests">
 		<mkdir dir="${basedir}/var" />
 		<mkdir dir="${test.build.dir}/var" />
+		<mkdir dir="${test.build.dir}/var/log" />
+                <copy todir="${test.build.dir}/var/log">
+                        <fileset dir="${basedir}/test/samples/">
+                                <include name="*.log" />
+                        </fileset>
+                </copy>
+                <copy todir="${test.build.dir}">
+                        <fileset dir="${build.dir}">
+                                <include name="chukwa-core*.jar" />
+                        </fileset>
+                </copy>
+                <copy file="${basedir}/conf/chukwa-demux-conf.xml.template" tofile="${test.build.dir}/conf/chukwa-demux-conf.xml"></copy>
 		<junit showoutput="${test.output}" fork="yes" printsummary="withOutAndErr" forkmode="${test.junit.fork.mode}" maxmemory="${test.junit.maxmemory}" dir="${test.build.dir}/classes/" timeout="${test.timeout}" errorProperty="tests.failed" failureProperty="tests.failed">
 			<classpath refid="testClasspath" />
 			<env key="CHUKWA_CONF_DIR" value="${test.build.dir}/conf" />
 			<env key="CHUKWA_DATA_DIR" value="${test.build.dir}/var" />
+			<env key="CHUKWA_HOME" value="${test.build.dir}" />
 			<sysproperty key="test.src.dir" value="${test.src.dir}" />
 			<sysproperty key="test.build.classes" value="${test.build.classes}" />
 			<formatter type="${test.junit.output.format}" />
