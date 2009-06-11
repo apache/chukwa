@@ -2,7 +2,13 @@ Chukwa Change Log
 
 Trunk (unreleased changes)
 
+Release 0.2.0 - 2009-06-30
+
+  INCOMPATIBLE CHANGES
+
   NEW FEATURES
+
+    CHUKWA-280. Added end to end test to detect iostat overflow. (Eric Yang)
 
     CHUKWA-194. Backfilling tools. (Jerome Boulon via asrabkin)
 
