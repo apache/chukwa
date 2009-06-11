@@ -36,7 +36,7 @@ public class AdaptorFactory {
    * @param className the name of the {@link Adaptor} class to instantiate
    * @return an Adaptor of the specified type
    */
-  static Adaptor createAdaptor(String className) {
+  static public Adaptor createAdaptor(String className) {
     Object obj = null;
     try {
       // the following reflection business for type checking is probably

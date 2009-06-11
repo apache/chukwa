@@ -54,7 +54,8 @@ import org.apache.log4j.Logger;
  */
 public class ChukwaAgent implements AdaptorManager {
   // boolean WRITE_CHECKPOINTS = true;
-  static final AgentMetrics agentMetrics = new AgentMetrics("ChukwaAgent", "chukwaAgent");
+  static AgentMetrics agentMetrics = new AgentMetrics("ChukwaAgent", "chukwaAgent");
+
   static Logger log = Logger.getLogger(ChukwaAgent.class);
   static ChukwaAgent agent = null;
 

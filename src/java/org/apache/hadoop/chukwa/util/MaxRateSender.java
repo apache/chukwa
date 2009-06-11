@@ -23,8 +23,7 @@ import java.util.Random;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.*;
 import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
-import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
-import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
+import org.apache.hadoop.chukwa.datacollection.adaptor.*;
 
 public class MaxRateSender extends Thread implements Adaptor {
 
@@ -77,14 +76,26 @@ public class MaxRateSender extends Thread implements Adaptor {
   }
 
   public long shutdown() throws AdaptorException {
-    stopping = true;
-    return offset;
+    return shutdown(AdaptorShutdownPolicy.GRACEFULLY);
   }
 
   public void hardStop() throws AdaptorException {
-    stopping = true;
+    shutdown(AdaptorShutdownPolicy.HARD_STOP);
   }
 
+  @Override
+  public long shutdown(AdaptorShutdownPolicy shutdownPolicy) {
+    
+    switch(shutdownPolicy) {
+      case HARD_STOP :
+      case GRACEFULLY : 
+      case WAIT_TILL_FINISHED :
+        stopping = true;
+      break;
+    }
+    return offset;
+  }
+  
   @Override
   public String getType() {
     return type;

@@ -247,6 +247,7 @@ public class AgentControlSocketListener extends Thread {
 
   public void tryToBind() throws IOException {
     s = new ServerSocket(portno);
+    s.setReuseAddress(true);
     portno = s.getLocalPort();
     if (s.isBound())
       log.info("socket bound to " + s.getLocalPort());

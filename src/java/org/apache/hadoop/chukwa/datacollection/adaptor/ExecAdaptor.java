@@ -39,7 +39,7 @@ import java.util.*;
  * 0
  * 
  */
-public class ExecAdaptor extends  AbstractAdaptor {
+public class ExecAdaptor extends AbstractAdaptor {
   
   static class EmbeddedExec extends ExecPlugin {
 
@@ -129,19 +129,48 @@ public class ExecAdaptor extends  AbstractAdaptor {
   }
 
   @Override
+  @Deprecated
+  /**
+  * use shutdown(AdaptorShutdownPolicy shutdownPolicy)
+  */
   public void hardStop() throws AdaptorException {
-    exec.stop();
-    timer.cancel();
+     shutdown(AdaptorShutdownPolicy.HARD_STOP);
   }
-
-  @Override
-  public long shutdown() throws AdaptorException {
-    try {
-      timer.cancel();
-      exec.waitFor(); // wait for last data to get pushed out
-    } catch (InterruptedException e) {
-      return sendOffset;
+  
+ @Override
+ @Deprecated
+ /**
+* use shutdown(AdaptorShutdownPolicy shutdownPolicy)
+*/
+    public long shutdown() throws AdaptorException {
+     return shutdown(AdaptorShutdownPolicy.GRACEFULLY);
+   }
+ 
+   @Override
+   public long shutdown(AdaptorShutdownPolicy shutdownPolicy)
+       throws AdaptorException {
+     log.info("Enter Shutdown:" + shutdownPolicy.name()+ " - ObjectId:" + this);
+     switch(shutdownPolicy) {
+     case HARD_STOP :
+       timer.cancel();
+       exec.stop();
+       break;
+     case GRACEFULLY :
+       try {
+         timer.cancel();
+         exec.waitFor();
+       } catch (InterruptedException e) {
+       }
+       break;
+     case WAIT_TILL_FINISHED :
+       try {
+         timer.cancel();
+         exec.waitFor();
+       } catch (InterruptedException e) {
+      }
+      break;
     }
+    log.info("Exist Shutdown:" + shutdownPolicy.name()+ " - ObjectId:" + this);
     return sendOffset;
   }
 

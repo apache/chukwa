@@ -135,7 +135,7 @@ public class FileAdaptor extends AbstractAdaptor {
   private long startTime = 0;
   private long timeOut = 0;
   
-  
+  protected volatile boolean finished = false;
   protected File toWatch;
   protected RandomAccessFile reader = null;
   protected long fileReadOffset;
@@ -186,12 +186,12 @@ public class FileAdaptor extends AbstractAdaptor {
          long fileTime = toWatch.lastModified();
          int bytesUsed = extractRecords(dest, 0, buf, fileTime);
          this.fileReadOffset = bytesUsed;
+         finished = true;
          deregisterAndStop(false);
          cleanUp();
-       }catch(Exception e) {
+       } catch(Exception e) {
          log.warn("Exception while trying to read: " + toWatch.getAbsolutePath(),e);
-       }
-       finally {
+       }  finally {
          if (reader != null) {
            try {
              reader.close();
@@ -204,6 +204,7 @@ public class FileAdaptor extends AbstractAdaptor {
      }
     } else {
       if (now > timeOut) {
+        finished = true;
         log.warn("Couldn't read this file: " + toWatch.getAbsolutePath());
         deregisterAndStop(false);
         cleanUp() ;
@@ -229,18 +230,59 @@ public class FileAdaptor extends AbstractAdaptor {
    * 
    * @see org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor#shutdown()
    */
+  @Deprecated
   public long shutdown() throws AdaptorException {
-    // do nothing -- will be automatically done by TimeOut
-    return fileReadOffset + offsetOfFirstByte;
+    return shutdown(AdaptorShutdownPolicy.GRACEFULLY);
   }
 
   /**
    * Stop tailing the file, effective immediately.
    */
+  @Deprecated
   public void hardStop() throws AdaptorException {
-    cleanUp();
+    shutdown(AdaptorShutdownPolicy.HARD_STOP);
   }
 
+  @Override
+  public long shutdown(AdaptorShutdownPolicy shutdownPolicy) {
+    log.info("Enter Shutdown:" + shutdownPolicy.name()+ " - ObjectId:" + this);
+    switch(shutdownPolicy) {
+      case HARD_STOP :
+        cleanUp();
+        break;
+      case GRACEFULLY : {
+        int retry = 0;
+        while (!finished && retry < 60) {
+          try {
+            log.info("GRACEFULLY Retry:" + retry);
+            Thread.sleep(1000);
+            retry++;
+          } catch (InterruptedException ex) {
+          }
+        } 
+      }
+      break;
+      case WAIT_TILL_FINISHED : {
+        int retry = 0;
+        while (!finished) {
+          try {
+            if (retry%100 == 0) {
+              log.info("WAIT_TILL_FINISHED Retry:" + retry);
+            }
+
+            Thread.sleep(1000);
+            retry++;
+          } catch (InterruptedException ex) {
+          }
+        } 
+      }
+
+      break;
+    }
+    log.info("Exist Shutdown:" + shutdownPolicy.name()+ " - ObjectId:" + this);
+    return fileReadOffset + offsetOfFirstByte;
+  }
+  
   public String getStreamName() {
     return toWatch.getPath();
   }

@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-194. Backfilling tools. (Jerome Boulon via asrabkin)
+
     CHUKWA-253. Added aggregations by user. (Cheng Zhang via Eric Yang)
 
     CHUKWA-95. Added Web Service API to export data from database. (Terence Kwan via Eric Yang)
