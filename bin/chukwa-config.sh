@@ -96,7 +96,7 @@ if [ -f "${CHUKWA_CONF_DIR}/chukwa-env.sh" ]; then
 fi
 
 export DATACONFIG=${CHUKWA_CONF_DIR}/mdl.xml
-COMMON=`ls ${CHUKWA_HOME}/lib/*.jar ${CHUKWA_HOME}/hadoopjars/commons*.jar ${CHUKWA_HOME}/build/ivy/lib/chukwa/common/*.jar`
+COMMON=`ls ${CHUKWA_HOME}/lib/*.jar`
 export COMMON=`echo ${COMMON} | sed 'y/ /:/'`
 export CHUKWA_CORE=${CHUKWA_HOME}/chukwa-core-${CHUKWA_VERSION}.jar
 export CHUKWA_AGENT=${CHUKWA_HOME}/chukwa-agent-${CHUKWA_VERSION}.jar
