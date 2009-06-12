@@ -60,6 +60,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-287. Fix collector crash on startup when no args. (Eric Yang via asrabkin)
+
     CHUKWA-273. Agents correctly use configured collector port numbers. (asrabkin)
 
     CHUKWA-216. postProcess.sh should use HADOOP_CONF_DIR to find hadoop-site.xml. (Jerome Boulon via asrabkin)
