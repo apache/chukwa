@@ -53,23 +53,27 @@ public class RetryListOfCollectors implements Iterator<String> {
 
     try {
       BufferedReader br = new BufferedReader(new FileReader(collectorFile));
-      String line;
+      String line, parsedline;
       while ((line = br.readLine()) != null) {
         if (!line.contains("://")) {
           // no protocol, assume http
           if (line.matches(".*:\\d+")) {
-            collectors.add("http://" + line);
+            parsedline = "http://" + line+"/";
           } else {
-            collectors.add("http://" + line + ":" + portNo);
+            parsedline = "http://" + line + ":" + portNo;
           }
         } else {
           if (line.matches(".*:\\d+")) {
-            collectors.add(line);
+            parsedline = line;
           } else {
-            collectors.add(line + ":" + portNo);
+            parsedline = line + ":" + portNo;
           }
         }
+        if(!parsedline.matches(".*\\w/.*")) //no resource name
+          parsedline = parsedline+"/";
+        collectors.add(parsedline);
       }
+      
       br.close();
     } catch (FileNotFoundException e) {
       System.err
