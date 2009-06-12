@@ -257,10 +257,10 @@ public class TestDatabaseIostat extends TestCase {
         fullPath.append(File.separator);        
         fullPath.append(fname);
         String recordType = fname.substring(0,fname.indexOf("."));
-        long adaptorId = cli.add(
+        String adaptorId = cli.add(
           "org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped", 
           recordType, "0 " + fullPath.toString(), 0);
-        assertTrue(adaptorId != -1);
+        assertNotNull(adaptorId);
         Thread.sleep(2000);
       }
       cli.removeAll();

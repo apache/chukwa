@@ -57,13 +57,13 @@ public class TaskLogAppender extends
             long currentLength = 0L;
             chukwaClient = new ChukwaAgentController();
             chukwaClientIsNull = false;
-            long adaptorID = chukwaClient.add(ChukwaAgentController.CharFileTailUTF8NewLineEscaped,
+            String adaptorID = chukwaClient.add(ChukwaAgentController.CharFileTailUTF8NewLineEscaped,
               recordType,currentLength + " " + log4jFileName, currentLength);
 
             // Setup a shutdownHook for the controller
             clientFinalizer = new ClientFinalizer(chukwaClient);
             Runtime.getRuntime().addShutdownHook(clientFinalizer);
-            if (adaptorID > 0) {
+            if (adaptorID != null) {
               log.debug("Added file tailing adaptor to chukwa agent for file "
                   + log4jFileName + ", adaptorId:" + adaptorID
                   + " using this recordType :" + recordType

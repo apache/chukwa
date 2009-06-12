@@ -36,7 +36,7 @@ public class ChukwaJobTrackerInstrumentation extends
   protected final JobTracker tracker;
   private static ChukwaAgentController chukwaClient = null;
   private static Log log = LogFactory.getLog(JobTrackerInstrumentation.class);
-  private static HashMap<JobID, Long> jobHistories = null;
+  private static HashMap<JobID, String> jobHistories = null;
 
   public ChukwaJobTrackerInstrumentation(JobTracker jt, JobConf conf) {
     super(jt, conf);
@@ -45,7 +45,7 @@ public class ChukwaJobTrackerInstrumentation extends
       chukwaClient = new ChukwaAgentController();
     }
     if (jobHistories == null) {
-      jobHistories = new HashMap<JobID, Long>();
+      jobHistories = new HashMap<JobID, String>();
     }
   }
 
@@ -59,7 +59,7 @@ public class ChukwaJobTrackerInstrumentation extends
       Path jobHistoryPath = JobHistory.JobInfo
           .getJobHistoryLogLocation(jobFileName);
       String jobConfPath = JobHistory.JobInfo.getLocalJobFilePath(id);
-      long adaptorID = chukwaClient
+      String adaptorID = chukwaClient
           .add(
               "org.apache.hadoop.chukwa.datacollection.adaptor.FileAdaptor",
               "JobConf", "0 " + jobConfPath, 0);

@@ -30,6 +30,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-5. Adaptors have durable names. (asrabkin)
+
     CHUKWA-280. Added end to end test to detect iostat overflow. (Eric Yang)
 
     CHUKWA-278. Improve post process manager and metric data loader to support data loading from pig aggregation. (Eric Yang)

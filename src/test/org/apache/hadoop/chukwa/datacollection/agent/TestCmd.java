@@ -33,9 +33,9 @@ public class TestCmd extends TestCase {
       agent = new ChukwaAgent();
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
-      long l = agent
+      String l = agent
           .processAddCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor  chukwaTestAdaptorType 0 my param1 param2 /var/log/messages 114027");
-      assertTrue(l != -1);
+      assertTrue(l != null);
       Adaptor adaptor = agent.getAdaptor(l);
       ChukwaTestAdaptor chukwaTestAdaptor = (ChukwaTestAdaptor) adaptor;
       assertTrue("error in type",
@@ -63,10 +63,10 @@ public class TestCmd extends TestCase {
       agent = new ChukwaAgent();
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
-      long l = agent
+      String name = agent
           .processAddCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor  chukwaTestAdaptorType 114027");
-      assertTrue(l != -1);
-      Adaptor adaptor = agent.getAdaptor(l);
+      assertTrue(name != null);
+      Adaptor adaptor = agent.getAdaptor(name);
       ChukwaTestAdaptor chukwaTestAdaptor = (ChukwaTestAdaptor) adaptor;
       assertTrue("error in type",
           "chukwaTestAdaptorType".intern() == chukwaTestAdaptor.getType()
@@ -75,7 +75,7 @@ public class TestCmd extends TestCase {
           .intern());
       assertTrue("error in startOffset", 114027l == chukwaTestAdaptor
           .getStartOffset());
-      agent.stopAdaptor(l, false);
+      agent.stopAdaptor(name, false);
       agent.shutdown();
       Thread.sleep(2000);
     } catch (InterruptedException e) {
@@ -92,11 +92,11 @@ public class TestCmd extends TestCase {
       agent = new ChukwaAgent();
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
-      long l = agent
+      String n = agent
           .processAddCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor"
               + "  chukwaTestAdaptorType 0  114027");
-      assertTrue(l != -1);
-      Adaptor adaptor = agent.getAdaptor(l);
+      assertTrue(n != null);
+      Adaptor adaptor = agent.getAdaptor(n);
       ChukwaTestAdaptor chukwaTestAdaptor = (ChukwaTestAdaptor) adaptor;
       assertTrue("error in type",
           "chukwaTestAdaptorType".intern() == chukwaTestAdaptor.getType()
@@ -105,7 +105,7 @@ public class TestCmd extends TestCase {
           .getParams().intern());
       assertTrue("error in startOffset", 114027l == chukwaTestAdaptor
           .getStartOffset());
-      agent.stopAdaptor(l, false);
+      agent.stopAdaptor(n, false);
       agent.shutdown();
       Thread.sleep(2000);
     } catch (InterruptedException e) {

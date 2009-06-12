@@ -120,7 +120,7 @@ public class ServletCollector extends HttpServlet {
     final long currentTime = System.currentTimeMillis();
     try {
 
-      log.debug("new post from " + req.getRemoteHost() + " at " + currentTime);
+      log.info("new post from " + req.getRemoteHost() + " at " + currentTime);
       java.io.InputStream in = req.getInputStream();
 
       ServletOutputStream l_out = resp.getOutputStream();
@@ -185,6 +185,8 @@ public class ServletCollector extends HttpServlet {
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
 
+
+    log.info("new GET from " + req.getRemoteHost() + " at " + System.currentTimeMillis());
     PrintStream out = new PrintStream(resp.getOutputStream());
     resp.setStatus(200);
 

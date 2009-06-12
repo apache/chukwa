@@ -60,12 +60,12 @@ public class TestAgentClient extends TestCase {
     try {
       // add the fileTailer to the agent using the client
       System.out.println("Adding adaptor with filename: " + params);
-      long adaptorID = c.addFile(appType, params);
+      String adaptorID = c.addFile(appType, params);
       System.out.println("Successfully added adaptor, id is:" + adaptorID);
 
       // do a list on the agent to see if the adaptor has been added for this
       // file
-      Map<Long, ChukwaAgentController.Adaptor> listResult = c.list();
+      Map<String, ChukwaAgentController.Adaptor> listResult = c.list();
       assertTrue(listResult.containsKey(adaptorID));
     } catch (IOException e) {
       e.printStackTrace();

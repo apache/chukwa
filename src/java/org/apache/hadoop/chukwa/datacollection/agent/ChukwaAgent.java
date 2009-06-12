@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -68,12 +70,12 @@ public class ChukwaAgent implements AdaptorManager {
 
   // doesn't need an equals(), comparator, etc
   private static class Offset {
-    public Offset(long l, long id) {
+    public Offset(long l, String id) {
       offset = l;
       this.id = id;
     }
 
-    private volatile long id;
+    private final String id;
     private volatile long offset;
   }
 
@@ -90,7 +92,7 @@ public class ChukwaAgent implements AdaptorManager {
 
   // basically only used by the control socket thread.
   //must be locked before access
-  private final Map<Long, Adaptor> adaptorsByNumber;
+  private final Map<String, Adaptor> adaptorsByName;
 
   private File checkpointDir; // lock this object to indicate checkpoint in
   // progress
@@ -102,9 +104,6 @@ public class ChukwaAgent implements AdaptorManager {
   private volatile boolean needNewCheckpoint = false; // set to true if any
   // event has happened
   // that should cause a new checkpoint to be written
-
-  private long lastAdaptorNumber = 0; // ID number of the last adaptor to be
-  // started
   private int checkpointNumber; // id number of next checkpoint.
   // should be protected by grabbing lock on checkpointDir
 
@@ -175,8 +174,8 @@ public class ChukwaAgent implements AdaptorManager {
    */
   @Override
   public int adaptorCount() {
-    synchronized(adaptorsByNumber) {
-      return adaptorsByNumber.size();
+    synchronized(adaptorsByName) {
+      return adaptorsByName.size();
     }
   }
 
@@ -191,7 +190,7 @@ public class ChukwaAgent implements AdaptorManager {
     // almost always just reading this; so use a ConcurrentHM.
     // since we wrapped the offset, it's not a structural mod.
     adaptorPositions = new ConcurrentHashMap<Adaptor, Offset>();
-    adaptorsByNumber = new HashMap<Long, Adaptor>();
+    adaptorsByName = new HashMap<String, Adaptor>();
     checkpointNumber = 0;
 
     boolean DO_CHECKPOINT_RESTORE = conf.getBoolean(
@@ -267,18 +266,23 @@ public class ChukwaAgent implements AdaptorManager {
 
   // words should contain (space delimited):
   // 0) command ("add")
-  // 1) AdaptorClassname
-  // 2) dataType (e.g. "hadoop_log")
-  // 3) params <optional>
+  // 1) Optional adaptor name, followed by =
+  // 2) AdaptorClassname
+  // 3) dataType (e.g. "hadoop_log")
+  // 4) params <optional>
   // (e.g. for files, this is filename,
   // but can be arbitrarily many space
   // delimited agent specific params )
-  // 4) offset
+  // 5) offset
   private Pattern addCmdPattern = Pattern.compile("[aA][dD][dD]\\s+" // command "add",
                                                              // any case, plus
                                                              // at least one
                                                              // space
-      + "(\\S+)\\s+" // the adaptor classname, plus at least one space
+      + "(?:"   //noncapturing group
+      +	"([^\\s=]+)" //containing a string (captured) 
+      + "\\s*=\\s*" //then an equals sign, potentially set off with whitespace
+      + ")?" //end optional noncapturing group 
+      + "([^\\s=]+)\\s+" // the adaptor classname, plus at least one space. No '=' in name
       + "(\\S+)\\s+" // datatype, plus at least one space
       + "(?:" // start a non-capturing group, for the parameters
       + "(.*?)\\s+" // capture the actual parameters reluctantly, followed by
@@ -293,46 +297,52 @@ public class ChukwaAgent implements AdaptorManager {
    * initial_adaptors and checkpoint files. So it makes sense to handle them here.
    * 
    */
-  public long processAddCommand(String cmd) {
+  public String processAddCommand(String cmd) {
     Matcher m = addCmdPattern.matcher(cmd);
     if (m.matches()) {
       long offset; // check for obvious errors first
       try {
-        offset = Long.parseLong(m.group(4));
+        offset = Long.parseLong(m.group(5));
       } catch (NumberFormatException e) {
         log.warn("malformed line " + cmd);
-        return -1L;
+        return null;
       }
 
-      String adaptorName = m.group(1);
-      String dataType = m.group(2);
-      String params = m.group(3);
+       
+      String adaptorID = m.group(1);
+      String adaptorClassName = m.group(2);
+      String dataType = m.group(3);
+      String params = m.group(4);
       if (params == null)
         params = "";
 
-      Adaptor adaptor = AdaptorFactory.createAdaptor(adaptorName);
+      if(adaptorID == null)
+        adaptorID = synthesizeAdaptorID(adaptorClassName, dataType, params);
+      
+      Adaptor adaptor = AdaptorFactory.createAdaptor(adaptorClassName);
       if (adaptor == null) {
-        log.warn("Error creating adaptor from adaptor name " + adaptorName);
-        return -1L;
+        log.warn("Error creating adaptor of class " + adaptorClassName);
+        return null;
       }
 
-      long adaptorID;
-      synchronized (adaptorsByNumber) {
-        for (Map.Entry<Long, Adaptor> a : adaptorsByNumber.entrySet()) {
+      synchronized (adaptorsByName) {
+        
+        /*for (Map.Entry<Long, Adaptor> a : adaptorsByName.entrySet()) {
           if (params.indexOf(a.getValue().getStreamName())!=-1) {
             log.warn(params + " already exist, skipping.");
-            return -1;
+            return null;
           }
-        }
-        adaptorID = ++lastAdaptorNumber;
-        adaptorsByNumber.put(adaptorID, adaptor);
+        }*/
+        if(adaptorsByName.containsKey(adaptorID))
+          return adaptorID;
+        adaptorsByName.put(adaptorID, adaptor);
         adaptorPositions.put(adaptor, new Offset(offset, adaptorID));
         needNewCheckpoint = true;
         try {
           adaptor.start(adaptorID, dataType, params, offset, DataFactory
               .getInstance().getEventQueue(), this);
           log.info("started a new adaptor, id = " + adaptorID);
-          ChukwaAgent.agentMetrics.adaptorCount.set(adaptorsByNumber.size());
+          ChukwaAgent.agentMetrics.adaptorCount.set(adaptorsByName.size());
           ChukwaAgent.agentMetrics.addedAdaptor.inc();
           return adaptorID;
 
@@ -345,7 +355,31 @@ public class ChukwaAgent implements AdaptorManager {
       log.warn("only 'add' command supported in config files; cmd was: " + cmd);
     // no warning for blank line
 
-    return -1;
+    return null;
+  }
+
+  private String synthesizeAdaptorID(String adaptorClassName, String dataType,
+      String params) {
+    MessageDigest md;
+    try {
+      md = MessageDigest.getInstance("MD5");
+
+      md.update(adaptorClassName.getBytes());
+      md.update(dataType.getBytes());
+      md.update(params.getBytes());
+      StringBuilder sb = new StringBuilder();
+      byte[] bytes = md.digest();
+      for(int i=0; i < bytes.length; ++i) {
+        if( (bytes[i] & 0xF0) == 0)
+          sb.append('0');
+        sb.append( Integer.toHexString(0xFF & bytes[i]) );
+      }
+      return sb.toString();
+    } catch (NoSuchAlgorithmException e) {
+      log.fatal("MD5 apparently doesn't work on your machine; bailing", e);
+      shutdown(true);//abort agent
+    }
+    return null;
   }
 
   /**
@@ -426,8 +460,8 @@ public class ChukwaAgent implements AdaptorManager {
       PrintWriter out = new PrintWriter(new BufferedWriter(
           new OutputStreamWriter(fos)));
 
-      for (Map.Entry<Long, String> stat : getAdaptorList().entrySet()) {
-          out.print("ADD " + stat.getValue());
+      for (Map.Entry<String, String> stat : getAdaptorList().entrySet()) {
+          out.println("ADD "+ stat.getKey()+ " = " + stat.getValue());
       }
 
       out.close();
@@ -480,10 +514,10 @@ public class ChukwaAgent implements AdaptorManager {
  * adaptor status strings.
  * @return
  */
-  public Map<Long, String> getAdaptorList() {
-    Map<Long, String> adaptors = new HashMap<Long, String>();
-    synchronized (adaptorsByNumber) {
-      for (Map.Entry<Long, Adaptor> a : adaptorsByNumber.entrySet()) {
+  public Map<String, String> getAdaptorList() {
+    Map<String, String> adaptors = new HashMap<String, String>();
+    synchronized (adaptorsByName) {
+      for (Map.Entry<String, Adaptor> a : adaptorsByName.entrySet()) {
         try {
           adaptors.put(a.getKey(), formatAdaptorStatus(a.getValue()));
         } catch (AdaptorException e) {
@@ -506,33 +540,33 @@ public class ChukwaAgent implements AdaptorManager {
    * @param gracefully if true, shutdown, if false, hardStop
    * @return the number of bytes synched at stop. -1 on error
    */
-  public long stopAdaptor(long number, boolean gracefully) {
+  public long stopAdaptor(String name, boolean gracefully) {
     Adaptor toStop;
     long offset = -1;
 
     // at most one thread can get past this critical section with toStop != null
     // so if multiple callers try to stop the same adaptor, all but one will
     // fail
-    synchronized (adaptorsByNumber) {
-      toStop = adaptorsByNumber.remove(number);
+    synchronized (adaptorsByName) {
+      toStop = adaptorsByName.remove(name);
     }
     if (toStop == null) {
-      log.warn("trying to stop adaptor " + number + " that isn't running");
+      log.warn("trying to stop adaptor " + name + " that isn't running");
       return offset;
     } else {
       adaptorPositions.remove(toStop);
     }
-    ChukwaAgent.agentMetrics.adaptorCount.set(adaptorsByNumber.size());
+    ChukwaAgent.agentMetrics.adaptorCount.set(adaptorsByName.size());
     ChukwaAgent.agentMetrics.removedAdaptor.inc();
     
     try {
       if (gracefully) {
         offset = toStop.shutdown();
-        log.info("shutdown on adaptor: " + number + ", "
+        log.info("shutdown on adaptor: " + name + ", "
             + toStop.getCurrentStatus());
       } else {
         toStop.hardStop();
-        log.info("hardStop on adaptorId: " + number + ", "
+        log.info("hardStop on adaptorId: " + name + ", "
             + toStop.getCurrentStatus());
       }
     } catch (AdaptorException e) {
@@ -549,9 +583,9 @@ public class ChukwaAgent implements AdaptorManager {
   }
   
   @Override
-  public Adaptor getAdaptor(long l) {
-    synchronized(adaptorsByNumber) {
-      return adaptorsByNumber.get(l);
+  public Adaptor getAdaptor(String name) {
+    synchronized(adaptorsByName) {
+      return adaptorsByName.get(name);
     }
   }
 
@@ -608,9 +642,9 @@ public class ChukwaAgent implements AdaptorManager {
     }
     // adaptors
 
-    synchronized (adaptorsByNumber) {
+    synchronized (adaptorsByName) {
       // shut down each adaptor
-      for (Adaptor a : adaptorsByNumber.values()) {
+      for (Adaptor a : adaptorsByName.values()) {
         try {
           a.hardStop();
         } catch (AdaptorException e) {
@@ -618,7 +652,7 @@ public class ChukwaAgent implements AdaptorManager {
         }
       }
     }
-    adaptorsByNumber.clear();
+    adaptorsByName.clear();
     adaptorPositions.clear();
     if (exit)
       System.exit(0);

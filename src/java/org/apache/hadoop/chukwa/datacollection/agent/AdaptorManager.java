@@ -31,10 +31,10 @@ public interface AdaptorManager {
 
   Configuration getConfiguration();
   int adaptorCount();
-  long stopAdaptor(long number, boolean gracefully);
-  Adaptor getAdaptor(long id);
-  long processAddCommand(String cmd);
-  Map<Long, String> getAdaptorList();
+  long stopAdaptor(String id, boolean gracefully);
+  Adaptor getAdaptor(String id);
+  String processAddCommand(String cmd);
+  Map<String, String> getAdaptorList();
 
   static AdaptorManager NULL = new AdaptorManager() {
 
@@ -44,12 +44,12 @@ public interface AdaptorManager {
     }
 
     @Override
-    public Adaptor getAdaptor(long id) {
+    public Adaptor getAdaptor(String id) {
       return null;
     }
 
     @Override
-    public Map<Long, String> getAdaptorList() {
+    public Map<String, String> getAdaptorList() {
       return Collections.emptyMap();
     }
 
@@ -59,12 +59,12 @@ public interface AdaptorManager {
     }
 
     @Override
-    public long processAddCommand(String cmd) {
-      return 0;
+    public String processAddCommand(String cmd) {
+      return "";
     }
 
     @Override
-    public long stopAdaptor(long number, boolean gracefully) {
+    public long stopAdaptor(String id, boolean gracefully) {
       return 0;
     }
   };

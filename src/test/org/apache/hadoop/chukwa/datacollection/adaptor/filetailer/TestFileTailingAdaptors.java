@@ -48,10 +48,10 @@ public class TestFileTailingAdaptors extends TestCase {
     // sleep for some time to make sure we don't get chunk from existing streams
     Thread.sleep(5000);
     File testFile = makeTestFile("chukwaCrSepTest", 80);
-    long adaptorId = agent
+    String adaptorId = agent
         .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8"
             + " lines " + testFile + " 0");
-    assertTrue(adaptorId != -1);
+    assertNotNull(adaptorId);
     System.out.println("getting a chunk...");
     Chunk c = chunks.waitForAChunk();
     System.out.println("got chunk");

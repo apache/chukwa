@@ -20,23 +20,45 @@ package org.apache.hadoop.chukwa.datacollection.connector;
 
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.*;
-import java.util.ArrayList;
+import java.util.*;
 
 public class ChunkCatcherConnector implements Connector {
 
   ChunkQueue eq;
+  
+  Timer tm;
+  
+  class Interruptor extends TimerTask {
+    Thread targ;
+    Interruptor(Thread t) {
+      targ =t;
+    }
+    
+    public void run() {
+      targ.interrupt();
+    }
+  };
 
   public void start() {
     eq = DataFactory.getInstance().getEventQueue();
+    tm = new Timer();
   }
 
-  public Chunk waitForAChunk() throws InterruptedException {
+  public Chunk waitForAChunk(long ms) throws InterruptedException {
+    
     ArrayList<Chunk> chunks = new ArrayList<Chunk>();
+    if(ms > 0)
+      tm.schedule(new Interruptor(Thread.currentThread()), ms);
     eq.collect(chunks, 1);
     return chunks.get(0);
   }
+  
+  public Chunk waitForAChunk() throws InterruptedException {
+    return this.waitForAChunk(0);//wait forever by default
+  }
 
   public void shutdown() {
+    tm.cancel();
   }
 
   @Override

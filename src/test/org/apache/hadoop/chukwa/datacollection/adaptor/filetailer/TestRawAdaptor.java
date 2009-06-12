@@ -49,10 +49,10 @@ public class TestRawAdaptor extends TestCase {
     // sleep for some time to make sure we don't get chunk from existing streams
     Thread.sleep(5000);
     File testFile = makeTestFile("chukwaRawTest", 80);
-    long adaptorId = agent
+    String adaptorId = agent
         .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.FileTailingAdaptor"
             + " raw " + testFile + " 0");
-    assertTrue(adaptorId != -1);
+    assertNotNull(adaptorId);
     Chunk c = chunks.waitForAChunk();
     while (!c.getDataType().equals("raw")) {
       c = chunks.waitForAChunk();

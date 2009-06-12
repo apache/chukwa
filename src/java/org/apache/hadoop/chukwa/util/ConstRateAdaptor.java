@@ -35,7 +35,7 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
   private long offset;
   private int bytesPerSec;
   private ChunkReceiver dest;
-  private long adaptorID;
+  private String adaptorID;
 
   private volatile boolean stopping = false;
 
@@ -43,7 +43,7 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
     return type.trim() + " " + bytesPerSec + " " + offset;
   }
 
-  public void start(long adaptor, String type, String bytesPerSecParam,
+  public void start(String adaptorID, String type, String bytesPerSecParam,
       long offset, ChunkReceiver dest, AdaptorManager c) throws AdaptorException {
     try {
       bytesPerSec = Integer.parseInt(bytesPerSecParam.trim());
@@ -51,7 +51,7 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
       throw new AdaptorException("bad argument to const rate adaptor: ["
           + bytesPerSecParam + "]");
     }
-    this.adaptorID = adaptor;
+    this.adaptorID = adaptorID;
     this.offset = offset;
     this.type = type;
     this.dest = dest;
