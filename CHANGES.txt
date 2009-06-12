@@ -60,6 +60,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-291. Append slash to collector paths. (asrabkin)
+
     CHUKWA-287. Fix collector crash on startup when no args. (Eric Yang via asrabkin)
 
     CHUKWA-273. Agents correctly use configured collector port numbers. (asrabkin)
