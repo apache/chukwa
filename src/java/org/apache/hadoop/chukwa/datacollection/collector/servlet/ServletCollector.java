@@ -120,7 +120,7 @@ public class ServletCollector extends HttpServlet {
     final long currentTime = System.currentTimeMillis();
     try {
 
-      log.info("new post from " + req.getRemoteHost() + " at " + currentTime);
+      log.debug("new post from " + req.getRemoteHost() + " at " + currentTime);
       java.io.InputStream in = req.getInputStream();
 
       ServletOutputStream l_out = resp.getOutputStream();
