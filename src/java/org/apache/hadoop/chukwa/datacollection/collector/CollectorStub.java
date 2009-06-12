@@ -98,9 +98,10 @@ public class CollectorStub {
       pool.setMaxThreads(THREADS);
       jettyServer.setThreadPool(pool);
       
-      // Add the cCllector servlet to server
+      // Add the collector servlet to server
       Context root = new Context(jettyServer, "/", Context.SESSIONS);
-      root.addServlet(new ServletHolder(new ServletCollector(conf)), "/chukwa");
+      root.addServlet(new ServletHolder(new ServletCollector(conf)), "/*");
+      root.setAllowNullPathInfo(false);
 
       // Add in any user-specified servlets
       for(Map.Entry<String, HttpServlet> e: servletsToAdd.entrySet()) {
