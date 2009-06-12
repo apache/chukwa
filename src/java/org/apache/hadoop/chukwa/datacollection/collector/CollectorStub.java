@@ -38,7 +38,7 @@ public class CollectorStub {
 
     DaemonWatcher.createInstance("Collector");
     try {
-      if (args.length > 0 && args[0].equalsIgnoreCase("help")|| args[0].equalsIgnoreCase("-help")) {
+      if (args.length > 0 && (args[0].equalsIgnoreCase("help")|| args[0].equalsIgnoreCase("-help"))) {
         System.out.println("usage: Normally you should just invoke CollectorStub without arguments.");
         System.out.println("A number of options can be specified here for debugging or special uses.  e.g.: ");
         System.out.println("Options include:\n\tportno=<#> \n\t" + "writer=pretend | <classname>"
