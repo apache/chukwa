@@ -39,10 +39,10 @@ public class TestAgent extends TestCase {
       ChukwaAgentController cli = new ChukwaAgentController("localhost", portno);
 
       for (int i = 1; i < 20; ++i) {
-        long adaptorId = cli.add(
+        String adaptorId = cli.add(
             "org.apache.hadoop.chukwa.util.ConstRateAdaptor", "raw" + i, "2000"
                 + i, 0);
-        assertTrue(adaptorId != -1);
+        assertNotNull(adaptorId);
         Thread.sleep(2000);
         cli.removeAll();
       }
@@ -62,17 +62,17 @@ public class TestAgent extends TestCase {
       conn.start();
       int count = agent.adaptorCount();
       for (int trial = 0; trial < 20; ++trial) {
-        ArrayList<Long> runningAdaptors = new ArrayList<Long>();
+        ArrayList<String> runningAdaptors = new ArrayList<String>();
 
         for (int i = 1; i < 7; ++i) {
-          long l = agent
+          String l = agent
               .processAddCommand("add  org.apache.hadoop.chukwa.util.ConstRateAdaptor  raw"
                   + i + " 2000" + i + " 0");
-          assertTrue(l != -1);
+          assertTrue(l != null);
           runningAdaptors.add(l);
         }
         Thread.sleep(1000);
-        for (Long l : runningAdaptors)
+        for (String l : runningAdaptors)
           agent.stopAdaptor(l, false);
         Thread.sleep(5000);
         assertTrue(agent.adaptorCount() == count);

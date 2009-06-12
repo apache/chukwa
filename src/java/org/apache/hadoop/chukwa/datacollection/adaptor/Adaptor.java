@@ -47,7 +47,7 @@ public interface Adaptor {
    * @param offset the stream offset of the first byte sent by this adaptor
    * @throws AdaptorException
    */
-  public void start(long adaptorID, String type, String status, long offset,
+  public void start(String adaptorID, String type, String status, long offset,
       ChunkReceiver dest, AdaptorManager c) throws AdaptorException;
 
   /**

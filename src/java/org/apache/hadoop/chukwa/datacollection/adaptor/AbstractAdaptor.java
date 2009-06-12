@@ -25,7 +25,7 @@ public abstract class AbstractAdaptor implements Adaptor {
 
   protected String type;
   protected ChunkReceiver dest;
-  protected long adaptorID;
+  protected String adaptorID;
   protected AdaptorManager control;
 
   @Override
@@ -34,7 +34,7 @@ public abstract class AbstractAdaptor implements Adaptor {
   }
 
   @Override
-  public final void start(long adaptorID, String type, String status, long offset,
+  public final void start(String adaptorID, String type, String status, long offset,
       ChunkReceiver dest, AdaptorManager c) throws AdaptorException {
     this.adaptorID = adaptorID;
     this.type = type;

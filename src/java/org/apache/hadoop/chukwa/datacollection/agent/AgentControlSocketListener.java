@@ -121,8 +121,8 @@ public class AgentControlSocketListener extends Thread {
       } else if (words[0].equalsIgnoreCase("close")) {
         connection.close();
       } else if (words[0].equalsIgnoreCase("add")) {
-        long newID = agent.processAddCommand(cmd);
-        if (newID != -1)
+        String newID = agent.processAddCommand(cmd);
+        if (newID != null)
           out.println("OK add completed; new ID is " + newID);
         else
           out.println("failed to start adaptor...check logs for details");
@@ -130,33 +130,31 @@ public class AgentControlSocketListener extends Thread {
         if (words.length < 2) {
           out.println("need to specify an adaptor to shut down, by number");
         } else {
-          long num = Long.parseLong(words[1]);
-          long offset = agent.stopAdaptor(num, true);
+          long offset = agent.stopAdaptor(words[1], true);
           if (offset != -1)
-            out.println("OK adaptor " + num + " stopping gracefully at "
+            out.println("OK adaptor " + words[1] + " stopping gracefully at "
                 + offset);
           else
-            out.println("FAIL: perhaps adaptor " + num + " does not exist");
+            out.println("FAIL: perhaps adaptor " + words[1] + " does not exist");
         }
       } else if (words[0].equalsIgnoreCase("stop")) {
         if (words.length < 2) {
           out.println("need to specify an adaptor to shut down, by number");
         } else {
-          long num = Long.parseLong(words[1]);
-          agent.stopAdaptor(num, false);
-          out.println("OK adaptor " + num + " stopped");
+          agent.stopAdaptor(words[1], false);
+          out.println("OK adaptor " + words[1] + " stopped");
         }
       } else if (words[0].equalsIgnoreCase("reloadCollectors")) {
         agent.getConnector().reloadConfiguration();
         out.println("OK reloadCollectors done");
       } else if (words[0].equalsIgnoreCase("list")) {
-        java.util.Map<Long, String> adaptorList = agent.getAdaptorList();
+        java.util.Map<String, String> adaptorList = agent.getAdaptorList();
 
         if (log.isDebugEnabled()) {
           log.debug("number of adaptors: " + adaptorList.size());
         }
 
-        for (Map.Entry<Long, String> a: adaptorList.entrySet()) {
+        for (Map.Entry<String, String> a: adaptorList.entrySet()) {
             out.print(a.getKey());
             out.print(") ");
             out.print(" ");

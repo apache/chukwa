@@ -542,7 +542,7 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
             }
 
 
-            long adaptorID = chukwaClient.add(ChukwaAgentController.CharFileTailUTF8NewLineEscaped,
+            String adaptorID = chukwaClient.add(ChukwaAgentController.CharFileTailUTF8NewLineEscaped,
                 recordType,currentLength + " " + log4jFileName, currentLength,
                 numRetries, retryInterval);
 
@@ -550,7 +550,7 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
             clientFinalizer = new ClientFinalizer(chukwaClient);
             Runtime.getRuntime().addShutdownHook(clientFinalizer);
 
-            if (adaptorID > 0) {
+            if (adaptorID != null) {
               log.debug("Added file tailing adaptor to chukwa agent for file "
                   + log4jFileName + ", adaptorId:" + adaptorID 
                   + " using this recordType :" + recordType 

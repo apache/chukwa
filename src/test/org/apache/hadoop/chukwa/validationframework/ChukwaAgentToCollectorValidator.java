@@ -160,8 +160,7 @@ public class ChukwaAgentToCollectorValidator {
     // 0 /var/log/messages
     // 0
     System.out.println("Adding adaptor");
-    long adaptor = cli
-        .add(
+    String adaptor = cli.add(
             "org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped",
             "AutomatedTestType", "0 " + inputFile, 0);
 

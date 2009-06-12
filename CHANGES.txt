@@ -34,6 +34,8 @@ Release 0.2.0 - 2009-06-30
 
   IMPROVEMENTS
 
+    CHUKWA-5. Adaptors have durable names. (asrabkin)
+
     CHUKWA-278. Improve post process manager and metric data loader to support data loading from pig aggregation. (Eric Yang)
 
     CHUKWA-263. Added ability to configure demux parameters during build time. (Jerome Boulon via Eric Yang)

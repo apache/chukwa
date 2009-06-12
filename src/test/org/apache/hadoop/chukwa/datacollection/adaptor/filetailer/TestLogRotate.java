@@ -48,10 +48,10 @@ public class TestLogRotate extends TestCase {
     // sleep for some time to make sure we don't get chunk from existing streams
     Thread.sleep(5000);
     File testFile = makeTestFile("chukwaLogRotateTest", 80);
-    long adaptorId = agent
-        .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8"
+    String adaptorId = agent
+        .processAddCommand("add lr =org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8"
             + " lines " + testFile + " 0");
-    assertTrue(adaptorId != -1);
+    assertTrue(adaptorId.equals("lr"));
     System.out.println("getting a chunk...");
     Chunk c = chunks.waitForAChunk();
     System.out.println("got chunk");

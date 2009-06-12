@@ -35,9 +35,9 @@ public class TestExecAdaptor extends TestCase {
   public void testWithPs() throws ChukwaAgent.AlreadyRunningException {
     try {
       ChukwaAgent agent = new ChukwaAgent();
-      agent
-          .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.ExecAdaptor ps ps aux 0");
-
+      String psAgentID = agent.processAddCommand(
+          "add org.apache.hadoop.chukwa.datacollection.adaptor.ExecAdaptor ps ps aux 0");
+      assertNotNull(psAgentID);
       Chunk c = chunks.waitForAChunk();
       System.out.println(new String(c.getData()));
     } catch (InterruptedException e) {

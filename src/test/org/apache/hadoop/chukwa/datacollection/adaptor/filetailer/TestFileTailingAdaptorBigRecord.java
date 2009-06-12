@@ -63,27 +63,27 @@ public class TestFileTailingAdaptorBigRecord extends TestCase {
       // sleep for some time to make sure we don't get chunk from existing
       // streams
       Thread.sleep(5000);
-      long adaptorId = agent
+      String adaptorId = agent
           .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped"
               + " BigRecord " + logFile + " 0");
-      assertTrue(adaptorId != -1);
+      assertNotNull(adaptorId);
 
       boolean record8Found = false;
       Chunk c = null;
       // Keep reading until record8
       // If the adaptor is stopped then Junit will fail with a timeOut
       while (!record8Found) {
-        c = chunks.waitForAChunk();
+        c = chunks.waitForAChunk();//only wait three minutes
         String data = new String(c.getData());
         if (c.getDataType().equals("BigRecord")
             && data.indexOf("8 abcdefghijklmnopqrstuvwxyz") >= 0) {
           record8Found = true;
         }
       }
-      agent.getAdaptor(adaptorId).shutdown();
+      agent.stopAdaptor(adaptorId, true);
       agent.shutdown();
     } catch (Exception e) {
-      Assert.fail("Exception in testBigRecord" + e.getMessage());
+      Assert.fail("Exception in testBigRecord: " + e.getMessage());
     } finally {
       if (f != null) {
         f.delete();

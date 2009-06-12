@@ -45,11 +45,11 @@ public class TestFileExpirationPolicy extends TestCase {
 
       FileTailingAdaptor.GRACEFUL_PERIOD = 30 * 1000;
 
-      long adaptorId = agent
+      String adaptorId = agent
           .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped MyType 0 /myWrongPath"
               + System.currentTimeMillis() + " 0");
 
-      assertTrue(adaptorId != -1);
+      assertTrue(adaptorId != null);
 
       assertNotNull(agent.getAdaptor(adaptorId));
 
@@ -91,11 +91,11 @@ public class TestFileExpirationPolicy extends TestCase {
       assertTrue(testFile.canRead() == true);
 
       FileTailingAdaptor.GRACEFUL_PERIOD = 30 * 1000;
-      long adaptorId = agent
+      String adaptorId = agent
           .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped MyType 0 "
               + logFile + " 0");
 
-      assertTrue(adaptorId != -1);
+      assertTrue(adaptorId != null);
 
       assertNotNull(agent.getAdaptor(adaptorId));
 
