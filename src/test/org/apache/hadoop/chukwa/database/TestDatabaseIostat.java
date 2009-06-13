@@ -143,7 +143,7 @@ public class TestDatabaseIostat extends TestCase {
       Context root = new Context(jettyCollector, "/", Context.SESSIONS);
       root.addServlet(new ServletHolder(new ServletCollector(conf)), "/*");
       jettyCollector.start();
-      jettyCollector.setStopAtShutdown(false);
+      jettyCollector.setStopAtShutdown(true);
       Thread.sleep(10000);
     } catch(Exception e) {
       fail("Fail to startup collector.");

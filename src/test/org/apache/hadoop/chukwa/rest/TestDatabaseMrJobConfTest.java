@@ -28,7 +28,7 @@ import org.apache.hadoop.chukwa.database.DatabaseConfig;
 import org.apache.hadoop.chukwa.database.Macro;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
 
-public class TestDatabaseMrJobConfTest extends TestDatabaseBaseTestCase {
+public class TestDatabaseMrJobConfTest extends DatabaseRestServerSetup {
     /* testing setup */
     public TestDatabaseMrJobConfTest() {
 	super();

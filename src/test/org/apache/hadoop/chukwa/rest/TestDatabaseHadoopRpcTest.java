@@ -28,7 +28,7 @@ import org.apache.hadoop.chukwa.database.DatabaseConfig;
 import org.apache.hadoop.chukwa.database.Macro;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
 
-public class TestDatabaseHadoopRpcTest extends TestDatabaseBaseTestCase {
+public class TestDatabaseHadoopRpcTest extends DatabaseRestServerSetup {
     /* testing setup */
     public TestDatabaseHadoopRpcTest() {
 	super();

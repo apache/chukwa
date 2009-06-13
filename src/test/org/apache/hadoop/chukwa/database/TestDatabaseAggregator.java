@@ -34,7 +34,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class TestDatabaseAggregator extends TestCase {
-    public TestDatabaseSetup dbSetup = new TestDatabaseSetup();
+    public DatabaseSetup dbSetup = new DatabaseSetup();
 
     public void setUp() {
 	dbSetup.setUpDatabase();

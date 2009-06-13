@@ -28,7 +28,7 @@ import org.apache.hadoop.chukwa.database.DatabaseConfig;
 import org.apache.hadoop.chukwa.database.Macro;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
 
-public class TestDatabaseSystemMetricsTest extends TestDatabaseBaseTestCase {
+public class TestDatabaseSystemMetricsTest extends DatabaseRestServerSetup {
     /* testing setup */
     public TestDatabaseSystemMetricsTest() {
 	super();
