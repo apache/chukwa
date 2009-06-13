@@ -28,7 +28,7 @@ import org.apache.hadoop.chukwa.database.DatabaseConfig;
 import org.apache.hadoop.chukwa.database.Macro;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
 
-public class TestDatabaseDiskTest extends TestDatabaseBaseTestCase {
+public class TestDatabaseDiskTest extends DatabaseRestServerSetup {
     /* testing setup */
     public TestDatabaseDiskTest() {
 	super();
