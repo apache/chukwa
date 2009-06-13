@@ -57,13 +57,13 @@ public class RetryListOfCollectors implements Iterator<String> {
       while ((line = br.readLine()) != null) {
         if (!line.contains("://")) {
           // no protocol, assume http
-          if (line.matches(".*:\\d+")) {
+          if (line.matches(".*:\\d+.*")) {
             parsedline = "http://" + line+"/";
           } else {
             parsedline = "http://" + line + ":" + portNo;
           }
         } else {
-          if (line.matches(".*:\\d+")) {
+          if (line.matches(".*:\\d+.*")) {
             parsedline = line;
           } else {
             parsedline = line + ":" + portNo;

@@ -57,18 +57,18 @@ public class TestRetryListOfCollectors extends TestCase {
     PrintWriter out = new PrintWriter(new FileOutputStream(tmpOutput));
     
     HashSet<String> validHosts = new HashSet<String>();
-    validHosts.add("http://host1:5052");
-    validHosts.add("http://host2:5050");
-    validHosts.add("http://host3:5052");
-    validHosts.add("http://host4:5050");
-    validHosts.add("http://host5:5052");
-    validHosts.add("http://host6:5052");
+    validHosts.add("http://host1:5052/");
+    validHosts.add("http://host2:5050/");
+    validHosts.add("http://host3:5052/");
+    validHosts.add("http://host4:5050/");
+    validHosts.add("http://host5:5052/");
+    validHosts.add("http://host6:5052/");
     
     out.println("host1");
     out.println("host2:5050");
     out.println("http://host3");
     out.println("http://host4:5050");
-    out.println("http://host5:5052");
+    out.println("http://host5:5052/");
     out.println("host6:5052");
     out.close();
     
