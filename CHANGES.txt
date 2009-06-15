@@ -64,7 +64,7 @@ Release 0.2.0 - 2009-06-30
 
   BUG FIXES
 
-    CHUKWA-294. Added post process data loader configuration.  (Eric Yang)
+    CHUKWA-10. Fix TestAgentConfig (asrabkin)
 
     CHUKWA-291. Append slash to collector paths. (asrabkin)
 
