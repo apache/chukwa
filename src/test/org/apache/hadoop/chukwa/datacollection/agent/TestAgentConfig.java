@@ -31,6 +31,7 @@ public class TestAgentConfig extends TestCase {
       ps.close();
 
       Configuration conf = new Configuration();
+      conf.set("chukwaAgent.control.port", "0");
       conf.set("chukwaAgent.initial_adaptors", initialAdaptors
           .getAbsolutePath());
       File checkpointDir = File.createTempFile("chukwatest", "checkpoint");
