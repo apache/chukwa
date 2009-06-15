@@ -64,6 +64,8 @@ Release 0.2.0 - 2009-06-30
 
   BUG FIXES
 
+    CHUKWA-294. Added post process data loader configuration.  (Eric Yang)
+
     CHUKWA-291. Append slash to collector paths. (asrabkin)
 
     CHUKWA-287. Fix crash on collector startup when no args present. (Eric Yang via asrabkin)
