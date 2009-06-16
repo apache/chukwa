@@ -20,8 +20,8 @@
 <project name="chukwa" default="main" xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	<property name="name" value="chukwa" />
-	<property name="chukwaVersion" value="0.1.2" />
-	<property name="chukwaRelease" value="alpha" />
+	<property name="chukwaVersion" value="0.2.0" />
+	<property name="chukwaRelease" value="dev" />
 	<property name="final.name" value="${name}-${chukwaVersion}" />
 	<property name="contrib.dir" value="${basedir}/contrib"/>
 	
