@@ -20,8 +20,8 @@
 <project name="chukwa" default="main" xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	<property name="name" value="chukwa" />
-	<property name="chukwaVersion" value="0.1.2" />
-	<property name="chukwaRelease" value="alpha" />
+	<property name="chukwaVersion" value="0.3.0" />
+	<property name="chukwaRelease" value="dev" />
 	<property name="final.name" value="${name}-${chukwaVersion}" />
 	<property name="contrib.dir" value="${basedir}/contrib"/>
 	
@@ -92,6 +92,7 @@
 		<path id="testClasspath">
 			<pathelement location="${build.classes}" />
 			<pathelement location="${test.build.classes}" />
+			<pathelement location="${test.build.dir}/conf" />
 			<fileset dir="${lib.dir}">
 				<include name="**/*.jar" />
 				<exclude name="**/excluded/" />
@@ -476,13 +477,16 @@
                         </fileset>
                 </copy>
                 <copy file="${basedir}/conf/chukwa-demux-conf.xml.template" tofile="${test.build.dir}/conf/chukwa-demux-conf.xml"></copy>
+                <copy file="${basedir}/conf/log4j.properties" tofile="${test.build.dir}/conf/log4j.properties"></copy>
 		<junit showoutput="${test.output}" fork="yes" printsummary="withOutAndErr" forkmode="${test.junit.fork.mode}" maxmemory="${test.junit.maxmemory}" dir="${test.build.dir}/classes/" timeout="${test.timeout}" errorProperty="tests.failed" failureProperty="tests.failed">
 			<classpath refid="testClasspath" />
 			<env key="CHUKWA_CONF_DIR" value="${test.build.dir}/conf" />
 			<env key="CHUKWA_DATA_DIR" value="${test.build.dir}/var" />
+			<env key="CHUKWA_LOG_DIR" value="${test.build.dir}/var/log" />
 			<env key="CHUKWA_HOME" value="${test.build.dir}" />
 			<sysproperty key="test.src.dir" value="${test.src.dir}" />
 			<sysproperty key="test.build.classes" value="${test.build.classes}" />
+			<sysproperty key="log4j.configuration" value="log4j.properties" />
 			<formatter type="${test.junit.output.format}" />
 			<batchtest todir="${test.build.dir}" unless="testcase">
 				<fileset dir="${test.src.dir}">
