@@ -62,6 +62,10 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-296. Fix jsp syntax error. (Terence Kwan via Eric Yang)
+
+    CHUKWA-294. Added post process data loader configuration.  (Eric Yang)
+
     CHUKWA-10. Fix TestAgentConfig (asrabkin)
 
     CHUKWA-291. Append slash to collector paths. (asrabkin)
