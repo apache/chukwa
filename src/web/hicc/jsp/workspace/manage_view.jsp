@@ -118,7 +118,7 @@
 </td>
 <td nowrap width="60">
 <c:choose>
-  <c:when test="${key}!=${default_view}"> 
+  <c:when test="${key!=default_view}"> 
     <input class="formButton" name="setDefault" value="Set As Default" type="button" onClick="setDefaultView('${key}');"/>
   </c:when>
   <c:otherwise>
