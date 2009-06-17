@@ -64,6 +64,8 @@ Release 0.2.0 - 2009-06-30
 
   BUG FIXES
 
+    CHUKWA-302. Removed hard coded dependency of Hadoop jar file. (Eric Yang)
+
     CHUKWA-298. Update branch 0.2 and trunk version number. (Eric Yang)
 
     CHUKWA-296. Fix jsp syntax error. (Terence Kwan via Eric Yang)

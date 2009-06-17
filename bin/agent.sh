@@ -30,7 +30,7 @@ function stop {
 }
 
 trap stop SIGHUP SIGINT SIGTERM
-echo "hadoop jar for agent is " ${HADOOP_20_JAR}
+echo "hadoop jar for agent is " ${HADOOP_JAR}
 
 if [ "X$1" = "Xstop" ]; then
    stop
@@ -41,4 +41,4 @@ if [ ! -d ${CHUKWA_LOG_DIR} ]; then
   chmod 777 ${CHUKWA_LOG_DIR}/metrics
 fi
 
-exec ${JAVA_HOME}/bin/java -Xms32M -Xmx64M -DAPP=agent -Dlog4j.configuration=chukwa-log4j.properties -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -classpath ${CHUKWA_CONF_DIR}:${CLASSPATH}:${CHUKWA_AGENT}:${CHUKWA_CORE}:${HADOOP_20_JAR}:${COMMON} org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent $@
+exec ${JAVA_HOME}/bin/java -Xms32M -Xmx64M -DAPP=agent -Dlog4j.configuration=chukwa-log4j.properties -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -classpath ${CHUKWA_CONF_DIR}:${CLASSPATH}:${CHUKWA_AGENT}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON} org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent $@

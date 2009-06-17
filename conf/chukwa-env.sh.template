@@ -25,16 +25,15 @@ export HADOOP_HOME="@TODO-HADOOP-HOME@"
 export HADOOP_CONF_DIR="@TODO-HADOOP-CONF-DIR@"
 
 # Optional (i.e. will try sensible defaults)
-# The location of a hadoop jars. Setting this will overrided the search for 
+# The location of a hadoop jars. Setting this will override the search for 
 # hadoop jars described above (using HADOOP_HOME). If HADOOP_JAR is not set, 
 # the default is to check HADOOP_HOME/build (above) for 
 # jars or classes, if those are not found, uses hadoop jars which
 # come with chukwa in $CHUKWA_HOME/hadoopjars. YOU SHOULD ONLY NEED TO 
-# USE THIS IF YOU ARE RUNNING A COLLECTOR WITHOUT A RUNNING 
-# HDFS! (i.e. writing datasink sequence files to local disk). Be careful 
-# if you use HDFS for chukwa storage, but haven't built the 
-# hadoop classes or jar because chukwa will use the default hadoop jars 
-# that come with ckukwa, you can easily suffer
+# USE THIS IF YOU ARE RUNNING AN AGENT WITH ANOTHER HADOOP VERSION RUNNING
+# ON THE SAME MACHINE.  Be careful if you use HDFS for chukwa storage, but 
+# haven't built the hadoop classes or jar because chukwa will use the 
+# default hadoop jars that come with chukwa, you can easily suffer
 # errors due to protocol mismatch between hadoop versions.
 #export HADOOP_JAR=${HADOOP_HOME}/build/hadoop-*-core.jar
 
