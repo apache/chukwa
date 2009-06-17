@@ -26,6 +26,7 @@ import junit.framework.TestCase;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
+import org.apache.hadoop.conf.Configuration;
 
 public class TestFileExpirationPolicy extends TestCase {
 
@@ -33,11 +34,13 @@ public class TestFileExpirationPolicy extends TestCase {
     ChukwaAgent agent = null;
 
     try {
-      agent = new ChukwaAgent();
+      Configuration conf = new ChukwaConfiguration();
+      conf.set("chukwaAgent.control.port", "0");
+      agent = new ChukwaAgent(conf);
       // Remove any adaptor left over from previous run
-      ChukwaConfiguration cc = new ChukwaConfiguration();
-      int portno = cc.getInt("chukwaAgent.control.port", 9093);
-      ChukwaAgentController cli = new ChukwaAgentController("localhost", portno);
+      
+ 
+      ChukwaAgentController cli = new ChukwaAgentController("localhost", agent.getControllerPort());
       cli.removeAll();
       // sleep for some time to make sure we don't get chunk from existing
       // streams
@@ -78,11 +81,12 @@ public class TestFileExpirationPolicy extends TestCase {
       String logFile = tempDir.getPath() + "/chukwatestExpiration.txt";
       testFile = makeTestFile(logFile, 8000);
 
-      agent = new ChukwaAgent();
+      Configuration conf = new ChukwaConfiguration();
+      conf.set("chukwaAgent.control.port", "0");
+      agent = new ChukwaAgent(conf);
       // Remove any adaptor left over from previous run
-      ChukwaConfiguration cc = new ChukwaConfiguration();
-      int portno = cc.getInt("chukwaAgent.control.port", 9093);
-      ChukwaAgentController cli = new ChukwaAgentController("localhost", portno);
+
+      ChukwaAgentController cli = new ChukwaAgentController("localhost", agent.getControllerPort());
       cli.removeAll();
       // sleep for some time to make sure we don't get chunk from existing
       // streams
