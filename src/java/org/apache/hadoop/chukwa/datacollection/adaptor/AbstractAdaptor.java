@@ -39,8 +39,8 @@ public abstract class AbstractAdaptor implements Adaptor {
     this.adaptorID = adaptorID;
     this.type = type;
     this.dest=dest;
-    start(status, offset);
     control = c;
+    start(status, offset);
   }
   
   public abstract void start(String status, long offset) throws AdaptorException;

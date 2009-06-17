@@ -35,6 +35,18 @@ public interface AdaptorManager {
   Adaptor getAdaptor(String id);
   String processAddCommand(String cmd);
   Map<String, String> getAdaptorList();
+  
+  /**
+   * Called to update the Agent status table.
+   * 
+   * Most adaptors should not call this. It is designed for adaptors that do
+   * some sort of local operation that needs checkpointing, but that doesn't
+   * emit chunks.  For instance, DirTailingAdaptor uses it to track sweeps. 
+   *  
+   * @param src the adaptor in question
+   * @param uuid the number to record as checkpoint.  Must be monotonically increasing.
+   */
+  public void reportCommit(Adaptor src, long uuid);
 
   static AdaptorManager NULL = new AdaptorManager() {
 
@@ -66,6 +78,10 @@ public interface AdaptorManager {
     @Override
     public long stopAdaptor(String id, boolean gracefully) {
       return 0;
+    }
+    
+    @Override
+    public void reportCommit(Adaptor a, long l) {
     }
   };
   

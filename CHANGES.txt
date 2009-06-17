@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-185. Ability to tail a whole directory. (asrabkin)
+
     CHUKWA-280. Added end to end test to detect iostat overflow. (Eric Yang)
 
     CHUKWA-194.  Backfilling tools.  (Jerome Boulon via asrabkin)
