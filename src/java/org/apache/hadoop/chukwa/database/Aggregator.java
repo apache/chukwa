@@ -74,18 +74,18 @@ public class Aggregator {
     return contents.toString();
   }
 
-  public void process(long start, long end, String query) {
+  public void process(long start, long end, String query) throws Throwable {
     try {
       Macro macroProcessor = new Macro(start, end, query);
       query = macroProcessor.toString();
       db.execute(query);
-    } catch (Exception e) {
-      log.error(query);
-      log.error(ExceptionUtil.getStackTrace(e));
+    } catch(Exception e) {
+      log.error("Query: "+query);
+      throw new Exception("Aggregation failed for: "+query);
     }
   }
 
-  public void process(String query) {
+  public void process(String query) throws Throwable {
     long start = current;
     long end = current;
     process(current, current, query);
@@ -130,10 +130,14 @@ public class Aggregator {
         } else {
           Aggregator dba = new Aggregator();
           long start = Calendar.getInstance().getTimeInMillis();
-          if(startTime!=0 && endTime!=0) {
-            dba.process(startTime, startTime, query[i]);
-          } else {
-            dba.process(query[i]);
+          try {
+            if(startTime!=0 && endTime!=0) {
+              dba.process(startTime, startTime, query[i]);
+            } else {
+              dba.process(query[i]);
+            }
+          } catch(Throwable e) {
+            log.error("Invalid query:"+query[i]);
           }
           long end = Calendar.getInstance().getTimeInMillis();
           long duration = end - start;

@@ -40,7 +40,7 @@ public class TestDatabaseDataExpiration extends TestCase {
   String cluster = "demo";
   long current = Calendar.getInstance().getTimeInMillis();
 
-  public void setUp() {
+  public void setUp() throws Exception {
     System.setProperty("CLUSTER","demo");
     DatabaseWriter db = new DatabaseWriter(cluster);
     String buffer = "";

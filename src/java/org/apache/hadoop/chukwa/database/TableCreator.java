@@ -28,6 +28,7 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 public class TableCreator {
   private static DatabaseConfig dbc = null;
@@ -39,74 +40,70 @@ public class TableCreator {
     }
   }
 
-  public void createTables() {
+  public void createTables() throws Exception {
     long now = (new Date()).getTime();
     createTables(now, now);
   }
 
-  public void createTables(long start, long end) {
+  public void createTables(long start, long end) throws Exception {
     String cluster = System.getProperty("CLUSTER");
     if (cluster == null) {
       cluster = "unknown";
     }
     DatabaseWriter dbw = new DatabaseWriter(cluster);
-    try {
-      HashMap<String, String> dbNames = dbc.startWith("report.db.name.");
-      Iterator<String> ki = dbNames.keySet().iterator();
-      while (ki.hasNext()) {
-        String name = ki.next();
-        String tableName = dbNames.get(name);
-        String[] tableList = dbc.findTableName(tableName, start, end);
-        log.debug("table name: " + tableList[0]);
-        try {
-          String[] parts = tableList[0].split("_");
-          int partition = Integer.parseInt(parts[parts.length - 2]);
-          String table = "";
-          for (int i = 0; i < parts.length - 2; i++) {
-            if (i != 0) {
-              table = table + "_";
-            }
-            table = table + parts[i];
+    HashMap<String, String> dbNames = dbc.startWith("report.db.name.");
+    Iterator<String> ki = dbNames.keySet().iterator();
+    while (ki.hasNext()) {
+      String name = ki.next();
+      String tableName = dbNames.get(name);
+      String[] tableList = dbc.findTableName(tableName, start, end);
+      log.debug("table name: " + tableList[0]);
+      try {
+        String[] parts = tableList[0].split("_");
+        int partition = Integer.parseInt(parts[parts.length - 2]);
+        String table = "";
+        for (int i = 0; i < parts.length - 2; i++) {
+          if (i != 0) {
+            table = table + "_";
           }
-          String query = "show create table " + table + "_template;";
-          ResultSet rs = dbw.query(query);
-          while (rs.next()) {
-            log.debug("table schema: " + rs.getString(2));
-            query = rs.getString(2);
-            log.debug("template table name:" + table + "_template");
-            log.debug("replacing with table name:" + table + "_" + partition
-                + "_" + parts[parts.length - 1]);
-            log.debug("creating table: " + query);
-            String createPartition = query.replaceFirst(table + "_template",
-                table + "_" + partition + "_" + parts[parts.length - 1]);
-            createPartition = createPartition.replaceFirst("TABLE",
-                "TABLE IF NOT EXISTS");
-            dbw.execute(createPartition);
-            partition++;
-            createPartition = query.replaceFirst(table + "_template", table
-                + "_" + partition + "_" + parts[parts.length - 1]);
-            createPartition = createPartition.replaceFirst("TABLE",
-                "TABLE IF NOT EXISTS");
-            dbw.execute(createPartition);
-            partition++;
-            createPartition = query.replaceFirst(table + "_template", table
-                + "_" + partition + "_" + parts[parts.length - 1]);
-            createPartition = createPartition.replaceFirst("TABLE",
-                "TABLE IF NOT EXISTS");
-            dbw.execute(createPartition);
-          }
-        } catch (NumberFormatException e) {
-          log.error("Error in parsing table partition number, skipping table:"
-              + tableList[0]);
-        } catch (ArrayIndexOutOfBoundsException e) {
-          log.debug("Skipping table:" + tableList[0]
-              + ", because it has no partition configuration.");
-        } catch (SQLException e) {
-
+          table = table + parts[i];
         }
+        String query = "show create table " + table + "_template;";
+        ResultSet rs = dbw.query(query);
+        while (rs.next()) {
+          log.debug("table schema: " + rs.getString(2));
+          query = rs.getString(2);
+          log.debug("template table name:" + table + "_template");
+          log.debug("replacing with table name:" + table + "_" + partition
+              + "_" + parts[parts.length - 1]);
+          log.debug("creating table: " + query);
+          String createPartition = query.replaceFirst(table + "_template",
+              table + "_" + partition + "_" + parts[parts.length - 1]);
+          createPartition = createPartition.replaceFirst("TABLE",
+              "TABLE IF NOT EXISTS");
+          dbw.execute(createPartition);
+          partition++;
+          createPartition = query.replaceFirst(table + "_template", table
+              + "_" + partition + "_" + parts[parts.length - 1]);
+          createPartition = createPartition.replaceFirst("TABLE",
+              "TABLE IF NOT EXISTS");
+          dbw.execute(createPartition);
+          partition++;
+          createPartition = query.replaceFirst(table + "_template", table
+              + "_" + partition + "_" + parts[parts.length - 1]);
+          createPartition = createPartition.replaceFirst("TABLE",
+              "TABLE IF NOT EXISTS");
+          dbw.execute(createPartition);
+        }
+      } catch (NumberFormatException e) {
+        log.error("Error in parsing table partition number, skipping table:"
+            + tableList[0]);
+      } catch (ArrayIndexOutOfBoundsException e) {
+        log.debug("Skipping table:" + tableList[0]
+            + ", because it has no partition configuration.");
+      } catch (SQLException e) {
+        throw e;
       }
-    } catch (Exception e) {
-      e.printStackTrace();
     }
   }
 
@@ -132,7 +129,11 @@ public class TableCreator {
         usage();
       }
     } else {
-      tc.createTables();
+      try {
+        tc.createTables();
+      } catch (Exception e) {
+        log.error(ExceptionUtil.getStackTrace(e));
+      }
     }
 
   }
