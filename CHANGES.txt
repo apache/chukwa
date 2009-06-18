@@ -64,6 +64,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-309. Fix MDL configuration for mr_job_conf table. (Cheng Zhang via Eric Yang)
+
     CHUKWA-301. Set TestFileExpirationPolicy controller port to 0 to avoid race condition. (Jerome Boulon via asrabkin)
 
     CHUKWA-302. Removed hard coded dependency of Hadoop jar file. (Eric Yang)
