@@ -37,7 +37,11 @@ public class TestDatabaseAggregator extends TestCase {
     public DatabaseSetup dbSetup = new DatabaseSetup();
 
     public void setUp() {
+      try{
 	dbSetup.setUpDatabase();
+      } catch (Exception e) {
+        fail(ExceptionUtil.getStackTrace(e));
+      }
     }
 
     public void tearDown() {

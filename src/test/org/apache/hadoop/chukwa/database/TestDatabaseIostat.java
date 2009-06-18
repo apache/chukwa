@@ -73,6 +73,7 @@ import org.apache.hadoop.chukwa.extraction.demux.Demux;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.chukwa.database.Macro;
 
 import junit.framework.TestCase;
@@ -177,7 +178,11 @@ public class TestDatabaseIostat extends TestCase {
     String tables[] = buffer.split(";");
     for(String table : tables) {
       if(table.length()>5) {
-        db.execute(table);
+        try {
+          db.execute(table);
+        } catch (Exception e) {
+          fail("Fail to retrieve meta data for database table: "+table);
+        }
       }
     }
     db.close();
@@ -185,7 +190,11 @@ public class TestDatabaseIostat extends TestCase {
       TableCreator tc = new TableCreator();
       long start = current;
       long end = current + (timeWindow[i]*1440*60*1000);
-      tc.createTables(start, end);
+      try {
+        tc.createTables(start, end);
+      } catch (Exception e) {
+        fail("Fail to create database tables."+ExceptionUtil.getStackTrace(e));
+      }
     }    
   }
 

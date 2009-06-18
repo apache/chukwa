@@ -54,7 +54,11 @@ public class TestDatabaseMetricDataLoader extends TestCase {
     String tables[] = buffer.split(";");
     for(String table : tables) {
       if(table.length()>5) {
-        db.execute(table);
+        try {
+          db.execute(table);
+        } catch (Exception e) {
+          fail("Fail to retrieve meta data from database table: "+table);
+        }
       }
     }
     db.close();
@@ -62,7 +66,11 @@ public class TestDatabaseMetricDataLoader extends TestCase {
       TableCreator tc = new TableCreator();
       long start = current;
       long end = current + (timeWindow[i]*1440*60*1000);
-      tc.createTables(start, end);
+      try {
+        tc.createTables(start, end);
+      } catch (Exception e) {
+        fail("Fail to create database tables.");
+      }
     }
   }
 
@@ -107,7 +115,8 @@ public class TestDatabaseMetricDataLoader extends TestCase {
   }
 
   public void testMetricDataLoader() {
-    String srcDir = System.getenv("CHUKWA_DATA_DIR");
+    boolean skip=false;
+    String srcDir = System.getenv("CHUKWA_DATA_DIR") + File.separator + "samples";
     try {
       ChukwaConfiguration conf = new ChukwaConfiguration();
       FileSystem fs = FileSystem.get(conf);
@@ -116,29 +125,34 @@ public class TestDatabaseMetricDataLoader extends TestCase {
         MetricDataLoader mdl = new MetricDataLoader(conf, fs, sequenceFile.getPath().toUri().toString());
         mdl.call();
       }
+      if(sources.length==0) {
+        skip=true;
+      }
     } catch (Throwable ex) {
       fail("SQL Exception: "+ExceptionUtil.getStackTrace(ex));
     }
-    DatabaseWriter db = new DatabaseWriter(cluster);
-    for(int i=0;i<tables.length;i++) {
-      String query = "select [avg("+tables[i]+")] from ["+tables[i]+"]";
-      Macro mp = new Macro(current,query);
-      query = mp.toString();
-      try {
-        ResultSet rs = db.query(query);
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int numberOfColumns = rsmd.getColumnCount();
-        while(rs.next()) {
-          for(int j=1;j<=numberOfColumns;j++) {
-            assertTrue("Table: "+tables[i]+", Column: "+rsmd.getColumnName(j)+", contains no data.",rs.getString(j)!=null);
+    if(!skip) {
+      DatabaseWriter db = new DatabaseWriter(cluster);
+      for(int i=0;i<tables.length;i++) {
+        String query = "select [avg("+tables[i]+")] from ["+tables[i]+"]";
+        Macro mp = new Macro(current,query);
+        query = mp.toString();
+        try {
+          ResultSet rs = db.query(query);
+          ResultSetMetaData rsmd = rs.getMetaData();
+          int numberOfColumns = rsmd.getColumnCount();
+          while(rs.next()) {
+            for(int j=1;j<=numberOfColumns;j++) {
+              assertTrue("Table: "+tables[i]+", Column: "+rsmd.getColumnName(j)+", contains no data.",rs.getString(j)!=null);
+            }
           }
+        } catch(Throwable ex) {
+          fail("MetricDataLoader failed: "+ExceptionUtil.getStackTrace(ex));
         }
-      } catch(Throwable ex) {
-        fail("MetricDataLoader failed: "+ExceptionUtil.getStackTrace(ex));
       }
+      db.close();
+      assertTrue("MetricDataLoader executed successfully.",true);
     }
-    db.close();
-    assertTrue("MetricDataLoader executed successfully.",true);
   }
 
 }

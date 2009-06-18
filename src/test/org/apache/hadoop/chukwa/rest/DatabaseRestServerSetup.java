@@ -84,7 +84,7 @@ public class DatabaseRestServerSetup extends TestCase {
 	  return cluster;
   }
 
-  protected void setUp() {
+  protected void setUp() throws Exception {
 	  dbSetup.setUpDatabase();
 	  String cluster = getCluster();
 	  DatabaseWriter dbw = new DatabaseWriter(cluster);

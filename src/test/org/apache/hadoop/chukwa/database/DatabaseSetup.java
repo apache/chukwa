@@ -20,6 +20,7 @@ package org.apache.hadoop.chukwa.database;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
 import org.apache.hadoop.chukwa.database.TableCreator;
 
@@ -29,7 +30,7 @@ public class DatabaseSetup {
   public String cluster = "demo";
   public long current = Calendar.getInstance().getTimeInMillis();
 
-  public void setUpDatabase() {
+  public void setUpDatabase() throws Exception {
     System.setProperty("CLUSTER","demo");
     DatabaseWriter db = new DatabaseWriter(cluster);
     String buffer = "";

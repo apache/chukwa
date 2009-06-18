@@ -82,7 +82,7 @@ public class DatabaseWriter {
     }
   }
 
-  public void execute(String query) {
+  public void execute(String query) throws SQLException {
     try {
       stmt = conn.createStatement();
       stmt.execute(query);
@@ -93,6 +93,7 @@ public class DatabaseWriter {
       log.error("SQLException: " + ex.getMessage());
       log.error("SQLState: " + ex.getSQLState());
       log.error("VendorError: " + ex.getErrorCode());
+      throw ex;
     } finally {
       if (stmt != null) {
         try {
