@@ -34,6 +34,8 @@ Release 0.2.0 - 2009-06-30
 
   IMPROVEMENTS
 
+    CHUKWA-276. Fix hourly and daily rolling to use a single reducer. (Jerome Boulon via Eric Yang)
+
     CHUKWA-313. Removed the 10 second ack from SeqFileWriter. (Eric Yang)
 
     CHUKWA-5. Adaptors have durable names. (asrabkin)
