@@ -68,6 +68,8 @@ Release 0.2.0 - 2009-06-30
 
   BUG FIXES
 
+    CHUKWA-319. Added cluster name to pig user aggregation script. (Cheng Zhang via Eric Yang)
+
     CHUKWA-316. Added explicit rule for MetricDataLoader to prevent loading of data. (Eric Yang)
 
     CHUKWA-312. Fixed chukwa-pig.jar class path for pig aggregation. (Cheng Zhang via Eric Yang)

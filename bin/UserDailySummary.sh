@@ -64,7 +64,7 @@ do
         uniqdir="/chukwa/pig/${cluster}_${recType}_${day}_`date +%s`"
         output="$uniqdir/${day}.D"
 
-        "$JAVA_HOME"/bin/java -cp ${CHUKWA_CORE}:${HADOOP_JAR}:${HADOOP_CONF_DIR}:${CHUKWA_HOME}/contrib/chukwa-pig/lib/pig.jar org.apache.pig.Main -param chukwaCore=${CHUKWA_CORE} -param chukwaPig=${CHUKWA_HOME}/contrib/chukwa-pig/chukwa-pig.jar -param output=${output} -param jobfile=$jobfile -param taskfile=$taskfile -param TIMESTAMP=`date -d ${day} +%s`000 ${pig}
+        "$JAVA_HOME"/bin/java -cp ${CHUKWA_CORE}:${HADOOP_JAR}:${HADOOP_CONF_DIR}:${CHUKWA_HOME}/contrib/chukwa-pig/lib/pig.jar org.apache.pig.Main -param chukwaCore=${CHUKWA_CORE} -param chukwaPig=${CHUKWA_HOME}/contrib/chukwa-pig/chukwa-pig.jar -param output=${output} -param jobfile=$jobfile -param taskfile=$taskfile -param cluster=$cluster -param TIMESTAMP=`date -d ${day} +%s`000 ${pig}
 
         cmd="${JAVA_HOME}/bin/java -DAPP=UserDailySummary -Dlog4j.configuration=chukwa-log4j.properties -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -classpath ${CHUKWA_HOME}/contrib/chukwa-pig/chukwa-pig.jar:${HADOOP_CONF_DIR}:${CLASSPATH}:${CHUKWA_CORE}:${COMMON}:${HADOOP_JAR}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.tools.PigMover ${cluster} ${recType} ${uniqdir}  ${output} /chukwa/postProcess/"
         echo $cmd
