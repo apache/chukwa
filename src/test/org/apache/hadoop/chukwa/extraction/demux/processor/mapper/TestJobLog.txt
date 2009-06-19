@@ -87,3 +87,4 @@ MapAttempt TASK_TYPE="MAP" TASKID="task_200904060626_2141_m_000108" TASK_ATTEMPT
         at org\.apache\.hadoop\.mapred\.Child\.main(Child\.java:156)
 " .
 MapAttempt TASK_TYPE="CLEANUP" TASKID="task_200904060626_2141_m_000197" TASK_ATTEMPT_ID="attempt_200904060626_2141_m_000197_0" START_TIME="1239190961843" TRACKER_NAME="tracker_kry3083\.chukwa-example\.com:localhost/127\.0\.0\.1:60970" HTTP_PORT="50060" .
+Task TASKID="task_200903062215_0577_m_000002" TASK_TYPE="MAP" START_TIME="0" SPLITS="/default-rack/test33\.chukwa-example\.com" .

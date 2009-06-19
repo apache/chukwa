@@ -173,7 +173,10 @@ public class JobLog extends AbstractProcessor {
 
 				int pos = pairs[i].lastIndexOf('"');
 				String value = pairs[i].substring(0, pos);
-				put(key, value);
+				if(key.intern()=="START_TIME".intern() && value.intern()=="0".intern()) {
+				} else {
+	                          put(key, value);				  
+				}
 				if(i == (pairs.length-1))
 					break;
 				key = pairs[i].substring(pos + 2);

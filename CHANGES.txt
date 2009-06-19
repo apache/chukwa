@@ -64,6 +64,12 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-304. Propagate exception upward for database test cases. (Eric Yang)
+
+    CHUKWA-314. Added filtering for start_time to remove invalid value. (Eric Yang)
+
+    CHUKWA-304. Propagate exception upward for database test cases. (Eric Yang)
+
     CHUKWA-309. Fix MDL configuration for mr_job_conf table. (Cheng Zhang via Eric Yang)
 
     CHUKWA-301. Set TestFileExpirationPolicy controller port to 0 to avoid race condition. (Jerome Boulon via asrabkin)
