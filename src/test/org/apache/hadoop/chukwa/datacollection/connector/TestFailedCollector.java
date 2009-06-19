@@ -52,6 +52,7 @@ public class TestFailedCollector extends TestCase {
       System.out.println("done");
       agent.shutdown();
       connector.shutdown();
+      Thread.sleep(2000);
     } catch (Exception e) {
       e.printStackTrace();
     }

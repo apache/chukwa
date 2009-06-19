@@ -71,6 +71,7 @@ public class TestFileTailingAdaptors extends TestCase {
     assertTrue(c.getDataType().equals("lines"));
     agent.stopAdaptor(adaptorId, false);
     agent.shutdown();
+    Thread.sleep(2000);
   }
 
   private File makeTestFile(String name, int size) throws IOException {

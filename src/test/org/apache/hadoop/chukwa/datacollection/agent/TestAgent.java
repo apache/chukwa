@@ -48,6 +48,7 @@ public class TestAgent extends TestCase {
       }
       agent.shutdown();
       conn.shutdown();
+      Thread.sleep(2000);
     } catch (Exception e) {
       e.printStackTrace();
       fail(e.toString());
@@ -78,6 +79,7 @@ public class TestAgent extends TestCase {
         assertTrue(agent.adaptorCount() == count);
       }
       agent.shutdown();
+      Thread.sleep(2000);
     } catch (Exception e) {
       e.printStackTrace();
       fail(e.toString());

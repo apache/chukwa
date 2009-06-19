@@ -70,6 +70,8 @@ Release 0.2.0 - 2009-06-30
 
   BUG FIXES
 
+    CHUKWA-321. Added 2 seconds sleep to avoid chukwa agent race condition. (Eric Yang)
+
     CHUKWA-319. Added cluster name to pig user aggregation script. (Cheng Zhang via Eric Yang)
 
     CHUKWA-316. Added explicit rule for MetricDataLoader to prevent loading of data. (Eric Yang)
