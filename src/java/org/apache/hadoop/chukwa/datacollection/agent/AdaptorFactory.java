@@ -23,11 +23,13 @@ import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.log4j.Logger;
 
 /**
- * Produces new unconfigured adaptors, given the class name of the appender type
- * 
+ * Produces new unconfigured adaptors, given the class name of the appender type.
+ *  Will try the name both in the default package, and then with 
+ *  'org.apache.hadoop.chukwa.datacollection.adaptor' prepended.
+ *  
  */
 public class AdaptorFactory {
-
+  public static final String PREPENDED_PACKAGE = "org.apache.hadoop.chukwa.datacollection.adaptor.";
   static Logger log = Logger.getLogger(ChukwaAgent.class);
 
   /**
@@ -48,25 +50,24 @@ public class AdaptorFactory {
       } else
         return null;
     } catch (Exception e1) {
-      log
-          .warn("Error instantiating new adaptor by class name, "
+      log.debug("Error instantiating new adaptor by class name, "
               + "attempting again, but with default chukwa package prepended, i.e. "
-              + "org.apache.hadoop.chukwa.datacollection.adaptor." + className
+              + PREPENDED_PACKAGE + className
               + ". " + e1);
       try {
         // if failed, try adding default class prefix
         Object obj2 = Class.forName(
-            "org.apache.hadoop.chukwa.datacollection.adaptor." + className)
+            PREPENDED_PACKAGE + className)
             .newInstance();
         if (Adaptor.class.isInstance(obj2)) {
-          log.debug("Succeeded in finding class by adding default chukwa "
+          log.debug("Succeeded in finding class by adding default adaptor "
               + "namespace prefix to class name profided");
           return (Adaptor) obj2;
         } else
           return null;
       } catch (Exception e2) {
-        System.out.println("Also error instantiating new adaptor by classname"
-            + "with prefix added" + e2);
+        log.warn("Error instantiating new adaptor"+ className +  " by classname"
+            + " and also with \"o.a.h.c.datacollection.adaptor\" prefix added", e2);
         return null;
       }
     }

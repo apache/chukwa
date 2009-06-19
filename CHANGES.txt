@@ -66,6 +66,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-42. Clean up logging of adaptor creation. (Ari Rabkin)
+
     CHUKWA-312. Fixed chukwa-pig.jar class path for pig aggregation. (Cheng Zhang via Eric Yang)
 
     CHUKWA-304. Propagate exception upward for database test cases. (Jerome Boulon via Eric Yang)
