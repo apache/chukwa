@@ -68,6 +68,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-319. Added cluster name to pig user aggregation script. (Cheng Zhang via Eric Yang)
+
     CHUKWA-316. Added explicit rule for MetricDataLoader to prevent loading of data. (Eric Yang)
 
     CHUKWA-42. Clean up logging of adaptor creation. (Ari Rabkin)
