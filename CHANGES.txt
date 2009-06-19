@@ -66,6 +66,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-316. Added explicit rule for MetricDataLoader to prevent loading of data. (Eric Yang)
+
     CHUKWA-42. Clean up logging of adaptor creation. (Ari Rabkin)
 
     CHUKWA-312. Fixed chukwa-pig.jar class path for pig aggregation. (Cheng Zhang via Eric Yang)
