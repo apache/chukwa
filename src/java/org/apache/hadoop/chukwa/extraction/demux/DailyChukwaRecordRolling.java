@@ -293,6 +293,7 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
     FileInputFormat.setInputPaths(conf, args[0]);
     FileOutputFormat.setOutputPath(conf, new Path(args[1]));
     conf.setJobPriority(JobPriority.LOW);
+    conf.setNumReduceTasks(1);
     JobClient.runJob(conf);
     return 0;
   }

@@ -38,5 +38,5 @@ if [ "X$1" = "Xstop" ]; then
 fi
 
 # run ArchiveManager
-${JAVA_HOME}/bin/java -Djava.library.path=${JAVA_LIBRARY_PATH} -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DAPP=archiveManager -Dlog4j.configuration=chukwa-log4j.properties -classpath ${CHUKWA_HOME}/conf:${CLASSPATH}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${tools} org.apache.hadoop.chukwa.extraction.archive.ChukwaArchiveManager
+${JAVA_HOME}/bin/java -Djava.library.path=${JAVA_LIBRARY_PATH} -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DAPP=archiveManager -Dlog4j.configuration=chukwa-log4j.properties -classpath ${CHUKWA_CONF_DIR}:${HADOOP_CONF_DIR}:${CLASSPATH}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${tools} org.apache.hadoop.chukwa.extraction.archive.ChukwaArchiveManager
 

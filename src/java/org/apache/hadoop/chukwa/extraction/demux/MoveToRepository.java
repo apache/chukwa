@@ -193,9 +193,7 @@ public class MoveToRepository {
         boolean rename = fs.rename(recordFile,destFilePath);
         done = true;
         log.info(">>>>>>>>>>>> after Rename" + destFilePath + " , rename:"+rename);
-      } else {
-        log.info("increment spill for :" + destFilePath);
-      }
+      } 
       count++;
 
       if (count > 1000) {
