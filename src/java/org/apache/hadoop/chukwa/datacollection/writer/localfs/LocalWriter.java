@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.datacollection.writer.localfs;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -112,7 +113,8 @@ public class LocalWriter implements ChukwaWriter {
 
   private long timePeriod = -1;
   private long nextTimePeriodComputation = -1;
-
+  private int minPercentFreeDisk = 20;
+  
   static {
     try {
       localHostAddr = "_" + InetAddress.getLocalHost().getHostName() + "_";
@@ -151,7 +153,7 @@ public class LocalWriter implements ChukwaWriter {
     }
 
     
-    
+    minPercentFreeDisk = conf.getInt("chukwaCollector.minPercentFreeDisk",20);
     
     rotateInterval = conf.getInt("chukwaCollector.rotateInterval",
         1000 * 60 * 5);// defaults to 5 minutes
@@ -160,11 +162,11 @@ public class LocalWriter implements ChukwaWriter {
         .getInt("chukwaCollector.writeChunkRetries", 10);
     writeChunkRetries = initWriteChunkRetries;
 
-    // check if they've told us the file system to use
     log.info("rotateInterval is " + rotateInterval);
     log.info("outputDir is " + localOutputDir);
     log.info("localFileSystem is " + fs.getUri().toString());
-
+    log.info("minPercentFreeDisk is " + minPercentFreeDisk);
+    
     // Setup everything by rotating
     rotate();
 
@@ -300,6 +302,7 @@ public class LocalWriter implements ChukwaWriter {
             fs.delete(previousPath, false);
           }
         }
+        
         Path newOutputPath = new Path(newName + ".chukwa");
         FSDataOutputStream newOutputStr = fs.create(newOutputPath);
         
@@ -320,6 +323,23 @@ public class LocalWriter implements ChukwaWriter {
       }
     }
  
+    // Check for disk space
+    File directory4Space = new File(localOutputDir);
+    long totalSpace = directory4Space.getTotalSpace();
+    long freeSpace = directory4Space.getFreeSpace();
+    long minFreeAvailable = (totalSpace * minPercentFreeDisk) /100;
+    
+    if (log.isDebugEnabled()) {
+      log.debug("Directory: " + localOutputDir + ", totalSpace: " + totalSpace 
+          + ", freeSpace: " + freeSpace + ", minFreeAvailable: " + minFreeAvailable
+          + ", percentFreeDisk: " + minPercentFreeDisk);
+    }
+  
+    if (freeSpace < minFreeAvailable) {
+      log.fatal("No space left on device, Bail out!");
+      DaemonWatcher.bailout(-1);
+    } 
+    
     log.debug("finished rotate()");
   }
 
