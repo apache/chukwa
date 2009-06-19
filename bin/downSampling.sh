@@ -103,11 +103,11 @@ do
 
                         # echo chukwa_home:${CHUKWA_HOME} chukwa_conf:${CHUKWA_CONF_DIR} cluster:$cluster day:$day pig:$pig recType:$recType newRecType:$newRecType time:$time timePeriod:$timePeriod input:$input output:$output;
                         echo ${CHUKWA_CONF_DIR} cluster:$cluster day:$day pig:$pig recType:$recType newRecType:$newRecType time:$time timePeriod:$timePeriod input:$input output:$output;
-                        cmd="${JAVA_HOME}/bin/java -DHADOOP_CONF_DIR=${HADOOP_CONF_DIR} -classpath ${CHUKWA_CORE}:${HADOOP_JAR}:${HADOOP_CONF_DIR}:${CHUKWA_HOME}/lib/pig.jar org.apache.pig.Main -param chukwaCore=${CHUKWA_CORE} -param chukwaPig=${CHUKWA_HOME}/chukwa-pig.jar -param input='${input}' -param output='${output}' -param recType='${newRecType}' -param timePeriod=${timePeriod} -param cluster=${cluster} ${pig}"
+                        cmd="${JAVA_HOME}/bin/java -DHADOOP_CONF_DIR=${HADOOP_CONF_DIR} -classpath ${CHUKWA_CORE}:${HADOOP_JAR}:${HADOOP_CONF_DIR}:${CHUKWA_HOME}/contrib/chukwa-pig/lib/pig.jar org.apache.pig.Main -param chukwaCore=${CHUKWA_CORE} -param chukwaPig=${CHUKWA_HOME}/contrib/chukwa-pig/chukwa-pig.jar -param input='${input}' -param output='${output}' -param recType='${newRecType}' -param timePeriod=${timePeriod} -param cluster=${cluster} ${pig}"
                         # echo $cmd
                         $cmd
 
-                        cmd="${JAVA_HOME}/bin/java -DAPP=PigDownSampling -Dlog4j.configuration=chukwa-log4j.properties -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -classpath ${CHUKWA_HOME}/chukwa-pig.jar:${HADOOP_CONF_DIR}:${CLASSPATH}:${CHUKWA_CORE}:${COMMON}:${HADOOP_JAR}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.tools.PigMover ${cluster} ${newRecType} ${uniqdir}  ${output} /chukwa/postProcess/"
+                        cmd="${JAVA_HOME}/bin/java -DAPP=PigDownSampling -Dlog4j.configuration=chukwa-log4j.properties -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -classpath ${CHUKWA_HOME}/contrib/chukwa-pig/chukwa-pig.jar:${HADOOP_CONF_DIR}:${CLASSPATH}:${CHUKWA_CORE}:${COMMON}:${HADOOP_JAR}:${CHUKWA_CONF_DIR} org.apache.hadoop.chukwa.tools.PigMover ${cluster} ${newRecType} ${uniqdir}  ${output} /chukwa/postProcess/"
                         # echo $cmd
                         $cmd
                 done
