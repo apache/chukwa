@@ -90,6 +90,9 @@ public class TestJobLogEntry extends TestCase {
 		assertEquals("1", counters.get("Counter:org.apache.hadoop.mapred.JobInProgress$Counter:TOTAL_LAUNCHED_REDUCES").toString());
 		assertEquals("20471", counters.get("Counter:FileSystemCounters:HDFS_BYTES_READ").toString());
 		
+		log = jobLog.getJobLogLine(testLogList.get(90));
+		assertTrue("START_TIME should not exist", log.get("START_TIME")==null);
+
 		log = jobLog.getJobLogLine("");
 		assertTrue(log==null);
 		
