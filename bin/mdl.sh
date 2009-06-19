@@ -24,5 +24,5 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-${JAVA_HOME}/bin/java -Xms2048M -Xmx3096M -DDATACONFIG=${CHUKWA_CONF_DIR}/mdl.xml -Djava.library.path=${JAVA_LIBRARY_PATH} -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DAPP=MDL -Dlog4j.configuration=chukwa-log4j.properties -classpath ${CLASSPATH}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${tools}:${CHUKWA_HOME}/conf org.apache.hadoop.chukwa.extraction.database.MetricDataLoader $@
+${JAVA_HOME}/bin/java -Xms2048M -Xmx3096M -DDATACONFIG=${CHUKWA_CONF_DIR}/mdl.xml -Djava.library.path=${JAVA_LIBRARY_PATH} -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DAPP=MDL -Dlog4j.configuration=chukwa-log4j.properties -classpath ${CLASSPATH}:${CHUKWA_CORE}:${HADOOP_JAR}:${COMMON}:${tools}:${CHUKWA_HOME}/conf org.apache.hadoop.chukwa.dataloader.MetricDataLoader $@
 
