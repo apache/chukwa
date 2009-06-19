@@ -1,7 +1,7 @@
 register $chukwaCore
 register $chukwaPig
 
-define seqWriter org.apache.hadoop.chukwa.ChukwaStorage('c_timestamp','userid', 'totalJobs', 'dataLocalMaps', 'rackLocalMaps', 'remoteMaps', 'mapInputBytes', 'reduceOutputRecords', 'mapSlotHours', 'reduceSlotHours', 'totalMaps', 'totalReduces','c_recordtype','c_source','c_application');
+define seqWriter org.apache.hadoop.chukwa.ChukwaStorage('c_timestamp','userid', 'totalJobs', 'dataLocalMaps', 'rackLocalMaps', 'remoteMaps', 'mapInputBytes', 'reduceOutputRecords', 'mapSlotHours', 'reduceSlotHours', 'totalMaps', 'totalReduces','c_recordtype','c_source','c_application', 'c_cluster');
 
 /*****************************************************************/
 /*********************** Task data begin *************************/
@@ -63,7 +63,7 @@ userJobRecords = foreach JoinedJobTask generate JobUser::user as user, JobTime::
 
 -- group by user
 userGroup = group userJobRecords by user;
-userSummary = foreach userGroup generate $TIMESTAMP as ts, group as user, COUNT(userJobRecords.jobId) as totalJobs, SUM(userJobRecords.dataLocalMaps) as dataLocalMaps, SUM(userJobRecords.rackLocalMaps) as rackLocalMaps, SUM(userJobRecords.remoteMaps) as remoteMaps, SUM(userJobRecords.mapInputBytes) as mapInputBytes, SUM(userJobRecords.reduceOutputRecords) as reduceOutputRecords, SUM(userJobRecords.mapSlotHours) as mapSlotHours, SUM(userJobRecords.reduceSlotHours) as reduceSlotHours, SUM(userJobRecords.totalMaps) as totalMaps, SUM(userJobRecords.totalReduces) as totalReduces;
+userSummary = foreach userGroup generate '$TIMESTAMP' as ts, group as user, COUNT(userJobRecords.jobId) as totalJobs, SUM(userJobRecords.dataLocalMaps) as dataLocalMaps, SUM(userJobRecords.rackLocalMaps) as rackLocalMaps, SUM(userJobRecords.remoteMaps) as remoteMaps, SUM(userJobRecords.mapInputBytes) as mapInputBytes, SUM(userJobRecords.reduceOutputRecords) as reduceOutputRecords, SUM(userJobRecords.mapSlotHours) as mapSlotHours, SUM(userJobRecords.reduceSlotHours) as reduceSlotHours, SUM(userJobRecords.totalMaps) as totalMaps, SUM(userJobRecords.totalReduces) as totalReduces, 'UserDailySummary' as c_recordtype, 'all' as c_source, 'UserSummaryPigScript' as c_application, '$cluster' as c_cluster;
 
 describe userSummary;
 -- dump userSummary;

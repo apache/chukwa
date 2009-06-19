@@ -124,7 +124,7 @@ public class MetricDataLoader implements Callable {
           metricName.append(".");
           metricName.append(name);
           if(!transformer.containsKey(metricName.toString())) {
-            transformer.put(metricName.toString(), name);
+            transformer.put(metricName.toString().toLowerCase(), name);
           }          
         }
         rs.close();
