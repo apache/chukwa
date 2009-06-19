@@ -64,6 +64,10 @@ public class TestFileExpirationPolicy extends TestCase {
     } finally {
       if (agent != null) {
         agent.shutdown();
+        try {
+          Thread.sleep(2000);
+        } catch (Exception ex) {
+        }
       }
     }
 
@@ -109,11 +113,16 @@ public class TestFileExpirationPolicy extends TestCase {
       Thread.sleep(FileTailingAdaptor.GRACEFUL_PERIOD + 10000);
       assertNull(agent.getAdaptor(adaptorId));
       agent.shutdown();
+      Thread.sleep(2000);
     } catch (Exception e) {
       Assert.fail("Exception in TestFileExpirationPolicy");
     } finally {
       if (agent != null) {
         agent.shutdown();
+        try {
+          Thread.sleep(2000);
+        } catch (Exception ex) {
+        }
       }
     }
   }

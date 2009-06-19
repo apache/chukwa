@@ -62,6 +62,7 @@ public class TestRawAdaptor extends TestCase {
     assertTrue(c.getSeqID() == testFile.length());
     agent.stopAdaptor(adaptorId, false);
     agent.shutdown();
+    Thread.sleep(2000);
   }
 
   private File makeTestFile(String name, int size) throws IOException {

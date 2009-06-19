@@ -82,6 +82,7 @@ public class TestFileTailingAdaptorBigRecord extends TestCase {
       }
       agent.stopAdaptor(adaptorId, true);
       agent.shutdown();
+      Thread.sleep(2000);
     } catch (Exception e) {
       Assert.fail("Exception in testBigRecord: " + e.getMessage());
     } finally {

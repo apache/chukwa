@@ -51,6 +51,7 @@ public class TestAgentConfig extends TestCase {
       System.out
           .println("---------------------done with first run, now stopping");
       agent.shutdown();
+      Thread.sleep(2000);
       assertEquals(0, agent.adaptorCount());
       // at this point, there should be a checkpoint file with a tailer reading
       // foo.
@@ -71,6 +72,7 @@ public class TestAgentConfig extends TestCase {
       assertNotNull(agent.getAdaptor("testAdaptor"));
       assertTrue(agent.getAdaptor("testAdaptor").getStreamName().contains("foo"));
       agent.shutdown();
+      Thread.sleep(2000);
       System.out.println("---------------------done");
 
     } catch (Exception e) {
@@ -98,6 +100,7 @@ public class TestAgentConfig extends TestCase {
       ChukwaAgent agent = new ChukwaAgent(conf);
       assertEquals(0, agent.getAdaptorList().size());
       agent.shutdown();
+      Thread.sleep(2000);
       assertTrue(NONCE_DIR.exists());
       for (File f : NONCE_DIR.listFiles())
         f.delete();
@@ -107,6 +110,7 @@ public class TestAgentConfig extends TestCase {
       agent = new ChukwaAgent(conf);
       assertEquals(0, agent.getAdaptorList().size());
       agent.shutdown();
+      Thread.sleep(2000);
       for (File f : NONCE_DIR.listFiles())
         f.delete();
 
@@ -117,6 +121,7 @@ public class TestAgentConfig extends TestCase {
       assertEquals(0, agent.getAdaptorList().size());
       agent.processAddCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor testdata  0");
       agent.shutdown();
+      Thread.sleep(2000);
       assertTrue(new File(NONCE_DIR, "chukwa_checkpoint_1").exists());
 
       System.out
@@ -124,6 +129,7 @@ public class TestAgentConfig extends TestCase {
       agent = new ChukwaAgent(conf);
       assertEquals(1, agent.getAdaptorList().size());
       agent.shutdown();
+      Thread.sleep(2000);
       // checkpoint # increments by one on boot and reload
       assertTrue(new File(NONCE_DIR, "chukwa_checkpoint_2").exists());
 

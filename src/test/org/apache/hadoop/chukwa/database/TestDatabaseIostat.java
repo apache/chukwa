@@ -224,6 +224,7 @@ public class TestDatabaseIostat extends TestCase {
       jettyCollector.stop();
       mr.shutdown();
       dfs.shutdown();
+      Thread.sleep(2000);
     } catch(Exception e) {
       e.printStackTrace();
       fail(e.toString());
