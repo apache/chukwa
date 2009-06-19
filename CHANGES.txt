@@ -66,6 +66,8 @@ Release 0.2.0 - 2009-06-30
 
   BUG FIXES
 
+    CHUKWA-316. Added explicit rule for MetricDataLoader to prevent loading of data. (Eric Yang)
+
     CHUKWA-312. Fixed chukwa-pig.jar class path for pig aggregation. (Cheng Zhang via Eric Yang)
 
     CHUKWA-314. Added filtering for start_time to remove invalid value. (Jerome Boulon via Eric Yang)

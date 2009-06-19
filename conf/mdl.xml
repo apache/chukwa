@@ -1374,6 +1374,12 @@
   <name>metric.jobdata.jobconf-json</name>
   <value>jobconf</value>
 </property>
+
+<property>
+  <name>metric.jobdata.jobconf</name>
+  <value></value>
+  <description>Explicitly undefined jobconf path to load to database</description>
+</property>
   
 <property>
   <name>metric.jobdata.finished_maps</name>
