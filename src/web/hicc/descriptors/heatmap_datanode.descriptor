@@ -1,0 +1,37 @@
+{
+"id":"heatmap_datanode_viewer",
+"title":"HDFS Heatmap",
+"version":"0.1",
+"categories":"Hadoop,Status",
+"module":"iframe/jsp/heatmap_datanode.jsp",
+"description":"Display Time sorted events",
+"screendump":"\/images\/start.png",
+"refresh":"15",
+"parameters":[
+{"name":"height","type":"select","value":"550","label":"Height","options":[
+{"label":"300","value":"300"},
+{"label":"450","value":"450"},
+{"label":"550","value":"550"},
+{"label":"650","value":"650"},
+{"label":"750","value":"750"},
+{"label":"850","value":"850"},
+]},
+{"name":"heatmap_datanode_stattype","type":"select","value":"transaction_count","label":"Statistic Type",
+"options":[
+{"label":"Number of Transactions","value":"transaction_count"},
+{"label":"Average Duration","value":"avg_duration"},
+{"label":"Average Volume","value":"avg_volume"},
+{"label":"Total Duration","value":"total_duration"},
+{"label":"Total Volume","value":"total_volume"}
+]},
+{"name":"heatmap_datanode_state","type":"select","value":"read_local","label":"HDFS State",
+"options":[
+{"label":"Local Reads","value":"read_local"},
+{"label":"Remote Reads","value":"read_remote"},
+{"label":"Local Writes","value":"write_local"},
+{"label":"Remote Writes","value":"write_remote"},
+{"label":"Replication Writes","value":"write_replicated"}
+]}
+]
+}
+

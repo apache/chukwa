@@ -1966,7 +1966,7 @@
 <property><name>metric.jobconfdata.job_conf.mapred.reducer.class</name><value>mr_reducer_cls</value></property>
 <property><name>metric.jobconfdata.job_conf.mapred.mapper.class</name><value>mr_mapper_cls</value></property>
 
-<!-- SALSA additions -->
+<!-- SALSA mapreduce fsm additions -->
 
 <property><name>report.db.name.mapreduce_fsm</name><value>mapreduce_fsm</value></property>
 <property><name>report.db.primary.key.mapreduce_fsm</name><value>unique_id</value></property>
@@ -1997,6 +1997,23 @@
 <!-- for user daily aggregation -->
 <property><name>report.db.name.userdailysummary</name><value>user_job_summary</value></property>
 <property><name>consolidator.table.user_job_summary</name><value>5,30,180,720</value></property>
+
+<!-- SALSA filesystem fsm additions -->
+<property><name>report.db.name.filesystem_fsm</name><value>filesystem_fsm</value></property>
+<property><name>report.db.primary.key.filesystem_fsm</name><value>unique_id</value></property>
+<property><name>consolidator.table.filesystem_fsm</name><value>5,30,180,720</value></property>
+<property><name>metric.filesystem_fsm.job_id</name><value>client_id</value></property>
+<property><name>metric.filesystem_fsm.state_uniq_id</name><value>unique_id</value></property>
+<property><name>metric.filesystem_fsm.task_id</name><value>block_id</value></property>
+<property><name>metric.filesystem_fsm.state_name</name><value>state_name</value></property>
+<property><name>metric.filesystem_fsm.host</name><value>hostname</value></property>
+<property><name>metric.filesystem_fsm.host_other</name><value>other_host</value> </property>
+<property><name>metric.filesystem_fsm.time_start</name><value>start_time</value></property>
+<property><name>metric.filesystem_fsm.time_end</name><value>finish_time</value></property>
+<property><name>metric.filesystem_fsm.time_start_millis</name><value>start_time_millis</value></property>
+<property><name>metric.filesystem_fsm.time_end_millis</name><value>finish_time_millis</value></property>
+<property><name>metric.filesystem_fsm.state_string</name><value>status</value></property>
+<property><name>metric.filesystem_fsm.counter_bytes</name><value>bytes</value></property>
 
 </configuration>
 

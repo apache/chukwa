@@ -24,6 +24,7 @@ drop table if exists hdfs_usage_template;
 drop table if exists QueueInfo;
 drop table if exists mapreduce_fsm_template;
 drop table if exists user_job_summary_template;
+drop table if exists filesystem_fsm_template;
 
 create table if not exists node_activity_template (
     timestamp  timestamp default CURRENT_TIMESTAMP,
@@ -749,4 +750,22 @@ create table if not exists user_job_summary_template (
     totalMaps double null, 
     totalReduces double null,
     primary key(userid, timestamp)
+) ENGINE=InnoDB;
+
+
+create table if not exists filesystem_fsm_template (
+    block_id VARCHAR(80),
+    unique_id VARCHAR(80),
+    client_id VARCHAR(80),
+    state_name VARCHAR(80),
+    hostname VARCHAR(80),
+    other_host VARCHAR(80),
+    start_time timestamp default 0,
+    finish_time timestamp default 0,
+    start_time_millis bigint default 0,
+    finish_time_millis bigint default 0,
+    status varchar(10) default 0,
+    bytes bigint default 0,
+    primary key(unique_id),
+    index(start_time, finish_time, unique_id)
 ) ENGINE=InnoDB;
