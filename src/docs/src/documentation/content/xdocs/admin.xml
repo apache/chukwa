@@ -227,6 +227,10 @@ source /path/to/chukwa/conf/database_upgrade.sql
 <li> Start the Chukwa data processors script (execute this command only on the data processor node):
 </li></ul> 
 <source>CHUKWA&#95;HOME/tools/init.d/chukwa-data-processors start </source>
+<ul>
+<li> Create down sampling daily cron job:
+</li></ul> 
+<source>CHUKWA&#95;HOME/bin/downSampling.sh --config <path to chukwa conf> -n add </source>
 </section>
 
 <section>
