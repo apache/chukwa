@@ -230,7 +230,7 @@ source /path/to/chukwa/conf/database_upgrade.sql
 <ul>
 <li> Create down sampling daily cron job:
 </li></ul> 
-<source>CHUKWA&#95;HOME/bin/downSampling.sh --config <path to chukwa conf> -n add </source>
+<source>CHUKWA&#95;HOME/bin/downSampling.sh --config &#60;path to chukwa conf&#62; -n add </source>
 </section>
 
 <section>
