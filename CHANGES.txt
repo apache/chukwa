@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-299. Added HDFS Spatial heatmaps visualization. (Jiaqi Tan via Eric Yang)
+
     CHUKWA-185. Ability to tail a whole directory. (asrabkin)
 
     CHUKWA-280. Added end to end test to detect iostat overflow. (Eric Yang)
