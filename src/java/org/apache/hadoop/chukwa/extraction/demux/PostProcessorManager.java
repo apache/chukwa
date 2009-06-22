@@ -102,6 +102,12 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
       chukwaRootReposDir += "/";
     }
  
+    String chukwaPostProcessInErrorDir = conf.get(CHUKWA_POSTPROCESS_IN_ERROR_DIR_FIELD, chukwaRootDir +DEFAULT_POSTPROCESS_IN_ERROR_DIR_NAME);
+    if ( ! chukwaPostProcessInErrorDir.endsWith("/") ) {
+      chukwaPostProcessInErrorDir += "/";
+    }
+ 
+    
     dataSources = new HashMap<String, String>();
     Path postProcessDirectory = new Path(postProcessDir);
     while (isRunning) {
@@ -134,21 +140,22 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
           
           log.info("PostProcess Start, directory:" + directoryToBeProcessed);
           start = System.currentTimeMillis();
-          
-          if ( processDemuxOutput(directoryToBeProcessed) == true) {
-            if (movetoMainRepository(directoryToBeProcessed,chukwaRootReposDir) == true) {
-              deleteDirectory(directoryToBeProcessed);
-            }else {
-              log.warn("Error in movetoMainRepository for :" + directoryToBeProcessed);
-              throw new RuntimeException("");
+         
+          try {
+            if ( processDemuxPigOutput(directoryToBeProcessed) == true) {
+              if (movetoMainRepository(directoryToBeProcessed,chukwaRootReposDir) == true) {
+                deleteDirectory(directoryToBeProcessed);
+                log.info("PostProcess Stop, directory:" + directoryToBeProcessed);
+                log.info("processDemuxOutput Duration:" + (System.currentTimeMillis() - start));
+                continue;
+              }
             }
-            
-          } else {
+            // if we are here it's because something bad happen during processing
             log.warn("Error in processDemuxOutput for :" + directoryToBeProcessed);
-            throw new RuntimeException("");
-          }
-          log.info("PostProcess Stop, directory:" + directoryToBeProcessed);
-          log.info("processDemuxOutput Duration:" + (System.currentTimeMillis() - start));
+            moveToInErrorDirectory(directoryToBeProcessed,directory,chukwaPostProcessInErrorDir); 
+          } catch (Throwable e) {
+            log.warn("Error in processDemuxOutput:" ,e);
+          } 
         }
        
       } catch (Throwable e) {
@@ -160,7 +167,7 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
     }
   }
   
-  public boolean processDemuxOutput(String directory) throws IOException {
+  public boolean processDemuxPigOutput(String directory) throws IOException {
     long start = System.currentTimeMillis();
     try {
       String[] classes = conf.get(POST_DEMUX_DATA_LOADER).split(",");
@@ -193,6 +200,21 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
     long start = System.currentTimeMillis();
     MoveToRepository.main(args);
     log.info("movetoMainRepository Duration:" + (System.currentTimeMillis() - start));
+    return true;
+  }
+  
+  public boolean moveToInErrorDirectory(String sourceDirectory,String dirName,String inErrorDirectory) throws Exception {
+    Path inErrorDir = new Path(inErrorDirectory);
+    if (!fs.exists(inErrorDir)) {
+      fs.mkdirs(inErrorDir);
+    }
+    
+    if (inErrorDirectory.endsWith("/")) {
+      inErrorDirectory += "/";
+    }
+    String finalInErrorDirectory = inErrorDirectory + dirName + "_" + System.currentTimeMillis();
+    fs.rename(new Path(sourceDirectory), new Path(finalInErrorDirectory));
+    log.warn("Error in postProcess  :" + sourceDirectory + " has been moved to:" + finalInErrorDirectory);
     return true;
   }
   

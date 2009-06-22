@@ -34,6 +34,8 @@ Release 0.2.0 - 2009-06-30
 
   IMPROVEMENTS
 
+    CHUKWA-326. If the chukwa records produce errors in post process, move to InErrorDirectory. (Jerome Boulon via Eric Yang)
+
     CHUKWA-318. Added check for disk capacity for collector to write. (Jerome Boulon via Eric Yang)
 
     CHUKWA-276. Fix hourly and daily rolling to use a single reducer. (Jerome Boulon via Eric Yang)
