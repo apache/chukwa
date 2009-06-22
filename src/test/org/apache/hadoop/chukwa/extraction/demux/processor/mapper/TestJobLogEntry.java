@@ -106,7 +106,11 @@ public class TestJobLogEntry extends TestCase {
 			}
 			System.out.println(log.getLogType());
 			for(Entry<String, String> entry : log.entrySet()) {
-				System.out.println(entry.getKey() + ": " + entry.getValue());
+				String k = entry.getKey();
+				String v = entry.getValue();
+				System.out.println(k + ": " + v);
+				if(k.equals("START_TIME") || k.equals("FINISH_TIME"))
+					assertTrue(v!=null && !v.equals("0"));
 			}
 			
 			// list all counters for this entry

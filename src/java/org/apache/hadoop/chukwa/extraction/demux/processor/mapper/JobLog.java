@@ -173,10 +173,7 @@ public class JobLog extends AbstractProcessor {
 
 				int pos = pairs[i].lastIndexOf('"');
 				String value = pairs[i].substring(0, pos);
-				if(key.intern()=="START_TIME".intern() && value.intern()=="0".intern()) {
-				} else {
-	                          put(key, value);				  
-				}
+	                        put(key, value);				  
 				if(i == (pairs.length-1))
 					break;
 				key = pairs[i].substring(pos + 2);
@@ -203,6 +200,13 @@ public class JobLog extends AbstractProcessor {
 			if(logType.equals("JobData") && get(JobHistory.Keys.FINISH_TIME.toString())!=null) {
 			  put("JOB_FINAL_STATUS", get("JOB_STATUS"));
 			}
+			
+            for(String timeKey : timestampKeys) {
+                String value = get(timeKey);
+                if(value == null || value.equals("0")) {
+                    remove(timeKey);
+                }
+            }
 		}
 
     public String getLogType() {
