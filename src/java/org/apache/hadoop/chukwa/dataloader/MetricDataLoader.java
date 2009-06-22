@@ -123,8 +123,9 @@ public class MetricDataLoader implements Callable {
           metricName.append(recordType.substring(15));
           metricName.append(".");
           metricName.append(name);
-          if(!transformer.containsKey(metricName.toString())) {
-            transformer.put(metricName.toString().toLowerCase(), name);
+          String mdlKey = metricName.toString().toLowerCase();
+          if(!transformer.containsKey(mdlKey)) {
+            transformer.put(mdlKey, name);
           }          
         }
         rs.close();
@@ -456,25 +457,30 @@ public class MetricDataLoader implements Callable {
             sql.append(sqlValues.toString());
             sql.append(";");
           } else {
-            sql.append("INSERT INTO ");
-            sql.append(table);
-            sql.append(" SET ");
-            sql.append(sqlValues.toString());
-            sql.append(" ON DUPLICATE KEY UPDATE ");
-            sql.append(sqlValues.toString());
-            sql.append(";");
+            if(sqlValues.length() > 0) {
+              sql.append("INSERT INTO ");
+              sql.append(table);
+              sql.append(" SET ");
+              sql.append(sqlValues.toString());
+              sql.append(" ON DUPLICATE KEY UPDATE ");
+              sql.append(sqlValues.toString());
+              sql.append(";");
+            }
           }
-          log.trace(sql);
-          if (batchMode) {
-            stmt.addBatch(sql.toString());
-            batch++;
-          } else {
-            stmt.execute(sql.toString());
-          }
-          if (batchMode && batch > 20000) {
-            int[] updateCounts = stmt.executeBatch();
-            log.info("batchMode insert=" + updateCounts.length);
-            batch = 0;
+          if(sql.length() > 0) {
+            log.trace(sql);
+          
+            if (batchMode) {
+              stmt.addBatch(sql.toString());
+              batch++;
+            } else {
+              stmt.execute(sql.toString());
+            }
+            if (batchMode && batch > 20000) {
+              int[] updateCounts = stmt.executeBatch();
+              log.info("Batch mode inserted=" + updateCounts.length + "records.");
+              batch = 0;
+            }
           }
         }
 
@@ -482,7 +488,7 @@ public class MetricDataLoader implements Callable {
 
       if (batchMode) {
         int[] updateCounts = stmt.executeBatch();
-        log.info("batchMode insert=" + updateCounts.length);
+        log.info("Batch mode inserted=" + updateCounts.length + "records.");
       }
     } catch (SQLException ex) {
       // handle any errors
