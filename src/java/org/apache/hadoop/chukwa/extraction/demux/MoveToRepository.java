@@ -102,8 +102,6 @@ public class MoveToRepository {
         fileDay = Integer.parseInt(fileName.substring(l - 14, l - 6));
         writeRecordFile(destDir + "/" + fileDay + "/", recordFile.getPath(),
             dataSource + "_" + fileDay);
-        // mark this directory for Daily rotate (re-process)
-        addDirectory4Rolling(true, fileDay, fileHour, cluster, dataSource);
       } else if (fileName.endsWith(".H.evt")) {
         // Hadoop_dfs_datanode_20080925_1.H.evt
         // Hadoop_dfs_datanode_20080925_12.H.evt

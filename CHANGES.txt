@@ -72,6 +72,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-327. Removed hourly rolling flag from daily rolling. (Jerome Boulon via Eric Yang)
+
     CHUKWA-324. For 0 matched field, changed MDL to skip empty SQL statement. (Eric Yang)
 
     CHUKWA-321. Added 2 seconds sleep to avoid chukwa agent race condition. (Eric Yang)
