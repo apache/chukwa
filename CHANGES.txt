@@ -70,7 +70,9 @@ Release 0.2.0 - 2009-06-30
 
   BUG FIXES
 
-    CHUKWA-327. Removed hourly rolling flag from daily rolling. (Jerome Boulon via Eric Yang)
+    CHUKWA-327. Remove START_TIME="0", FINISH_TIME="0" from JobHistory. (Cheng Zhang via Eric Yang)
+
+    CHUKWA-325. Removed hourly rolling flag from daily rolling. (Jerome Boulon via Eric Yang)
 
     CHUKWA-324. For 0 matched field, changed MDL to skip empty SQL statement. (Eric Yang)
 
