@@ -24,8 +24,10 @@ public interface CHUKWA_CONSTANT {
   public static final String CHUKWA_ROOT_DIR_FIELD = "chukwaRootDir";
   public static final String CHUKWA_ROOT_REPOS_DIR_FIELD = "chukwaRootReposDir";
 
+  
   public static final String CHUKWA_ARCHIVE_DIR_FIELD = "chukwaArchiveDir";
   public static final String CHUKWA_POST_PROCESS_DIR_FIELD = "chukwaPostProcessDir";
+  public static final String CHUKWA_POSTPROCESS_IN_ERROR_DIR_FIELD = "chukwaPostProcessInErrorDir";
   public static final String CHUKWA_DATA_SINK_DIR_FIELD = "chukwaDataSinkDir";
   
   public static final String CHUKWA_NAGIOS_HOST_FIELD = "demux.nagiosHost";
@@ -38,6 +40,7 @@ public interface CHUKWA_CONSTANT {
   public static final String DEFAULT_DEMUX_ROOT_DIR_NAME          = "/chukwa/";
   public static final String DEFAULT_REPOS_DIR_NAME               = "repos/";
   public static final String DEFAULT_CHUKWA_POSTPROCESS_DIR_NAME  = "postProcess/";
+  public static final String DEFAULT_POSTPROCESS_IN_ERROR_DIR_NAME = "postProcessInError/";
   public static final String DEFAULT_CHUKWA_LOGS_DIR_NAME         = "logs/";
   
   public static final String DEFAULT_DEMUX_PROCESSING_DIR_NAME    = "demuxProcessing/";
