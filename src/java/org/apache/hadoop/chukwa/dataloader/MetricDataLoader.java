@@ -189,16 +189,20 @@ public class MetricDataLoader implements Callable {
 
     ChukwaRecordKey key = new ChukwaRecordKey();
     ChukwaRecord record = new ChukwaRecord();
+    String cluster = null;
+    int numOfRecords = 0;
     try {
       Pattern p = Pattern.compile("(.*)-\\d+$");
       int batch = 0;
       while (reader.next(key, record)) {
+    	numOfRecords++;
         if(first) { 
           try {
-            initEnv(RecordUtil.getClusterName(record));
+            cluster = RecordUtil.getClusterName(record);
+            initEnv(cluster);
             first=false;
           } catch(Exception ex) {
-            log.error("Initialization failed for: "+RecordUtil.getClusterName(record)+".  Please check jdbc configuration.");
+            log.error("Initialization failed for: "+cluster+".  Please check jdbc configuration.");
             return false;
           }
         }
@@ -516,7 +520,7 @@ public class MetricDataLoader implements Callable {
       int latencySeconds = ((int) (latencyMillis + 500)) / 1000;
       String logMsg = (isSuccessful ? "Saved" : "Error occurred in saving");
       log.info(logMsg + " (" + recordType + ","
-          + RecordUtil.getClusterName(record) + ") " + latencySeconds + " sec");
+          + cluster + ") " + latencySeconds + " sec. numOfRecords: " + numOfRecords);
       if (rs != null) {
         try {
           rs.close();
