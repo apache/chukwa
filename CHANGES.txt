@@ -72,6 +72,8 @@ Release 0.2.0 - 2009-06-30
 
   BUG FIXES
 
+    CHUKWA-329. Correction to user job summary script. (Cheng Zhang via Eric Yang)
+
     CHUKWA-328. Handle empty sequence file more gracefully for MetricDataLoader. (Cheng Zhang via Eric Yang)
 
     CHUKWA-327. Remove START_TIME="0", FINISH_TIME="0" from JobHistory. (Cheng Zhang via Eric Yang)
