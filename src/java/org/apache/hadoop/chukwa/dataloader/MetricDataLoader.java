@@ -352,7 +352,7 @@ public class MetricDataLoader implements Callable {
           boolean firstValue = true;
           while (fi.hasNext()) {
             String fieldKey = fi.next();
-            if (transformer.containsKey(fieldKey) && transformer.get(fieldKey).intern()!="".intern()) {
+            if (transformer.containsKey(fieldKey) && transformer.get(fieldKey).intern()!="_delete".intern()) {
               if (!firstValue) {
                 sqlValues.append(", ");
               }
