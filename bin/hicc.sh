@@ -21,15 +21,26 @@ bin=`cd "$bin"; pwd`
 
 . "$bin"/chukwa-config.sh
 
-trap '${CHUKWA_HOME}/opt/apache-tomcat-6.0.18/bin/shutdown.sh;rm -f ${CHUKWA_HOME}/var/run/hicc.pid; exit 0' 1 2 15
-
-if [ "X$1" = "Xstop" ]; then
-  echo -n "Shutting down Hadoop Infrasture Care Center..."
-  ${CHUKWA_HOME}/opt/apache-tomcat-6.0.18/bin/shutdown.sh
+function stop {
+  echo -n "Shutting down HICC..."
+  ${JPS} | grep HiccWebServer | grep -v grep | grep -o '[^ ].*'| cut -f 1 -d" " | xargs kill -TERM >&/dev/null
   echo "done"
   exit 0
+}
+
+trap stop SIGHUP SIGINT SIGTERM
+
+if [ "X$1" = "Xstop" ]; then
+  stop
 fi
 
-echo "${pid}" > "${CHUKWA_HOME}/var/run/hicc.pid"
+WEB_SERVICE_COMMON=`ls ${CHUKWA_HOME}/lib/*.jar ${CHUKWA_HOME}/webapps/hicc.war`
+WEB_SERVICE_COMMON=`echo ${WEB_SERVICE_COMMON}| sed 'y/ /:/'`
 
-${CHUKWA_HOME}/opt/apache-tomcat-6.0.18/bin/startup.sh
+exec ${JAVA_HOME}/bin/java -DAPP=hicc \
+                           -Dlog4j.configuration=chukwa-log4j.properties \
+                           -DCHUKWA_HOME=${CHUKWA_HOME} \
+                           -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} \
+                           -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} \
+                           -DCHUKWA_DATA_DIR=${CHUKWA_DATA_DIR} \
+                           -classpath ${CHUKWA_CONF_DIR}:${HADOOP_CONF_DIR}:${CLASSPATH}:${CHUKWA_CORE}:${WEB_SERVICE_COMMON}:${HADOOP_JAR}:${HICC_JAR} org.apache.hadoop.chukwa.hicc.HiccWebServer

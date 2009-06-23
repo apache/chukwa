@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 %>
-<%@ page import = "javax.servlet.http.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.tomcat.util.http.Parameters" %>
+<%@ page import = "javax.servlet.http.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*" %>
 <%
        for (Enumeration e = session.getAttributeNames() ; e.hasMoreElements() ;) {
            String name = (String) e.nextElement();

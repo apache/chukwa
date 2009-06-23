@@ -21,11 +21,16 @@ import junit.framework.*;
 import java.util.*;
 import java.text.*;
 import java.io.*;
+import java.net.URL;
 import java.sql.*;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.*;
+import org.mortbay.jetty.Server;
+import org.mortbay.xml.XmlConfiguration;
 import org.apache.hadoop.chukwa.util.*;
 
 /*
@@ -35,42 +40,64 @@ import org.apache.hadoop.chukwa.util.*;
 public class TestDatabaseWebJson extends TestCase {
     protected HashMap testTables;
     protected String data_url="http://localhost:8080/hicc/jsp/get_db_data.jsp";
+    private Server server = null;
+    private Log log = LogFactory.getLog(TestDatabaseWebJson.class);
 
     /* 
      * setup list of tables to do testing. 
      * Add the table name and the table's primary keys.
      */
     protected void setUp() {
-	testTables = new HashMap();
+      testTables = new HashMap();
 
-	ArrayList<String> keys=new ArrayList<String>();
-	keys.add("timestamp");
-	keys.add("mount");
-	testTables.put("cluster_disk", keys);
+      ArrayList<String> keys = new ArrayList<String>();
+      keys.add("timestamp");
+      keys.add("mount");
+      testTables.put("cluster_disk", keys);
 
-	keys=new ArrayList<String>();
-	keys.add("timestamp");
-	testTables.put("cluster_system_metrics", keys);
+      keys = new ArrayList<String>();
+      keys.add("timestamp");
+      testTables.put("cluster_system_metrics", keys);
 
-	keys=new ArrayList<String>();
-	keys.add("timestamp");
-	keys.add("host");
-	keys.add("mount");
-	testTables.put("disk", keys);
+      keys = new ArrayList<String>();
+      keys.add("timestamp");
+      keys.add("host");
+      keys.add("mount");
+      testTables.put("disk", keys);
 
-	keys=new ArrayList<String>();
-	keys.add("job_id");
-	testTables.put("mr_job", keys);
+      keys = new ArrayList<String>();
+      keys.add("job_id");
+      testTables.put("mr_job", keys);
 
-	keys=new ArrayList<String>();
-	keys.add("task_id");
-	testTables.put("mr_task", keys);
+      keys = new ArrayList<String>();
+      keys.add("task_id");
+      testTables.put("mr_task", keys);
 
-	keys=new ArrayList<String>();
-	keys.add("timestamp");
-	testTables.put("system_metrics", keys);
+      keys = new ArrayList<String>();
+      keys.add("timestamp");
+      testTables.put("system_metrics", keys);
+      URL serverConf = TestDatabaseWebJson.class
+        .getResource("/WEB-INF/jetty.xml");
+      server = new Server();
+      XmlConfiguration configuration;
+      try {
+        configuration = new XmlConfiguration(serverConf);
+        configuration.configure(server);
+        server.start();
+        server.setStopAtShutdown(true);
+      } catch (Exception e) {
+        log.error(ExceptionUtil.getStackTrace(e));
+      }
     }
 
+    protected void tearDown() {
+      try {
+        server.stop();
+        Thread.sleep(2000);
+      } catch (Exception e) {
+        log.error(ExceptionUtil.getStackTrace(e));
+      }
+    }
 
     /*
      * similar to PHP join function to join a string array to one single string.
@@ -172,7 +199,7 @@ public class TestDatabaseWebJson extends TestCase {
 	     * with the database
 	     */
 
-	    String cluster = "deploymenttest";
+	    String cluster = "demo";
 	    DatabaseWriter db = new DatabaseWriter(cluster);
 
 	    JSONArray json_array=new JSONArray(json_str);
@@ -208,9 +235,11 @@ public class TestDatabaseWebJson extends TestCase {
 	    System.out.println("Exception: "+e.toString()+":"+e.getMessage());
 	    System.out.println("Exception: "+e.toString()+":"+e.getSQLState());
 	    System.out.println("Exception: "+e.toString()+":"+e.getErrorCode());
+            fail("SQL Error:"+ExceptionUtil.getStackTrace(e));
 	} catch (Exception eOther) {
 	    System.out.println("Other Exception: "+eOther.toString());
 	    eOther.printStackTrace();
+            fail("Error:"+ExceptionUtil.getStackTrace(eOther));
 	} finally {
 	}
     }

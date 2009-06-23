@@ -92,6 +92,7 @@
 		<path id="testClasspath">
 			<pathelement location="${build.classes}" />
 			<pathelement location="${test.build.classes}" />
+			<pathelement location="${build.dir}/hicc.war" />
 			<pathelement location="${test.build.dir}/conf" />
 			<fileset dir="${lib.dir}">
 				<include name="**/*.jar" />
@@ -337,8 +338,10 @@
 		<property name="test.include" value="Test*" />
 		<property name="test.classpath.id" value="test.classpath" />
 		<property name="test.output" value="no" />
+		<property name="test.printsummary" value="on" />
+		<!-- property name="test.printsummary" value="withOutAndError" / -->
 		<property name="test.timeout" value="900000" />
-		<property name="test.junit.output.format" value="plain" />
+		<property name="test.junit.output.format" value="brief" />
 		<property name="test.junit.fork.mode" value="perTest" />
 		<property name="test.junit.printsummary" value="yes" />
 		<property name="test.junit.haltonfailure" value="yes" />
@@ -450,6 +453,7 @@
 		<copy todir="${test.build.dir}/var" failonerror="false">
 			<fileset dir="${basedir}/test/samples" />
 		</copy>
+                <copy file="${build.dir}/hicc.war" tofile="${test.build.dir}hicc.war" />
 	</target>
 
 	  <target name="compile-contrib" depends="compile-common,compile-datacollection,compile-extraction">
@@ -459,31 +463,30 @@
 	     </subant>  	
 	  </target>
 	
-	
-	<!--printsummary="${test.junit.printsummary}" -->
-
-	<target name="test-chukwa" depends="compile,compile-test" description="Run Chukwa unit tests">
-		<mkdir dir="${basedir}/var" />
+	<target name="test-chukwa" depends="compile,compile-test,compress" description="Run Chukwa unit tests">
 		<mkdir dir="${test.build.dir}/var" />
 		<mkdir dir="${test.build.dir}/var/log" />
+		<mkdir dir="${test.build.classes}/webapps" />
+		<mkdir dir="${test.build.classes}/logs" />
                 <copy todir="${test.build.dir}/var/log">
                         <fileset dir="${basedir}/test/samples/">
                                 <include name="*.log" />
                         </fileset>
                 </copy>
-                <copy todir="${test.build.dir}">
+                <copy todir="${test.build.classes}">
                         <fileset dir="${build.dir}">
                                 <include name="chukwa-core*.jar" />
                         </fileset>
                 </copy>
                 <copy file="${basedir}/conf/chukwa-demux-conf.xml.template" tofile="${test.build.dir}/conf/chukwa-demux-conf.xml"></copy>
                 <copy file="${basedir}/conf/log4j.properties" tofile="${test.build.dir}/conf/log4j.properties"></copy>
-		<junit showoutput="${test.output}" fork="yes" printsummary="withOutAndErr" forkmode="${test.junit.fork.mode}" maxmemory="${test.junit.maxmemory}" dir="${test.build.dir}/classes/" timeout="${test.timeout}" errorProperty="tests.failed" failureProperty="tests.failed">
+                <copy file="${build.dir}/hicc.war" tofile="${test.build.classes}/webapps/hicc.war"></copy>
+		<junit showoutput="${test.output}" fork="yes" printsummary="${test.printsummary}" forkmode="${test.junit.fork.mode}" maxmemory="${test.junit.maxmemory}" dir="${test.build.dir}/classes/" timeout="${test.timeout}" errorProperty="tests.failed" failureProperty="tests.failed">
 			<classpath refid="testClasspath" />
 			<env key="CHUKWA_CONF_DIR" value="${test.build.dir}/conf" />
 			<env key="CHUKWA_DATA_DIR" value="${test.build.dir}/var" />
 			<env key="CHUKWA_LOG_DIR" value="${test.build.dir}/var/log" />
-			<env key="CHUKWA_HOME" value="${test.build.dir}" />
+			<env key="CHUKWA_HOME" value="${test.build.classes}" />
 			<sysproperty key="test.src.dir" value="${test.src.dir}" />
 			<sysproperty key="test.build.classes" value="${test.build.classes}" />
 			<sysproperty key="log4j.configuration" value="log4j.properties" />
@@ -698,8 +701,13 @@
 			<fileset dir="${common.ivy.lib.dir}">
 				<include name="*.jar" />
 				<exclude name="jetty-*.jar" />
+				<!-- exclude name="junit-*.jar" / -->
+				<exclude name="standard*.jar" />
+<!-- start -->
 				<exclude name="jsp-api*.jar" />
-				<exclude name="junit-*.jar" />
+				<exclude name="servlet*.jar" />
+<!-- end -->
+				<exclude name="jstl*.jar" />
 			</fileset>
 			<fileset dir="${build.dir}">
 				<include name="${name}-core-${chukwaVersion}.jar" />
@@ -1105,19 +1113,27 @@
 		<mkdir dir="${build.dir}/${final.name}" />
 		<mkdir dir="${build.dir}/${final.name}/lib" />
 		<mkdir dir="${build.dir}/${final.name}/bin" />
-    <mkdir dir="${build.dir}/${final.name}/script" />
-    <mkdir dir="${build.dir}/${final.name}/script/pig" />
+                <mkdir dir="${build.dir}/${final.name}/script" />
+                <mkdir dir="${build.dir}/${final.name}/script/pig" />
 		<mkdir dir="${build.dir}/${final.name}/docs" />
 		<mkdir dir="${build.dir}/${final.name}/opt" />
 		<mkdir dir="${build.dir}/${final.name}/tools" />
 		<mkdir dir="${build.dir}/${final.name}/var" />
 		<mkdir dir="${build.dir}/${final.name}/var/run" />
 		<mkdir dir="${build.dir}/${final.name}/logs" />
+		<mkdir dir="${build.dir}/${final.name}/webapps" />
 
 		<copy todir="${build.dir}/${final.name}" includeEmptyDirs="false">
 			<fileset dir="${build.dir}">
 				<include name="*.jar" />
-				<include name="*.war" />
+				<include name="collector*.war" />
+			</fileset>
+		</copy>
+
+		<copy todir="${build.dir}/${final.name}/webapps" includeEmptyDirs="false">
+			<fileset dir="${build.dir}">
+				<include name="hicc*.war" />
+				<include name="chukwa*.war" />
 			</fileset>
 		</copy>
 
@@ -1166,6 +1182,12 @@
 
 		<chmod perm="ugo+x" type="file" parallel="false">
 			<fileset dir="${build.dir}/${final.name}/tools">
+				<include name="**" />
+			</fileset>
+		</chmod>
+
+		<chmod perm="ugo+x" type="file" parallel="false">
+			<fileset dir="${build.dir}/${final.name}/bin">
 				<include name="**" />
 			</fileset>
 		</chmod>

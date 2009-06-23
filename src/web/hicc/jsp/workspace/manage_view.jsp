@@ -77,9 +77,9 @@
     </c:forEach>
     </select>
   </td><td align="middle">
-    <input type='checkbox' class='formCheckbox' id='read_permission' name='read_permission' ${permission.[permissionKey].read ? "checked":""}>
+    <input type='checkbox' class='formCheckbox' id='read_permission' name='read_permission'>
   </td><td align="middle">
-    <input type='checkbox' class='formCheckbox' id='modify_permission' name='modify_permission' ${permission.[permissionKey].modify ? "checked":""}>
+    <input type='checkbox' class='formCheckbox' id='modify_permission' name='modify_permission'>
   </td><td>
     <img src='/sim/images/close16.gif' onClick="deleteCurrentRow('${key}',this);"/>
   </td></tr>

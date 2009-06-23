@@ -17,7 +17,22 @@
  * limitations under the License.
  */
 %>
-<%@ page import = "java.text.DecimalFormat,java.text.NumberFormat,java.sql.*,java.io.*, org.json.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.util.DatabaseWriter, org.apache.hadoop.chukwa.database.Macro, org.apache.hadoop.chukwa.util.XssFilter, org.apache.hadoop.chukwa.database.DatabaseConfig, org.apache.hadoop.chukwa.hicc.DatasetMapper"  %> 
+<%@ page import = "java.text.DecimalFormat" %>
+<%@ page import = "java.text.NumberFormat" %>
+<%@ page import = "java.sql.*" %>
+<%@ page import = "java.io.*" %>
+<%@ page import = "org.json.*" %>
+<%@ page import = "java.util.Calendar" %>
+<%@ page import = "java.util.Date" %>
+<%@ page import = "java.text.SimpleDateFormat" %>
+<%@ page import = "java.util.*" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.ClusterConfig" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.TimeHandler" %>
+<%@ page import = "org.apache.hadoop.chukwa.util.DatabaseWriter" %>
+<%@ page import = "org.apache.hadoop.chukwa.database.Macro" %>
+<%@ page import = "org.apache.hadoop.chukwa.util.XssFilter" %>
+<%@ page import = "org.apache.hadoop.chukwa.database.DatabaseConfig" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.DatasetMapper"  %> 
 <%
     /* get the passed in parameters */
     String table=request.getParameter("table");
@@ -25,7 +40,7 @@
     String endDate=request.getParameter("end");		// in long format
 
 
-
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Date startDateObj=new Date(Long.parseLong(startDate));
     String startDateString = sdf.format(startDateObj);
 
@@ -46,10 +61,10 @@
 	
     Macro m=new Macro(Long.parseLong(startDate),Long.parseLong(endDate),query);
 
-    String cluster="deploymenttest";
+    String cluster="demo";
     DatabaseWriter db = new DatabaseWriter(cluster);
 
-    String jsonString="{}";
+    String jsonString="[]";
 
     try {
 	// first get the table

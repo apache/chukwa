@@ -100,6 +100,7 @@ COMMON=`ls ${CHUKWA_HOME}/lib/*.jar`
 export COMMON=`echo ${COMMON} | sed 'y/ /:/'`
 export CHUKWA_CORE=${CHUKWA_HOME}/chukwa-core-${CHUKWA_VERSION}.jar
 export CHUKWA_AGENT=${CHUKWA_HOME}/chukwa-agent-${CHUKWA_VERSION}.jar
+export HICC_JAR=${CHUKWA_HOME}/hicc.war
 
 export CURRENT_DATE=`date +%Y%m%d%H%M`
 
