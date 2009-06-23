@@ -1377,7 +1377,7 @@
 
 <property>
   <name>metric.jobdata.jobconf</name>
-  <value></value>
+  <value>_delete</value>
   <description>Explicitly undefined jobconf path to load to database</description>
 </property>
   
