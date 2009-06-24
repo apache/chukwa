@@ -28,30 +28,39 @@ import org.apache.hadoop.chukwa.datacollection.adaptor.*;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
+import org.apache.hadoop.conf.Configuration;
 
 public class TestFileTailingAdaptors extends TestCase {
   ChunkCatcherConnector chunks;
-
-  public TestFileTailingAdaptors() {
+  Configuration conf = new Configuration();
+  File baseDir, testFile;
+  
+  public TestFileTailingAdaptors() throws IOException {
     chunks = new ChunkCatcherConnector();
     chunks.start();
+    baseDir = new File(System.getProperty("test.build.data", "/tmp"));
+    conf.set("chukwaAgent.checkpoint.dir", baseDir.getCanonicalPath());
+    conf.setBoolean("chukwaAgent.checkpoint.enabled", false);
+    conf.setInt("chukwaAgent.adaptor.context.switch.time", 100);
+
+    testFile = makeTestFile("chukwaCrSepTest", 80);
+
   }
 
   public void testCrSepAdaptor() throws IOException, InterruptedException,
       ChukwaAgent.AlreadyRunningException {
     ChukwaAgent agent = new ChukwaAgent();
     // Remove any adaptor left over from previous run
-    ChukwaConfiguration cc = new ChukwaConfiguration();
-    int portno = cc.getInt("chukwaAgent.control.port", 9093);
-    ChukwaAgentController cli = new ChukwaAgentController("localhost", portno);
-    cli.removeAll();
+
     // sleep for some time to make sure we don't get chunk from existing streams
     Thread.sleep(5000);
-    File testFile = makeTestFile("chukwaCrSepTest", 80);
+    assertEquals(0, agent.adaptorCount());
     String adaptorId = agent
         .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8"
             + " lines " + testFile + " 0");
     assertNotNull(adaptorId);
+    assertEquals(1, agent.adaptorCount());
+
     System.out.println("getting a chunk...");
     Chunk c = chunks.waitForAChunk();
     System.out.println("got chunk");
@@ -64,7 +73,6 @@ public class TestFileTailingAdaptors extends TestCase {
     for (int rec = 0; rec < c.getRecordOffsets().length; ++rec) {
       String record = new String(c.getData(), recStart,
           c.getRecordOffsets()[rec] - recStart + 1);
-      System.out.println("record " + rec + " was: " + record);
       assertTrue(record.equals(rec + " abcdefghijklmnopqrstuvwxyz\n"));
       recStart = c.getRecordOffsets()[rec] + 1;
     }
@@ -73,10 +81,33 @@ public class TestFileTailingAdaptors extends TestCase {
     agent.shutdown();
     Thread.sleep(2000);
   }
+  
+  public void testRepeatedlyOnBigFile() throws IOException,
+  ChukwaAgent.AlreadyRunningException, InterruptedException {
+    int tests = 1000; //SHOULD SET HIGHER AND WATCH WITH lsof to find leaks
+
+    ChukwaAgent agent = new ChukwaAgent(conf);
+    for(int i=0; i < tests; ++i) {
+      if(i % 100 == 0)
+        System.out.println("buzzed " + i + " times");
+      
+      assertEquals(0, agent.adaptorCount());
+      agent.processAddCommand("add test = filetailer.FileTailingAdaptor raw " +testFile.getCanonicalPath() + " 0");
+      assertEquals(1, agent.adaptorCount());
+      Chunk c = chunks.waitForAChunk();
+      String dat = new String(c.getData());
+      assertTrue(dat.startsWith("0 abcdefghijklmnopqrstuvwxyz"));
+      assertTrue(dat.endsWith("9 abcdefghijklmnopqrstuvwxyz\n"));
+      assertTrue(c.getDataType().equals("raw"));
+      if(agent.adaptorCount() > 0)
+        agent.stopAdaptor("test", false);
+    }
+    agent.shutdown();
+  }
 
   private File makeTestFile(String name, int size) throws IOException {
-    File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"),
-        name);
+    File tmpOutput = new File(baseDir, name);
+    tmpOutput.deleteOnExit();
     FileOutputStream fos = new FileOutputStream(tmpOutput);
 
     PrintWriter pw = new PrintWriter(fos);

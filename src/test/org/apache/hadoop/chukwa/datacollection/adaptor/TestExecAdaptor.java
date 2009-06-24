@@ -19,30 +19,46 @@ package org.apache.hadoop.chukwa.datacollection.adaptor;
 
 
 import junit.framework.TestCase;
+import org.apache.hadoop.conf.*;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
-import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
+import org.apache.hadoop.chukwa.datacollection.connector.*;
+import org.apache.hadoop.chukwa.datacollection.test.*;
 
 public class TestExecAdaptor extends TestCase {
 
-  ChunkCatcherConnector chunks;
+  Connector chunks;
 
-  public TestExecAdaptor() {
-    chunks = new ChunkCatcherConnector();
+
+  public void testWithPs() throws ChukwaAgent.AlreadyRunningException, InterruptedException {
+    Configuration conf = new Configuration();
+    conf.set("chukwaAgent.control.port", "0");
+    conf.setBoolean("chukwaAgent.checkpoint.enabled", false);
+    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChunkCatcherConnector chunks = new ChunkCatcherConnector();
     chunks.start();
+    String psAgentID = agent.processAddCommand(
+        "add org.apache.hadoop.chukwa.datacollection.adaptor.ExecAdaptor ps ps aux 0");
+    assertNotNull(psAgentID);
+    Chunk c = chunks.waitForAChunk();
+    System.out.println(new String(c.getData()));
+    agent.shutdown();
   }
+  
+  
+  public void testForLeaks()  throws ChukwaAgent.AlreadyRunningException, InterruptedException {
+    Configuration conf = new Configuration();
+//    conf.set("chukwaAgent.control.port", "0");
+    conf.setBoolean("chukwaAgent.checkpoint.enabled", false);
+    ChukwaAgent agent = new ChukwaAgent(conf);
 
-  public void testWithPs() throws ChukwaAgent.AlreadyRunningException {
-    try {
-      ChukwaAgent agent = new ChukwaAgent();
-      String psAgentID = agent.processAddCommand(
-          "add org.apache.hadoop.chukwa.datacollection.adaptor.ExecAdaptor ps ps aux 0");
-      assertNotNull(psAgentID);
-      Chunk c = chunks.waitForAChunk();
-      System.out.println(new String(c.getData()));
-    } catch (InterruptedException e) {
-
-    }
+    chunks = new ConsoleOutConnector(agent, false);
+    chunks.start();
+    assertEquals(0, agent.adaptorCount());
+    String lsID = agent.processAddCommand(
+      "add exec= org.apache.hadoop.chukwa.datacollection.adaptor.ExecAdaptor Listing 100 /bin/sleep 1 0");
+    Thread.sleep( 60*1000);
+    System.out.println("stopped ok"); 
   }
 
 }
