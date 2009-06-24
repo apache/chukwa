@@ -65,5 +65,11 @@ public class ChunkCatcherConnector implements Connector {
   public void reloadConfiguration() {
     System.out.println("reloadConfiguration");
   }
+  
+  public void clear() throws InterruptedException {
+    ArrayList<Chunk> list = new ArrayList<Chunk>();
+    while(eq.size() > 0)
+      eq.collect(list, 1);
+  }
 
 }
