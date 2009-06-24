@@ -192,7 +192,7 @@ public class MetricDataLoader implements Callable {
     String cluster = null;
     int numOfRecords = 0;
     try {
-      Pattern p = Pattern.compile("(.*)-\\d+$");
+      Pattern p = Pattern.compile("(.*)\\-(\\d+)$");
       int batch = 0;
       while (reader.next(key, record)) {
     	numOfRecords++;
