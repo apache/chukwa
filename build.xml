@@ -419,7 +419,7 @@
 		</javac>
 	</target>
 
-	<target name="compile-test" depends="init" description="Test target">
+	<target name="compile-test" depends="init,compress" description="Test target">
 
 		<delete dir="${test.build.dir}" />
 		<mkdir dir="${test.build.dir}" />
@@ -453,7 +453,7 @@
 		<copy todir="${test.build.dir}/var" failonerror="false">
 			<fileset dir="${basedir}/test/samples" />
 		</copy>
-                <copy file="${build.dir}/hicc.war" tofile="${test.build.dir}hicc.war" />
+                <copy file="${build.dir}/hicc.war" tofile="${test.build.dir}/hicc.war" />
 	</target>
 
 	  <target name="compile-contrib" depends="compile-common,compile-datacollection,compile-extraction">
