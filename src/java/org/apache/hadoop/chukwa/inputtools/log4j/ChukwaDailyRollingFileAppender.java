@@ -22,8 +22,10 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.chukwa.datacollection.controller.ClientFinalizer;
+import org.apache.hadoop.chukwa.util.AdaptorNamingUtils;
 import org.apache.hadoop.chukwa.util.RecordConstants;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
@@ -541,8 +543,10 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
               numRetries = 48;
             }
 
-
-            String adaptorID = chukwaClient.add(ChukwaAgentController.CharFileTailUTF8NewLineEscaped,
+            String name = AdaptorNamingUtils.synthesizeAdaptorID
+              (ChukwaAgentController.CharFileTailUTF8NewLineEscaped, recordType, log4jFileName);
+            
+            String adaptorID = chukwaClient.addByName(name, ChukwaAgentController.CharFileTailUTF8NewLineEscaped,
                 recordType,currentLength + " " + log4jFileName, currentLength,
                 numRetries, retryInterval);
 
