@@ -44,6 +44,7 @@ import org.apache.hadoop.chukwa.datacollection.agent.metrics.AgentMetrics;
 import org.apache.hadoop.chukwa.datacollection.connector.Connector;
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
 import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
+import org.apache.hadoop.chukwa.util.AdaptorNamingUtils;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -315,31 +316,36 @@ public class ChukwaAgent implements AdaptorManager {
       String params = m.group(4);
       if (params == null)
         params = "";
-
-      if(adaptorID == null)
-        adaptorID = synthesizeAdaptorID(adaptorClassName, dataType, params);
       
       Adaptor adaptor = AdaptorFactory.createAdaptor(adaptorClassName);
       if (adaptor == null) {
         log.warn("Error creating adaptor of class " + adaptorClassName);
         return null;
       }
-
+      String coreParams = adaptor.parseArgs(params);
+      if(coreParams == null) {
+        log.warn("invalid params for adaptor: " + params);
+        return null;
+      }
+      
+      if(adaptorID == null) { //user didn't specify, so synthesize
+        try {
+         adaptorID = AdaptorNamingUtils.synthesizeAdaptorID(adaptorClassName, dataType, coreParams);
+        } catch(NoSuchAlgorithmException e) {
+          log.fatal("MD5 apparently doesn't work on your machine; bailing", e);
+          shutdown(true);
+        }
+      }
+      
       synchronized (adaptorsByName) {
         
-        /*for (Map.Entry<Long, Adaptor> a : adaptorsByName.entrySet()) {
-          if (params.indexOf(a.getValue().getStreamName())!=-1) {
-            log.warn(params + " already exist, skipping.");
-            return null;
-          }
-        }*/
         if(adaptorsByName.containsKey(adaptorID))
           return adaptorID;
         adaptorsByName.put(adaptorID, adaptor);
         adaptorPositions.put(adaptor, new Offset(offset, adaptorID));
         needNewCheckpoint = true;
         try {
-          adaptor.start(adaptorID, dataType, params, offset, DataFactory
+          adaptor.start(adaptorID, dataType, offset, DataFactory
               .getInstance().getEventQueue(), this);
           log.info("started a new adaptor, id = " + adaptorID);
           ChukwaAgent.agentMetrics.adaptorCount.set(adaptorsByName.size());
@@ -358,29 +364,7 @@ public class ChukwaAgent implements AdaptorManager {
     return null;
   }
 
-  private String synthesizeAdaptorID(String adaptorClassName, String dataType,
-      String params) {
-    MessageDigest md;
-    try {
-      md = MessageDigest.getInstance("MD5");
 
-      md.update(adaptorClassName.getBytes());
-      md.update(dataType.getBytes());
-      md.update(params.getBytes());
-      StringBuilder sb = new StringBuilder();
-      byte[] bytes = md.digest();
-      for(int i=0; i < bytes.length; ++i) {
-        if( (bytes[i] & 0xF0) == 0)
-          sb.append('0');
-        sb.append( Integer.toHexString(0xFF & bytes[i]) );
-      }
-      return sb.toString();
-    } catch (NoSuchAlgorithmException e) {
-      log.fatal("MD5 apparently doesn't work on your machine; bailing", e);
-      shutdown(true);//abort agent
-    }
-    return null;
-  }
 
   /**
    * Tries to restore from a checkpoint file in checkpointDir. There should

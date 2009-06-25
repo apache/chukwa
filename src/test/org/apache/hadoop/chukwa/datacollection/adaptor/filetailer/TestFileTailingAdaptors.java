@@ -84,7 +84,7 @@ public class TestFileTailingAdaptors extends TestCase {
   
   public void testRepeatedlyOnBigFile() throws IOException,
   ChukwaAgent.AlreadyRunningException, InterruptedException {
-    int tests = 1000; //SHOULD SET HIGHER AND WATCH WITH lsof to find leaks
+    int tests = 10; //SHOULD SET HIGHER AND WATCH WITH lsof to find leaks
 
     ChukwaAgent agent = new ChukwaAgent(conf);
     for(int i=0; i < tests; ++i) {
@@ -118,6 +118,20 @@ public class TestFileTailingAdaptors extends TestCase {
     pw.flush();
     pw.close();
     return tmpOutput;
+  }
+  
+  public void testOffsetInAdaptorName() throws IOException, ChukwaAgent.AlreadyRunningException,
+  InterruptedException{
+    File testFile = makeTestFile("foo", 120);
+    ChukwaAgent agent = new ChukwaAgent(conf);
+    assertEquals(0, agent.adaptorCount());
+    agent.processAddCommand("add test = filetailer.FileTailingAdaptor raw " +testFile.getCanonicalPath() + " 0");
+    assertEquals(1, agent.adaptorCount());
+    Thread.sleep(2000);
+    agent.processAddCommand("add test = filetailer.FileTailingAdaptor raw " +testFile.getCanonicalPath() + " 0");
+    assertEquals(1, agent.adaptorCount());
+    chunks.clear();
+    agent.shutdown();
   }
 
   public static void main(String[] args) {

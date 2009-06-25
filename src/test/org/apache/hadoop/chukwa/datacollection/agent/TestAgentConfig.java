@@ -46,7 +46,7 @@ public class TestAgentConfig extends TestCase {
       assertEquals(1, agent.adaptorCount());// check that we processed initial
                                             // adaptors
       assertNotNull(agent.getAdaptor("testAdaptor"));
-      assertTrue(agent.getAdaptor("testAdaptor").getStreamName().contains("foo"));
+      assertTrue(agent.getAdaptor("testAdaptor").getCurrentStatus().contains("foo"));
 
       System.out
           .println("---------------------done with first run, now stopping");
@@ -70,7 +70,7 @@ public class TestAgentConfig extends TestCase {
       assertEquals(1, agent.adaptorCount());// check that we processed initial
                                             // adaptors
       assertNotNull(agent.getAdaptor("testAdaptor"));
-      assertTrue(agent.getAdaptor("testAdaptor").getStreamName().contains("foo"));
+      assertTrue(agent.getAdaptor("testAdaptor").getCurrentStatus().contains("foo"));
       agent.shutdown();
       Thread.sleep(2000);
       System.out.println("---------------------done");

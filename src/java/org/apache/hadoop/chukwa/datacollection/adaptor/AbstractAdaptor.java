@@ -34,16 +34,16 @@ public abstract class AbstractAdaptor implements Adaptor {
   }
 
   @Override
-  public final void start(String adaptorID, String type, String status, long offset,
+  public final void start(String adaptorID, String type, long offset,
       ChunkReceiver dest, AdaptorManager c) throws AdaptorException {
     this.adaptorID = adaptorID;
     this.type = type;
     this.dest=dest;
     control = c;
-    start(status, offset);
+    start(offset);
   }
   
-  public abstract void start(String status, long offset) throws AdaptorException;
+  public abstract void start(long offset) throws AdaptorException;
 
   public void deregisterAndStop(boolean gracefully) {
     control.stopAdaptor(adaptorID, gracefully);

@@ -40,7 +40,7 @@ public class MaxRateSender extends Thread implements Adaptor {
     return "";
   }
 
-  public void start(String adaptorID, String type, String status, long offset,
+  public void start(String adaptorID, String type, long offset,
       ChunkReceiver dest, AdaptorManager c) throws AdaptorException {
     this.setName("MaxRateSender adaptor");
     this.adaptorID = adaptorID;
@@ -50,8 +50,9 @@ public class MaxRateSender extends Thread implements Adaptor {
     super.start(); // this is a Thread.start
   }
 
-  public String getStreamName() {
-    return type;
+  @Override
+  public String parseArgs(String s) {
+    return s;
   }
 
   public void run() {

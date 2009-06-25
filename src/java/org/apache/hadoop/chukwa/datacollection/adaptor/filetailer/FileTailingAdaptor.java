@@ -74,10 +74,19 @@ public class FileTailingAdaptor extends AbstractAdaptor {
     log = Logger.getLogger(FileTailingAdaptor.class);
   }
 
-  public void start(String params, long bytes) {
-    // in this case params = filename
+  public void start(long bytes) {
     this.attempts = 0;
 
+   
+    log.info("started file tailer on file " + toWatch
+        + " with first byte at offset " + offsetOfFirstByte);
+
+    this.fileReadOffset = bytes;
+    tailer.startWatchingFile(this);
+  }
+  
+  @Override
+  public String parseArgs(String params) { 
     Pattern cmd = Pattern.compile("(\\d+)\\s+(.+)\\s?");
     Matcher m = cmd.matcher(params);
     if (m.matches()) {
@@ -86,11 +95,7 @@ public class FileTailingAdaptor extends AbstractAdaptor {
     } else {
       toWatch = new File(params.trim());
     }
-    log.info("started file tailer on file " + toWatch
-        + " with first byte at offset " + offsetOfFirstByte);
-
-    this.fileReadOffset = bytes;
-    tailer.startWatchingFile(this);
+    return toWatch.getAbsolutePath();
   }
 
   /**

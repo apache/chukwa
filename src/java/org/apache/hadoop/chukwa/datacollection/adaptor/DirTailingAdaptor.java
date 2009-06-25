@@ -48,16 +48,9 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
 
   static Pattern cmd = Pattern.compile("(.+)\\s+(\\S+)");
   @Override
-  public void start(String status, long offset) throws AdaptorException {
+  public void start(long offset) throws AdaptorException {
     scanInterval = control.getConfiguration().getInt("adaptor.dirscan.intervalMs", 10000);
-    Matcher m = cmd.matcher(status);
-    if(!m.matches() )
-      throw new AdaptorException("bad syntax for DirTailer");
-    else if (m.groupCount() < 2)
-      throw new AdaptorException("bad syntax for DirTailer");
-    baseDir = new File(m.group(1));
-    adaptorName = m.group(2);
-    
+      
     scanThread.start();
     lastSweepStartTime = offset;
   }
@@ -106,8 +99,16 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
   }
 
   @Override
-  public String getStreamName() {
-    return "dir scan of " + baseDir;
+  public String parseArgs(String status) {
+    Matcher m = cmd.matcher(status);
+    if(!m.matches() ) {
+      log.warn("bad syntax in DirTailingAdaptor args");
+      return null;
+    }
+    baseDir = new File(m.group(1));
+    adaptorName = m.group(2);
+    return baseDir + " " + adaptorName; //both params mandatory
+
   }
 
 

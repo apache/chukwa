@@ -76,6 +76,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-330. Make separation between fixed adaptor parameters and optional adaptor parameters for generating adaptor id. (Ari Rabkin via Eric Yang)
+
     CHUKWA-37. Remove stale and unused bin scripts. (asrabkin)
 
     CHUKWA-331. Fixed regular expression for down sampling base on record type. (Cheng Zhang via Eric Yang)

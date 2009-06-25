@@ -47,7 +47,7 @@ public interface Adaptor {
    * @param offset the stream offset of the first byte sent by this adaptor
    * @throws AdaptorException
    */
-  public void start(String adaptorID, String type, String status, long offset,
+  public void start(String adaptorID, String type, long offset,
       ChunkReceiver dest, AdaptorManager c) throws AdaptorException;
 
   /**
@@ -62,11 +62,15 @@ public interface Adaptor {
   public String getType();
 
   /**
-   * Return the stream name
+   * Parse args, return stream name.  Do not start running.
    * 
-   * @return Stream name as a string
+   * Return the stream name, given params.
+   * The stream name is the part of the Adaptor status that's used to 
+   * determine uniqueness. 
+   * 
+   * @return Stream name as a string, null if params are malformed
    */
-  public String getStreamName();
+  public String parseArgs(String params);
 
   /**
    * Signals this adaptor to come to an orderly stop. The adaptor ought to push

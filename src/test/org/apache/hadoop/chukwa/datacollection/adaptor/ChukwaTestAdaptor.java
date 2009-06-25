@@ -34,9 +34,9 @@ public class ChukwaTestAdaptor extends AbstractAdaptor {
   }
 
   @Override
-  public String getStreamName() {
-    // TODO Auto-generated method stub
-    return "";
+  public String parseArgs(String s) {
+    params = s;
+    return s;
   }
 
   @Override
@@ -52,8 +52,7 @@ public class ChukwaTestAdaptor extends AbstractAdaptor {
   }
 
   @Override
-  public void start(String params, long offset) throws AdaptorException {
-    this.params = params;
+  public void start(long offset) throws AdaptorException {
     this.startOffset = offset;
     System.out.println("adaptorId [" + adaptorID + "]");
     System.out.println("type [" + type + "]");

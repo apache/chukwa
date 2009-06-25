@@ -81,7 +81,7 @@ class FileAdaptorTailer extends Thread {
         
         long startTime = System.currentTimeMillis();
         for (FileAdaptor adaptor: adaptors) {
-          log.info("calling this adaptor:" + adaptor.getStreamName());
+          log.info("calling sendFile for " + adaptor.toWatch.getCanonicalPath());
           adaptor.sendFile(); 
         }
         
@@ -136,7 +136,7 @@ public class FileAdaptor extends AbstractAdaptor {
   private long timeOut = 0;
   
   protected volatile boolean finished = false;
-  protected File toWatch;
+  File toWatch;
   protected RandomAccessFile reader = null;
   protected long fileReadOffset;
   protected boolean shutdownCalled = false;
@@ -146,21 +146,14 @@ public class FileAdaptor extends AbstractAdaptor {
    */
   private long offsetOfFirstByte = 0;
 
-  public void start(String params, long bytes) {
+  public void start( long bytes) {
     // in this case params = filename
     log.info("adaptor id: " + adaptorID + " started file adaptor on file "
-        + params);
+        + toWatch);
     this.startTime = System.currentTimeMillis();
     this.timeOut = startTime + TIMEOUT_PERIOD;
     
 
-    String[] words = params.split(" ");
-    if (words.length > 1) {
-      offsetOfFirstByte = Long.parseLong(words[0]);
-      toWatch = new File(params.substring(words[0].length() + 1));
-    } else {
-      toWatch = new File(params);
-    }
     
     tailer.addFileAdaptor(this);
   }
@@ -283,8 +276,16 @@ public class FileAdaptor extends AbstractAdaptor {
     return fileReadOffset + offsetOfFirstByte;
   }
   
-  public String getStreamName() {
-    return toWatch.getPath();
+  public String parseArgs(String params) {
+
+    String[] words = params.split(" ");
+    if (words.length > 1) {
+      offsetOfFirstByte = Long.parseLong(words[0]);
+      toWatch = new File(params.substring(words[0].length() + 1));
+    } else {
+      toWatch = new File(params);
+    }
+    return toWatch.getAbsolutePath();
   }
 
   /**

@@ -62,11 +62,13 @@ public class ExecAdaptor extends AbstractAdaptor {
   
   class RunToolTask extends TimerTask {
     public void run() {
+      log.info("calling exec");
       JSONObject o = exec.execute();
       try {
 
         if (o.getInt("status") == exec.statusKO)
-          hardStop();
+          deregisterAndStop(false);
+
 
         // FIXME: downstream customers would like timestamps here.
         // Doing that efficiently probably means cutting out all the
@@ -78,6 +80,8 @@ public class ExecAdaptor extends AbstractAdaptor {
           result.append(dateFormat.format(new java.util.Date()));
           result.append(" INFO org.apache.hadoop.chukwa.");
           result.append(type);
+          result.append("= ");
+          result.append(o.getString("exitValue"));
           result.append(": ");
           result.append(o.getString("stdout"));
           data = result.toString().getBytes();
@@ -101,12 +105,10 @@ public class ExecAdaptor extends AbstractAdaptor {
 
         dest.add(c);
       } catch (JSONException e) {
-        // FIXME: log this somewhere
+        log.warn(e);
       } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-      } catch (AdaptorException e) {
-        // FIXME: log this somewhere
-      }
+        ;
+      } 
     }
   };
 
@@ -124,9 +126,6 @@ public class ExecAdaptor extends AbstractAdaptor {
     return type + " " + period + " " + cmd + " " + sendOffset;
   }
 
-  public String getStreamName() {
-    return cmd;
-  }
 
   @Override
   @Deprecated
@@ -156,12 +155,6 @@ public class ExecAdaptor extends AbstractAdaptor {
        exec.stop();
        break;
      case GRACEFULLY :
-       try {
-         timer.cancel();
-         exec.waitFor();
-       } catch (InterruptedException e) {
-       }
-       break;
      case WAIT_TILL_FINISHED :
        try {
          timer.cancel();
@@ -175,8 +168,19 @@ public class ExecAdaptor extends AbstractAdaptor {
   }
 
   @Override
-  public void start(String status, long offset) throws AdaptorException {
+  public void start(long offset) throws AdaptorException {
 
+
+    this.sendOffset = offset;
+
+    this.exec = new EmbeddedExec(cmd);
+    TimerTask execTimer = new RunToolTask();
+    timer.schedule(execTimer, 0L, period);
+  }
+
+
+  @Override
+  public String parseArgs(String status) { 
     int spOffset = status.indexOf(' ');
     if (spOffset > 0) {
       try {
@@ -189,13 +193,9 @@ public class ExecAdaptor extends AbstractAdaptor {
       }
     } else
       cmd = status;
-    this.sendOffset = offset;
-
-    this.exec = new EmbeddedExec(cmd);
-    TimerTask execTimer = new RunToolTask();
-    timer.schedule(execTimer, 0L, period);
+    
+    return cmd;
   }
-
 
 
 }
