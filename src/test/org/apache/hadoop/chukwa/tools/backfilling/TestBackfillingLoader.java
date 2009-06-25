@@ -218,7 +218,8 @@ public class TestBackfillingLoader extends TestCase{
     conf.set("chukwaCollector.rotateInterval", "" + (Integer.MAX_VALUE -1));
     conf.set("chukwaCollector.localOutputDir", dataDir  + "/log/");
     conf.set("chukwaCollector.writerClass", "org.apache.hadoop.chukwa.datacollection.writer.localfs.LocalWriter");
-    
+    conf.set("chukwaCollector.minPercentFreeDisk", "2");//so unit tests pass on machines with full-ish disks
+
     String cluster = "MyCluster_" + ts;
     String machine = "machine_" + ts;
     String adaptorName = "org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped";

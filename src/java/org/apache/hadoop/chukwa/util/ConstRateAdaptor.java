@@ -61,7 +61,7 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
       //("bad argument to const rate adaptor: ["  + bytesPerSecParam + "]");
       return null;
     }
-    return this.type;
+    return bytesPerSecParam;
   }
 
   public void run() {

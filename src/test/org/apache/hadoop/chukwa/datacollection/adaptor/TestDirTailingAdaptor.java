@@ -36,6 +36,8 @@ public class TestDirTailingAdaptor extends TestCase {
     Configuration conf = new Configuration();
     baseDir = new File(System.getProperty("test.build.data", "/tmp"));
     conf.set("chukwaAgent.checkpoint.dir", baseDir.getCanonicalPath());
+    conf.set("chukwaAgent.checkpoint.name", "checkpoint_test_"+System.currentTimeMillis());
+    conf.setInt("chukwaAgent.control.port", 0);
     conf.setBoolean("chukwaAgent.checkpoint.enabled", false);
     
     agent = new ChukwaAgent(conf);

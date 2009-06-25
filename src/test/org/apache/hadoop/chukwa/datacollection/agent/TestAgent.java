@@ -19,6 +19,7 @@ package org.apache.hadoop.chukwa.datacollection.agent;
 
 
 import java.util.ArrayList;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
@@ -30,12 +31,13 @@ public class TestAgent extends TestCase {
   public void testStopAndStart() {
 
     try {
-      ChukwaAgent agent = new ChukwaAgent();
+      Configuration conf = new Configuration();
+      conf.setInt("chukwaAgent.control.port", 0);
+      ChukwaAgent agent = new ChukwaAgent(conf);
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
 
-      ChukwaConfiguration cc = new ChukwaConfiguration();
-      int portno = cc.getInt("chukwaAgent.control.port", 9093);
+      int portno = agent.getControllerPort();
       ChukwaAgentController cli = new ChukwaAgentController("localhost", portno);
 
       for (int i = 1; i < 20; ++i) {
@@ -58,7 +60,9 @@ public class TestAgent extends TestCase {
   public void testMultiStopAndStart() {
 
     try {
-      ChukwaAgent agent = new ChukwaAgent();
+      Configuration conf = new Configuration();
+      conf.setInt("chukwaAgent.control.port", 0);
+      ChukwaAgent agent = new ChukwaAgent(conf);
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
       int count = agent.adaptorCount();

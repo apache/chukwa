@@ -90,6 +90,8 @@ public class TestChukwaWriters extends TestCase{
       String localWriterOutputDir = outputDirectory +"/localWriter/localOutputDir";
       confLocalWriter.set("chukwaCollector.localOutputDir",localWriterOutputDir);
       confLocalWriter.set("chukwaCollector.rotateInterval", "300000");
+      confLocalWriter.set("chukwaCollector.minPercentFreeDisk", "2");//so unit tests pass on 
+      //machines with mostly-full disks
 
       
       String localWriterFile = null;
