@@ -47,7 +47,7 @@ public class JobLog extends AbstractProcessor {
       return null;
     }
     recordEntry = recordEntry.trim();
-    if(recordEntry.length() == 0) {
+    if(recordEntry.length() == 0 || recordEntry.startsWith("Meta")) {
       savedLines = "";
       return null;
     }

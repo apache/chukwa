@@ -76,6 +76,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-335. Discard meta line in job history file. (Cheng Zhang via asrabkin)
+
     CHUKWA-330. Make separation between fixed adaptor parameters and optional adaptor parameters for generating adaptor id. (Ari Rabkin via Eric Yang)
 
     CHUKWA-37. Remove stale and unused bin scripts. (asrabkin)
