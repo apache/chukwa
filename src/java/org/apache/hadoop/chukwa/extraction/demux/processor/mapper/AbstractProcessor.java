@@ -39,9 +39,9 @@ public abstract class AbstractProcessor implements MapProcessor {
   int currentPos = 0;
   int startOffset = 0;
 
-  ChukwaArchiveKey archiveKey = null;
-  ChukwaRecordKey key = new ChukwaRecordKey();
-  Chunk chunk = null;
+  protected ChukwaArchiveKey archiveKey = null;
+  protected ChukwaRecordKey key = new ChukwaRecordKey();
+  protected Chunk chunk = null;
 
   boolean chunkInErrorSaved = false;
   OutputCollector<ChukwaRecordKey, ChukwaRecord> output = null;

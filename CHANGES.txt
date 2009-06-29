@@ -34,6 +34,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-25.  Archiver can group by cluster name. (asrabkin)
+    
     CHUKWA-308. Added capability to start hicc without tomcat. (Eric Yang)
 
     CHUKWA-326. If the chukwa records produce errors in post process, move to InErrorDirectory. (Jerome Boulon via Eric Yang)

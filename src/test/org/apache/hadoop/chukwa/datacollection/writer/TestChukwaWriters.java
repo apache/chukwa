@@ -83,7 +83,7 @@ public class TestChukwaWriters extends TestCase{
       
       Assert.assertFalse(seqWriterFile == null);
       
-      String seqWriterDump = dumpArachive(fs,conf,seqWriterFile);
+      String seqWriterDump = dumpArchive(fs,conf,seqWriterFile);
       
       Configuration confLocalWriter = new Configuration();
       confSeqWriter.set("writer.hdfs.filesystem", "file:///");
@@ -110,7 +110,7 @@ public class TestChukwaWriters extends TestCase{
       }
       
       Assert.assertFalse(localWriterFile == null);
-      String localWriterDump = dumpArachive(fs,conf,localWriterFile);
+      String localWriterDump = dumpArchive(fs,conf,localWriterFile);
 
       Assert.assertTrue(seqWriterDump.intern() == localWriterDump.intern());
 
@@ -123,7 +123,7 @@ public class TestChukwaWriters extends TestCase{
     
   }
   
-  protected String dumpArachive(FileSystem fs,Configuration conf, String file) throws Throwable {
+  protected String dumpArchive(FileSystem fs,Configuration conf, String file) throws Throwable {
     SequenceFile.Reader reader = null;
     try {
       reader = new SequenceFile.Reader(fs, new Path(file), conf);

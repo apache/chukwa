@@ -210,7 +210,9 @@ public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
   public void runArchive(String archivesMRInputDir,String archivesMROutputDir,
       String finalArchiveOutput) throws Exception {
     String[] args = new String[3];
-    args[0] = "Stream";
+    
+    
+    args[0] = conf.get("archive.grouper","Stream");
     args[1] = archivesMRInputDir + "*/*.done" ;
     args[2] = archivesMROutputDir;
     

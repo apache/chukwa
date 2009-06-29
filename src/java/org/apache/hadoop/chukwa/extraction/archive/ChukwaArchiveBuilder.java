@@ -36,12 +36,21 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
 
+/**
+ * Main class for mapreduce job to do archiving of Chunks.
+ * 
+ * Map class and reduce classes are both identity; actual logic is in 
+ * Partitioner and OutputFormat classes.  Those are selected by first argument.
+ * 
+ * 
+ *
+ */
 public class ChukwaArchiveBuilder extends Configured implements Tool {
   static Logger log = Logger.getLogger(ChukwaArchiveBuilder.class);
 
   static int printUsage() {
     System.out
-        .println("ChuckwaArchiveBuilder <Stream/DataType/Daily/Hourly> <input> <output>");
+        .println("ChukwaArchiveBuilder <Stream/DataType/Daily/Hourly> <input> <output>");
     ToolRunner.printGenericCommandUsage(System.out);
     return -1;
   }
@@ -54,8 +63,7 @@ public class ChukwaArchiveBuilder extends Configured implements Tool {
           + " instead of 3.");
       return printUsage();
     }
-
-    JobConf jobConf = new JobConf(new ChukwaConfiguration(), ChukwaArchiveBuilder.class);
+    JobConf jobConf = new JobConf(getConf(), ChukwaArchiveBuilder.class);
 
     jobConf.setInputFormat(SequenceFileInputFormat.class);
 
@@ -71,7 +79,7 @@ public class ChukwaArchiveBuilder extends Configured implements Tool {
       jobConf.setPartitionerClass(ChukwaArchiveHourlyPartitioner.class);
       jobConf.setOutputFormat(ChukwaArchiveHourlyOutputFormat.class);
     } else if (args[0].equalsIgnoreCase("DataType")) {
-      jobConf.setJobName("Chukwa-HourlyArchiveBuilder-DataType");
+      jobConf.setJobName("Chukwa-ArchiveBuilder-DataType");
       int reduceCount = jobConf.getInt("chukwaArchiveBuilder.reduceCount", 1);
       log.info("Reduce Count:" + reduceCount);
       jobConf.setNumReduceTasks(reduceCount);
@@ -103,7 +111,7 @@ public class ChukwaArchiveBuilder extends Configured implements Tool {
   }
 
   public static void main(String[] args) throws Exception {
-    int res = ToolRunner.run(new Configuration(), new ChukwaArchiveBuilder(),
+    int res = ToolRunner.run(new ChukwaConfiguration(), new ChukwaArchiveBuilder(),
         args);
     System.exit(res);
   }

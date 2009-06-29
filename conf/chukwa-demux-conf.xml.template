@@ -27,7 +27,19 @@
 	  files.  This determines the number of open file handles.</description>
 	</property>
 
-<!-- -->
+<!-- Archive configuration -->
+  
+    <property>
+       <name>archive.grouper</name>
+       <value>Stream</value>
+       <description>How to group archive files. Choices are Hourly, Daily, DataType, and Stream.</description>
+    </property>
+
+    <property>
+       <name>archive.groupByClusterName</name>
+       <value>false</value>
+       <description>Whether the DataType grouper should group archived files by cluster name.</description>
+    </property>
 
 <!-- PostProcessorManager config -->
   <property>
