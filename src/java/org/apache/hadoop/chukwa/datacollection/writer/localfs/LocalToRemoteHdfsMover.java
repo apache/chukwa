@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.datacollection.writer.localfs;
 
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.concurrent.BlockingQueue;
 
@@ -117,7 +118,11 @@ public class LocalToRemoteHdfsMover extends Thread {
       } else {
         throw new RuntimeException("Cannot rename remote file, " + pRemoteFilePath + " to " + pFinalRemoteFilePath);
       }
-    }catch (Exception e) {
+    }catch(FileNotFoundException ex) {
+      //do nothing since if the file is no longer there it's
+      // because it has already been moved over by the cleanup task.
+    }
+    catch (Exception e) {
       log.warn("Cannot copy to the remote HDFS",e);
       throw e;
     }
@@ -161,10 +166,9 @@ public class LocalToRemoteHdfsMover extends Thread {
           cleanup();
           inError = false;
         }
+
+        filePath = fileQueue.take();
         
-        if (filePath == null) {
-          filePath = fileQueue.take();
-        }
         if (filePath == null) {
           continue;
         }
