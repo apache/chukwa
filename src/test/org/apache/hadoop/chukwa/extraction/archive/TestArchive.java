@@ -115,7 +115,7 @@ public class TestArchive extends TestCase {
     conf.setInt("io.sort.factor", 5);
     conf.setInt("mapred.tasktracker.map.tasks.maximum", 2);
     conf.setInt("mapred.tasktracker.reduce.tasks.maximum", 2);
-    conf.set("archive.addClusterName", "true");
+    conf.set("archive.groupByClusterName", "true");
     
     MiniMRCluster mr = new MiniMRCluster(NUM_HADOOP_SLAVES, fileSys.getUri()
         .toString(), 1);
