@@ -72,6 +72,10 @@ Release 0.2.0 - 2009-06-30
 
   BUG FIXES
 
+    CHUKWA-191. Edit docs. (Eric Yang via asrabkin)
+
+    CHUKWA-333. Add release notes. (asrabkin, with contributions from Cheng Zhang)
+
     CHUKWA-330. Modified AgentController to add adaptor by name for uniquely identify stream. (Ari Rabkin via Eric Yang)
 
     CHUKWA-37. Remove stale and unused bin scripts. (Ari Rabkin)

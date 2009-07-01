@@ -162,7 +162,7 @@ cd $CHUKWA&#95;HOME/opt/mysql-&#42;
 </source>
 
 <p>
-Configure and then copy the my.cnf file to the CHUKWA_HOME/opt/mysql-* directory:
+Configure mysql in the CHUKWA_HOME/opt/mysql-* directory:
 </p>
 <source>
 ./scripts/mysql_install_db
