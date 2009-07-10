@@ -34,6 +34,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-341. Heap space in HICC Jetty is configurable. (Jiaqi Tan via asrabkin)
+
     CHUKWA-284.  Checkpoint includes last byte Acked, not sent. (asrabkin)
 
     CHUKWA-25.  Archiver can group by cluster name. (asrabkin)

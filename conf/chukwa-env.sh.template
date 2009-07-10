@@ -70,3 +70,9 @@ export JDBC_DRIVER=@TODO_CHUKWA_JDBC_DRIVER@
 
 # Database URL prefix for Database Loader.
 export JDBC_URL_PREFIX=@TODO_CHUKWA_JDBC_URL_PREFIX@
+
+# HICC Jetty Server heap memory settings 
+# Specify min and max size of heap to JVM, e.g. 300M
+export CHUKWA_HICC_MIN_MEM=
+export CHUKWA_HICC_MAX_MEM=
+

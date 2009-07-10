@@ -34,10 +34,21 @@ if [ "X$1" = "Xstop" ]; then
   stop
 fi
 
+if [ ! -z "${CHUKWA_HICC_MAX_MEM}" ]; then
+  MAX_MEM="-Xmx${CHUKWA_HICC_MAX_MEM}"
+else
+  MAX_MEM=""
+fi
+if [ ! -z "${CHUKWA_HICC_MIN_MEM}" ]; then
+  MIN_MEM="-Xms${CHUKWA_HICC_MIN_MEM}"
+else
+  MIN_MEM=""
+fi
+
 WEB_SERVICE_COMMON=`ls ${CHUKWA_HOME}/lib/*.jar ${CHUKWA_HOME}/webapps/hicc.war`
 WEB_SERVICE_COMMON=`echo ${WEB_SERVICE_COMMON}| sed 'y/ /:/'`
 
-exec ${JAVA_HOME}/bin/java -DAPP=hicc \
+exec ${JAVA_HOME}/bin/java ${MAX_MEM} ${MIN_MEM} -DAPP=hicc \
                            -Dlog4j.configuration=chukwa-log4j.properties \
                            -DCHUKWA_HOME=${CHUKWA_HOME} \
                            -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} \
