@@ -52,7 +52,7 @@ public class ChukwaAgentController {
     String adaptorName;
     String type;
     String params;
-    long offset;
+    private long offset;
     long numRetries;
     long retryInterval;
 

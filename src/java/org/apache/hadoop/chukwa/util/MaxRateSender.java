@@ -37,7 +37,7 @@ public class MaxRateSender extends Thread implements Adaptor {
   private String adaptorID;
 
   public String getCurrentStatus() throws AdaptorException {
-    return "";
+    return type;
   }
 
   public void start(String adaptorID, String type, long offset,

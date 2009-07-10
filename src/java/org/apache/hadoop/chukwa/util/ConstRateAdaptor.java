@@ -40,7 +40,7 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
   private volatile boolean stopping = false;
 
   public String getCurrentStatus() throws AdaptorException {
-    return type.trim() + " " + bytesPerSec + " " + offset;
+    return type.trim() + " " + bytesPerSec;
   }
 
   public void start(String adaptorID, String type, 

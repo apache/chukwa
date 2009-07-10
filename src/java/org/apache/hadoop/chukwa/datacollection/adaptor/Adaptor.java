@@ -51,8 +51,9 @@ public interface Adaptor {
       ChunkReceiver dest, AdaptorManager c) throws AdaptorException;
 
   /**
-   * Return the adaptor's state Should not include class name, datatype or byte
-   * offset, which are written by caller.
+   * Return the adaptor's state Should not include class name or byte
+   * offset, which are written by caller. The datatype should, however,
+   * be written by this method.
    * 
    * @return the adaptor state as a string
    * @throws AdaptorException

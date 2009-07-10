@@ -92,7 +92,7 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
   @Override
   public String getCurrentStatus() throws AdaptorException {
     try {
-      return type + " " + baseDir.getCanonicalPath()+ " " + adaptorName+ " " + lastSweepStartTime;
+      return type + " " + baseDir.getCanonicalPath()+ " " + adaptorName;
     } catch(IOException e) {
       throw new AdaptorException(e);
     }

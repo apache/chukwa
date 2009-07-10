@@ -445,7 +445,7 @@ public class ChukwaAgent implements AdaptorManager {
           new OutputStreamWriter(fos)));
 
       for (Map.Entry<String, String> stat : getAdaptorList().entrySet()) {
-          out.println("ADD "+ stat.getKey()+ " = " + stat.getValue());
+        out.println("ADD "+ stat.getKey()+ " = " + stat.getValue());
       }
 
       out.close();
@@ -490,7 +490,8 @@ public class ChukwaAgent implements AdaptorManager {
 
   
   private String formatAdaptorStatus(Adaptor a) throws AdaptorException {
-    return a.getClass().getCanonicalName() + " " + a.getCurrentStatus();
+    return a.getClass().getCanonicalName() + " " + a.getCurrentStatus() + 
+   " " + adaptorPositions.get(a).offset;
   }
   
 /**

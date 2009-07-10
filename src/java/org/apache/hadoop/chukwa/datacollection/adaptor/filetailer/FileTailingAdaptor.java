@@ -77,7 +77,6 @@ public class FileTailingAdaptor extends AbstractAdaptor {
   public void start(long bytes) {
     this.attempts = 0;
 
-   
     log.info("started file tailer on file " + toWatch
         + " with first byte at offset " + offsetOfFirstByte);
 
@@ -177,8 +176,7 @@ public class FileTailingAdaptor extends AbstractAdaptor {
    * @see org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor#getCurrentStatus()
    */
   public String getCurrentStatus() {
-    return type.trim() + " " + offsetOfFirstByte + " " + toWatch.getPath()
-        + " " + fileReadOffset;
+    return type.trim() + " " + offsetOfFirstByte + " " + toWatch.getPath();
     // can make this more efficient using a StringBuilder
   }
 

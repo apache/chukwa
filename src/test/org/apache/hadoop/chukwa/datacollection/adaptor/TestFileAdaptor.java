@@ -84,7 +84,7 @@ public class TestFileAdaptor extends TestCase {
   
   public void testRepeatedly() throws IOException,
   ChukwaAgent.AlreadyRunningException, InterruptedException {
-    int tests = 300; //SHOULD SET HIGHER AND WATCH WITH lsof to find leaks
+    int tests = 100; //SHOULD SET HIGHER AND WATCH WITH lsof to find leaks
 
     ChukwaAgent agent = new ChukwaAgent(conf);
     for(int i=0; i < tests; ++i) {

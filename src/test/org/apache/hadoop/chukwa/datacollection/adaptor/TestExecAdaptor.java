@@ -45,7 +45,10 @@ public class TestExecAdaptor extends TestCase {
     agent.shutdown();
   }
   
-  
+  /*
+   * Buzz in a loop, starting ls every 100 ms.
+   * Length of loop controlled by sleep statement near bottom of function
+   */
   public void testForLeaks()  throws ChukwaAgent.AlreadyRunningException, InterruptedException {
     Configuration conf = new Configuration();
 //    conf.set("chukwaAgent.control.port", "0");
@@ -57,7 +60,7 @@ public class TestExecAdaptor extends TestCase {
     assertEquals(0, agent.adaptorCount());
     String lsID = agent.processAddCommand(
       "add exec= org.apache.hadoop.chukwa.datacollection.adaptor.ExecAdaptor Listing 100 /bin/sleep 1 0");
-    Thread.sleep( 60*1000);
+    Thread.sleep( 25*1000); //RAISE THIS to test longer
     System.out.println("stopped ok"); 
   }
 
