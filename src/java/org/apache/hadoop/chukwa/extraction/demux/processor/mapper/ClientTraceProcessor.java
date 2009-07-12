@@ -100,8 +100,10 @@ public class ClientTraceProcessor extends AbstractProcessor {
     try {
       idMatcher.reset(recordEntry);
       long ms;
+      long ms_fullresolution;
       if (idMatcher.find()) {
         ms = sdf.parse(idMatcher.group(1)).getTime();
+        ms_fullresolution = ms;
       } else {
         throw new IOException("Could not find date/source");
       }
@@ -129,6 +131,7 @@ public class ClientTraceProcessor extends AbstractProcessor {
       rec.add(Record.tagsField, chunk.getTags());
       rec.add(Record.sourceField, chunk.getSource());
       rec.add(Record.applicationField, chunk.getApplication());
+      rec.add("actual_time",(new Long(ms_fullresolution)).toString());
       output.collect(key, rec);
 
     } catch (ParseException e) {

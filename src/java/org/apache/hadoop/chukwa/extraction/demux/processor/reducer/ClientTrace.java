@@ -53,8 +53,19 @@ public class ClientTrace implements ReduceProcessor {
       long bytes = 0L;
       ChukwaRecord rec = null;
       while (values.hasNext()) {
+        /* aggregate bytes for current key */
         rec = values.next();
         bytes += Long.valueOf(rec.getValue("bytes"));
+        
+        /* output raw values to different data type for uses which
+         * require detailed per-operation data */
+        ChukwaRecordKey detailed_key = new ChukwaRecordKey();
+        String [] k = key.getKey().split("/");
+        String full_timestamp = null;
+        full_timestamp = rec.getValue("actual_time");
+        detailed_key.setReduceType("ClientTraceDetailed");
+        detailed_key.setKey(k[0]+"/"+k[1]+"_"+k[2]+"/"+full_timestamp);
+        output.collect(detailed_key, rec);
       }
       if (null == rec) {
         return;
