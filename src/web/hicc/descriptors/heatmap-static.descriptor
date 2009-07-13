@@ -1,0 +1,37 @@
+{
+"id":"heatmap_viewer_static",
+"title":"HDFS Heatmap (Static)",
+"version":"0.1",
+"categories":"Hadoop,Status",
+"module":"iframe/jsp/heatmap-static.jsp",
+"description":"Display time-aggregated HDFS events",
+"screendump":"\/images\/start.png",
+"refresh":"15",
+"parameters":[
+{"name":"height","type":"select","value":"600","label":"Height","options":[
+{"label":"300","value":"300"},
+{"label":"450","value":"400"},
+{"label":"600","value":"500"},
+{"label":"800","value":"800"},
+{"label":"1000","value":"1000"},
+{"label":"1200","value":"1200"}
+]},
+{"name":"query_state","type":"select","value":"read","label":"State","options":[
+{"label":"Block Reads","value":"read"},
+{"label":"Block Writes","value":"write"},
+{"label":"Local Block Reads","value":"read_local"},
+{"label":"Remote Block Reads","value":"read_remote"},
+{"label":"Local Block Writes","value":"write_local"},
+{"label":"Remote Block Writes","value":"write_remote"},
+{"label":"Replicated Block Writes","value":"write_replicated"}
+]},
+{"name":"query_stat_type","type":"select","value":"transaction_count","label":"Statistic Type","options":[
+{"label":"Number of Transactions","value":"transaction_count"},
+{"label":"Average Duration","value":"avg_duration"},
+{"label":"Average Block Size","value":"avg_volume"},
+{"label":"Total Duration","value":"total_duration"},
+{"label":"Total Block Size","value":"total_volume"}
+]},
+]
+}
+

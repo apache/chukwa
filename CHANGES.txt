@@ -4,7 +4,9 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
-    CHUKWA-342. Statics swimlanes visualization widget.   (Jiaqi Tan via asrabkin)
+    CHUKWA-343. Static HDFS Heatmap visualization.   (Jiaqi Tan via asrabkin)
+
+    CHUKWA-342. Static swimlanes visualization widget.   (Jiaqi Tan via asrabkin)
 
     CHUKWA-299. Added HDFS Spatial heatmaps visualization. (Jiaqi Tan via Eric Yang)
 
