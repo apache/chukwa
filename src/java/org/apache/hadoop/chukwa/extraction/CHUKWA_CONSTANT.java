@@ -25,6 +25,7 @@ public interface CHUKWA_CONSTANT {
   public static final String CHUKWA_ROOT_REPOS_DIR_FIELD = "chukwaRootReposDir";
 
   
+  //This is the INPUT directory for archiving; defaults to /chukwa/logs
   public static final String CHUKWA_ARCHIVE_DIR_FIELD = "chukwaArchiveDir";
   public static final String CHUKWA_POST_PROCESS_DIR_FIELD = "chukwaPostProcessDir";
   public static final String CHUKWA_POSTPROCESS_IN_ERROR_DIR_FIELD = "chukwaPostProcessInErrorDir";
@@ -37,7 +38,7 @@ public interface CHUKWA_CONSTANT {
   
   public static final String CHUKWA_DEMUX_REDUCER_COUNT_FIELD     = "demux.reducerCount";
   
-  public static final String DEFAULT_DEMUX_ROOT_DIR_NAME          = "/chukwa/";
+  public static final String DEFAULT_CHUKWA_ROOT_DIR_NAME          = "/chukwa/";
   public static final String DEFAULT_REPOS_DIR_NAME               = "repos/";
   public static final String DEFAULT_CHUKWA_POSTPROCESS_DIR_NAME  = "postProcess/";
   public static final String DEFAULT_POSTPROCESS_IN_ERROR_DIR_NAME = "postProcessInError/";
@@ -51,10 +52,12 @@ public interface CHUKWA_CONSTANT {
   public static final String DEFAULT_CHUKWA_DATASINK_DIR_NAME     = "dataSinkArchives/";
   public static final String DEFAULT_FINAL_ARCHIVES               = "finalArchives/";
   
-  public static final String DEFAULT_ARCHIVES_PROCESSING_DIR_NAME    = "archivesProcessing/";
-  public static final String DEFAULT_ARCHIVES_MR_OUTPUT_DIR_NAME     = "mrOutput/";
-  public static final String DEFAULT_ARCHIVES_MR_INPUT_DIR_NAME      = "mrInput/";
-  public static final String DEFAULT_ARCHIVES_IN_ERROR_DIR_NAME      = "inError/";
+    //These fields control the working dirs for the archive mapred job.
+    //They are not configurable at runtime.
+  public static final String ARCHIVES_PROCESSING_DIR_NAME    = "archivesProcessing/";
+  public static final String ARCHIVES_MR_OUTPUT_DIR_NAME     = "mrOutput/";
+  public static final String ARCHIVES_MR_INPUT_DIR_NAME      = "mrInput/";
+  public static final String ARCHIVES_IN_ERROR_DIR_NAME      = "inError/";
 
   public static final String POST_DEMUX_DATA_LOADER = "chukwa.post.demux.data.loader";  
 }

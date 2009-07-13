@@ -72,7 +72,7 @@ public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
   
   public void start() throws Exception {
     
-    String chukwaRootDir = conf.get(CHUKWA_ROOT_DIR_FIELD, DEFAULT_DEMUX_ROOT_DIR_NAME);
+    String chukwaRootDir = conf.get(CHUKWA_ROOT_DIR_FIELD, DEFAULT_CHUKWA_ROOT_DIR_NAME);
     if ( ! chukwaRootDir.endsWith("/") ) {
       chukwaRootDir += "/";
     }
@@ -86,10 +86,10 @@ public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
     Path pArchiveRootDir = new Path(archiveRootDir);
     setup(pArchiveRootDir);
     
-    String archivesRootProcessingDir = chukwaRootDir + DEFAULT_ARCHIVES_PROCESSING_DIR_NAME;
+    String archivesRootProcessingDir = chukwaRootDir + ARCHIVES_PROCESSING_DIR_NAME;
     // String archivesErrorDir = archivesRootProcessingDir + DEFAULT_ARCHIVES_IN_ERROR_DIR_NAME;
-    String archivesMRInputDir = archivesRootProcessingDir + DEFAULT_ARCHIVES_MR_INPUT_DIR_NAME;
-    String archivesMROutputDir = archivesRootProcessingDir+ DEFAULT_ARCHIVES_MR_OUTPUT_DIR_NAME;
+    String archivesMRInputDir = archivesRootProcessingDir + ARCHIVES_MR_INPUT_DIR_NAME;
+    String archivesMROutputDir = archivesRootProcessingDir+ ARCHIVES_MR_OUTPUT_DIR_NAME;
     String finalArchiveOutput = chukwaRootDir + DEFAULT_FINAL_ARCHIVES;
 
 

@@ -210,7 +210,7 @@ public class ChukwaAgent implements AdaptorManager {
       checkpointDir.mkdirs();
     }
     tags = conf.get("chukwaAgent.tags", "cluster=\"unknown\"");
-    DataFactory.getInstance().addDefaultTag(conf.get("chukwaAgent.tags", "cluster=\"unknown\""));
+    DataFactory.getInstance().addDefaultTag(conf.get("chukwaAgent.tags", "cluster=\"unknown_cluster\""));
 
     log.info("Config - CHECKPOINT_BASE_NAME: [" + CHECKPOINT_BASE_NAME + "]");
     log.info("Config - checkpointDir: [" + checkpointDir + "]");

@@ -19,9 +19,13 @@
 package org.apache.hadoop.chukwa.extraction.archive;
 
 
+import java.io.IOException;
+import java.util.Iterator;
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
+import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
+import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -29,6 +33,10 @@ import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.MapReduceBase;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.Reducer;
+import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.mapred.SequenceFileInputFormat;
 import org.apache.hadoop.mapred.lib.IdentityMapper;
 import org.apache.hadoop.mapred.lib.IdentityReducer;
@@ -46,6 +54,23 @@ import org.apache.log4j.Logger;
  *
  */
 public class ChukwaArchiveBuilder extends Configured implements Tool {
+  
+  
+  static class UniqueKeyReduce extends MapReduceBase implements
+  Reducer<ChukwaArchiveKey, ChunkImpl, ChukwaArchiveKey, ChunkImpl> {
+
+    /**
+     * Outputs exactly one value for each key; this suppresses duplicates
+     */
+    @Override
+    public void reduce(ChukwaArchiveKey key, Iterator<ChunkImpl> vals,
+        OutputCollector<ChukwaArchiveKey, ChunkImpl> out, Reporter r)
+        throws IOException {
+      ChunkImpl i = vals.next();
+      out.collect(key, i);
+    }
+  
+  }
   static Logger log = Logger.getLogger(ChukwaArchiveBuilder.class);
 
   static int printUsage() {
@@ -68,7 +93,9 @@ public class ChukwaArchiveBuilder extends Configured implements Tool {
     jobConf.setInputFormat(SequenceFileInputFormat.class);
 
     jobConf.setMapperClass(IdentityMapper.class);
-    jobConf.setReducerClass(IdentityReducer.class);
+    
+    jobConf.setReducerClass(UniqueKeyReduce.class);
+//    jobConf.setReducerClass(IdentityReducer.class);
 
     if (args[0].equalsIgnoreCase("Daily")) {
       jobConf.setPartitionerClass(ChukwaArchiveDailyPartitioner.class);

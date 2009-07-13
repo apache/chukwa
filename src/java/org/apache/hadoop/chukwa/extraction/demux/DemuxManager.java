@@ -99,7 +99,7 @@ public class DemuxManager implements CHUKWA_CONSTANT {
    */
   public void start() throws Exception {
 
-     String chukwaRootDir = conf.get(CHUKWA_ROOT_DIR_FIELD, DEFAULT_DEMUX_ROOT_DIR_NAME);
+     String chukwaRootDir = conf.get(CHUKWA_ROOT_DIR_FIELD, DEFAULT_CHUKWA_ROOT_DIR_NAME);
      if ( ! chukwaRootDir.endsWith("/") ) {
        chukwaRootDir += "/";
      }
@@ -325,6 +325,7 @@ public class DemuxManager implements CHUKWA_CONSTANT {
        return ( 0 == ToolRunner.run(this.conf,new Demux(), demuxParams) );
      } catch (Throwable e) {
        e.printStackTrace();
+       log.error("failed to run demux", e);
        globalErrorcounter ++;
      }
      return false;
@@ -343,8 +344,8 @@ public class DemuxManager implements CHUKWA_CONSTANT {
        String dataSinkDir, String demuxInputDir) throws IOException {
      Path pDataSinkDir = new Path(dataSinkDir);
      Path pDemuxInputDir = new Path(demuxInputDir);
-     log.info("dataSinkDir" + dataSinkDir);
-     log.info("demuxInputDir" + demuxInputDir);
+     log.info("dataSinkDir: " + dataSinkDir);
+     log.info("demuxInputDir: " + demuxInputDir);
 
 
      boolean containsFile = false;

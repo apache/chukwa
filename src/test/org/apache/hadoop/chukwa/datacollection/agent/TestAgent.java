@@ -25,7 +25,8 @@ import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
 import junit.framework.TestCase;
-
+//Note this test takes a minimum of 
+// 20 * 2 + 6* 20 = 160 seconds. 
 public class TestAgent extends TestCase {
 
   public void testStopAndStart() {
