@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 %>
-<%@ page import = "javax.servlet.http.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.tomcat.util.http.Parameters, org.apache.hadoop.chukwa.util.XssFilter" %>
+<%@ page import = "javax.servlet.http.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
        XssFilter xf = new XssFilter(request);
        for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {

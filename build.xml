@@ -1122,7 +1122,8 @@
 		<mkdir dir="${build.dir}/${final.name}/var/run" />
 		<mkdir dir="${build.dir}/${final.name}/logs" />
 		<mkdir dir="${build.dir}/${final.name}/webapps" />
-
+		<mkdir dir="${build.dir}/${final.name}/webapps/sandbox" />
+		
 		<copy todir="${build.dir}/${final.name}" includeEmptyDirs="false">
 			<fileset dir="${build.dir}">
 				<include name="*.jar" />

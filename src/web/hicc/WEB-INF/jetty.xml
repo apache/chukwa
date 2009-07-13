@@ -117,7 +117,7 @@
       <Arg>
         <New class="org.mortbay.jetty.deployer.ContextDeployer">
           <Set name="contexts"><Ref id="Contexts"/></Set>
-          <Set name="configurationDir"><SystemProperty name="CHUKWA_HOME" default="."/>/contexts</Set>
+          <Set name="configurationDir"><SystemProperty name="CHUKWA_HOME" default="."/>/webapps/sandbox</Set>
           <Set name="scanInterval">1</Set>
         </New>
       </Arg>

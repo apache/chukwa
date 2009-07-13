@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-342. Statics swimlanes visualization widget.   (Jiaqi Tan via asrabkin)
+
     CHUKWA-299. Added HDFS Spatial heatmaps visualization. (Jiaqi Tan via Eric Yang)
 
     CHUKWA-185. Ability to tail a whole directory. (asrabkin)
@@ -209,12 +211,6 @@ Release 0.1.2 - 2009-05-14
     CHUKWA-134. Add release audit target. (Giridharan Kesavan via Eric Yang)
 
     CHUKWA-80.  Extracted rpm spec file from build.xml file.  Fix start up script, and config script. (Eric Yang)
-
-    CHUKWA-26.  * DemuxManager, ArchiveManager and PostProcessorManager are now a single daemon process each.
-                * Each one working independently from others, as soon as something is available.
-                * Start-data-processor is now using those new daemons instead of pocessSink.sh
-                * Daily will process a daily compaction only when all hourly would have been done.
-                * Demux is now able to send NSCA commands to Nagios. (Jerome Boulon via Eric Yang)
 
     CHUKWA-26.  * DemuxManager, ArchiveManager and PostProcessorManager are now a single daemon process each.
                 * Each one working independently from others, as soon as something is available.

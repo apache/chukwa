@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 %>
-<%@ page import = "javax.servlet.http.*, java.net.URLEncoder, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.tomcat.util.http.Parameters" %>
+<%@ page import = "javax.servlet.http.*, java.net.URLEncoder, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*" %>
 <%!
    public static String HTMLEntityEncode( String s ) {
        StringBuffer buf = new StringBuffer();
