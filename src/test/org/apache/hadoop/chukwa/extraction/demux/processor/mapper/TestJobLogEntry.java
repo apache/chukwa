@@ -59,12 +59,7 @@ public class TestJobLogEntry extends TestCase {
 
 	public void testJobLogEntry() {
     JobLog jobLog = new JobLog();
-		JobLogLine log = jobLog.getJobLogLine(testLogList.get(0));
-		assertEquals("Meta", log.getLogType());
-		assertEquals("1", log.get("VERSION"));
-		assertEquals(0l, log.getTimestamp());
-		
-		log = jobLog.getJobLogLine(testLogList.get(1));
+		JobLogLine log = jobLog.getJobLogLine(testLogList.get(1));
 		assertEquals("JobData", log.getLogType());
 		assertEquals("hdfs://test33/tmp/hadoop-gmon/mapred/system/job_200903062215_0577/job\\.xml", log.get("JOBCONF"));
 		assertEquals("job_200903062215_0577", log.get("JOBID"));
