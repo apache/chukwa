@@ -27,11 +27,8 @@
         The Chukwa Documentation provides the information you need to get started using Chukwa.
       </p>
       <p>
-        If you're trying to set up a Chukwa cluster from scratch, you should read the <a href="admin.html"> Chukwa Administration Guide</a> which shows you how to setup and deploy Chukwa. 
+        Begin with the <a href="admin.html"> Chukwa Administration Guide</a> which shows you how to setup and deploy Chukwa. 
       </p>
-     <p> If you want to configure the Chukwa agent process, to control what's collected, you should read the <a href="agent.html">Agent Guide</a>.
-     </p>
-     <p>And if you want to use collected data, read the <a href="programming.html">programming guide</a></p>
       <p>
 		If you have more questions, you can ask on the <a href="ext:lists">Chukwa Core Mailing Lists</a>.
       </p>

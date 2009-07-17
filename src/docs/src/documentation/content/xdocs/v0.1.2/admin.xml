@@ -334,7 +334,7 @@ http://&#60;collector3HostName&#62;:&#60;collector3Port&#62;/
 
 
 <section>
-<title>3. Configure Adaptors</title>
+<title>3. Configure the Adaptor</title>
 <p>Edit the CHUKWA_HOME/conf/initial_adaptors configuration file.</p>
 
 <p>Define the default adaptors:</p>

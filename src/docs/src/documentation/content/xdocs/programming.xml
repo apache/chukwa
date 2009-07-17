@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+<document>
+  <header>
+    <title>Chukwa Programming Guide</title>
+  </header>
+  <body>
+
+<p>This document discusses the Chukwa archive file formats, and the layout of the Chukwa storage directories.</p>
+
+<section>
+<title>Sink File Format</title>
+<p>As data is collected, Chukwa dumps it into <em>sink files</em> in HDFS. By default, these are located in <code>/chukwa/logs</code>.  If the file name ends in .chukwa, that means the file is still being written to. Every few minutes, the collector will close the file, and rename the file to '*.done'.  This marks the file as available for processing.</p>
+
+<p>Each sink file is a Hadoop sequence file, containing a succession of key-value pairs, and periodic synch markers to facilitate MapReduce access. They key type is <code>ChukwaArchiveKey</code>; the value type is <code>ChunkImpl</code>. See the Chukwa Javadoc for details about these classes.</p>
+
+<p>Data in the sink may include duplicate and omitted chunks.</p>
+</section>
+
+<section>
+<title>Demux and Archiving</title>
+<p>It's possible to write MapReduce jobs that directly examine the data sink, but it's not extremely convenient. Data is not organized in a useful way, so jobs will likely discard most of their input. Data quality is imperfect, since duplicates and omissions may exist.  And MapReduce and HDFS are optimized to deal with a modest number of large files, not many small ones.</p> 
+
+<p> Chukwa therefore supplies several MapReduce jobs for organizing collected data and putting it into a more useful form; these jobs are typically run regularly from cron.  Knowing how to use Chukwa-collected data requires understanding how these jobs lay out storage. For now, this document only discusses one such job: the Simple Archiver. </p>
+</section>
+
+<section><title>Simple Archiver</title>
+<p>The simple archiver is designed to consolidate a large number of data sink files into a small number of archive files, with the contents grouped in a useful way.  Archive files, like raw sink files, are in Hadoop sequence file format. Unlike the data sink, however, duplicates have been removed.  (Future versions of the Simple Archiver will indicate the presence of gaps.)</p>
+
+<p>The simple archiver moves every <code>.done</code> file out of the sink, and then runs a MapReduce job to group the data. Output Chunks will be placed into files with names of the form <code>/chukwa/archive/clustername/Datatype_date.arc</code>.  Date corresponds to when the data was collected; Datatype is the datatype of each Chunk. 
+</p>
+
+<p>If archived data corresponds to an existing filename, a new file will be created with a disambiguating suffix.</p>
+
+<!-- The Simple Archiver is a Java class, stored in <code>chukwa-core-*.jar</code> -->
+
+</section>
+
+</body>
+</document>

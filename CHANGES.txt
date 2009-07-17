@@ -42,6 +42,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-350. Improve docs, add programmer guide. (asrabkin)
+
     CHUKWA-282. Demux should output detailed per-operation ClientTrace records (Jiaqi Tan via asrabkin)
 
     CHUKWA-341. Heap space in HICC Jetty is configurable. (Jiaqi Tan via asrabkin)

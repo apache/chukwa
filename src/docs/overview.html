@@ -21,6 +21,9 @@
 </head>
 <body>
 
+Hadoop MapReduce and HDFS are designed to support efficient batch processing of large datasets.  Many organizations accumulate huge volumes of log files and system metrics data, and it's tempting to use MapReduce to do the processing. However, this data has certain unfortunate characteristics. It's updated incrementally, and spread across many machines. This makes it a difficult to use MapReduce on this data.  Chukwa is a Hadoop subproject aiming to bridge this gap, and to facilitate MapReduce processing of monitoring data.  
+
+
 Chukwa is an open source data collection system for monitoring and analyzing large distributed systems.  
 Chukwa is built on top of the Hadoop distributed filesystem (HDFS) and MapReduce framework and inherits Hadoop's
 scalability and robustness.  Chukwa also includes a flexible and powerful toolkit for displaying monitoring
