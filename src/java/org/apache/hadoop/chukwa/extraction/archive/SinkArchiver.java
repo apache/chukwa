@@ -99,6 +99,9 @@ public class SinkArchiver implements CHUKWA_CONSTANT {
         fs.delete(pMRInputDir, true);
       }
       
+      if(!fs.exists(archive)) {
+        fs.mkdirs(archive);
+      }
       FileStatus[] files = fs.listStatus(pOutputDir);
       for(FileStatus f: files) {
         if(!f.getPath().getName().endsWith("_logs"))
@@ -132,7 +135,15 @@ public class SinkArchiver implements CHUKWA_CONSTANT {
         args);
     return res;
   }
-  
+  /**
+   * Merges the contents of src into dest.
+   * If src is a file, moves it to dest.
+   * 
+   * @param fs the filesystem in question
+   * @param src a file or directory to merge into dest
+   * @param dest a directory to merge into
+   * @throws IOException
+   */
   public void promoteAndMerge(FileSystem fs, Path src, Path dest) 
   throws IOException {
     FileStatus stat = fs.getFileStatus(src);

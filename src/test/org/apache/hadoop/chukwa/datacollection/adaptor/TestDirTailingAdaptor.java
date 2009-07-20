@@ -35,23 +35,25 @@ public class TestDirTailingAdaptor extends TestCase {
     
     Configuration conf = new Configuration();
     baseDir = new File(System.getProperty("test.build.data", "/tmp"));
-    conf.set("chukwaAgent.checkpoint.dir", baseDir.getCanonicalPath());
-    conf.set("chukwaAgent.checkpoint.name", "checkpoint_test_"+System.currentTimeMillis());
+    File checkpointDir = new File(baseDir, "dirtailerTestCheckpoints");
+    createEmptyDir(checkpointDir);
+    
+    conf.set("chukwaAgent.checkpoint.dir", checkpointDir.getCanonicalPath());
+    conf.set("chukwaAgent.checkpoint.name", "checkpoint_");
     conf.setInt("chukwaAgent.control.port", 0);
     conf.setBoolean("chukwaAgent.checkpoint.enabled", false);
     
     agent = new ChukwaAgent(conf);
     File emptyDir = new File(baseDir, "emptyDir");
-    if(emptyDir.exists())
-      emptyDir.delete();
-    emptyDir.mkdir();
+    createEmptyDir(emptyDir);
+    
     assertEquals(0, agent.adaptorCount());
     agent.processAddCommand("add DirTailingAdaptor raw " + emptyDir + " filetailer.CharFileTailingAdaptorUTF8 0");
     assertEquals(1, agent.adaptorCount());
 
     File dirWithFile = new File(baseDir, "dir2");
     dirWithFile.delete();
-    assertFalse( "temp directory not empty",dirWithFile.exists());
+    assertFalse("temp directory not empty",dirWithFile.exists());
       
     dirWithFile.mkdir();
     File inDir = File.createTempFile("atemp", "file", dirWithFile);
@@ -70,12 +72,43 @@ public class TestDirTailingAdaptor extends TestCase {
     aNewFile.deleteOnExit();
     anOldFile.setLastModified(10);//just after epoch
     agent = new ChukwaAgent(conf); //restart agent.
+    
+    //should be four adaptors: the DirTailer on emptyDir, the DirTailer on the full dir,
+    //and FileTailers for File inDir and file newfile
     assertEquals(4, agent.adaptorCount());
     
     //make sure we started tailing the new, not the old, file.
     for(Map.Entry<String, String> adaptors : agent.getAdaptorList().entrySet()) {
+      System.out.println(adaptors.getKey() +": " + adaptors.getValue());
       assertFalse(adaptors.getValue().contains("oldXYZ"));
     }
+    nukeDirContents(checkpointDir);//nuke dir
+    checkpointDir.delete();
+    emptyDir.delete();
+    nukeDirContents(dirWithFile);
+    dirWithFile.delete();
+  }
+
+  //returns true if dir exists
+  private boolean nukeDirContents(File dir) {
+    if(dir.exists()) {
+      if(dir.isDirectory()) {
+        for(File f: dir.listFiles()) {
+          nukeDirContents(f);
+          f.delete();
+        }
+      } else
+        dir.delete();
+      
+      return true;
+    }
+    return false;
+  }
+  
+  private void createEmptyDir(File dir) {
+    if(!nukeDirContents(dir))
+      dir.mkdir();
+    assertTrue(dir.isDirectory() && dir.listFiles().length == 0);
   }
 
 }
