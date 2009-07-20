@@ -51,7 +51,7 @@ public class TestDemux extends TestCase {
         + r.nextInt() + "\n";
 
     ChunkImpl c = new ChunkImpl("HadoopLogProcessor", "test",
-        line.length() - 1L, line.getBytes(), null);
+        line.length() , line.getBytes(), null);
     return c;
   }
 

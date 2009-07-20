@@ -61,7 +61,7 @@ public class TestArchive extends TestCase {
         + r.nextInt() + "\n";
 
     ChunkImpl c = new ChunkImpl("HadoopLogProcessor", "test",
-        line.length() - 1L + lastSeqID, line.getBytes(), null);
+        line.length()  + lastSeqID, line.getBytes(), null);
     lastSeqID += line.length();
     c.addTag("cluster=\"foocluster\"");
     return c;

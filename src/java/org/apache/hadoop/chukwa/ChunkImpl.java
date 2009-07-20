@@ -157,7 +157,6 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
   }
 
   public int[] getRecordOffsets() {
-
     if (recordEndOffsets == null)
       recordEndOffsets = new int[] { data.length - 1 };
     return recordEndOffsets;
@@ -232,12 +231,8 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
     for (int i = 0; i < recordEndOffsets.length; ++i)
       out.writeInt(recordEndOffsets[i]);
 
-    out.write(data, 0, recordEndOffsets[recordEndOffsets.length - 1] + 1); // byte
-                                                                           // at
-                                                                           // last
-                                                                           // offset
-                                                                           // is
-                                                                           // valid
+    out.write(data, 0, recordEndOffsets[recordEndOffsets.length - 1] + 1); 
+    // byte at last offset is valid
   }
 
   public static ChunkImpl read(DataInput in) throws IOException {
@@ -257,8 +252,8 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
    * @see org.apache.hadoop.chukwa.Chunk#getSerializedSizeEstimate()
    */
   public int getSerializedSizeEstimate() {
-    int size = 2 * (source.length() + application.length() + dataType.length() + debuggingInfo
-        .length()); // length of strings (pessimistic)
+    int size = 2 * (source.length() + application.length() + dataType.length() 
+        + debuggingInfo.length()); // length of strings (pessimistic)
     size += data.length + 4;
     if (recordEndOffsets == null)
       size += 8;
@@ -273,6 +268,10 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
     int i = 0;
     for (Integer offset : carriageReturns)
       recordEndOffsets[i++] = offset;
+  }
+  
+  public int getLength() {
+    return data.length;
   }
 
 }

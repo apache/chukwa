@@ -70,7 +70,7 @@ public class TestHadoopLogProcessor extends TestCase {
         + " INFO org.apache.hadoop.dfs.DataNode: Some text goes here"
         + r.nextInt() + "\n";
     ChunkImpl c = new ChunkImpl("HadoopLogProcessor", "test",
-        line.length() - 1, line.getBytes(), null);
+        line.length() , line.getBytes(), null);
 
     return c;
   }

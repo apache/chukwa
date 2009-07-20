@@ -85,6 +85,8 @@ public interface Chunk {
    * 
    *         We pick this convention so that subtracting sequence IDs yields
    *         length.
+   *         
+   *         Furthermore, seqID - length = first byte pos.
    */
   public long getSeqID();
 
