@@ -42,6 +42,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-356. More powerful file extractor. (asrabkin)
+
     CHUKWA-350. Improve docs, add programmer guide. (asrabkin)
 
     CHUKWA-282. Demux should output detailed per-operation ClientTrace records (Jiaqi Tan via asrabkin)
