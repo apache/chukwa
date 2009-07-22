@@ -46,7 +46,7 @@ import org.apache.log4j.Logger;
  */
 public class ChukwaAgentController {
   static Logger log = Logger.getLogger(ChukwaAgentController.class);
-
+   
   public class AddAdaptorTask extends TimerTask {
 
     String adaptorName;
@@ -171,7 +171,7 @@ public class ChukwaAgentController {
         try {
           offset = Long.parseLong(newOffset);
         } catch (NumberFormatException nfe) {
-          System.err.println("adaptor didn't shutdown gracefully.\n" + nfe);
+          log.error("adaptor didn't shutdown gracefully.\n" + nfe);
         }
       }
 
@@ -213,8 +213,7 @@ public class ChukwaAgentController {
       runningAdaptors = list();
       return true;
     } catch (IOException e) {
-      System.err
-          .println("Error initializing ChukwaClient with list of "
+      System.err.println("Error initializing ChukwaClient with list of "
               + "currently registered adaptors, clearing our local list of adaptors");
       // e.printStackTrace();
       // if we can't connect to the LocalAgent, reset/clear our local view of
@@ -262,14 +261,13 @@ public class ChukwaAgentController {
           runningAdaptors.put(adaptorID, adaptor);
           runningInstanceAdaptors.put(adaptorID, adaptor);
         } else {
-          System.err
-              .println("Failed to successfully add the adaptor in AgentClient, adaptorID returned by add() was negative.");
+          System.err.println("Failed to successfully add the adaptor in AgentClient, adaptorID returned by add() was negative.");
         }
       } catch (IOException ioe) {
-        System.out.println("AgentClient failed to contact the agent ("
+        log.warn("AgentClient failed to contact the agent ("
             + hostname + ":" + portno + ")");
-        System.out
-            .println("Scheduling a agent connection retry for adaptor add() in another "
+        
+        log.warn("Scheduling a agent connection retry for adaptor add() in another "
                 + retryInterval
                 + " milliseconds, "
                 + numRetries
@@ -322,7 +320,7 @@ public class ChukwaAgentController {
         System.err.println("Error removing an adaptor in removeAll()");
         ioe.printStackTrace();
       }
-      System.out.println("Successfully removed adaptor " + id);
+      log.info("Successfully removed adaptor " + id);
     }
   }
 
@@ -335,7 +333,7 @@ public class ChukwaAgentController {
       try {
         remove(a.className, a.appType, a.params);
       } catch (IOException ioe) {
-        System.out.println("Error removing an adaptor in removeInstanceAdaptors()");
+        log.warn("Error removing an adaptor in removeInstanceAdaptors()");
         ioe.printStackTrace();
       }
     }
@@ -423,7 +421,7 @@ public class ChukwaAgentController {
       return addByName(null, DEFAULT_FILE_TAILER, appType, 0L + " " + filename, 0L,
           numRetries, retryInterval);
     } else {
-      System.out.println("An adaptor for filename \"" + filename
+      log.info("An adaptor for filename \"" + filename
           + "\", type \"" + appType
           + "\", exists already, addFile() command aborted");
       return null;
@@ -530,12 +528,9 @@ public class ChukwaAgentController {
     } else if (numArgs >= 1 && args[0].equalsIgnoreCase("removeall")) {
       doRemoveAll(c);
     } else {
-      System.err
-          .println("usage: ChukwaClient addfile <apptype> <filename> [-h hostname] [-p portnumber]");
-      System.err
-          .println("       ChukwaClient removefile adaptorID [-h hostname] [-p portnumber]");
-      System.err
-          .println("       ChukwaClient removefile <apptype> <filename> [-h hostname] [-p portnumber]");
+      System.err.println("usage: ChukwaClient addfile <apptype> <filename> [-h hostname] [-p portnumber]");
+      System.err.println("       ChukwaClient removefile adaptorID [-h hostname] [-p portnumber]");
+      System.err.println("       ChukwaClient removefile <apptype> <filename> [-h hostname] [-p portnumber]");
       System.err.println("       ChukwaClient list [IP] [port]");
       System.err.println("       ChukwaClient removeAll [IP] [port]");
     }
@@ -550,11 +545,11 @@ public class ChukwaAgentController {
     for (int i = 0; i < args.length; i++) {
       if (args[i].equals("-h") && args.length > i + 1) {
         hostname = args[i + 1];
-        System.out.println("Setting hostname to: " + hostname);
+        log.debug("Setting hostname to: " + hostname);
         numArgs -= 2; // subtract for the flag and value
       } else if (args[i].equals("-p") && args.length > i + 1) {
         portno = Integer.parseInt(args[i + 1]);
-        System.out.println("Setting portno to: " + portno);
+        log.debug("Setting portno to: " + portno);
         numArgs -= 2; // subtract for the flat, i.e. -p, and value
       }
     }
@@ -563,13 +558,12 @@ public class ChukwaAgentController {
 
   private static String doAddFile(ChukwaAgentController c, String appType,
       String params) {
-    System.out.println("Adding adaptor with filename: " + params);
+    log.info("Adding adaptor with filename: " + params);
     String adaptorID = c.addFile(appType, params);
     if (adaptorID != null) {
-      System.out.println("Successfully added adaptor, id is:" + adaptorID);
+      log.info("Successfully added adaptor, id is:" + adaptorID);
     } else {
-      System.err
-          .println("Agent reported failure to add adaptor, adaptor id returned was:"
+      System.err.println("Agent reported failure to add adaptor, adaptor id returned was:"
               + adaptorID);
     }
     return adaptorID;
@@ -578,7 +572,7 @@ public class ChukwaAgentController {
   private static void doRemoveFile(ChukwaAgentController c, String appType,
       String params) {
     try {
-      System.out.println("Removing adaptor with filename: " + params);
+      log.debug("Removing adaptor with filename: " + params);
       c.removeFile(appType, params);
     } catch (IOException e) {
       e.printStackTrace();
@@ -589,7 +583,7 @@ public class ChukwaAgentController {
     try {
       Iterator<Adaptor> adptrs = c.list().values().iterator();
       while (adptrs.hasNext()) {
-        System.out.println(adptrs.next().toString());
+        log.debug(adptrs.next().toString());
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -597,7 +591,7 @@ public class ChukwaAgentController {
   }
 
   private static void doRemoveAll(ChukwaAgentController c) {
-    System.out.println("Removing all adaptors");
+    log.info("Removing all adaptors");
     c.removeAll();
   }
 }
