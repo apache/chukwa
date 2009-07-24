@@ -39,7 +39,7 @@ the layout of the Chukwa storage directories.</p>
 <title>Sink File Format</title>
 <p>
 As data is collected, Chukwa dumps it into <em>sink files</em> in HDFS. By
-default, these are located in <code>/chukwa/logs</code>.  If the file name ends
+default, these are located in <code>hdfs:///chukwa/logs</code>.  If the file name ends
 in .chukwa, that means the file is still being written to. Every few minutes, 
 the collector will close the file, and rename the file to '*.done'.  This 
 marks the file as available for processing.</p>
@@ -79,7 +79,7 @@ versions of the Simple Archiver will indicate the presence of gaps.)</p>
 <p>The simple archiver moves every <code>.done</code> file out of the sink, and 
 then runs a MapReduce job to group the data. Output Chunks will be placed into 
 files with names of the form 
-<code>/chukwa/archive/clustername/Datatype_date.arc</code>.  
+<code>hdfs:///chukwa/archive/clustername/Datatype_date.arc</code>.  
 Date corresponds to when the data was collected; Datatype is the datatype of 
 each Chunk. 
 </p>
@@ -101,8 +101,8 @@ great, you can use <code>dump.sh</code>, a command-line tool that does the job.
 </p>
 
 <p>
-The <code>dump</code> tool a search pattern as its first argument, followed by
-a list of files or file-globs.  It will then print the contents of every data
+The <code>dump</code> tool takes a search pattern as its first argument, followed
+by a list of files or file-globs.  It will then print the contents of every data
 stream in those files that matches the pattern. (A data stream is a sequence of
 chunks with the same host, source, and datatype.)  Data is printed in order,
 with duplicates removed.  No metadata is printed.  Separate streams are 
@@ -113,7 +113,7 @@ separated by a row of dashes.
 matches the glob pattern.  Note the use of single quotes to pass glob patterns
 through to the application, preventing the shell from expanding them.</p>
 <source>
-bin/dump.sh 'datatype=.*' 'hdfs://host:9000/chukwa/archive/*.arc
+$CHUKWA_HOME/bin/dump.sh 'datatype=.*' 'hdfs://host:9000/chukwa/archive/*.arc'
 </source>
 
 <p>
@@ -123,8 +123,8 @@ That is, they are a sequence of rules, separated by ampersand signs. Each rule
 is of the form <code>metadatafield=regex</code>, where 
 <code>metadatafield</code> is one of the Chukwa metadata fields, and 
 <code>regex</code> is a regular expression.  The valid metadata field names are:
-<code>datatype</code>, <code>host</code>, <code>cluster</code>, and 
-<code>name</code>.  
+<code>datatype</code>, <code>host</code>, <code>cluster</code>, 
+<code>content</code> and <code>name</code>.  
 </p>
 
 <p>A stream matches the search pattern only if every rule matches. So to 

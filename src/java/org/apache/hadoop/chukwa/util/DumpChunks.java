@@ -25,8 +25,7 @@ import java.util.regex.*;
 import java.util.*;
 import java.io.*;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.hadoop.chukwa.ChukwaArchiveKey;
-import org.apache.hadoop.chukwa.ChunkImpl;
+import org.apache.hadoop.chukwa.*;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.engine.RecordUtil;
 import org.apache.hadoop.fs.FileSystem;
@@ -37,7 +36,7 @@ import org.apache.hadoop.conf.Configuration;
 
 public class DumpChunks {
 
-  static class SearchRule {
+  private static class SearchRule {
     Pattern p;
     String targ;
     
@@ -46,7 +45,7 @@ public class DumpChunks {
       this.targ = t;
     }
     
-    boolean matches(ChunkImpl chunk) {
+    boolean matches(Chunk chunk) {
       if(targ.equals("datatype")) {
         return p.matcher(chunk.getDataType()).matches();
       } else if(targ.equals("name")) {
@@ -56,6 +55,10 @@ public class DumpChunks {
       } else if(targ.equals("cluster")) {
         String cluster = RecordUtil.getClusterName(chunk);
         return p.matcher(cluster).matches();
+      } else if(targ.equals("content")) {
+        String content = new String(chunk.getData());
+        Matcher m = p.matcher(content);
+        return m.matches();
       }
       else { 
         assert false: "unknown target: " +targ;
@@ -63,9 +66,62 @@ public class DumpChunks {
       }
     }
     
+    public String toString() {
+      return targ + "=" +p.toString();
+    }
+    
   }
   
-  static final String[] SEARCH_TARGS = {"datatype", "name", "host", "cluster"};
+  public static class Filter {
+    List<SearchRule> compiledPatterns;
+    
+    public Filter(String listOfPatterns) throws  PatternSyntaxException{
+      compiledPatterns = new ArrayList<SearchRule>();
+      //FIXME: could escape these
+      String[] patterns = listOfPatterns.split(SEPARATOR);
+      for(String p: patterns) {
+        int equalsPos = p.indexOf('=');
+        
+        if(equalsPos < 0 || equalsPos > (p.length() -2)) {
+          throw new PatternSyntaxException(
+              "pattern must be of form targ=pattern", p, -1);
+        }
+        
+        String targ = p.substring(0, equalsPos);
+        if(!ArrayUtils.contains(SEARCH_TARGS, targ)) {
+          throw new PatternSyntaxException(
+              "pattern doesn't start with recognized search target", p, -1);
+        }
+        
+        Pattern pat = Pattern.compile(p.substring(equalsPos+1), Pattern.DOTALL);
+        compiledPatterns.add(new SearchRule(pat, targ));
+      }
+    }
+
+    public boolean matches(Chunk chunk) {
+      for(SearchRule r: compiledPatterns) {
+        if(!r.matches(chunk))
+          return false;
+      }
+      return true;
+    }
+    
+    public int size() {
+      return compiledPatterns.size();
+    }
+    
+    public String toString() {
+      StringBuilder sb = new StringBuilder();
+      sb.append(compiledPatterns.get(0));
+      for(int i=1; i < compiledPatterns.size(); ++i) {
+        sb.append(" & ");
+        sb.append(compiledPatterns.get(i));
+      }
+      return sb.toString();
+    }
+  }//end class
+  
+  static final String[] SEARCH_TARGS = {"datatype", "name", "host", "cluster", "content"};
 
     static final String SEPARATOR="&";
   /**
@@ -81,14 +137,20 @@ public class DumpChunks {
       System.out.println("usage: Dump pattern1,pattern2,pattern3... file1 file2 file3...");
       System.exit(-1);
     }
-    System.err.println("Patterns:" + args[0]);
+    
     for(int i=1; i < args.length; ++i)
         System.err.println("FileGlob: " + args[i]);
 
     ChukwaConfiguration conf = new ChukwaConfiguration();
+
+
+    dump(args, conf, System.out);
+  }
+  
+  static FileSystem getFS(Configuration conf, String uri) throws IOException, URISyntaxException {
     FileSystem fs;
-    if(args[1].contains("://")) {
-      fs = FileSystem.get(new URI(args[1]), conf);
+    if(uri.contains("://")) {
+      fs = FileSystem.get(new URI(uri), conf);
     } else {
       String fsName = conf.get("writer.hdfs.filesystem");
       if(fsName == null)
@@ -97,25 +159,40 @@ public class DumpChunks {
         fs = FileSystem.get(conf);
     }
     System.err.println("filesystem is " + fs.getUri());
-
-    dump(args, conf, fs, System.out);
+    return fs;
   }
 
-  static void dump(String[] args, Configuration conf,
-      FileSystem fs, PrintStream out) throws IOException {
-    List<SearchRule> patterns = buildPatterns(args[0]);
+  static void dump(String[] args, Configuration conf, PrintStream out) throws IOException, URISyntaxException {
+    
+    int filterArg = 0;
+    boolean summarize = false;
+    if(args[0].equals("-s")) {
+      filterArg++;
+      summarize = true;
+    }
+    
+    Filter patterns = new Filter(args[filterArg]);
+
+    System.err.println("Patterns:" + patterns);
     ArrayList<Path> filesToSearch = new ArrayList<Path>();
 
-    Map<String, SortedMap<Long, ChunkImpl> > matchCatalog = new HashMap<String, SortedMap<Long, ChunkImpl> >();
-    
-    for(int i=1; i < args.length; ++i){
+
+    FileSystem fs = getFS(conf, args[filterArg + 1]);
+    for(int i=filterArg + 1; i < args.length; ++i){
       Path[] globbedPaths = FileUtil.stat2Paths(fs.globStatus(new Path(args[i])));
-      for(Path p: globbedPaths)
-        filesToSearch.add(p);
+      if(globbedPaths != null)
+        for(Path p: globbedPaths)
+          filesToSearch.add(p);
     }
     
     System.err.println("expands to " + filesToSearch.size() + " actual files");
 
+    DumpChunks dc;
+    if(summarize)
+      dc = new DumpAndSummarize();
+    else 
+      dc= new DumpChunks();
+    
     try {
       for(Path p: filesToSearch) {
       
@@ -124,50 +201,55 @@ public class DumpChunks {
         ChukwaArchiveKey key = new ChukwaArchiveKey();
         ChunkImpl chunk = ChunkImpl.getBlankChunk();
         while (r.next(key, chunk)) {
-          if(matchesPattern(patterns, chunk)) {
-            updateMatchCatalog(matchCatalog, key.getStreamName(), chunk);
+          if(patterns.matches(chunk)) {
+            dc.updateMatchCatalog(key.getStreamName(), chunk);
             chunk = ChunkImpl.getBlankChunk();
           }
         }
       }
       
-      for(SortedMap<Long, ChunkImpl> stream: matchCatalog.values()) {
-        printNoDups(stream, out);
-        out.println("\n--------------------");
-      }
+      dc.displayResults(out);
       
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
-  
-  private static void printNoDups(SortedMap<Long, ChunkImpl> stream, OutputStream out) throws IOException {
-    long nextToPrint = 0;
 
-   System.err.println("---- map starts at "+ stream.firstKey());
-    for(Map.Entry<Long, ChunkImpl> e: stream.entrySet()) {
-      if(e.getKey() >= nextToPrint) {
-        System.err.println("---- printing bytes starting at " + e.getKey());
-        out.write(e.getValue().getData());
-        nextToPrint = e.getValue().getSeqID();
-      } else if(e.getValue().getSeqID() < nextToPrint) {
-        continue; //data already printed
-      } else {
-        //tricky case: chunk overlaps with already-printed data, but not completely
-        ChunkImpl c = e.getValue();
-        long chunkStartPos = e.getKey();
-        int numToPrint = (int) (c.getSeqID() - nextToPrint);
-        int printStartOffset = (int) ( nextToPrint -  chunkStartPos);
-        out.write(c.getData(), printStartOffset, numToPrint);
-        nextToPrint = c.getSeqID();
-      }
-    }
-    
+  public DumpChunks() {
+    matchCatalog = new HashMap<String, SortedMap<Long, ChunkImpl> >();
   }
 
-  private static void updateMatchCatalog(
-      Map<String, SortedMap<Long, ChunkImpl>> matchCatalog, String streamName,
-      ChunkImpl chunk) {
+  Map<String, SortedMap<Long, ChunkImpl>> matchCatalog;
+  
+  protected void displayResults(PrintStream out) throws IOException{
+    for(SortedMap<Long, ChunkImpl> stream: matchCatalog.values()) {
+      long nextToPrint = 0;
+      if(stream.firstKey() > 0)
+        System.err.println("---- map starts at "+ stream.firstKey());
+      for(Map.Entry<Long, ChunkImpl> e: stream.entrySet()) {
+        if(e.getKey() >= nextToPrint) {
+          if(e.getKey() > nextToPrint)
+            System.err.println("---- printing bytes starting at " + e.getKey());
+          
+          out.write(e.getValue().getData());
+          nextToPrint = e.getValue().getSeqID();
+        } else if(e.getValue().getSeqID() < nextToPrint) {
+          continue; //data already printed
+        } else {
+          //tricky case: chunk overlaps with already-printed data, but not completely
+          ChunkImpl c = e.getValue();
+          long chunkStartPos = e.getKey();
+          int numToPrint = (int) (c.getSeqID() - nextToPrint);
+          int printStartOffset = (int) ( nextToPrint -  chunkStartPos);
+          out.write(c.getData(), printStartOffset, numToPrint);
+          nextToPrint = c.getSeqID();
+        }
+      }
+      out.println("\n--------------------");
+    }
+  }
+ 
+  protected void updateMatchCatalog(String streamName,  ChunkImpl chunk) {
 
     SortedMap<Long, ChunkImpl> chunksInStream = matchCatalog.get(streamName);
     if(chunksInStream == null ) {
@@ -184,41 +266,29 @@ public class DumpChunks {
       if(chunk.getLength() > prevMatch.getLength())
         chunksInStream.put (startPos, chunk);
     }
-    
   }
 
-  static List<SearchRule> buildPatterns(String listOfPatterns) throws
-  PatternSyntaxException{
-    List<SearchRule> compiledPatterns = new ArrayList<SearchRule>();
-    //FIXME: could escape these
-    String[] patterns = listOfPatterns.split(SEPARATOR);
-    for(String p: patterns) {
-      int equalsPos = p.indexOf('=');
-      
-      if(equalsPos < 0 || equalsPos > (p.length() -2)) {
-        throw new PatternSyntaxException(
-            "pattern must be of form targ=pattern", p, -1);
+  static class DumpAndSummarize extends DumpChunks {
+    Map<String, Integer> matchCounts = new LinkedHashMap<String, Integer>();
+    
+
+    protected void displayResults(PrintStream out) throws IOException{
+      for(Map.Entry<String, Integer> s: matchCounts.entrySet()) {
+        out.print(s.getKey());
+        out.print(" ");
+        out.println(s.getValue());
       }
-      
-      String targ = p.substring(0, equalsPos);
-      if(!ArrayUtils.contains(SEARCH_TARGS, targ)) {
-        throw new PatternSyntaxException(
-            "pattern doesn't start with recognized search target", p, -1);
-      }
-      
-      Pattern pat = Pattern.compile(p.substring(equalsPos+1));
-      compiledPatterns.add(new SearchRule(pat, targ));
+        
     }
     
-    return compiledPatterns;
-  }
-
-  static boolean matchesPattern(List<SearchRule> matchers, ChunkImpl chunk) {
-    for(SearchRule r: matchers) {
-      if(!r.matches(chunk))
-        return false;
+    protected void updateMatchCatalog(String streamName,  ChunkImpl chunk) {
+      Integer i = matchCounts.get(streamName);
+      if(i != null)
+        matchCounts.put(streamName, i+1);
+      else
+        matchCounts.put(streamName, new Integer(1));
     }
-    return true;
+    
   }
 
 }

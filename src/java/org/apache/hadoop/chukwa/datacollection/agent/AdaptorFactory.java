@@ -66,7 +66,7 @@ public class AdaptorFactory {
         } else
           return null;
       } catch (Exception e2) {
-        log.warn("Error instantiating new adaptor"+ className +  " by classname"
+        log.warn("Error instantiating new adaptor "+ className +  " by classname"
             + " and also with \"o.a.h.c.datacollection.adaptor\" prefix added", e2);
         return null;
       }

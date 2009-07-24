@@ -25,6 +25,12 @@ import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 
+/**
+ * A pipeline of Pipelineable writers
+ * Controlled by option 'chukwaCollector.pipeline', which should be a comma-
+ * separated list of classnames. 
+ * 
+ */
 public class PipelineStageWriter implements ChukwaWriter {
   Logger log = Logger.getLogger(PipelineStageWriter.class);
 
@@ -79,6 +85,7 @@ public class PipelineStageWriter implements ChukwaWriter {
               + " at end of processing pipeline isn't a ChukwaWriter");
           throw new WriterException("bad pipeline");
         } else {
+          ((ChukwaWriter)st).init(conf);
           if (lastWriter != null)
             lastWriter.setNextStage((ChukwaWriter) st);
           else

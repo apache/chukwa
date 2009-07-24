@@ -23,6 +23,18 @@
   </header>
   
   <body>
+  	<p>
+  	  Log processing was one of the original purposes of MapReduce. Unfortunately,
+  	  using Hadoop for MapReduce processing of logs is somewhat troublesome. 
+  	  Logs are generated incrementally across many machines, but Hadoop MapReduce
+  	  works best on a small number of large files. And HDFS doesn't currently
+  	  support appends, making it difficult to keep the distributed copy fresh.
+  	  </p>
+  	  <p>
+  	  Chukwa is a Hadoop subproject devoted to bridging that gap between logs
+  	   and MapReduce.  Chukwa is a scalable distributed monitoring and analysis
+  	   system, particularly logs from Hadoop and other large systems.  
+  	</p>
       <p>
         The Chukwa Documentation provides the information you need to get 
         started using Chukwa.
@@ -33,7 +45,9 @@
         shows you how to setup and deploy Chukwa. 
       </p>
      <p> If you want to configure the Chukwa agent process, to control what's 
-     collected, you should read the <a href="agent.html">Agent Guide</a>.
+     collected, you should read the <a href="agent.html">Agent Guide</a>. There's
+     also a  <a href="collector.html">Collector Guide</a> describing that part of 
+     the pipeline.
      </p>
      <p>And if you want to use collected data, read the 
      <a href="programming.html">User and Programming Guide</a></p>

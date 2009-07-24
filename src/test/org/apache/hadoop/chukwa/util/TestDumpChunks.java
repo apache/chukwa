@@ -39,6 +39,7 @@ public class TestDumpChunks extends TestCase {
     SequenceFile.Writer seqFileWriter = SequenceFile.createWriter(conf, out,
         ChukwaArchiveKey.class, ChunkImpl.class,
         SequenceFile.CompressionType.NONE, null);
+    
     for (ChunkImpl chunk: chunks) {
       ChukwaArchiveKey archiveKey = new ChukwaArchiveKey();
       
@@ -57,23 +58,33 @@ public class TestDumpChunks extends TestCase {
   
   public void testBasicPatternMatching() {
    try {
-     List<DumpChunks.SearchRule> rules = DumpChunks.buildPatterns("host=foo.*&cluster=bar&datatype=Data");
+     DumpChunks.Filter rules = new DumpChunks.Filter("host=foo.*&cluster=bar&datatype=Data");
      assertEquals(3, rules.size());
      byte[] dat = "someText".getBytes();
      ChunkImpl chunkNone = new ChunkImpl("badData","aname", dat.length, dat, null);
-     assertFalse(DumpChunks.matchesPattern(rules, chunkNone));
+     assertFalse(rules.matches(chunkNone));
 
+       //do the right thing on a non-match
      ChunkImpl chunkSome = new ChunkImpl("badData", "aname", dat.length, dat, null);
      chunkSome.setSource("fooly");
      chunkSome.addTag("cluster=\"bar\"");
-     assertFalse(DumpChunks.matchesPattern(rules, chunkSome));
+     assertFalse(rules.matches( chunkSome));
 
      ChunkImpl chunkAll = new ChunkImpl("Data", "aname", dat.length, dat, null);
      chunkAll.setSource("fooly");
      chunkAll.addTag("cluster=\"bar\"");
 
      System.out.println("chunk is " + chunkAll);
-     assertTrue(DumpChunks.matchesPattern(rules, chunkAll));
+     assertTrue(rules.matches(chunkAll));
+     
+       //check that we match content correctly
+     rules = new DumpChunks.Filter("content=someText");
+     assertTrue(rules.matches(chunkAll));
+     rules = new DumpChunks.Filter("content=some");
+     assertFalse(rules.matches( chunkAll));
+     rules = new DumpChunks.Filter("datatype=Data&content=.*some.*");
+     assertTrue(rules.matches( chunkAll));
+
    } catch(Exception e) {
      fail("exception " + e);
    } 
@@ -106,8 +117,6 @@ public class TestDumpChunks extends TestCase {
     
     assertTrue(new String(capture.toByteArray()).startsWith("testing\n---"));
     //now test for matches.
-    
-    
     
   }
 

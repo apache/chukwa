@@ -37,9 +37,7 @@ public class CollectorTest extends TestCase {
     try {
       Configuration conf = new Configuration();
       conf.set("chukwaCollector.chunkSuppressBufferSize", "10");
-      conf
-          .set(
-              "chukwaCollector.pipeline",
+      conf.set("chukwaCollector.pipeline",
               "org.apache.hadoop.chukwa.datacollection.writer.Dedup,"// note
                                                                      // comma
                   + "org.apache.hadoop.chukwa.datacollection.collector.CaptureWriter");

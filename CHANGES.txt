@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-358. Real-time monitoring at collector. (asrabkin)
+
     CHUKWA-352. Xtrace in contrib. (asrabkin)
 
     CHUKWA-346. Simplified sink archiver. (asrabkin)
