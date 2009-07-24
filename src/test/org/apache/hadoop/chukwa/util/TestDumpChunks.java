@@ -90,7 +90,7 @@ public class TestDumpChunks extends TestCase {
    } 
   }
   
-  public void testFilePatternMatching() throws IOException {
+  public void testFilePatternMatching() throws IOException, java.net.URISyntaxException {
     
     File tempDir = new File(System.getProperty("test.build.data", "/tmp"));
 
@@ -113,7 +113,7 @@ public class TestDumpChunks extends TestCase {
     
     String[] args = new String[] {"datatype=Data",path.toString()};
     ByteArrayOutputStream capture = new ByteArrayOutputStream();
-    DumpChunks.dump(args, conf, FileSystem.getLocal(conf), new PrintStream(capture));
+    DumpChunks.dump(args, conf,new PrintStream(capture));
     
     assertTrue(new String(capture.toByteArray()).startsWith("testing\n---"));
     //now test for matches.
