@@ -44,6 +44,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-355.  Remove obsolete datacollection.protocol package. (asrabkin)
+
     CHUKWA-270. ChukwaAgentController no longer uses stdout. (Rushin Barot via asrabkin)
 
     CHUKWA-356. More powerful file extractor. (asrabkin)
