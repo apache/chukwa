@@ -44,6 +44,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-333.  Copy release notes from 0.2 forward to Trunk. (asrabkin)
+
     CHUKWA-362.  Archiver group-by-cluster conf name shouldn't be hardcoded. (asrabkin)
 
     CHUKWA-355.  Remove obsolete datacollection.protocol package. (asrabkin)
