@@ -33,6 +33,8 @@ import org.apache.log4j.Logger;
 
 public class ChukwaArchiveDataTypeOutputFormat extends
     MultipleSequenceFileOutputFormat<ChukwaArchiveKey, ChunkImpl> {
+  
+  static final String GROUP_BY_CLUSTER_OPTION_NAME = "archive.groupByClusterName";
   static Logger log = Logger.getLogger(ChukwaArchiveDataTypeOutputFormat.class);
   SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd");
   boolean useClusterID;
@@ -41,8 +43,8 @@ public class ChukwaArchiveDataTypeOutputFormat extends
       JobConf job, String name, Progressable arg3) 
   throws java.io.IOException{
 
-    log.info("archive.addClusterName is " + job.get("archive.groupByClusterName"));
-    useClusterID = "true".equals(job.get("archive.groupByClusterName"));
+    log.info(GROUP_BY_CLUSTER_OPTION_NAME + " is " + job.get(GROUP_BY_CLUSTER_OPTION_NAME));
+    useClusterID = "true".equals(job.get(GROUP_BY_CLUSTER_OPTION_NAME));
 
     return super.getRecordWriter(fs, job, name, arg3);
   }

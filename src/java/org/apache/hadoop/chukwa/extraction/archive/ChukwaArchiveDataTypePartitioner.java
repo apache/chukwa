@@ -32,7 +32,8 @@ public class ChukwaArchiveDataTypePartitioner<K, V> implements
 
   boolean useClusterID = false;
   public void configure(JobConf conf) {
-    useClusterID = "true".equals(conf.get("archive.groupByClusterName"));
+    useClusterID = "true".equals(conf.get(ChukwaArchiveDataTypeOutputFormat.
+        GROUP_BY_CLUSTER_OPTION_NAME));
   }
 
   public int getPartition(ChukwaArchiveKey key, ChunkImpl chunk,
@@ -43,10 +44,11 @@ public class ChukwaArchiveDataTypePartitioner<K, V> implements
       return ((chunk.getDataType() + "_" + clusterID + "_" + sdf.format(key.getTimePartition()))
           .hashCode() & Integer.MAX_VALUE)
           % numReduceTasks;
-    } else
+    } else {
       return ((chunk.getDataType() + "_" + sdf.format(key.getTimePartition()))
         .hashCode() & Integer.MAX_VALUE)
         % numReduceTasks;
+    }
   }
 
 }

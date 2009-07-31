@@ -52,6 +52,8 @@ public class SinkArchiver implements CHUKWA_CONSTANT {
   public static void main(String[] args) {
     try {
       Configuration conf = new ChukwaConfiguration();
+      if(conf.get(ChukwaArchiveDataTypeOutputFormat.GROUP_BY_CLUSTER_OPTION_NAME) == null )
+        conf.set(ChukwaArchiveDataTypeOutputFormat.GROUP_BY_CLUSTER_OPTION_NAME, "true");
       FileSystem fs = FileSystem.get(conf);
       SinkArchiver archiver = new SinkArchiver();
       archiver.exec(fs, conf);    

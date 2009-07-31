@@ -68,6 +68,12 @@ public class ChukwaArchiveBuilder extends Configured implements Tool {
         throws IOException {
       ChunkImpl i = vals.next();
       out.collect(key, i);
+      int dups = 0;
+      while(vals.hasNext()) {
+        vals.next();
+        dups ++;
+      }
+      r.incrCounter("app", "duplicate chunks", dups);
     }
   
   }

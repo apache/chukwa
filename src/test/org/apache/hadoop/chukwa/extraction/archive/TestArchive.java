@@ -123,7 +123,7 @@ public class TestArchive extends TestCase {
     conf.setInt("io.sort.factor", 5);
     conf.setInt("mapred.tasktracker.map.tasks.maximum", 2);
     conf.setInt("mapred.tasktracker.reduce.tasks.maximum", 2);
-    conf.set("archive.groupByClusterName", "true");
+    conf.set(ChukwaArchiveDataTypeOutputFormat.GROUP_BY_CLUSTER_OPTION_NAME, "true");
     
     System.setProperty("hadoop.log.dir", System.getProperty(
         "test.build.data", "/tmp"));
