@@ -23,6 +23,7 @@ import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent.AlreadyRunningException;
 import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
+import org.apache.hadoop.conf.Configuration;
 import junit.framework.TestCase;
 
 public class TestCmd extends TestCase {
@@ -30,7 +31,9 @@ public class TestCmd extends TestCase {
   public void testAddCmdWithParam() {
     ChukwaAgent agent;
     try {
-      agent = new ChukwaAgent();
+      Configuration conf = new Configuration();
+      conf.set("chukwaAgent.control.port", "0");
+      agent = new ChukwaAgent(conf);
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
       String l = agent
@@ -60,7 +63,9 @@ public class TestCmd extends TestCase {
   public void testAddCmdWithoutParam1() {
     ChukwaAgent agent;
     try {
-      agent = new ChukwaAgent();
+      Configuration conf = new Configuration();
+      conf.set("chukwaAgent.control.port", "0");
+      agent = new ChukwaAgent(conf);
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
       String name = agent
@@ -89,7 +94,9 @@ public class TestCmd extends TestCase {
   public void testAddCmdWithoutParam2() {
     ChukwaAgent agent;
     try {
-      agent = new ChukwaAgent();
+      Configuration conf = new Configuration();
+      conf.set("chukwaAgent.control.port", "0");
+      agent = new ChukwaAgent(conf);
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
       String n = agent

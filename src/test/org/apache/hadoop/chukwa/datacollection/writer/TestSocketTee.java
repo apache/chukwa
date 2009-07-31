@@ -86,18 +86,31 @@ public class TestSocketTee  extends TestCase{
     s.close();
     
     Socket s2 = new Socket("localhost", SocketTeeWriter.DEFAULT_PORT);
-    s2.getOutputStream().write((SocketTeeWriter.RAW+" content=.*c.*\n").getBytes());
+    s2.getOutputStream().write((SocketTeeWriter.RAW+" content=.*d.*\n").getBytes());
     dis = new DataInputStream(s2.getInputStream());
     dis.readFully(new byte[3]); //read "OK\n"
     l = new ArrayList<Chunk>();
-    l.add(new ChunkImpl("dt3", "name", 1, new byte[] {'c'}, null));
+    l.add(new ChunkImpl("dt3", "name", 1, new byte[] {'d'}, null));
     psw.add(l);
+    assertEquals(4, CaptureWriter.outputs.size());
+
     int len = dis.readInt();
     assertTrue(len == 1);
     byte[] data = new byte[100];
     int read = dis.read(data);
     assertTrue(read == 1);
-    assertTrue(data[0] == 'c');
+    assertTrue(data[0] == 'd');
+    
+    s2.close();
+    dis.close();
+    
+    l = new ArrayList<Chunk>();
+    l.add(new ChunkImpl("dt3", "name", 3, new byte[] {'c', 'a', 'd'}, null));
+    psw.add(l);
+    assertEquals(5, CaptureWriter.outputs.size());
+//    Thread.sleep(1000);
+   
+    
   }
   
 }

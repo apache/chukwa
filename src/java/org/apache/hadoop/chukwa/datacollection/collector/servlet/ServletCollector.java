@@ -194,9 +194,9 @@ public class ServletCollector extends HttpServlet {
     if (pingAtt != null) {
       out.println("Date:" + ServletCollector.statTime);
       out.println("Now:" + System.currentTimeMillis());
-      out.println("numberHTTPConnection:"
+      out.println("numberHTTPConnection in time window:"
           + ServletCollector.numberHTTPConnection);
-      out.println("numberchunks:" + ServletCollector.numberchunks);
+      out.println("numberchunks in time window:" + ServletCollector.numberchunks);
       out.println("lifetimechunks:" + ServletCollector.lifetimechunks);
     } else {
       out.println("<html><body><h2>Chukwa servlet running</h2>");

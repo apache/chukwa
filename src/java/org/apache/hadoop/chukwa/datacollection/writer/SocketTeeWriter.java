@@ -17,9 +17,9 @@
  */
 package org.apache.hadoop.chukwa.datacollection.writer;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.regex.PatternSyntaxException;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.util.DumpChunks;
@@ -52,17 +52,23 @@ import java.io.*;
  *              
  *  In english: clients should connect and say either "RAW " or "WRITABLE " 
  *  followed by a filter.  (Note that the keyword is followed by exactly one space.)
- *  They'll then receive either a sequence of byte arrays or of writable-serialized
+ *  They'll then receive either a sequence of byte arrays or of writable-serialized.
+ *  
+ *  Option chukwaCollector.tee.keepalive controls using TCP keepalive. Defaults to true.
  *  
  */
 public class SocketTeeWriter implements PipelineableWriter {
 
   public static final String WRITABLE = "WRITABLE";
   public static final String RAW = "RAW";
+  static boolean USE_KEEPALIVE = true;
   static final int DEFAULT_PORT = 9094;
+  static int QUEUE_LENGTH = 1000;
+  
   static Logger log = Logger.getLogger(SocketTeeWriter.class);
   volatile boolean running = true;
   int timeout;
+//  private final ExecutorService pool;
   
   /**
    * Listens for incoming connections, spawns a Tee to deal with each.
@@ -71,7 +77,9 @@ public class SocketTeeWriter implements PipelineableWriter {
     ServerSocket s;
     public SocketListenThread(Configuration conf) throws IOException {
       int portno = conf.getInt("chukwaCollector.tee.port", DEFAULT_PORT);
+      USE_KEEPALIVE = conf.getBoolean("chukwaCollector.tee.keepalive", true);
       s = new ServerSocket(portno);
+      setDaemon(true);
     }
     
     public void run() {
@@ -89,7 +97,9 @@ public class SocketTeeWriter implements PipelineableWriter {
     
     public void shutdown() {
       try{
-        s.close();
+        //running was set to false by caller.
+        s.close(); //to break out of run loop
+        this.interrupt();
       } catch(IOException e) {
         
       }
@@ -106,19 +116,48 @@ public class SocketTeeWriter implements PipelineableWriter {
     DataOutputStream out;
     DumpChunks.Filter rules;
     boolean sendRawBytes;
+    final BlockingQueue<Chunk> sendQ;
     public Tee(Socket s) throws IOException {
       sock = s;
       //now initialize asynchronously
-      run();
-//      new Thread(this).start();
+      sendQ = new ArrayBlockingQueue<Chunk>(QUEUE_LENGTH);
+      
+    Thread t = new Thread(this);
+    t.setDaemon(true);
+    t.start();
+  }
+    
+    public void run() {
+      setup();
+      try {
+        while(sock.isConnected()) {
+          Chunk c = sendQ.take();
+          
+          if(sendRawBytes) {
+            byte[] data = c.getData();
+            out.writeInt(data.length);
+            out.write(data);
+          } else
+            c.write(out);
+        }
+      } catch(IOException e) {
+        log.info("lost tee", e);
+        synchronized(tees) {
+          tees.remove(this);
+        }
+      } catch(InterruptedException e) {
+        //exit quietly
+      }
     }
+    
     /**
      * initializes the tee.
      */
-    public void run() {
+    public void setup() {
       try {   //outer try catches IOExceptions
        try { //inner try catches Pattern Syntax errors
         sock.setSoTimeout(timeout);
+        sock.setKeepAlive(USE_KEEPALIVE);
         in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
         String cmd = in.readLine();
         if(!cmd.contains(" ")) {
@@ -157,26 +196,19 @@ public class SocketTeeWriter implements PipelineableWriter {
       }
     }
     
-    public void maybeSend(Chunk c) throws IOException {
-      if(rules.matches(c)) {
-        if(sendRawBytes) {
-          byte[] data = c.getData();
-          out.writeInt(data.length);
-          out.write(data);
-        } else
-          c.write(out);
-      }
-    }
-    
     public void close() {
       try {
         out.close();
         in.close();
       } catch(Exception e) {}
     }
+
+    public void handle(Chunk c) {
+      if(rules.matches(c)) 
+        sendQ.add(c);
+    }
   }
-  
-  
+
   /////////////////Main class SocketTeeWriter//////////////////////
   
   
@@ -196,14 +228,8 @@ public class SocketTeeWriter implements PipelineableWriter {
       Iterator<Tee> loop = tees.iterator();
       while(loop.hasNext()) {
         Tee t = loop.next();
-        try {
-          for(Chunk c: chunks) {
-            t.maybeSend(c);
-          }
-        } catch(IOException e) {
-          t.close();
-          loop.remove(); //drop failed tee from list.
-          log.info("lost connection: "+ e.toString());
+        for(Chunk c: chunks) {
+          t.handle(c);
         }
       }
     }
