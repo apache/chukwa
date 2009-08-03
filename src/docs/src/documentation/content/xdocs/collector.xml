@@ -36,6 +36,16 @@
   	<section><title>Configuration Knobs</title>
   	<p>There's a bunch more "standard" knobs worth knowing about. These
   	are mostly documented in <code>chukwa-collector-conf.xml</code></p>
+  	
+  	<p>
+  	It's also possible to do limited configuration on the command line. This is
+  	primarily intended for debugging.  You can say 'writer=pretend' to get the 
+  	collector to print incoming chunks on standard out, or portno=xyz to override
+  	the default port number.
+  	</p>
+  	 	<source>
+  	  bin/jettyCollector.sh writer=pretend portno=8081
+  	</source>
   	</section>
   	
   	<section><title>Advanced options</title>
