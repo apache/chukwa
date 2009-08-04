@@ -135,7 +135,9 @@ public class DumpChunks {
   Map<String, SortedMap<Long, ChunkImpl>> matchCatalog;
   
   protected void displayResults(PrintStream out) throws IOException{
-    for(SortedMap<Long, ChunkImpl> stream: matchCatalog.values()) {
+    for(Map.Entry<String,SortedMap<Long, ChunkImpl>> streamE: matchCatalog.entrySet()) {
+      String header = streamE.getKey();
+      SortedMap<Long, ChunkImpl> stream = streamE.getValue();
       long nextToPrint = 0;
       if(stream.firstKey() > 0)
         System.err.println("---- map starts at "+ stream.firstKey());
@@ -158,7 +160,7 @@ public class DumpChunks {
           nextToPrint = c.getSeqID();
         }
       }
-      out.println("\n--------------------");
+      out.println("\n--------"+header + "--------");
     }
   }
  
