@@ -35,12 +35,90 @@ pipeline, see the <a href="design.html">Design Guide</a>.)
 In particular, this document discusses the Chukwa archive file formats, and 
 the layout of the Chukwa storage directories.</p>
 
+
+
+<section>
+<title>Reading data from the sink or the archive</title>
+<p>
+Chukwa gives you several ways of inspecting or processing collected data.
+</p>
+
+<section><title>Dumping some data</title>
+<p>
+It very often happens that you want to retrieve one or more files that have been
+collected with Chukwa. If the total volume of data to be recovered is not too
+great, you can use <code>dump.sh</code>, a command-line tool that does the job.
+The <code>dump</code> tool does an in-memory sort of the data, so you'll be 
+constrained by the Java heap size (typically a few hundred MB).
+</p>
+
+<p>
+The <code>dump</code> tool takes a search pattern as its first argument, followed
+by a list of files or file-globs.  It will then print the contents of every data
+stream in those files that matches the pattern. (A data stream is a sequence of
+chunks with the same host, source, and datatype.)  Data is printed in order,
+with duplicates removed.  No metadata is printed.  Separate streams are 
+separated by a row of dashes.  
+</p>
+
+<p>For example, the following command will dump all data from every file that
+matches the glob pattern.  Note the use of single quotes to pass glob patterns
+through to the application, preventing the shell from expanding them.</p>
+<source>
+$CHUKWA_HOME/bin/dump.sh 'datatype=.*' 'hdfs://host:9000/chukwa/archive/*.arc'
+</source>
+
+<p>
+The patterns used by <code>dump.sh</code> are based on normal regular 
+expressions. They are of the form <code>field1=regex&#38;field2=regex</code>.
+That is, they are a sequence of rules, separated by ampersand signs. Each rule
+is of the form <code>metadatafield=regex</code>, where 
+<code>metadatafield</code> is one of the Chukwa metadata fields, and 
+<code>regex</code> is a regular expression.  The valid metadata field names are:
+<code>datatype</code>, <code>host</code>, <code>cluster</code>, 
+<code>content</code> and <code>name</code>.  
+</p>
+
+<p>A stream matches the search pattern only if every rule matches. So to 
+retrieve HadoopLog data from cluster foo, you might search for 
+<code>cluster=foo&#38;datatype=HadoopLog</code>.
+</p>
+</section>
+
+
+<section><title>Exploring the Sink or Archive</title>
+<p>
+Another common task is finding out what data has been collected. Chukwa offers
+a specialized tool for this purpose: <code>DumpArchive</code>. This tool has
+two modes: summarize and verbose, with the latter being the default.
+</p>
+<p>
+In summarize mode, <code>DumpArchive</code> prints a count of chunks in each
+data stream.  In verbose mode, the chunks themselves are dumped.</p>
+<p>
+You can invoke the tool by running <code>$CHUKWA_HOME/bin/dumpArchive.sh</code>.
+To specify summarize mode, pass <code>--summarize</code> as the first argument.
+</p>
+<source>
+bin/dumpArchive.sh --summarize 'hdfs://host:9000/chukwa/logs/*.done'
+</source>
+</section>
+
+<section><title>Using MapReduce</title>
+<p>
+A key goal of Chukwa was to facilitate MapReduce processing of collected data.
+The next section discusses the file formats.  An understanding of MapReduce
+and SequenceFiles is helpful in understanding the material.</p>
+</section>
+
+</section>
+
 <section>
 <title>Sink File Format</title>
 <p>
 As data is collected, Chukwa dumps it into <em>sink files</em> in HDFS. By
-default, these are located in <code>hdfs:///chukwa/logs</code>.  If the file name ends
-in .chukwa, that means the file is still being written to. Every few minutes, 
+default, these are located in <code>hdfs:///chukwa/logs</code>.  If the file name 
+ends in .chukwa, that means the file is still being written to. Every few minutes, 
 the collector will close the file, and rename the file to '*.done'.  This 
 marks the file as available for processing.</p>
 
@@ -92,48 +170,6 @@ created with a disambiguating suffix.</p>
 
 </section>
 
-<section>
-<title>Reading data from the sink or the archive</title>
-<p>
-It very often happens that you want to retrieve one or more files that have been
-collected with Chukwa. If the total volume of data to be recovered is not too
-great, you can use <code>dump.sh</code>, a command-line tool that does the job.
-</p>
-
-<p>
-The <code>dump</code> tool takes a search pattern as its first argument, followed
-by a list of files or file-globs.  It will then print the contents of every data
-stream in those files that matches the pattern. (A data stream is a sequence of
-chunks with the same host, source, and datatype.)  Data is printed in order,
-with duplicates removed.  No metadata is printed.  Separate streams are 
-separated by a row of dashes.  
-</p>
-
-<p>For example, the following command will dump all data from every file that
-matches the glob pattern.  Note the use of single quotes to pass glob patterns
-through to the application, preventing the shell from expanding them.</p>
-<source>
-$CHUKWA_HOME/bin/dump.sh 'datatype=.*' 'hdfs://host:9000/chukwa/archive/*.arc'
-</source>
-
-<p>
-The patterns used by <code>dump.sh</code> are based on normal regular 
-expressions. They are of the form <code>field1=regex&#38;field2=regex</code>.
-That is, they are a sequence of rules, separated by ampersand signs. Each rule
-is of the form <code>metadatafield=regex</code>, where 
-<code>metadatafield</code> is one of the Chukwa metadata fields, and 
-<code>regex</code> is a regular expression.  The valid metadata field names are:
-<code>datatype</code>, <code>host</code>, <code>cluster</code>, 
-<code>content</code> and <code>name</code>.  
-</p>
-
-<p>A stream matches the search pattern only if every rule matches. So to 
-retrieve HadoopLog data from cluster foo, you might search for 
-<code>cluster=foo&#38;datatype=HadoopLog</code>.
-</p>
-
-
-</section>
 
 </body>
 </document>
