@@ -44,6 +44,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-364.  Design and Architecture document in documentation. (asrabkin)
+
     CHUKWA-333.  Copy release notes from 0.2 forward to Trunk. (asrabkin)
 
     CHUKWA-362.  Archiver group-by-cluster conf name shouldn't be hardcoded. (asrabkin)

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+<document>
+  <header>
+    <title>Chukwa: Architecture and Design</title>
+  </header>
+  <body>
+	  <section><title>Introduction</title>
+	   	<p>
+  	  Log processing was one of the original purposes of MapReduce. Unfortunately,
+  	  using Hadoop for MapReduce processing of logs is somewhat troublesome. 
+  	  Logs are generated incrementally across many machines, but Hadoop MapReduce
+  	  works best on a small number of large files. And HDFS doesn't currently
+  	  support appends, making it difficult to keep the distributed copy fresh.
+  	  </p>
+  	  <p>
+  	  Chukwa aims to provide a flexible and powerful platform for distributed
+  	  data collection and rapid data processing. Our goal is to produce a system
+  	  that's usable today, but that can be modified to take advantage of newer
+  	  storage technologies (HDFS appends, HBase, etc) as they mature. In order
+  	  to maintain this flexibility, Chukwa is structured as a pipeline of
+  	  collection and processing stages, with clean and narrow interfaces between
+  	  stages. This will facilitate future innovation without breaking existing code.
+  	  </p>
+  	  <p>
+  	  Chukwa has four primary components:
+  	  </p>
+  	  <ol>
+  	  <li><strong>Agents</strong> that run on each machine and emit data.</li>
+  	  <li><strong>Collectors</strong> that receive data from the agent and write
+  	   it to stable storage.</li>
+  	  <li><strong>MapReduce jobs</strong> for parsing and archiving the data.</li>
+  	  <li><strong>HICC</strong>, the Hadoop Infrastructure Care Center; a web-portal
+  	  style interface for displaying data.</li>
+  	  </ol>
+  	  
+  	  <p>
+  	  Below is a figure showing the Chukwa data pipeline, annotated with data
+  	  dwell times at each stage. A more detailed figure is available at the end
+  	  of this document.
+  	  </p>
+  	  <figure src="images/datapipeline.png" alt="A picture of the chukwa data pipeline"/>
+	  </section>
+	  
+	  <section><title>Agents and Adaptors</title>
+	  <p>
+	  Chukwa agents do not collect some particular fixed set of data. Rather, they
+	  support dynamically starting and stopping <em>Adaptors</em>, which small
+	  dynamically-controllable modules that run inside the Agent process and are
+	  responsible for the actual collection of data.
+	  </p>
+	  <p>
+		These dynamically controllable data sources are called 
+		adaptors, since they generally are wrapping some other data source, 
+		such as a file or a Unix command-line tool.  The Chukwa <a href="agent.html">
+		agent guide</a> includes an up-to-date list of available Adaptors.
+	  </p>
+	  <p>
+	  Data sources need to be dynamically controllable because the particular data
+	  being collected from a machine changes over time, and varies from machine 
+	  to machine. For example, as Hadoop tasks start and stop, different log files
+	  must be monitored. We might want to increase our collection rate if we 
+	  detect anomalies.  And of course, it makes no sense to collect Hadoop 
+	  metrics on an NFS server. 
+	  </p>
+	 </section>
+
+	<section><title>Data Model</title>
+	<p>Chukwa Adaptors emit data in <em>Chunks</em>. A Chunk is a sequence of bytes,
+		 with some metadata. Several of these are set automatically by the Agent or 
+		 Adaptors. Two of them require user intervention: <code>cluster name</code> and 
+		 <code>datatype</code>.  Cluster name is specified in <code>conf/chukwa-env.sh</code>,
+		  and is global to each Agent process.  Datatype describes the expected format 
+		  of the data collected by an Adaptor instance, and it is specified when that 
+		  instance is started. 
+  </p>
+		
+		<p>The following table lists the Chunk metadata fields. 
+		</p>
+		
+		<table>
+		<tr><td>Field</td><td>Meaning</td><td>Source</td></tr>
+		<tr><td>Source</td><td>Hostname where Chunk was generated</td><td>Automatic</td></tr>
+		<tr><td>Cluster</td><td>Cluster host is associated with</td><td>Specified by user
+		 in agent config</td></tr>
+		<tr><td>Datatype</td><td>Format of output</td><td>Specified by user when Adaptor
+		 started</td></tr>
+		<tr><td>Sequence ID</td><td>Offset of Chunk in stream</td><td>Automatic, initial
+		 offset specified when Adaptor started</td></tr>
+		<tr><td>Name</td><td>Name of data source</td><td>Automatic, chosen by Adaptor</td></tr>
+		</table>
+		
+		<p>Conceptually, each Adaptor emits a semi-infinite stream of bytes, numbered
+		 starting from zero. The sequence ID specifies how many bytes each Adaptor has
+		 sent, including the current chunk.  So if an adaptor emits a chunk containing
+		 the first 100 bytes from a file, the sequenceID of that Chunk will be 100. 
+		 And the second hundred bytes will have sequence ID 200.  This may seem a 
+		 little peculiar, but it's actually the same way that TCP sequence numbers work.
+		</p>
+		
+		<p>Adaptors need to take sequence ID as a parameter so that they can resume 
+		correctly after a crash, and not send redundant data. When starting adaptors, 
+		it's usually save to specify 0 as an ID, but it's sometimes useful to specify 
+		something else. For instance, it lets you do things like only tail the second 
+		half of a file. 
+		</p>
+		</section>
+		
+		<section><title>Collectors</title>
+		<p>
+		Rather than have each adaptor write directly to HDFS, data is sent across 
+		the network to a <em>collector</em> process, that does the HDFS writes.  
+		Each collector receives data from up to several hundred hosts, and writes all
+		this data to a single <em>sink file</em>, which is a Hadoop sequence file of
+		serialized Chunks. Periodically, collectors close their sink files, rename 
+		them to mark them available for processing, and resume writing a new file.  
+		Data is sent to collectors over HTTP.  
+   </p>
+   <p>
+	 Collectors thus drastically reduce the number of HDFS files generated by Chukwa,
+	 from one per machine or adaptor per unit time, to a handful per cluster.  
+	 The decision to put collectors between data sources and the data store has 
+	 other benefits. Collectors hide the details of the HDFS file system in use, 
+	 such as its Hadoop version, from the adaptors.  This is a significant aid to 
+	 configuration.  It is especially helpful when using Chukwa to monitor a 
+	 development cluster running a different version of Hadoop or when using 
+	 Chukwa to monitor a non-Hadoop cluster.  
+		</p>
+		<p>For more information on configuring collectors, see the 
+		<a href="collector.html">Collector documentation</a>.</p>
+		</section>
+		
+		<section><title>MapReduce processing</title>
+		<p>
+		Collectors write data in sequence files. This is convenient for rapidly
+		getting data committed to stable storage. But it's less convenient for
+		analysis or finding particular data items. As a result, Chukwa has a toolbox
+		of MapReduce jobs for organizing and processing incoming data. </p>
+		<p>
+		These jobs come in two kinds: <em>Archiving</em> and <em>Demux</em>.
+		The archiving jobs simply take Chunks from their input, and output new sequence
+		files of Chunks, ordered and grouped. They do no parsing or modification of 
+		the contents. (There are several different archiving jobs, that differ in
+		precisely how they group the data.)
+		</p>
+		<p>  
+		The Demux job, in contrast, take Chunks as input and parse them to produce
+		ChukwaRecords, which are sets of key-value pairs.
+		</p>
+		<p>
+		 For details on controlling this part of the pipeline, see the 
+		 <a href="admin.html">Administration guide</a>. For details about the file
+		 formats, and how to use the collected data, see the <a href="programming.html">
+		 Programming guide</a>.
+		</p>
+		</section>
+		
+		<section><title>HICC</title>
+		<p>
+		HICC, the Hadoop Infrastructure Care Center is a web-portal
+  	style interface for displaying data.  Data is fetched from a MySQL database,
+  	which in turn is populated by a mapreduce job that runs on the collected data,
+  	after Demux. The  <a href="admin.html">Administration guide</a> has details
+  	on setting up HICC.
+		</p>
+		<p>And now, the full-size picture of Chukwa:</p>
+		<figure  align="left" alt="Chukwa Components" src="images/components.gif" />
+		
+		</section>
+  </body>
+</document>

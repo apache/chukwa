@@ -41,6 +41,7 @@ See http://forrest.apache.org/docs/linking.html for more info
 
  <docs label="Overview"> 
     <index      label="Overview"       href="index.html" />
+    <index      label="Architecture"       href="design.html" />
     <admin      label="Admin Guide"    href="admin.html" />
     <agent      label="Agent Configuration Guide" href="agent.html" />
     <programming      label="Programming Guide" href="programming.html" />

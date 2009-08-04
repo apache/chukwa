@@ -27,8 +27,8 @@
 <p>
 At the core of Chukwa is a flexible system for collecting and processing
 monitoring data, particularly log files. This document describes how to use the
-collected data.  (To control what gets collected, and for an overview of the
-Chukwa data model, see the <a href="agent.html">Agent Guide</a>.)  
+collected data.  (For an overview of the Chukwa data model and collection 
+pipeline, see the <a href="design.html">Design Guide</a>.)  
 </p>
 
 <p>
