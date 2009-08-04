@@ -153,8 +153,7 @@ public class ChukwaHttpSender implements ChukwaSender {
       if (collectors.hasNext()) {
         currCollector = collectors.next();
       } else
-        log
-            .error("No collectors to try in send(), not even trying to do doPost()");
+        log.error("No collectors to try in send(), not even trying to do doPost()");
     }
   }
 
@@ -203,16 +202,15 @@ public class ChukwaHttpSender implements ChukwaSender {
         // sent
         return commitResults;
       } catch (Throwable e) {
-        log.error("Http post exception", e);
+        log.error("Http post exception");
+        log.debug("Http post exception", e);
         ChukwaHttpSender.metrics.httpThrowable.inc();
-        log
-            .info("Checking list of collectors to see if another collector has been specified for rollover");
+        log.info("Checking list of collectors to see if another collector has been specified for rollover");
         if (collectors.hasNext()) {
           ChukwaHttpSender.metrics.collectorRollover.inc();
           currCollector = collectors.next();
 
-          log
-              .info("Found a new collector to roll over to, retrying HTTP Post to collector "
+          log.info("Found a new collector to roll over to, retrying HTTP Post to collector "
                   + currCollector);
         } else {
           if (retries > 0) {
@@ -279,8 +277,7 @@ public class ChukwaHttpSender implements ChukwaSender {
       throw new HttpException("got back a failure from server");
     }
     // implicitly "else"
-    log
-        .info(">>>>>> HTTP Got success back from the remote collector; response length "
+    log.info(">>>>>> HTTP Got success back from the remote collector; response length "
             + method.getResponseContentLength());
 
     // FIXME: should parse acks here

@@ -44,6 +44,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-74.  Agent shouldn't log exceptions for down collectors. (Rushin Barot via asrabkin)
+
     CHUKWA-365.  Improved DumpArchive tool. (asrabkin)
 
     CHUKWA-364.  Design and Architecture document in documentation. (asrabkin)
