@@ -23,7 +23,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.regex.PatternSyntaxException;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.util.DumpChunks;
-import static org.apache.hadoop.chukwa.util.DumpChunks.Filter;
+import org.apache.hadoop.chukwa.util.Filter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 import org.mortbay.log.Log;
@@ -114,7 +114,7 @@ public class SocketTeeWriter implements PipelineableWriter {
     Socket sock;
     BufferedReader in;
     DataOutputStream out;
-    DumpChunks.Filter rules;
+    Filter rules;
     boolean sendRawBytes;
     final BlockingQueue<Chunk> sendQ;
     public Tee(Socket s) throws IOException {
@@ -174,7 +174,7 @@ public class SocketTeeWriter implements PipelineableWriter {
         }
         
         String cmdAfterSpace = cmd.substring(cmd.indexOf(' ')+1);
-        rules = new DumpChunks.Filter(cmdAfterSpace);
+        rules = new Filter(cmdAfterSpace);
         out = new DataOutputStream(sock.getOutputStream());
 
           //now that we read everything OK we can add ourselves to list, and return.

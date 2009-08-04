@@ -24,6 +24,8 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.hadoop.chukwa.datacollection.DataFactory;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
@@ -185,7 +187,21 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
   public String getTags() {
     return tags;
   }
-
+  
+  /**
+   * @see org.apache.hadoop.chukwa.Chunk#getTag(java.lang.String)
+   */
+  public String getTag(String tagName) {
+    Pattern tagPattern = Pattern.compile(".*"+tagName+"=\"(.*)\".*");
+    if (tags != null) {
+      Matcher matcher = tagPattern.matcher(tags);
+      if (matcher.matches()) {
+        return matcher.group(1);
+      }
+    }
+    return null;
+  }
+  
   /**
    * @see org.apache.hadoop.io.Writable#readFields(java.io.DataInput)
    */

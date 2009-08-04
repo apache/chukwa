@@ -118,6 +118,13 @@ public interface Chunk {
    */
   public void addTag(String tag);
 
+  /**
+   * Returns the value of a single tag, assuming tags are of the form
+   * tagname="val"
+   * @param tagName the tag to return
+   * @return null if not matched.
+   */
+  public String getTag(String tagName);
   
   public void write(DataOutput data) throws IOException;
 }

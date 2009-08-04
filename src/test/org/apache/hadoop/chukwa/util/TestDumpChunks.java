@@ -55,41 +55,7 @@ public class TestDumpChunks extends TestCase {
     seqFileWriter.close();
     out.close();
   }
-  
-  public void testBasicPatternMatching() {
-   try {
-     DumpChunks.Filter rules = new DumpChunks.Filter("host=foo.*&cluster=bar&datatype=Data");
-     assertEquals(3, rules.size());
-     byte[] dat = "someText".getBytes();
-     ChunkImpl chunkNone = new ChunkImpl("badData","aname", dat.length, dat, null);
-     assertFalse(rules.matches(chunkNone));
 
-       //do the right thing on a non-match
-     ChunkImpl chunkSome = new ChunkImpl("badData", "aname", dat.length, dat, null);
-     chunkSome.setSource("fooly");
-     chunkSome.addTag("cluster=\"bar\"");
-     assertFalse(rules.matches( chunkSome));
-
-     ChunkImpl chunkAll = new ChunkImpl("Data", "aname", dat.length, dat, null);
-     chunkAll.setSource("fooly");
-     chunkAll.addTag("cluster=\"bar\"");
-
-     System.out.println("chunk is " + chunkAll);
-     assertTrue(rules.matches(chunkAll));
-     
-       //check that we match content correctly
-     rules = new DumpChunks.Filter("content=someText");
-     assertTrue(rules.matches(chunkAll));
-     rules = new DumpChunks.Filter("content=some");
-     assertFalse(rules.matches( chunkAll));
-     rules = new DumpChunks.Filter("datatype=Data&content=.*some.*");
-     assertTrue(rules.matches( chunkAll));
-
-   } catch(Exception e) {
-     fail("exception " + e);
-   } 
-  }
-  
   public void testFilePatternMatching() throws IOException, java.net.URISyntaxException {
     
     File tempDir = new File(System.getProperty("test.build.data", "/tmp"));

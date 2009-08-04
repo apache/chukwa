@@ -45,4 +45,15 @@ public class ChunkImplTest extends TestCase {
       // right behavior, do nothing
     }
   }
+  
+  public void testTag() {
+    ChunkBuilder cb = new ChunkBuilder();
+    cb.addRecord("foo".getBytes());
+    cb.addRecord("bar".getBytes());
+    cb.addRecord("baz".getBytes());
+    Chunk c = cb.getChunk();
+    assertNull(c.getTag("foo"));
+    c.addTag("foo=\"bar\"");
+    assertEquals("bar", c.getTag("foo"));
+  }
 }

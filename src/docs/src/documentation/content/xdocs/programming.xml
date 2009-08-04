@@ -76,8 +76,15 @@ is of the form <code>metadatafield=regex</code>, where
 <code>metadatafield</code> is one of the Chukwa metadata fields, and 
 <code>regex</code> is a regular expression.  The valid metadata field names are:
 <code>datatype</code>, <code>host</code>, <code>cluster</code>, 
-<code>content</code> and <code>name</code>.  
+<code>content</code>, <code>name</code>.  Note that the <code>name</code> field matches the stream name -- often the filename
+that the data was extracted from.
 </p>
+
+<p>
+In addition, you can match arbitrary tags via <code>tags.tagname</code>.
+So for instance, to match chunks with tag <code>foo="bar"</code> you could say
+<code>tags.foo=bar</code>. Note that quotes are present in the tag, but not
+in the filter rule.</p>
 
 <p>A stream matches the search pattern only if every rule matches. So to 
 retrieve HadoopLog data from cluster foo, you might search for 

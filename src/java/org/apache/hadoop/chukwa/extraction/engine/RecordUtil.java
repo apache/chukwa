@@ -6,6 +6,10 @@ import java.util.regex.Pattern;
 
 import org.apache.hadoop.chukwa.Chunk;
 
+/**
+ * Various utility methods.
+ * 
+ */
 public class RecordUtil {
   static Pattern clusterPattern = Pattern
       .compile("(.*)?cluster=\"(.*?)\"(.*)?");
@@ -21,6 +25,11 @@ public class RecordUtil {
 
     return "undefined";
   }
+  /**
+   * Uses a precompiled pattern, so theoretically faster than
+   * Chunk.getTag().
+   * 
+   */
   public static String getClusterName(Chunk chunk) {
     String tags = chunk.getTags();
     if (tags != null) {
@@ -32,4 +41,6 @@ public class RecordUtil {
 
     return "undefined";
   }
+  
+
 }

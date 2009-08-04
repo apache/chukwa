@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-366. Custom tags. (asrabkin)
+
     CHUKWA-358. Real-time monitoring at collector. (asrabkin)
 
     CHUKWA-352. Xtrace in contrib. (asrabkin)
