@@ -104,6 +104,8 @@ public class ExecAdaptor extends AbstractAdaptor {
         } // else we get default one record
 
         dest.add(c);
+        //We can't replay exec data, so we might as well commit to it now.
+        control.reportCommit(ExecAdaptor.this, sendOffset);
       } catch (JSONException e) {
         log.warn(e);
       } catch (InterruptedException e) {

@@ -46,6 +46,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-370.  Exec adaptor should commit immediately. (asrabkin)
+
     CHUKWA-367.  Print metadata in DumpChunks. (asrabkin)
 
     CHUKWA-74.  Agent shouldn't log exceptions for down collectors. (Rushin Barot via asrabkin)
