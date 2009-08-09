@@ -64,6 +64,8 @@ public class TestFilter extends TestCase {
     assertFalse(rule.matches(chunk1));
     chunk1.addTag("foo=\"bar\"");
     assertTrue(rule.matches(chunk1));
+    chunk1.addTag("baz=\"quux\"");
+    assertTrue(rule.matches(chunk1));
   }
   
 }
