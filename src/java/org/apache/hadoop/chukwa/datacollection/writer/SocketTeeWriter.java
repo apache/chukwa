@@ -50,7 +50,7 @@ import java.io.*;
  * TeeWriter ---> Client    (Chunk serialized as Writable)*
  *              An indefinite sequence of serialized chunks
  *              
- *  In english: clients should connect and say either "RAW " or "WRITABLE " 
+ *  In English: clients should connect and say either "RAW " or "WRITABLE " 
  *  followed by a filter.  (Note that the keyword is followed by exactly one space.)
  *  They'll then receive either a sequence of byte arrays or of writable-serialized.
  *  
@@ -204,8 +204,10 @@ public class SocketTeeWriter implements PipelineableWriter {
     }
 
     public void handle(Chunk c) {
+      
+      //don't ever block; just ignore this chunk if we don't have room for it.
       if(rules.matches(c)) 
-        sendQ.add(c);
+        sendQ.offer(c);
     }
   }
 

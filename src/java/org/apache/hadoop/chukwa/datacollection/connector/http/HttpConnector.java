@@ -54,11 +54,16 @@ public class HttpConnector implements Connector, Runnable {
 
   static Logger log = Logger.getLogger(HttpConnector.class);
 
-  static Timer statTimer = null;
-  static volatile int chunkCount = 0;
-  static final int MAX_SIZE_PER_POST = 2 * 1024 * 1024;
-  static final int MIN_POST_INTERVAL = 5 * 1000;
-  static ChunkQueue chunkQueue;
+  Timer statTimer = null;
+  volatile int chunkCount = 0;
+  
+  int MAX_SIZE_PER_POST = 2 * 1024 * 1024;
+  int MIN_POST_INTERVAL = 5 * 1000;
+  public static final String MIN_POST_INTERVAL_OPT = "httpConnector.minPostInterval";
+  public static final String MAX_SIZE_PER_POST_OPT = "httpConnector.maxPostSize";
+
+  
+  ChunkQueue chunkQueue;
 
   ChukwaAgent agent;
   String argDestination = null;
@@ -68,9 +73,8 @@ public class HttpConnector implements Connector, Runnable {
   private Iterator<String> collectors = null;
   protected ChukwaSender connectorClient = null;
 
-  static {
+  { //instance initializer block
     statTimer = new Timer();
-    chunkQueue = DataFactory.getInstance().getEventQueue();
     statTimer.schedule(new TimerTask() {
       public void run() {
         int count = chunkCount;
@@ -93,6 +97,12 @@ public class HttpConnector implements Connector, Runnable {
   }
 
   public void start() {
+
+    chunkQueue = DataFactory.getInstance().getEventQueue();
+    MAX_SIZE_PER_POST = agent.getConfiguration().getInt(MAX_SIZE_PER_POST_OPT,
+        MAX_SIZE_PER_POST);
+    MIN_POST_INTERVAL = agent.getConfiguration().getInt(MIN_POST_INTERVAL_OPT,
+        MIN_POST_INTERVAL);
     (new Thread(this, "HTTP post thread")).start();
   }
 
@@ -168,8 +178,7 @@ public class HttpConnector implements Connector, Runnable {
           Thread.sleep(now - lastPost); // wait for stuff to accumulate
         lastPost = now;
       } // end of try forever loop
-      log
-          .info("received stop() command so exiting run() loop to shutdown connector");
+      log.info("received stop() command so exiting run() loop to shutdown connector");
     } catch (OutOfMemoryError e) {
       log.warn("Bailing out", e);
       DaemonWatcher.bailout(-1);

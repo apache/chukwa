@@ -20,16 +20,17 @@ package org.apache.hadoop.chukwa.util;
 
 
 import java.util.Random;
-import org.apache.hadoop.chukwa.ChunkImpl;
+import org.apache.hadoop.chukwa.*;
 import org.apache.hadoop.chukwa.datacollection.*;
 import org.apache.hadoop.chukwa.datacollection.adaptor.*;
 import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
+import org.apache.hadoop.conf.Configuration;
 
 public class ConstRateAdaptor extends Thread implements Adaptor {
 
-  private static final int SLEEP_VARIANCE = 200;
-  private static final int MIN_SLEEP = 300;
+  private int SLEEP_VARIANCE = 200;
+  private int MIN_SLEEP = 300;
 
   private String type;
   private long offset;
@@ -51,6 +52,9 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
     this.type = type;
     this.dest = dest;
     this.setName("ConstRate Adaptor_" + type);
+    Configuration conf = c.getConfiguration();
+    MIN_SLEEP = conf.getInt("constAdaptor.minSleep", MIN_SLEEP);
+    SLEEP_VARIANCE = conf.getInt("constAdaptor.sleepVariance", SLEEP_VARIANCE);
     super.start(); // this is a Thread.start
   }
 
@@ -65,16 +69,17 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
   }
 
   public void run() {
-    Random r = new Random();
+    Random timeCoin = new Random();
     try {
       while (!stopping) {
-        int MSToSleep = r.nextInt(SLEEP_VARIANCE) + MIN_SLEEP; // between 1 and
+        int MSToSleep = timeCoin.nextInt(SLEEP_VARIANCE) + MIN_SLEEP; // between 1 and
                                                                // 3 secs
         // FIXME: I think there's still a risk of integer overflow here
         int arraySize = (int) (MSToSleep * (long) bytesPerSec / 1000L);
         byte[] data = new byte[arraySize];
-        r.nextBytes(data);
+        Random dataPattern = new Random(offset);
         offset += data.length;
+        dataPattern.nextBytes(data);
         ChunkImpl evt = new ChunkImpl(type, "random data source", offset, data,
             this);
 
@@ -106,16 +111,28 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
   }
 
 
-    @Override
-    public long shutdown(AdaptorShutdownPolicy shutdownPolicy) {
-      
-      switch(shutdownPolicy) {
-        case HARD_STOP :
-        case GRACEFULLY : 
-        case WAIT_TILL_FINISHED :
-          stopping = true;
-        break;
-      }
-      return offset;
+  @Override
+  public long shutdown(AdaptorShutdownPolicy shutdownPolicy) {
+    
+    switch(shutdownPolicy) {
+      case HARD_STOP :
+      case GRACEFULLY : 
+      case WAIT_TILL_FINISHED :
+        stopping = true;
+      break;
     }
+    return offset;
+  }
+  
+  public static boolean checkChunk(Chunk chunk) {
+    byte[] data = chunk.getData();
+    byte[] correctData = new byte[data.length];
+    Random dataPattern = new Random(chunk.getSeqID());
+    dataPattern.nextBytes(correctData);
+    for(int i=0; i < data.length ; ++i) 
+      if(data [i] != correctData[i])
+        return false;
+     
+    return true;
+  }
 }

@@ -46,6 +46,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-373.  Test code for backpressure. (asrabkin)
+
     CHUKWA-370.  Exec adaptor should commit immediately. (asrabkin)
 
     CHUKWA-367.  Print metadata in DumpChunks. (asrabkin)

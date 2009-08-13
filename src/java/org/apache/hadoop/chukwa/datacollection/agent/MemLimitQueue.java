@@ -53,6 +53,12 @@ public class MemLimitQueue implements ChunkQueue {
     synchronized (this) {
       while (chunk.getData().length + dataSize > MAX_MEM_USAGE) {
         try {
+          if(dataSize == 0) { //queue is empty, but data is still too big
+            log.error("JUMBO CHUNK SPOTTED: type= " + chunk.getDataType() + 
+                " and source =" +chunk.getStreamName()); 
+            return; //return without sending; otherwise we'd deadlock.
+            //this error should probably be fatal; there's no way to recover.
+          }
           metrics.fullQueue.set(1);
           this.wait();
           log.info("MemLimitQueue is full [" + dataSize + "]");
