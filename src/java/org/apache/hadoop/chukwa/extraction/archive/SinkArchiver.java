@@ -41,7 +41,7 @@ import java.io.IOException;
  */
 public class SinkArchiver implements CHUKWA_CONSTANT {
   
-  final private static PathFilter DATA_SINK_FILTER = new PathFilter() {
+  final public static PathFilter DATA_SINK_FILTER = new PathFilter() {
     public boolean accept(Path file) {
       return file.getName().endsWith(".done");
     }     
@@ -91,7 +91,8 @@ public class SinkArchiver implements CHUKWA_CONSTANT {
         fs.mkdirs(pMRInputDir);
       
       Path pOutputDir = new Path(archivesMROutputDir);
-      
+      if(fs.listStatus(pOutputDir).length == 0)
+        fs.delete(pOutputDir, true);
       Path archive = new Path(chukwaRootDir + "archive");
       
       selectInputs(fs, pSource, pMRInputDir);
