@@ -478,7 +478,7 @@ portalWidget.prototype = {
                     if (myAjax.success()) {
                         json_text=myAjax.transport.responseText;
                     }
-                    param_options=json_text.parseJSON();
+                    param_options=json_text.evalJSON();
 		    content+='<table cellpadding="0" cellspacing="0" style="font-size:10px;"><tr><td>';
                     content+='Available:<br/><select multiple size="10" class="formSelect" id="available_'+param_id+'" name="available_'+param_id+'" >';
                     for (var j=0;j<param_options.length;j++) {
@@ -648,7 +648,7 @@ portalWidget.prototype = {
                 if (myAjax.success()) {
                     json_text=myAjax.transport.responseText;
                 }
-                param_options=json_text.parseJSON();
+                param_options=json_text.evalJSON();
 		$('available_'+param_id).options.length=0;
 		$(param_id).options.length=0;
                 for (var j=0;j<param_options.length;j++) {
