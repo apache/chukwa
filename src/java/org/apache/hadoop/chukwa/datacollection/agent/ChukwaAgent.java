@@ -489,7 +489,7 @@ public class ChukwaAgent implements AdaptorManager {
   }
 
   
-  private String formatAdaptorStatus(Adaptor a) throws AdaptorException {
+  private String formatAdaptorStatus(Adaptor a) {
     return a.getClass().getCanonicalName() + " " + a.getCurrentStatus() + 
    " " + adaptorPositions.get(a).offset;
   }
@@ -503,11 +503,7 @@ public class ChukwaAgent implements AdaptorManager {
     Map<String, String> adaptors = new HashMap<String, String>();
     synchronized (adaptorsByName) {
       for (Map.Entry<String, Adaptor> a : adaptorsByName.entrySet()) {
-        try {
-          adaptors.put(a.getKey(), formatAdaptorStatus(a.getValue()));
-        } catch (AdaptorException e) {
-          log.error(e);
-        }
+        adaptors.put(a.getKey(), formatAdaptorStatus(a.getValue()));
       }
     }
     return adaptors;

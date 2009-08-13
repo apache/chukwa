@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.hadoop.chukwa.hicc.ColorPicker;
 import org.apache.hadoop.chukwa.util.XssFilter;
 
+@SuppressWarnings("unused")
 public class Chart {
   private String id;
   private String title;

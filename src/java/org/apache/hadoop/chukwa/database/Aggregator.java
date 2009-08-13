@@ -41,6 +41,7 @@ import org.apache.hadoop.chukwa.util.DatabaseWriter;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.chukwa.util.PidFile;
 
+@SuppressWarnings("unused")
 public class Aggregator {
 
   private static Log log = LogFactory.getLog(Aggregator.class);

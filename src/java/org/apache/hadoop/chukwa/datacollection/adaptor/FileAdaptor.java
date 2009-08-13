@@ -312,7 +312,7 @@ public class FileAdaptor extends AbstractAdaptor {
   }
 
   @Override
-  public String getCurrentStatus() throws AdaptorException {
+  public String getCurrentStatus() {
     return type.trim() + " " + offsetOfFirstByte + " " + toWatch.getPath();
   }
 

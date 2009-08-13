@@ -41,8 +41,9 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
   long lastSweepStartTime;
   volatile boolean continueScanning=true;
   File baseDir;
+  String baseDirName; 
   long scanInterval;
-  String adaptorName;
+  String adaptorName; //name of adaptors to start
   
   
 
@@ -53,6 +54,11 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
       
     scanThread.start();
     lastSweepStartTime = offset;
+    try {
+      baseDirName = baseDir.getCanonicalPath();
+    } catch(IOException e) {
+      throw new AdaptorException(e);
+    }
   }
   
   public void run() {
@@ -90,12 +96,8 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
   }
 
   @Override
-  public String getCurrentStatus() throws AdaptorException {
-    try {
-      return type + " " + baseDir.getCanonicalPath()+ " " + adaptorName;
-    } catch(IOException e) {
-      throw new AdaptorException(e);
-    }
+  public String getCurrentStatus() {
+    return type + " " + baseDirName + " " + adaptorName;
   }
 
   @Override

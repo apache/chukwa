@@ -36,7 +36,7 @@ public class MaxRateSender extends Thread implements Adaptor {
   ChunkReceiver dest;
   private String adaptorID;
 
-  public String getCurrentStatus() throws AdaptorException {
+  public String getCurrentStatus() {
     return type;
   }
 

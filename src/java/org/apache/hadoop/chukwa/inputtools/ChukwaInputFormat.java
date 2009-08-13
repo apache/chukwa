@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
  * be extended to also filter by other fields.
  * 
  */
+@SuppressWarnings("deprecation")
 public class ChukwaInputFormat extends
     SequenceFileInputFormat<LongWritable, Text> {
 

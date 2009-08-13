@@ -28,7 +28,7 @@ public class ChukwaTestAdaptor extends AbstractAdaptor {
   private ChunkReceiver dest = null;
 
   @Override
-  public String getCurrentStatus() throws AdaptorException {
+  public String getCurrentStatus() {
     // TODO Auto-generated method stub
     return type + " " + params + " " + startOffset;
   }

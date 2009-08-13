@@ -56,9 +56,8 @@ public interface Adaptor {
    * be written by this method.
    * 
    * @return the adaptor state as a string
-   * @throws AdaptorException
    */
-  public String getCurrentStatus() throws AdaptorException;
+  public String getCurrentStatus();
 
   public String getType();
 

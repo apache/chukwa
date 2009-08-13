@@ -124,7 +124,7 @@ public class ExecAdaptor extends AbstractAdaptor {
   }
 
   @Override
-  public String getCurrentStatus() throws AdaptorException {
+  public String getCurrentStatus() {
     return type + " " + period + " " + cmd;
   }
 
