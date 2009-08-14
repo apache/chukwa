@@ -31,7 +31,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
-public class CollectorTest extends TestCase {
+public class TestCollector extends TestCase {
 
   public void testCollector() {
     try {
