@@ -122,6 +122,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-377. Revised xtrace adaptor code. (asrabkin)
+
     CHUKWA-372. select_multiple_callback does not work in hicc (Eric Yang via asrabkin)
 
     CHUKWA-354. Fix corner case in SinkArchiver. (asrabkin)

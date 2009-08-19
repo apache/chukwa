@@ -38,6 +38,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.log4j.Logger;
 
 import edu.berkeley.xtrace.reporting.Report;
 import edu.berkeley.xtrace.*;
@@ -52,13 +53,24 @@ import edu.berkeley.xtrace.*;
  */
 public class XtrExtract extends Configured implements Tool {
   
-  public static final String OUTLINK_FIELD = "__xtr_outlinks";
   
   /**
-   * with more than 10,000 reports, switch to on-disk sort, 
+   * Hadoop docs say to do this if you pass an ArrayWritable to reduce.
+   */
+  public static class TextArrayWritable extends ArrayWritable {
+      public TextArrayWritable() { super(Text.class); } 
+
+    } 
+ 
+  
+  public static final String OUTLINK_FIELD = "__xtr_outlinks";
+  static Logger log = Logger.getLogger(XtrExtract.class);
+  
+  /**
+   * with more than 50,000 reports in a single trace, switch to on-disk sort, 
    * instead of in-memory topological sort.
    */
-  static final int MAX_IN_MEMORY_REPORTS = 10* 1000;
+  static final int MAX_IN_MEMORY_REPORTS = 50* 1000;
   
 public static class MapClass extends Mapper <Object, Object, BytesWritable, Text> {
     
@@ -71,13 +83,22 @@ public static class MapClass extends Mapper <Object, Object, BytesWritable, Text
         Mapper<Object, Object,BytesWritable, Text>.Context context)
         throws IOException, InterruptedException 
     {
+      Counter unparseableReport = context.getCounter("app", "unparseable chunks");
+      
       Text t;
       BytesWritable bw;
       
       if(k instanceof ChukwaArchiveKey && v instanceof ChunkImpl) {
         ChunkImpl value = (ChunkImpl) v;
         Report xtrReport = Report.createFromString(new String(value.getData()));
-        bw = new BytesWritable(xtrReport.getMetadata().getTaskId().get());
+       
+        try {    //we do this to handle the case where not all input is x-trace
+          bw = new BytesWritable(xtrReport.getMetadata().getTaskId().get());
+        } catch(Exception e) {
+          unparseableReport.increment(1);
+          return;
+        }
+        
         //FIXME: can probably optimize the above lines by doing a search in the raw bytes
         t= new Text(value.getData());
       } else if(k instanceof ChukwaRecordKey && v instanceof ChukwaRecord){
@@ -87,7 +108,7 @@ public static class MapClass extends Mapper <Object, Object, BytesWritable, Text
         //FIXME: can probably optimize the above lines by doing a search in the raw bytes
         t= new Text(value.getValue(Record.bodyField));
       } else {
-        System.out.println("unexpected key/value types: "+ k.getClass().getCanonicalName() 
+        log.error("unexpected key/value types: "+ k.getClass().getCanonicalName() 
             + " and " + v.getClass().getCanonicalName() );
         return;
       }
@@ -109,21 +130,24 @@ public static class MapClass extends Mapper <Object, Object, BytesWritable, Text
           Reducer<BytesWritable, Text,BytesWritable,ArrayWritable>.Context context) 
           throws IOException, InterruptedException
     {
-      String taskIDString = new String(taskID.getBytes());
+      String taskIDString = IoUtil.bytesToString(taskID.getBytes());
       //in both cases, key is OpId string
       HashMap<String, Report> reports = new LinkedHashMap<String, Report>();
 
-      Counter reportCounter = context.getCounter("app", "reports");
+      Counter reportCounter = context.getCounter("app", "distinct reports");
       Counter edgeCounter = context.getCounter("app", "edges");
       Counter badEdgeCounter = context.getCounter("app", "reference to missing report");
-      int edgeCount = 0;
+      Counter dupCounter = context.getCounter("app", "duplicate report");
+
+      int edgeCount = 0, dups = 0, numReports = 0;
       
-      int numReports = 0;
       for(Text rep_text: values) {
         Report r = Report.createFromString(rep_text.toString());
         numReports++;
         
         if(numReports < MAX_IN_MEMORY_REPORTS) {
+          if(reports.containsKey(r.getMetadata().getOpIdString()))
+            dups++;
           reports.put(r.getMetadata().getOpIdString(), r);
         } else if(numReports == MAX_IN_MEMORY_REPORTS) {
           //bail out, prepare to do an external sort.
@@ -132,92 +156,68 @@ public static class MapClass extends Mapper <Object, Object, BytesWritable, Text
           ;
     //      do the external sort
       }
-
-      HashMap<String, Integer> counts = new HashMap<String, Integer>();
-      Queue<Report> zeroInlinkReports = new LinkedList<Report>();
+      
       reportCounter.increment(reports.size());
-      //FIXME: could usefully compare reports.size() with numReports;
-      //that would measure duplicate reports
-      
-      //increment link counts for children
-      for(Report r: reports.values()){ 
-        String myOpID = r.getMetadata().getOpIdString();
-        int parentCount = 0;
-        for(String inLink: r.get("Edge")) {
-          
-            //sanitize data from old, nonconformant C++ implementation
-          if(inLink.contains(","))
-            inLink = inLink.substring(0, inLink.indexOf(','));
-          
-          Report parent = reports.get(inLink);
-          if(parent != null) {
-            parent.put(OUTLINK_FIELD, myOpID);
-            parentCount++;
-            edgeCount++;
-          }
-          else { //no match
-            if(!inLink.equals("0000000000000000"))  {
-              System.out.println("no sign of parent: " + inLink);
-              badEdgeCounter.increment(1);
-            }
-            //else quietly suppress
-          }
-        }
-          
-        //if there weren't any parents, we can dequeue
-        if(parentCount == 0)
-          zeroInlinkReports.add(r);
-        else
-          counts.put(myOpID, parentCount);
-      }
-      
-      System.out.println(taskIDString+": " + edgeCount + " total edges");
-      edgeCounter.increment(edgeCount);
-      //at this point, we have a map from metadata to report, and also
-      //from report op ID to inlink count.
-      //next step is to do a topological sort.
+      dupCounter.increment(dups);
+      CausalGraph g = new CausalGraph(reports);
 
-      
-      Text[] finalOutput = new Text[reports.size()];
-      System.out.println(taskIDString+": expecting to sort " + finalOutput.length + " reports");
-      int i=0;
-      while(!zeroInlinkReports.isEmpty()) {
-        Report r = zeroInlinkReports.poll();
-        if(r == null) {
-          System.err.println("poll returned null but list not empty");
-          break;
-        }
-        finalOutput[i++] = new Text(r.toString());
-        List<String> outLinks =  r.get(OUTLINK_FIELD);
-        if(outLinks != null) {
-          for(String outLink: outLinks) {
-            Integer oldCount = counts.get(outLink);
-            if(oldCount == null) {
-              oldCount = 0;  //FIXME: can this happen?
-              System.out.println("warning: found an in-edge where none was expected");
-            } if(oldCount == 1) {
-              zeroInlinkReports.add(reports.get(outLink));
-            }
-            counts.put(outLink, oldCount -1);
-          }
-        }
-      }
-      if(i != finalOutput.length) {
-        if(i > 0)
-           System.out.println("error: I only sorted " + i + " items, but expected " 
-            + finalOutput.length+", is your list cyclic?");
+      PtrReverse reverser = new PtrReverse();
+      List<Report> sortedReports = g.topoSort(reverser);
+      int sortedLen = sortedReports.size();
+      if(sortedLen!= reports.size()) {
+        if(sortedLen > 0)
+           log.warn(taskIDString+": I only sorted " + sortedLen + " items, but expected " 
+            + reports.size()+", is your list cyclic?");
         else
-          System.out.println("every event in graph has a predecessor; perhaps "
+          log.warn(taskIDString+": every event in graph has a predecessor; perhaps "
               + "the start event isn't in the input set?");
       }
+      log.debug(taskIDString+": " + reverser.edgeCount + " total edges");
+      edgeCounter.increment(reverser.edgeCount);
+      badEdgeCounter.increment(reverser.badCount);
+      
+      Text[] finalOutput = new Text[sortedReports.size()];
+      int i=0;
+      for(Report r:sortedReports)
+        finalOutput[i++] = new Text(r.toString());
 
-      context.write(taskID, new ArrayWritable(Text.class, finalOutput));
+      TextArrayWritable out = new TextArrayWritable();
+      out.set(finalOutput);
+      context.write(taskID, out);
       //Should sort values topologically and output list.  or?
       
     } //end reduce
     
   }//end reduce class
 
+  public static class PtrReverse {
+    int badCount = 0;
+    int edgeCount = 0;
+    
+    public int setupForwardPointers(Map<String, Report> reports, Report r,
+        String myOpID) {
+      int parentCount =0;
+      for(String inLink: r.get("Edge")) {  
+        //sanitize data from old, nonconformant C++ implementation
+        if(inLink.contains(","))
+          inLink = inLink.substring(0, inLink.indexOf(','));
+        
+        Report parent = reports.get(inLink);
+        if(parent != null) {
+          parent.put(OUTLINK_FIELD, myOpID);
+          parentCount++;
+        } else { //no match
+          if(!inLink.equals("0000000000000000"))  {
+            log.info("no sign of parent: " + inLink);
+            badCount++;
+          }
+          //else quietly suppress
+        }
+      }
+      edgeCount += badCount + parentCount;
+      return parentCount;
+    }
+  }
 
   @Override
   public int run(String[] arg) throws Exception {
@@ -234,7 +234,7 @@ public static class MapClass extends Mapper <Object, Object, BytesWritable, Text
     extractor.setMapOutputValueClass(Text.class);
     
     extractor.setOutputKeyClass(BytesWritable.class);
-    extractor.setOutputValueClass(ArrayWritable.class);
+    extractor.setOutputValueClass(TextArrayWritable.class);
     
     extractor.setInputFormatClass(SequenceFileInputFormat.class);
     extractor.setOutputFormatClass(SequenceFileOutputFormat.class);

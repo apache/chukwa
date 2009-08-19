@@ -38,6 +38,7 @@ public class XtrAdaptor extends AbstractAdaptor implements Runnable {
   
   
   ReportSource rs;
+  String rsName;
   Thread pump = new Thread(this);
   Thread reportSourceThread;
   BlockingQueue<String> q = new ArrayBlockingQueue<String>(1000);
@@ -102,13 +103,14 @@ public class XtrAdaptor extends AbstractAdaptor implements Runnable {
   }
 
   @Override
-  public String getCurrentStatus() throws AdaptorException {
-    return type;
+  public String getCurrentStatus() {
+    return type +" "+ rsName;
   }
 
   @Override
   public String parseArgs(String params) {
     rs = getXtrReportSource(params);  
+    rsName = params;
     return params; //no optional params 
   }
 
