@@ -231,7 +231,7 @@
 		<pathelement location="${test.build.classes}" />
 		<pathelement location="${chukwa.root.build.classes}" />
 		<fileset dir="${basedir}/lib">
-			<include name="**/xtrace*.jar" />
+			<include name="**/*.jar" />
 			<exclude name="**/excluded/" />
 		</fileset>
 		<fileset dir="../../build/">
@@ -240,6 +240,10 @@
 		</fileset>
 		<fileset dir="../../hadoopjars/">
 			<include name="hadoop*.jar" />
+			<exclude name="**/excluded/" />
+		</fileset>
+		<fileset dir="../../build/ivy/lib/chukwa/common">
+			<include name="**/*.jar" />
 			<exclude name="**/excluded/" />
 		</fileset>
 	</path>
@@ -264,7 +268,7 @@
 
 	</target>
 	
-	<target name="test" depends="compile-test" description="chukwa-xtrace tests">
+	<target name="test" depends="ivy-init-properties-local,compile-test" description="chukwa-xtrace tests">
         <delete dir="${test.log.dir}"/>
         <mkdir dir="${test.log.dir}"/>
 		 <echo>*** ${test.build.classes} *** ${chukwa.root.build.dir} ***</echo>
@@ -280,11 +284,12 @@
             <sysproperty key="hadoop.log.dir" value="${test.log.dir}"/>
 	     	
 	     	<classpath>
-                <pathelement location="${build.classes}" />
-            	<pathelement location="${test.build.classes}" />
-                <path refid="xtr-classpath"/>
-            </classpath>
-            <formatter type="${test.junit.output.format}" />
+          <pathelement location="${build.classes}" />
+          <pathelement location="${test.build.classes}" />
+          <path refid="xtr-classpath"/>
+        </classpath>
+       
+	     		<formatter type="${test.junit.output.format}" />
 
 
             <batchtest fork="yes" todir="${test.log.dir}" unless="testcase">
