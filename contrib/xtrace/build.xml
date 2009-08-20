@@ -268,7 +268,7 @@
 
 	</target>
 	
-	<target name="test" depends="ivy-init-properties-local,compile-test" description="chukwa-xtrace tests">
+	<target name="test" depends="compile-test" description="chukwa-xtrace tests">
         <delete dir="${test.log.dir}"/>
         <mkdir dir="${test.log.dir}"/>
 		 <echo>*** ${test.build.classes} *** ${chukwa.root.build.dir} ***</echo>
