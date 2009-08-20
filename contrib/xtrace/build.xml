@@ -242,7 +242,7 @@
 			<include name="hadoop*.jar" />
 			<exclude name="**/excluded/" />
 		</fileset>
-		<fileset dir="../../build/ivy/lib/chukwa/common">
+		<fileset dir="../../build/ivy/lib/chukwa/common/">
 			<include name="**/*.jar" />
 			<exclude name="**/excluded/" />
 		</fileset>
@@ -258,17 +258,14 @@
 
 		<javac srcdir="test/src/java" destdir="${test.build.classes}" debug="${javac.debug}">
 			<compilerarg value="-Xlint" />
-			<include name="org/apache/hadoop/chukwa/**" />
-            <classpath>
-                <pathelement location="${build.classes}" />
-            	<pathelement location="${test.build.classes}" />
-                <path refid="xtr-classpath"/>
-            </classpath>
+			<include name="edu/berkeley/chukwa_xtrace/**" />
+			<classpath refid="xtr-classpath" />
+
 		</javac>
 
 	</target>
 	
-	<target name="test" depends="compile-test" description="chukwa-xtrace tests">
+	<target name="test" depends="init,compile-test" description="chukwa-xtrace tests">
         <delete dir="${test.log.dir}"/>
         <mkdir dir="${test.log.dir}"/>
 		 <echo>*** ${test.build.classes} *** ${chukwa.root.build.dir} ***</echo>
