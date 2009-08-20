@@ -28,6 +28,7 @@ import org.apache.hadoop.chukwa.datacollection.adaptor.*;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
+import org.apache.hadoop.conf.Configuration;
 
 public class TestRawAdaptor extends TestCase {
   ChunkCatcherConnector chunks;
@@ -40,32 +41,38 @@ public class TestRawAdaptor extends TestCase {
   public void testRawAdaptor() throws IOException, InterruptedException,
       ChukwaAgent.AlreadyRunningException {
 
-    ChukwaAgent agent = new ChukwaAgent();
     // Remove any adaptor left over from previous run
-    ChukwaConfiguration cc = new ChukwaConfiguration();
-    int portno = cc.getInt("chukwaAgent.control.port", 9093);
-    ChukwaAgentController cli = new ChukwaAgentController("localhost", portno);
-    cli.removeAll();
-    // sleep for some time to make sure we don't get chunk from existing streams
-    Thread.sleep(5000);
+    Configuration conf = new Configuration();
+    conf.set("chukwaAgent.control.port", "0");
+    conf.setInt("chukwaAgent.adaptor.context.switch.time", 100);
+    ChukwaAgent agent = new ChukwaAgent(conf);
+
     File testFile = makeTestFile("chukwaRawTest", 80);
     String adaptorId = agent
         .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.FileTailingAdaptor"
             + " raw " + testFile + " 0");
     assertNotNull(adaptorId);
     Chunk c = chunks.waitForAChunk();
-    while (!c.getDataType().equals("raw")) {
-      c = chunks.waitForAChunk();
-    }
+    assertEquals(testFile.length(), c.getData().length);
     assertTrue(c.getDataType().equals("raw"));
     assertTrue(c.getRecordOffsets().length == 1);
     assertTrue(c.getSeqID() == testFile.length());
+    
+    c = chunks.waitForAChunk(1000);
+    assertNull(c);
+    
     agent.stopAdaptor(adaptorId, false);
     agent.shutdown();
-    Thread.sleep(2000);
   }
 
-  private File makeTestFile(String name, int size) throws IOException {
+  /**
+   * 
+   * @param name
+   * @param size size in lines
+   * @return
+   * @throws IOException
+   */
+  public static File makeTestFile(String name, int size) throws IOException {
     File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"),
         name);
     FileOutputStream fos = new FileOutputStream(tmpOutput);

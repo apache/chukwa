@@ -37,14 +37,6 @@ public class TestFileExpirationPolicy extends TestCase {
       Configuration conf = new ChukwaConfiguration();
       conf.set("chukwaAgent.control.port", "0");
       agent = new ChukwaAgent(conf);
-      // Remove any adaptor left over from previous run
-      
- 
-      ChukwaAgentController cli = new ChukwaAgentController("localhost", agent.getControllerPort());
-      cli.removeAll();
-      // sleep for some time to make sure we don't get chunk from existing
-      // streams
-      Thread.sleep(5000);
 
       FileTailingAdaptor.GRACEFUL_PERIOD = 30 * 1000;
 

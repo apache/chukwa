@@ -39,6 +39,7 @@ public class TestFileAdaptor extends TestCase {
   
   public TestFileAdaptor() throws IOException {
     baseDir = new File(System.getProperty("test.build.data", "/tmp"));
+    conf.setInt("chukwaAgent.control.port", 0);
     conf.set("chukwaAgent.checkpoint.dir", baseDir.getCanonicalPath());
     conf.setBoolean("chukwaAgent.checkpoint.enabled", false);
     conf.setInt("chukwaAgent.adaptor.fileadaptor.timeoutperiod", 100);
@@ -74,7 +75,8 @@ public class TestFileAdaptor extends TestCase {
 
     agent.processAddCommand("add test = FileAdaptor raw " +testFile.getCanonicalPath() + " 0");
     assertEquals(1, agent.adaptorCount());
-    Chunk c = chunks.waitForAChunk();
+    Chunk c = chunks.waitForAChunk(5000);
+    assertNotNull(c);
     String dat = new String(c.getData());
     assertTrue(dat.startsWith("0 abcdefghijklmnopqrstuvwxyz"));
     assertTrue(dat.endsWith("9 abcdefghijklmnopqrstuvwxyz\n"));
@@ -84,7 +86,7 @@ public class TestFileAdaptor extends TestCase {
   
   public void testRepeatedly() throws IOException,
   ChukwaAgent.AlreadyRunningException, InterruptedException {
-    int tests = 100; //SHOULD SET HIGHER AND WATCH WITH lsof to find leaks
+    int tests = 10; //SHOULD SET HIGHER AND WATCH WITH lsof to find leaks
 
     ChukwaAgent agent = new ChukwaAgent(conf);
     for(int i=0; i < tests; ++i) {
@@ -94,7 +96,8 @@ public class TestFileAdaptor extends TestCase {
       assertEquals(0, agent.adaptorCount());
       agent.processAddCommand("add test = FileAdaptor raw " +testFile.getCanonicalPath() + " 0");
       assertEquals(1, agent.adaptorCount());
-      Chunk c = chunks.waitForAChunk();
+      Chunk c = chunks.waitForAChunk(5000);
+      assertNotNull(c);
       String dat = new String(c.getData());
       assertTrue(dat.startsWith("0 abcdefghijklmnopqrstuvwxyz"));
       assertTrue(dat.endsWith("9 abcdefghijklmnopqrstuvwxyz\n"));

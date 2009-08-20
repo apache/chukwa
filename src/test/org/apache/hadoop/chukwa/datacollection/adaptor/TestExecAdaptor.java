@@ -60,7 +60,7 @@ public class TestExecAdaptor extends TestCase {
     assertEquals(0, agent.adaptorCount());
     String lsID = agent.processAddCommand(
       "add exec= org.apache.hadoop.chukwa.datacollection.adaptor.ExecAdaptor Listing 100 /bin/sleep 1 0");
-    Thread.sleep( 25*1000); //RAISE THIS to test longer
+    Thread.sleep( 5*1000); //RAISE THIS to test longer
     System.out.println("stopped ok"); 
   }
 

@@ -121,15 +121,6 @@ public class FileAdaptor extends AbstractAdaptor {
   
   static {
     tailer = new FileAdaptorTailer();
-    ChukwaAgent agent = ChukwaAgent.getAgent();
-    if (agent != null) {
-      Configuration conf = agent.getConfiguration();
-      if (conf != null) {
-        TIMEOUT_PERIOD = conf.getInt(
-            "chukwaAgent.adaptor.fileadaptor.timeoutperiod",
-            DEFAULT_TIMEOUT_PERIOD);
-      }
-    }
   }
   
   private long startTime = 0;
@@ -151,6 +142,9 @@ public class FileAdaptor extends AbstractAdaptor {
     log.info("adaptor id: " + adaptorID + " started file adaptor on file "
         + toWatch);
     this.startTime = System.currentTimeMillis();
+    TIMEOUT_PERIOD = control.getConfiguration().getInt(
+        "chukwaAgent.adaptor.fileadaptor.timeoutperiod",
+        DEFAULT_TIMEOUT_PERIOD);
     this.timeOut = startTime + TIMEOUT_PERIOD;
     
 

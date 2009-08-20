@@ -28,6 +28,7 @@ import org.apache.hadoop.chukwa.datacollection.adaptor.*;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
+import org.apache.hadoop.conf.Configuration;
 import junit.framework.TestCase;
 
 public class TestStartAtOffset extends TestCase {
@@ -41,14 +42,10 @@ public class TestStartAtOffset extends TestCase {
 
   public void testStartAtOffset() throws IOException, InterruptedException,
       ChukwaAgent.AlreadyRunningException {
-    ChukwaAgent agent = new ChukwaAgent();
-    // Remove any adaptor left over from previous run
-    ChukwaConfiguration cc = new ChukwaConfiguration();
-    int portno = cc.getInt("chukwaAgent.control.port", 9093);
-    ChukwaAgentController cli = new ChukwaAgentController("localhost", portno);
-    cli.removeAll();
-    // sleep for some time to make sure we don't get chunk from existing streams
-    Thread.sleep(5000);
+    Configuration conf = new Configuration();
+    conf.set("chukwaAgent.control.port", "0");
+    conf.setInt("chukwaAgent.adaptor.context.switch.time", 100);
+    ChukwaAgent agent = new ChukwaAgent(conf);
     File testFile = makeTestFile();
     int startOffset = 0; // skip first line
     String adaptorId = agent
@@ -75,19 +72,14 @@ public class TestStartAtOffset extends TestCase {
     assertTrue(c.getDataType().equals("lines"));
     agent.stopAdaptor(adaptorId, false);
     agent.shutdown();
-    Thread.sleep(2000);
   }
 
   public void testStartAfterOffset() throws IOException, InterruptedException,
       ChukwaAgent.AlreadyRunningException {
-    ChukwaAgent agent = new ChukwaAgent();
-    // Remove any adaptor left over from previous run
-    ChukwaConfiguration cc = new ChukwaConfiguration();
-    int portno = cc.getInt("chukwaAgent.control.port", 9093);
-    ChukwaAgentController cli = new ChukwaAgentController("localhost", portno);
-    cli.removeAll();
-    // sleep for some time to make sure we don't get chunk from existing streams
-    Thread.sleep(5000);
+    Configuration conf = new Configuration();
+    conf.set("chukwaAgent.control.port", "0");
+    conf.setInt("chukwaAgent.adaptor.context.switch.time", 100);
+    ChukwaAgent agent = new ChukwaAgent(conf);
     File testFile = makeTestFile();
     int startOffset = 0;
     String adaptorId = agent
@@ -120,7 +112,6 @@ public class TestStartAtOffset extends TestCase {
     assertTrue(c.getDataType().equals("lines"));
     agent.stopAdaptor(adaptorId, false);
     agent.shutdown();
-    Thread.sleep(2000);
   }
 
   private File makeTestFile() throws IOException {

@@ -73,15 +73,16 @@ public class TestDirTailingAdaptor extends TestCase {
     anOldFile.setLastModified(10);//just after epoch
     agent = new ChukwaAgent(conf); //restart agent.
     
-    //should be four adaptors: the DirTailer on emptyDir, the DirTailer on the full dir,
-    //and FileTailers for File inDir and file newfile
-    assertEquals(4, agent.adaptorCount());
-    
+
     //make sure we started tailing the new, not the old, file.
     for(Map.Entry<String, String> adaptors : agent.getAdaptorList().entrySet()) {
       System.out.println(adaptors.getKey() +": " + adaptors.getValue());
       assertFalse(adaptors.getValue().contains("oldXYZ"));
     }
+    //should be four adaptors: the DirTailer on emptyDir, the DirTailer on the full dir,
+    //and FileTailers for File inDir and file newfile
+    assertEquals(4, agent.adaptorCount());
+    
     nukeDirContents(checkpointDir);//nuke dir
     checkpointDir.delete();
     emptyDir.delete();

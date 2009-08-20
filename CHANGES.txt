@@ -122,6 +122,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-380. FTA shouldn't emit empty chunks. (asrabkin)
+
     CHUKWA-378. Disable TestArchive unit test. (asrabkin)
 
     CHUKWA-377. Revised xtrace adaptor code. (asrabkin)

@@ -51,7 +51,7 @@ public class FileTailingAdaptor extends AbstractAdaptor {
   public static int MAX_RETRIES = 300;
   public static int GRACEFUL_PERIOD = 3 * 60 * 1000; // 3 minutes
 
-  protected static Configuration conf = null;
+  protected Configuration conf = null;
   private int attempts = 0;
   private long gracefulPeriodExpired = 0l;
   private boolean adaptorInError = false;
@@ -75,6 +75,13 @@ public class FileTailingAdaptor extends AbstractAdaptor {
   }
 
   public void start(long bytes) {
+    
+    conf = control.getConfiguration();
+    MAX_READ_SIZE = conf.getInt(
+        "chukwaAgent.fileTailingAdaptor.maxReadSize",
+        DEFAULT_MAX_READ_SIZE);
+    log.info("chukwaAgent.fileTailingAdaptor.maxReadSize: "
+        + MAX_READ_SIZE);
     this.attempts = 0;
 
     log.info("started file tailer on file " + toWatch
@@ -287,27 +294,7 @@ public class FileTailingAdaptor extends AbstractAdaptor {
 
         long bufSize = len - fileReadOffset;
 
-        if (conf == null) {
-          ChukwaAgent agent = ChukwaAgent.getAgent();
-          if (agent != null) {
-            conf = agent.getConfiguration();
-            if (conf != null) {
-              MAX_READ_SIZE = conf.getInt(
-                  "chukwaAgent.fileTailingAdaptor.maxReadSize",
-                  DEFAULT_MAX_READ_SIZE);
-              log.info("chukwaAgent.fileTailingAdaptor.maxReadSize: "
-                  + MAX_READ_SIZE);
-            } else {
-              log.info("Conf is null, running in default mode");
-              conf = new Configuration();
-            }
-          } else {
-            log.info("Agent is null, running in default mode");
-            conf = new Configuration();
-          }
-        }
-
-        if (bufSize > MAX_READ_SIZE) {
+       if (bufSize > MAX_READ_SIZE) {
           bufSize = MAX_READ_SIZE;
           hasMoreData = true;
         }
@@ -378,6 +365,9 @@ public class FileTailingAdaptor extends AbstractAdaptor {
    */
   protected int extractRecords(ChunkReceiver eq, long buffOffsetInFile,
       byte[] buf) throws InterruptedException {
+    if(buf.length == 0)
+      return 0;
+    
     ChunkImpl chunk = new ChunkImpl(type, toWatch.getAbsolutePath(),
         buffOffsetInFile + buf.length, buf, this);
 

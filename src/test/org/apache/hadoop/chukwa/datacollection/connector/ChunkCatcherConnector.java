@@ -30,12 +30,14 @@ public class ChunkCatcherConnector implements Connector {
   
   class Interruptor extends TimerTask {
     Thread targ;
+    volatile boolean deactivate = false;
     Interruptor(Thread t) {
       targ =t;
     }
     
-    public void run() {
-      targ.interrupt();
+    public synchronized void run() {
+      if(!deactivate)
+        targ.interrupt();
     }
   };
 
@@ -44,12 +46,21 @@ public class ChunkCatcherConnector implements Connector {
     tm = new Timer();
   }
 
-  public Chunk waitForAChunk(long ms) throws InterruptedException {
+  public Chunk waitForAChunk(long ms) {
     
     ArrayList<Chunk> chunks = new ArrayList<Chunk>();
+    Interruptor i = new Interruptor(Thread.currentThread());
     if(ms > 0)
-      tm.schedule(new Interruptor(Thread.currentThread()), ms);
-    eq.collect(chunks, 1);
+      tm.schedule(i, ms);
+    try {
+      eq.collect(chunks, 1);
+      synchronized(i) {
+        i.deactivate = true;
+      }
+    } catch(InterruptedException e) {
+      Thread.interrupted();
+      return null;
+    }
     return chunks.get(0);
   }
   
