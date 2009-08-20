@@ -91,6 +91,9 @@ public class SinkArchiver implements CHUKWA_CONSTANT {
         fs.mkdirs(pMRInputDir);
       
       Path pOutputDir = new Path(archivesMROutputDir);
+      if(!fs.exists(pOutputDir))
+        fs.mkdirs(pOutputDir);
+      
       if(fs.listStatus(pOutputDir).length == 0)
         fs.delete(pOutputDir, true);
       Path archive = new Path(chukwaRootDir + "archive");

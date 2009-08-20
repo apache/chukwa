@@ -18,8 +18,9 @@
 package org.apache.hadoop.chukwa.datacollection.controller;
 
 
-import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
+import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
 import org.apache.hadoop.chukwa.datacollection.connector.Connector;
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
@@ -28,30 +29,24 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 public class TestAgentClient extends TestCase {
-  ChukwaConfiguration config;
+  Configuration config;
   ChukwaAgent agent;
   ChukwaAgentController c;
-  Connector httpConnector;
+  Connector connector;
 
   // consoleConnector = new ConsoleOutConnector(agent);
 
   protected void setUp() throws ChukwaAgent.AlreadyRunningException {
-    config = new ChukwaConfiguration();
-    agent = new ChukwaAgent();
+    config = new Configuration();
+    agent = new ChukwaAgent(config);
     c = new ChukwaAgentController();
-    httpConnector = new HttpConnector(agent); // use default source for list of
-                                              // collectors (i.e.
-                                              // conf/connectors)
-
-    httpConnector.start();
-
-    // assertTrue(Integer.parseInt(config.get("chukwaAgent.control.port")) ==
-    // agent.getControlSock().getPortNumber());
+    connector = new ChunkCatcherConnector();
+    connector.start();
   }
 
   protected void tearDown() {
     System.out.println("in tearDown()");
-    ((HttpConnector) httpConnector).shutdown();
+    connector.shutdown();
   }
 
   public void testAddFile() {

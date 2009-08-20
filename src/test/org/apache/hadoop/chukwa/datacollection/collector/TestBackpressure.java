@@ -15,15 +15,24 @@ import org.mortbay.jetty.servlet.ServletHolder;
 public class TestBackpressure extends TestCase {
 
   int PORTNO = 9991;
-  int SLEEP_SEC = 20;
-  int WRITE_RATE = 300; //kb/sec
-  int SEND_RATE = 2500000; //bytes/sec
+  
+  /**
+   * NOTE THAT WRITE-RATE * POST SIZE MUST BE GREATER THAN TEST DURATION
+   * 
+   * Default max post size is 2 MB; need to process that several times during test.
+   */
+  int TEST_DURATION_SECS = 40;
+  int WRITE_RATE_KB = 200; //kb/sec
+  
+  
+  int SEND_RATE = 2500* 1000; //bytes/sec
+  int MIN_ACCEPTABLE_PERCENT = 60;
   
   public void testBackpressure() throws Exception {
     Configuration conf = new Configuration();
     conf.set("chukwaCollector.writerClass", NullWriter.class
         .getCanonicalName());
-    conf.set(NullWriter.RATE_OPT_NAME, ""+WRITE_RATE);//kb/sec
+    conf.set(NullWriter.RATE_OPT_NAME, ""+WRITE_RATE_KB);//kb/sec
     conf.setInt(HttpConnector.MIN_POST_INTERVAL_OPT, 100);
     conf.setInt("constAdaptor.sleepVariance", 1);
     conf.setInt("constAdaptor.minSleep", 50);
@@ -41,13 +50,13 @@ public class TestBackpressure extends TestCase {
     Thread.sleep(1000);
     agent.processAddCommand("add constSend = " + ConstRateAdaptor.class.getCanonicalName() + 
         " testData "+ SEND_RATE + " 0");
-    Thread.sleep(SLEEP_SEC * 1000);
+    Thread.sleep(TEST_DURATION_SECS * 1000);
 
     String stat = agent.getAdaptorList().get("constSend");
-    long bytesPerSec = Long.valueOf(stat.split(" ")[3]) / SLEEP_SEC / 1000;
-    System.out.println("data rate was " + bytesPerSec + " kb /second");
-    assertTrue(bytesPerSec < WRITE_RATE);
-    assertTrue(bytesPerSec > 3* WRITE_RATE / 4);//an assumption, but should hold true
+    long kbytesPerSec = Long.valueOf(stat.split(" ")[3]) / TEST_DURATION_SECS / 1000;
+    System.out.println("data rate was " + kbytesPerSec + " kb /second");
+    assertTrue(kbytesPerSec < WRITE_RATE_KB); //write rate should throttle sends
+    assertTrue(kbytesPerSec > MIN_ACCEPTABLE_PERCENT* WRITE_RATE_KB / 100);//an assumption, but should hold true
     agent.shutdown();
   }
 }
