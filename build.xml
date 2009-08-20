@@ -497,6 +497,7 @@
 					<exclude name="**/${test.exclude}.java" />
 					<exclude name="**/TestAgentConfig.java" />
 					<exclude name="**/TestDemux.java" />
+					<exclude name="**/TestArchive.java" />
 				</fileset>
 			</batchtest>
 			<batchtest todir="${test.build.dir}" if="testcase">
