@@ -37,7 +37,7 @@ public class TestAcksOnFailure extends TestCase {
     ChukwaHttpSender send = new ChukwaHttpSender(conf);
     ArrayList<String> collectors = new ArrayList<String>();
     collectors.add("http://somehost.invalid/chukwa");
-    send.setCollectors(new RetryListOfCollectors(collectors, 1000));
+    send.setCollectors(new RetryListOfCollectors(collectors, conf));
     
     byte[] data = "sometestdata".getBytes();
     Adaptor a = new FileTailingAdaptor();

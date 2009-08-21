@@ -46,6 +46,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-379.  Refactor sender code. (asrabkin)
+
     CHUKWA-374.  Adaptor.getStatus() shouldn't throw exceptions. (asrabkin)
 
     CHUKWA-373.  Test code for backpressure. (asrabkin)

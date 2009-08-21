@@ -32,14 +32,15 @@ import java.util.List;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
+import org.apache.hadoop.chukwa.datacollection.collector.servlet.ServletCollector;
 import org.apache.hadoop.chukwa.datacollection.sender.metrics.HttpSenderMetrics;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.DataOutputBuffer;
@@ -48,6 +49,11 @@ import org.apache.log4j.Logger;
 /**
  * Encapsulates all of the http setup and connection details needed for chunks
  * to be delivered to a collector.
+ * 
+ * This class should encapsulate the details of the low level data formatting.
+ * The Connector is responsible for picking what to send and to whom;
+ * retry policy is encoded in the collectors iterator.
+ * 
  * <p>
  * On error, tries the list of available collectors, pauses for a minute, and
  * then repeats.
@@ -67,7 +73,7 @@ public class ChukwaHttpSender implements ChukwaSender {
   static Logger log = Logger.getLogger(ChukwaHttpSender.class);
   static HttpClient client = null;
   static MultiThreadedHttpConnectionManager connectionManager = null;
-  static String currCollector = null;
+  String currCollector = null;
 
   protected Iterator<String> collectors;
 
@@ -122,22 +128,13 @@ public class ChukwaHttpSender implements ChukwaSender {
     // setup default collector
     ArrayList<String> tmp = new ArrayList<String>();
     this.collectors = tmp.iterator();
-    log
-        .info("added a single collector to collector list in ConnectorClient constructor, it's hasNext is now: "
+    log.info("added a single collector to collector list in ConnectorClient constructor, it's hasNext is now: "
             + collectors.hasNext());
 
     MAX_RETRIES_PER_COLLECTOR = c.getInt("chukwaAgent.sender.fastRetries", 4);
     SENDER_RETRIES = c.getInt("chukwaAgent.sender.retries", 144000);
     WAIT_FOR_COLLECTOR_REBOOT = c.getInt("chukwaAgent.sender.retryInterval",
         20 * 1000);
-  }
-
-  /**
-   * Set up a single connector for this client to send {@link Chunk}s to
-   * 
-   * @param collector the url of the collector
-   */
-  public void setCollectors(String collector) {
   }
 
   /**
@@ -163,6 +160,7 @@ public class ChukwaHttpSender implements ChukwaSender {
    * 
    * @return array of chunk id's which were ACKed by collector
    */
+  @Override
   public List<CommitListEntry> send(List<Chunk> toSend)
       throws InterruptedException, IOException {
     List<DataOutputBuffer> serializedEvents = new ArrayList<DataOutputBuffer>();
@@ -190,26 +188,46 @@ public class ChukwaHttpSender implements ChukwaSender {
     // collect all serialized chunks into a single buffer to send
     RequestEntity postData = new BuffersRequestEntity(serializedEvents);
 
+    PostMethod method = new PostMethod();
+    method.setRequestEntity(postData);
+    log.info(">>>>>> HTTP post to " + currCollector + " length = " + postData.getContentLength());
+
+    return postAndParseResponse(method, commitResults);
+  }
+  
+  public List<CommitListEntry> postAndParseResponse(PostMethod method, List<CommitListEntry> commitResults)
+  throws IOException, InterruptedException{
+    reliablySend(method, "chukwa"); //FIXME: shouldn't need to hardcode this here
+    return commitResults;
+  }
+
+  /**
+   *  Responsible for executing the supplied method on at least one collector
+   * @param method
+   * @return
+   * @throws InterruptedException
+   * @throws IOException if no collector responds with an OK
+   */
+  protected List<String> reliablySend(HttpMethodBase method, String pathSuffix) throws InterruptedException, IOException {
     int retries = SENDER_RETRIES;
     while (currCollector != null) {
       // need to pick a destination here
-      PostMethod method = new PostMethod();
       try {
-        doPost(method, postData, currCollector);
+
+        // send it across the network    
+        List<String> responses = doRequest(method, currCollector+ pathSuffix);
 
         retries = SENDER_RETRIES; // reset count on success
-        // if no exception was thrown from doPost, ACK that these chunks were
-        // sent
-        return commitResults;
+
+        return responses;
       } catch (Throwable e) {
         log.error("Http post exception");
         log.debug("Http post exception", e);
         ChukwaHttpSender.metrics.httpThrowable.inc();
-        log.info("Checking list of collectors to see if another collector has been specified for rollover");
         if (collectors.hasNext()) {
           ChukwaHttpSender.metrics.collectorRollover.inc();
+          failedCollector(currCollector);
           currCollector = collectors.next();
-
           log.info("Found a new collector to roll over to, retrying HTTP Post to collector "
                   + currCollector);
         } else {
@@ -229,14 +247,23 @@ public class ChukwaHttpSender implements ChukwaSender {
         method.releaseConnection();
       }
     } // end retry loop
-    return new ArrayList<CommitListEntry>();
+    return new ArrayList<String>();
   }
 
   /**
-   * Handles the HTTP post. Throws HttpException on failure
+   * A hook for taking action when a collector is declared failed.
+   * @param downCollector
    */
-  @SuppressWarnings("deprecation")
-  private void doPost(PostMethod method, RequestEntity data, String dest)
+  protected void failedCollector(String downCollector) {
+    log.debug("declaring "+ downCollector + " down");
+  }
+
+  /**
+   * Responsible for performing a single operation to a specified collector URL.
+   * 
+   * @param dest the URL being requested. (Including hostname)
+   */
+  protected List<String> doRequest(HttpMethodBase method, String dest)
       throws IOException, HttpException {
 
     HttpMethodParams pars = method.getParams();
@@ -253,11 +280,6 @@ public class ChukwaHttpSender implements ChukwaSender {
     method.setParams(pars);
     method.setPath(dest);
 
-    // send it across the network
-    method.setRequestEntity(data);
-
-    log.info(">>>>>> HTTP post to " + dest + " length = "
-        + data.getContentLength());
     // Send POST request
     ChukwaHttpSender.metrics.httpPost.inc();
     
@@ -271,13 +293,12 @@ public class ChukwaHttpSender implements ChukwaSender {
         ChukwaHttpSender.metrics.httpTimeOutException.inc();
       }
       
-      log.error(">>>>>> HTTP post response statusCode: " + statusCode
-          + ", statusLine: " + method.getStatusLine());
+      log.error(">>>>>> HTTP response from " + dest + " statusLine: " + method.getStatusLine());
       // do something aggressive here
       throw new HttpException("got back a failure from server");
     }
     // implicitly "else"
-    log.info(">>>>>> HTTP Got success back from the remote collector; response length "
+    log.info(">>>>>> HTTP Got success back from "+ dest + "; response length "
             + method.getResponseContentLength());
 
     // FIXME: should parse acks here
@@ -288,10 +309,13 @@ public class ChukwaHttpSender implements ChukwaSender {
     rstream = new ByteArrayInputStream(resp_buf);
     BufferedReader br = new BufferedReader(new InputStreamReader(rstream));
     String line;
+    List<String> resp = new ArrayList<String>();
     while ((line = br.readLine()) != null) {
       if (log.isDebugEnabled()) {
         log.debug("response: " + line);
       }
+      resp.add(line);
     }
+    return resp;
   }
 }

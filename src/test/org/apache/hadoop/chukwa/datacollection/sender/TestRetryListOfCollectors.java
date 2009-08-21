@@ -32,7 +32,8 @@ public class TestRetryListOfCollectors extends TestCase {
     hosts.add("host2");
     hosts.add("host3");
     hosts.add("host4");
-    RetryListOfCollectors rloc = new RetryListOfCollectors(hosts, 2000);
+    Configuration conf = new Configuration();
+    RetryListOfCollectors rloc = new RetryListOfCollectors(hosts, conf);
     assertEquals(hosts.size(), rloc.total());
 
     for (int i = 0; i < hosts.size(); ++i) {
@@ -74,7 +75,7 @@ public class TestRetryListOfCollectors extends TestCase {
     
     Configuration conf = new Configuration();
     conf.setInt("chukwaCollector.http.port", 5052);
-    RetryListOfCollectors rloc = new RetryListOfCollectors(tmpOutput, 2000, conf);
+    RetryListOfCollectors rloc = new RetryListOfCollectors(tmpOutput, conf);
     for (int i = 0; i < validHosts.size(); ++i) {
       assertTrue(rloc.hasNext());
       String s = rloc.next();

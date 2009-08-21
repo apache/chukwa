@@ -67,7 +67,7 @@ public class DataFactory {
    * @return empty list if file does not exist
    * @throws IOException on other error
    */
-  public Iterator<String> getCollectorURLs(Configuration conf) throws IOException {
+  public Iterator<String> getCollectorURLs(Configuration conf, String filename) throws IOException {
     String chukwaHome = System.getenv("CHUKWA_HOME");
     if (chukwaHome == null) {
       chukwaHome = ".";
@@ -87,13 +87,16 @@ public class DataFactory {
 
     log.info("setting up collectors file: " + chukwaConf + File.separator
         + COLLECTORS_FILENAME);
-    File collectors = new File(chukwaConf + File.separator + "collectors");
+    File collectors = new File(chukwaConf + File.separator + filename);
     try {
-      return new RetryListOfCollectors(collectors, 1000 * 15, conf);// time is ms
-                                                              // between tries
+      return new RetryListOfCollectors(collectors, conf);
     } catch (java.io.IOException e) {
       log.error("failed to read collectors file: ", e);
       throw e;
     }
   }
+  public Iterator<String> getCollectorURLs(Configuration conf) throws IOException {
+    return getCollectorURLs(conf, "collectors");
+  }
+
 }

@@ -46,7 +46,7 @@ public class TestCollector extends TestCase {
       ChukwaHttpSender sender = new ChukwaHttpSender(conf);
       ArrayList<String> collectorList = new ArrayList<String>();
       collectorList.add("http://localhost:9990/chukwa");
-      sender.setCollectors(new RetryListOfCollectors(collectorList, 50));
+      sender.setCollectors(new RetryListOfCollectors(collectorList, conf));
       Server server = new Server(9990);
       Context root = new Context(server, "/", Context.SESSIONS);
 

@@ -164,7 +164,7 @@ public class TestDatabaseIostat extends TestCase {
       sender = new ChukwaHttpSender(conf);
       ArrayList<String> collectorList = new ArrayList<String>();
       collectorList.add("http://localhost:"+collectorPort+"/chukwa");
-      sender.setCollectors(new RetryListOfCollectors(collectorList, 50));
+      sender.setCollectors(new RetryListOfCollectors(collectorList, conf));
     } catch (AlreadyRunningException e) {
       fail("Chukwa Agent is already running");
     }

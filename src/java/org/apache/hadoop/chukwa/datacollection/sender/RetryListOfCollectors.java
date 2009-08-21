@@ -34,7 +34,7 @@ import org.apache.hadoop.conf.Configuration;
  * 
  * 
  */
-public class RetryListOfCollectors implements Iterator<String> {
+public class RetryListOfCollectors implements Iterator<String>, Cloneable {
 
   int maxRetryRateMs;
   List<String> collectors;
@@ -42,42 +42,29 @@ public class RetryListOfCollectors implements Iterator<String> {
   int nextCollector = 0;
   private String portNo;
   Configuration conf;
+  public static final String RETRY_RATE_OPT = "chukwaAgent.connector.retryRate";
 
-  public RetryListOfCollectors(File collectorFile, int maxRetryRateMs, Configuration conf)
+  public RetryListOfCollectors(File collectorFile, Configuration conf)
       throws IOException {
-    this.maxRetryRateMs = maxRetryRateMs;
-    lastLookAtFirstNode = 0;
     collectors = new ArrayList<String>();
     this.conf = conf;
     portNo = conf.get("chukwaCollector.http.port", "8080");
-
+    maxRetryRateMs = conf.getInt(RETRY_RATE_OPT, 15 * 1000);
     try {
       BufferedReader br = new BufferedReader(new FileReader(collectorFile));
       String line, parsedline;
       while ((line = br.readLine()) != null) {
-        if (!line.contains("://")) {
-          // no protocol, assume http
-          if (line.matches(".*:\\d+.*")) {
-            parsedline = "http://" + line+"/";
-          } else {
-            parsedline = "http://" + line + ":" + portNo;
-          }
-        } else {
-          if (line.matches(".*:\\d+.*")) {
-            parsedline = line;
-          } else {
-            parsedline = line + ":" + portNo;
-          }
-        }
-        if(!parsedline.matches(".*\\w/.*")) //no resource name
-          parsedline = parsedline+"/";
+        parsedline = canonicalizeLine(line);
         collectors.add(parsedline);
       }
       
       br.close();
     } catch (FileNotFoundException e) {
-      System.err
-          .println("Error in RetryListOfCollectors() opening file: collectors, double check that you have set the CHUKWA_CONF_DIR environment variable. Also, ensure file exists and is in classpath");
+      System.err.println("Error in RetryListOfCollectors() opening file"
+            + collectorFile.getCanonicalPath() + ", double check that you have"
+            + "set the CHUKWA_CONF_DIR environment variable. Also, ensure file"
+            + " exists and is in classpath");
+      throw e;
     } catch (IOException e) {
       System.err
           .println("I/O error in RetryListOfcollectors instantiation in readLine() from specified collectors file");
@@ -86,14 +73,35 @@ public class RetryListOfCollectors implements Iterator<String> {
     shuffleList();
   }
 
+  private String canonicalizeLine(String line) {
+    String parsedline;
+    if (!line.contains("://")) {
+      // no protocol, assume http
+      if (line.matches(".*:\\d+.*")) {
+        parsedline = "http://" + line+"/";
+      } else {
+        parsedline = "http://" + line + ":" + portNo;
+      }
+    } else {
+      if (line.matches(".*:\\d+.*")) {
+        parsedline = line;
+      } else {
+        parsedline = line + ":" + portNo;
+      }
+    }
+    if(!parsedline.matches(".*\\w/.*")) //no resource name
+      parsedline = parsedline+"/";
+    return parsedline;
+  }
+
   /**
    * This is only used for debugging. Possibly it should sanitize urls the same way the other
    * constructor does.
    * @param collectors
    * @param maxRetryRateMs
    */
-  public RetryListOfCollectors(final List<String> collectors, int maxRetryRateMs) {
-    this.maxRetryRateMs = maxRetryRateMs;
+  public RetryListOfCollectors(final List<String> collectors, Configuration conf) {
+    maxRetryRateMs = conf.getInt(RETRY_RATE_OPT, 15 * 1000);
     lastLookAtFirstNode = 0;
     this.collectors = new ArrayList<String>();
     this.collectors.addAll(collectors);
@@ -101,7 +109,7 @@ public class RetryListOfCollectors implements Iterator<String> {
   }
 
   // for now, use a simple O(n^2) algorithm.
-  // safe, because we only do this once, and on smalls list
+  // safe, because we only do this once, and on smallish lists
   private void shuffleList() {
     ArrayList<String> newList = new ArrayList<String>();
     Random r = new java.util.Random();
@@ -151,6 +159,15 @@ public class RetryListOfCollectors implements Iterator<String> {
    */
   int total() {
     return collectors.size();
+  }
+  
+  public RetryListOfCollectors clone() {
+    try {
+      RetryListOfCollectors clone = (RetryListOfCollectors) super.clone();
+      return clone;
+    } catch(CloneNotSupportedException e) {
+      return null;
+    }
   }
 
 }
