@@ -111,10 +111,12 @@ function toggle_view_all() {
 }
 </script>
 <input type=hidden name=cmd id=cmd value=1>
+<% if(request.getParameter("embed")==null) { %>
 <table width="100%" cellpadding=3 cellspacing=0>
 <tr><td nowrap><img src="images/chukwa.jpg" align="absmiddle">Hadoop Infrastructure Care Center</td>
     <td align="left" nowrap class="portal_top_nav_bar" nowrap> </td></tr>
 </table>
+<% } %>
 <table width="100%" cellpadding=0 cellspacing=0 class="menubar">
 <tr><td>
 <div id="menu">
@@ -243,5 +245,6 @@ function debugMode() {
 }
 
 </script>
+<a href="http://hadoop.apache.org/chukwa"><font color="#aaaaaa" size="-1">Powered by Chukwa</font></a>
 </body>
 </html>
