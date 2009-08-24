@@ -228,6 +228,10 @@ public class Chart {
           .append("<script type=\"text/javascript\" src=\"/hicc/js/flexigrid.pack.js\"></script>\n");
       output
           .append("<script type=\"text/javascript\" src=\"/hicc/js/excanvas.pack.js\"></script>\n");
+      output
+          .append("<script type=\"text/javascript\" src=\"/hicc/js/base64.js\"></script>\n");
+      output
+          .append("<script type=\"text/javascript\" src=\"/hicc/js/canvas2image.js\"></script>\n");
       output.append("<div id=\"placeholderTitle\"><center>" + title
           + "</center></div>\n");
       output.append("<div id=\"placeholder\" style=\"width:" + this.width
@@ -438,6 +442,7 @@ public class Chart {
 	output.append("   $(window).resize(function() { wholePeriod(); });\n");
 	output.append("});\n");
 	output.append("</script>\n");
+        output.append("<input type=\"button\" value=\"Export\" onclick=\"javascript:saveReport();\">\n");
 	output.append("</body></html>\n");
     } else {
       output.append("chartTitle=\"<center>" + this.title + "</center>\";");

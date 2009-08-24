@@ -4,6 +4,10 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-383. Added embed mode for HICC.  (Eric Yang)
+
+    CHUKWA-382. Added export button to export HICC graph as static image.  (Eric Yang)
+
     CHUKWA-366. Custom tags. (asrabkin)
 
     CHUKWA-358. Real-time monitoring at collector. (asrabkin)

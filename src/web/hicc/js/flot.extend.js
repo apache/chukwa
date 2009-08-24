@@ -262,3 +262,30 @@ function refresh(url, parameters) {
   }
   return true;
 }
+
+function saveReport() {
+  var pattern = /https?:\/\/(.*?)\//;
+  var baseUrl = pattern.exec(location.href)[0];
+  var chart = document.getElementById('placeholder').cloneNode(true);
+  var canvas = document.getElementById('placeholder').getElementsByTagName('canvas')[0];
+  chart.getElementsByTagName('canvas')[0].style.display="none";
+  chart.getElementsByTagName('canvas')[1].style.display="none";
+  var legend = document.getElementById('placeholderLegend');
+  var tableLegend = document.getElementById('statisLegend');
+  var data="data:text/html,";
+  data+="<!doctype html>";
+  data+="<link type=\"text/css\" rel=\"stylesheet\" href=\""+baseUrl+"hicc/css/default.css\" />";
+  data+="<link type=\"text/css\" rel=\"stylesheet\" href=\""+baseUrl+"hicc/css/iframe.css\" />";
+  data+="<link type=\"text/css\" rel=\"stylesheet\" href=\""+baseUrl+"hicc/css/flexigrid/flexigrid.css\" />";
+  data+="<center>";
+  data+="<div id=\"placeholder\" style=\"width:"+chart.style.width+"; height:"+chart.style.height+"; position: relative;\">";
+  data+="<img src=\""+canvas.toDataURL()+"\" style=\"position: absolute; left: 0px; top: 0px\">";
+  data+="<center>";
+  data+=chart.innerHTML;
+  data+="</center>";
+  data+="</div>";
+  data+=legend.innerHTML;
+  data+=tableLegend.innerHTML;
+  data+="</center>";
+  return window.open(data);
+}
