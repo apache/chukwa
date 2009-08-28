@@ -20,6 +20,7 @@ package org.apache.hadoop.chukwa.util;
 
 
 import java.util.Random;
+import java.util.regex.*;
 import org.apache.hadoop.chukwa.*;
 import org.apache.hadoop.chukwa.datacollection.*;
 import org.apache.hadoop.chukwa.datacollection.adaptor.*;
@@ -27,6 +28,18 @@ import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 import org.apache.hadoop.conf.Configuration;
 
+/**
+ * Emits chunks at a roughly constant data rate. Chunks are in a very particular
+ * format: the output data is verifiable, but sufficiently non-deterministic
+ * that two different instances of this adaptor are very likely to have
+ * distinct outputs.
+ * 
+ * 
+ * Each chunk is full of random bytes; the randomness comes from 
+ * an instance of java.util.Random seeded with the offset xored
+ * with the time-of-generation. The time of generation is stored, big-endian,
+ * in the first eight bytes of each chunk.
+ */
 public class ConstRateAdaptor extends Thread implements Adaptor {
 
   private int SLEEP_VARIANCE = 200;
@@ -36,18 +49,17 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
   private long offset;
   private int bytesPerSec;
   private ChunkReceiver dest;
-  private String adaptorID;
-
+  long seed;
+  
   private volatile boolean stopping = false;
 
   public String getCurrentStatus() {
-    return type.trim() + " " + bytesPerSec;
+    return type.trim() + " " + bytesPerSec + " " + seed;
   }
 
   public void start(String adaptorID, String type, 
       long offset, ChunkReceiver dest, AdaptorManager c) throws AdaptorException {
 
-    this.adaptorID = adaptorID;
     this.offset = offset;
     this.type = type;
     this.dest = dest;
@@ -60,7 +72,15 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
 
   public String parseArgs(String bytesPerSecParam) {
     try {
-      bytesPerSec = Integer.parseInt(bytesPerSecParam.trim());
+      Matcher m = Pattern.compile("([0-9]+)(?:\\s+([0-9]+))?\\s*").matcher(bytesPerSecParam);
+      if(!m.matches())
+        return null;
+      bytesPerSec = Integer.parseInt(m.group(1));
+      String rate = m.group(2);
+      if(rate != null)
+        seed = Long.parseLong(m.group(2));
+      else
+        seed = System.currentTimeMillis();
     } catch (NumberFormatException e) {
       //("bad argument to const rate adaptor: ["  + bytesPerSecParam + "]");
       return null;
@@ -76,12 +96,7 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
                                                                // 3 secs
         // FIXME: I think there's still a risk of integer overflow here
         int arraySize = (int) (MSToSleep * (long) bytesPerSec / 1000L);
-        byte[] data = new byte[arraySize];
-        Random dataPattern = new Random(offset);
-        offset += data.length;
-        dataPattern.nextBytes(data);
-        ChunkImpl evt = new ChunkImpl(type, "random data source", offset, data,
-            this);
+        ChunkImpl evt = nextChunk(arraySize + 8);
 
         dest.add(evt);
 
@@ -89,6 +104,21 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
       } // end while
     } catch (InterruptedException ie) {
     } // abort silently
+  }
+
+  public ChunkImpl nextChunk(int arraySize) {
+    byte[] data = new byte[arraySize];
+    Random dataPattern = new Random(offset ^ seed);
+    long s = this.seed;
+    offset += data.length;
+    dataPattern.nextBytes(data);
+    for(int i=0; i < 8; ++i)  {
+      data[7-i] = (byte) (s & 0xFF);
+      s >>= 8;
+    }
+    ChunkImpl evt = new ChunkImpl(type, "random ("+ this.seed+")", offset, data,
+        this);
+    return evt;
   }
 
   public String toString() {
@@ -127,12 +157,23 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
   public static boolean checkChunk(Chunk chunk) {
     byte[] data = chunk.getData();
     byte[] correctData = new byte[data.length];
-    Random dataPattern = new Random(chunk.getSeqID());
+    
+    long seed = 0;
+    for(int i=0; i < 8; ++i) 
+      seed = (seed << 8) | (0xFF & data[i] );
+
+    seed ^= (chunk.getSeqID() - data.length);
+    Random dataPattern = new Random(seed);
     dataPattern.nextBytes(correctData);
-    for(int i=0; i < data.length ; ++i) 
+    for(int i=8; i < data.length ; ++i) 
       if(data [i] != correctData[i])
         return false;
      
     return true;
+  }
+  
+  void test_init(String type) {
+    this.type = type;
+    seed = System.currentTimeMillis();
   }
 }

@@ -34,6 +34,7 @@ public class TestRetryListOfCollectors extends TestCase {
     hosts.add("host4");
     Configuration conf = new Configuration();
     RetryListOfCollectors rloc = new RetryListOfCollectors(hosts, conf);
+    rloc.shuffleList();
     assertEquals(hosts.size(), rloc.total());
 
     for (int i = 0; i < hosts.size(); ++i) {

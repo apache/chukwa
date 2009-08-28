@@ -21,10 +21,10 @@ package org.apache.hadoop.chukwa.datacollection.connector;
 
 import java.io.File;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
-import org.apache.hadoop.chukwa.datacollection.TempFileUtil;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
+import org.apache.hadoop.chukwa.util.TempFileUtil;
 import junit.framework.TestCase;
 
 public class TestFailedCollector extends TestCase {

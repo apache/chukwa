@@ -52,8 +52,9 @@ public class TestBackpressure extends TestCase {
         " testData "+ SEND_RATE + " 0");
     Thread.sleep(TEST_DURATION_SECS * 1000);
 
-    String stat = agent.getAdaptorList().get("constSend");
-    long kbytesPerSec = Long.valueOf(stat.split(" ")[3]) / TEST_DURATION_SECS / 1000;
+    String[] stat = agent.getAdaptorList().get("constSend").split(" ");
+    long kbytesPerSec = Long.valueOf(stat[stat.length -1]) / TEST_DURATION_SECS / 1000;
+
     System.out.println("data rate was " + kbytesPerSec + " kb /second");
     assertTrue(kbytesPerSec < WRITE_RATE_KB); //write rate should throttle sends
     assertTrue(kbytesPerSec > MIN_ACCEPTABLE_PERCENT* WRITE_RATE_KB / 100);//an assumption, but should hold true
