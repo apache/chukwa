@@ -46,10 +46,7 @@ public class RetryListOfCollectors implements Iterator<String>, Cloneable {
 
   public RetryListOfCollectors(File collectorFile, Configuration conf)
       throws IOException {
-    collectors = new ArrayList<String>();
-    this.conf = conf;
-    portNo = conf.get("chukwaCollector.http.port", "8080");
-    maxRetryRateMs = conf.getInt(RETRY_RATE_OPT, 15 * 1000);
+    this(conf);
     try {
       BufferedReader br = new BufferedReader(new FileReader(collectorFile));
       String line, parsedline;
@@ -101,16 +98,22 @@ public class RetryListOfCollectors implements Iterator<String>, Cloneable {
    * @param maxRetryRateMs
    */
   public RetryListOfCollectors(final List<String> collectors, Configuration conf) {
+    this(conf);
+    this.collectors.addAll(collectors);
+    //we don't shuffle the list here -- this constructor is only used for test purposes
+  }
+  
+  public RetryListOfCollectors(Configuration conf) {
+    collectors = new ArrayList<String>();
+    this.conf = conf;
+    portNo = conf.get("chukwaCollector.http.port", "8080");
     maxRetryRateMs = conf.getInt(RETRY_RATE_OPT, 15 * 1000);
     lastLookAtFirstNode = 0;
-    this.collectors = new ArrayList<String>();
-    this.collectors.addAll(collectors);
-    shuffleList();
   }
 
   // for now, use a simple O(n^2) algorithm.
   // safe, because we only do this once, and on smallish lists
-  private void shuffleList() {
+  public void shuffleList() {
     ArrayList<String> newList = new ArrayList<String>();
     Random r = new java.util.Random();
     while (!collectors.isEmpty()) {
@@ -138,12 +141,8 @@ public class RetryListOfCollectors implements Iterator<String>, Cloneable {
       return null;
   }
 
-  public String getRandomCollector() {
-    return collectors.get((int) java.lang.Math.random() * collectors.size());
-  }
-
-  public void add(URL collector) {
-    collectors.add(collector.toString());
+  public void add(String collector) {
+    collectors.add(collector);
   }
 
   public void remove() {

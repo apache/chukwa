@@ -22,5 +22,7 @@ public interface ChukwaSender {
       throws InterruptedException, java.io.IOException;
 
   public void setCollectors(Iterator<String> collectors);
+  
+  public void stop();
 
 }

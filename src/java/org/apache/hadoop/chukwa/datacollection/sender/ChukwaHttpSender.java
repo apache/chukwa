@@ -66,6 +66,9 @@ public class ChukwaHttpSender implements ChukwaSender {
   final int MAX_RETRIES_PER_COLLECTOR; // fast retries, in http client
   final int SENDER_RETRIES;
   final int WAIT_FOR_COLLECTOR_REBOOT;
+  final int COLLECTOR_TIMEOUT;
+  
+  public static final String COLLECTOR_TIMEOUT_OPT = "chukwaAgent.sender.collectorTimeout";
   // FIXME: this should really correspond to the timer in RetryListOfCollectors
 
   static final HttpSenderMetrics metrics = new HttpSenderMetrics("ChukwaAgent", "chukwaHttpSender");
@@ -128,13 +131,12 @@ public class ChukwaHttpSender implements ChukwaSender {
     // setup default collector
     ArrayList<String> tmp = new ArrayList<String>();
     this.collectors = tmp.iterator();
-    log.info("added a single collector to collector list in ConnectorClient constructor, it's hasNext is now: "
-            + collectors.hasNext());
 
     MAX_RETRIES_PER_COLLECTOR = c.getInt("chukwaAgent.sender.fastRetries", 4);
     SENDER_RETRIES = c.getInt("chukwaAgent.sender.retries", 144000);
     WAIT_FOR_COLLECTOR_REBOOT = c.getInt("chukwaAgent.sender.retryInterval",
         20 * 1000);
+    COLLECTOR_TIMEOUT = c.getInt(COLLECTOR_TIMEOUT_OPT, 30*1000);
   }
 
   /**
@@ -150,7 +152,7 @@ public class ChukwaHttpSender implements ChukwaSender {
       if (collectors.hasNext()) {
         currCollector = collectors.next();
       } else
-        log.error("No collectors to try in send(), not even trying to do doPost()");
+        log.error("No collectors to try in send(), won't even try to do doPost()");
     }
   }
 
@@ -226,10 +228,15 @@ public class ChukwaHttpSender implements ChukwaSender {
         ChukwaHttpSender.metrics.httpThrowable.inc();
         if (collectors.hasNext()) {
           ChukwaHttpSender.metrics.collectorRollover.inc();
-          failedCollector(currCollector);
+          boolean repeatPost = failedCollector(currCollector);
           currCollector = collectors.next();
-          log.info("Found a new collector to roll over to, retrying HTTP Post to collector "
-                  + currCollector);
+          if(repeatPost)
+            log.info("Found a new collector to roll over to, retrying HTTP Post to collector "
+                + currCollector);
+          else {
+            log.info("Using " + currCollector + " in the future, but not retrying this post");
+            break;
+          }
         } else {
           if (retries > 0) {
             log.warn("No more collectors to try rolling over to; waiting "
@@ -252,10 +259,12 @@ public class ChukwaHttpSender implements ChukwaSender {
 
   /**
    * A hook for taking action when a collector is declared failed.
+   * Returns whether to retry current post, or junk it
    * @param downCollector
    */
-  protected void failedCollector(String downCollector) {
+  protected boolean failedCollector(String downCollector) {
     log.debug("declaring "+ downCollector + " down");
+    return true;
   }
 
   /**
@@ -275,7 +284,7 @@ public class ChukwaHttpSender implements ChukwaSender {
           }
         });
 
-    pars.setParameter(HttpMethodParams.SO_TIMEOUT, new Integer(30000));
+    pars.setParameter(HttpMethodParams.SO_TIMEOUT, new Integer(COLLECTOR_TIMEOUT));
 
     method.setParams(pars);
     method.setPath(dest);
@@ -317,5 +326,9 @@ public class ChukwaHttpSender implements ChukwaSender {
       resp.add(line);
     }
     return resp;
+  }
+
+  @Override
+  public void stop() {
   }
 }

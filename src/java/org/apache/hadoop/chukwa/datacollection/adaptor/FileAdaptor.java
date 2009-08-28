@@ -137,7 +137,7 @@ public class FileAdaptor extends AbstractAdaptor {
    */
   private long offsetOfFirstByte = 0;
 
-  public void start( long bytes) {
+  public void start(long bytes) {
     // in this case params = filename
     log.info("adaptor id: " + adaptorID + " started file adaptor on file "
         + toWatch);
@@ -146,8 +146,6 @@ public class FileAdaptor extends AbstractAdaptor {
         "chukwaAgent.adaptor.fileadaptor.timeoutperiod",
         DEFAULT_TIMEOUT_PERIOD);
     this.timeOut = startTime + TIMEOUT_PERIOD;
-    
-
     
     tailer.addFileAdaptor(this);
   }

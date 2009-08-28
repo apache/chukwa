@@ -25,6 +25,7 @@ import org.apache.hadoop.chukwa.datacollection.collector.servlet.ServletCollecto
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.chukwa.datacollection.writer.ConsoleWriter;
+import org.apache.hadoop.conf.Configuration;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -72,9 +73,10 @@ public class FileTailerStressTest {
       Server server = new Server(9990);
       Context root = new Context(server, "/", Context.SESSIONS);
 
-      ServletCollector.setWriter(new ConsoleWriter(true));
-      root.addServlet(new ServletHolder(new ServletCollector(
-          new ChukwaConfiguration(true))), "/*");
+      Configuration conf =  new Configuration();
+      ServletCollector collector = new ServletCollector(conf);
+      collector.setWriter(new ConsoleWriter(true));
+      root.addServlet(new ServletHolder(collector), "/*");
       server.start();
       server.setStopAtShutdown(false);
 
