@@ -89,12 +89,10 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
   }
 
   public void run() {
-    Random timeCoin = new Random();
+    Random timeCoin = new Random(seed);
     try {
       while (!stopping) {
-        int MSToSleep = timeCoin.nextInt(SLEEP_VARIANCE) + MIN_SLEEP; // between 1 and
-                                                               // 3 secs
-        // FIXME: I think there's still a risk of integer overflow here
+        int MSToSleep = timeCoin.nextInt(SLEEP_VARIANCE) + MIN_SLEEP; 
         int arraySize = (int) (MSToSleep * (long) bytesPerSec / 1000L);
         ChunkImpl evt = nextChunk(arraySize + 8);
 
