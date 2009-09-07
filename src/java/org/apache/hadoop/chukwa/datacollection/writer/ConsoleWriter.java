@@ -91,11 +91,11 @@ public class ConsoleWriter implements ChukwaWriter {
   }
 
   @Override
-  public void add(List<Chunk> chunks) throws WriterException {
+  public CommitStatus add(List<Chunk> chunks) throws WriterException {
     for (Chunk chunk : chunks) {
       add(chunk);
     }
-
+    return COMMIT_OK;
   }
 
 }

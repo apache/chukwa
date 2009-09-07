@@ -224,7 +224,7 @@ public class LocalWriter implements ChukwaWriter {
    *  Best effort, there's no guarantee that chunks 
    *  have really been written to disk
    */
-  public void add(List<Chunk> chunks) throws WriterException {
+  public CommitStatus add(List<Chunk> chunks) throws WriterException {
     if (!isRunning) {
       throw new WriterException("Writer not yet ready");
     }
@@ -270,6 +270,7 @@ public class LocalWriter implements ChukwaWriter {
         throw new WriterException(e);
       }
     }
+    return COMMIT_OK;
   }
 
   protected void rotate() {

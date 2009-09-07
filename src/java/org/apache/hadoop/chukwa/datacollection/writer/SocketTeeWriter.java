@@ -224,8 +224,8 @@ public class SocketTeeWriter implements PipelineableWriter {
   }
 
   @Override
-  public void add(List<Chunk> chunks) throws WriterException {
-    next.add(chunks); //pass data through
+  public CommitStatus add(List<Chunk> chunks) throws WriterException {
+    CommitStatus rv = next.add(chunks); //pass data through
     synchronized(tees) {
       Iterator<Tee> loop = tees.iterator();
       while(loop.hasNext()) {
@@ -235,6 +235,7 @@ public class SocketTeeWriter implements PipelineableWriter {
         }
       }
     }
+    return rv;
   }
 
   @Override

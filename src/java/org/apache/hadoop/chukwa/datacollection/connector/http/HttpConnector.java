@@ -48,6 +48,7 @@ import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.connector.Connector;
 import org.apache.hadoop.chukwa.datacollection.sender.*;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 
 public class HttpConnector implements Connector, Runnable {
@@ -61,7 +62,9 @@ public class HttpConnector implements Connector, Runnable {
   int MIN_POST_INTERVAL = 5 * 1000;
   public static final String MIN_POST_INTERVAL_OPT = "httpConnector.minPostInterval";
   public static final String MAX_SIZE_PER_POST_OPT = "httpConnector.maxPostSize";
+  public static final String ASYNC_ACKS_OPT = "httpConnector.asyncAcks";
 
+  boolean ASYNC_ACKS = false;
   
   ChunkQueue chunkQueue;
 
@@ -99,47 +102,56 @@ public class HttpConnector implements Connector, Runnable {
   public void start() {
 
     chunkQueue = DataFactory.getInstance().getEventQueue();
-    MAX_SIZE_PER_POST = agent.getConfiguration().getInt(MAX_SIZE_PER_POST_OPT,
-        MAX_SIZE_PER_POST);
-    MIN_POST_INTERVAL = agent.getConfiguration().getInt(MIN_POST_INTERVAL_OPT,
-        MIN_POST_INTERVAL);
+    Configuration conf = agent.getConfiguration();
+    MAX_SIZE_PER_POST = conf.getInt(MAX_SIZE_PER_POST_OPT, MAX_SIZE_PER_POST);
+    MIN_POST_INTERVAL = conf.getInt(MIN_POST_INTERVAL_OPT, MIN_POST_INTERVAL);
+    ASYNC_ACKS = conf.getBoolean(ASYNC_ACKS_OPT, ASYNC_ACKS);
     (new Thread(this, "HTTP post thread")).start();
   }
 
   public void shutdown() {
     stopMe = true;
+    connectorClient.stop();
   }
 
   public void run() {
     log.info("HttpConnector started at time:" + System.currentTimeMillis());
 
-    Iterator<String> destinations = null;
-
     // build a list of our destinations from collectors
     try {
-      destinations = DataFactory.getInstance().getCollectorURLs(agent.getConfiguration());
+      if(collectors == null)
+        collectors = DataFactory.getInstance().getCollectorURLs(agent.getConfiguration());
     } catch (IOException e) {
-      log.error("Failed to retreive list of collectors from "
+      log.error("Failed to retrieve list of collectors from "
           + "conf/collectors file", e);
     }
-
-    connectorClient = new ChukwaHttpSender(agent.getConfiguration());
+    
+    if(ASYNC_ACKS) {
+      try {
+        connectorClient = new AsyncAckSender(agent.getConfiguration(), agent);
+      } catch(IOException e) {
+        log.fatal("can't read AsycAck hostlist file, exiting");
+        agent.shutdown(true);
+      }
+    } else
+      connectorClient = new ChukwaHttpSender(agent.getConfiguration());
 
     if (argDestination != null) {
       ArrayList<String> tmp = new ArrayList<String>();
       tmp.add(argDestination);
       collectors = tmp.iterator();
-      connectorClient.setCollectors(collectors);
       log.info("using collector specified at agent runtime: " + argDestination);
-    } else if (destinations != null && destinations.hasNext()) {
-      collectors = destinations;
-      connectorClient.setCollectors(destinations);
+    } else
       log.info("using collectors from collectors file");
-    } else {
+
+    if (collectors == null || !collectors.hasNext()) {
       log.error("No collectors specified, exiting (and taking agent with us).");
       agent.shutdown(true);// error is unrecoverable, so stop hard.
       return;
     }
+
+    connectorClient.setCollectors(collectors);
+
 
     try {
       long lastPost = System.currentTimeMillis();
@@ -148,8 +160,7 @@ public class HttpConnector implements Connector, Runnable {
         try {
           // get all ready chunks from the chunkQueue to be sent
           chunkQueue.collect(newQueue, MAX_SIZE_PER_POST); // FIXME: should
-                                                           // really do this by
-                                                           // size
+                                                           // really do this by size
 
         } catch (InterruptedException e) {
           System.out.println("thread interrupted during addChunks(ChunkQueue)");
@@ -159,8 +170,7 @@ public class HttpConnector implements Connector, Runnable {
         int toSend = newQueue.size();
         List<ChukwaHttpSender.CommitListEntry> results = connectorClient
             .send(newQueue);
-        log.info("sent " + toSend + " chunks, got back " + results.size()
-            + " acks");
+        log.info("sent " + toSend + " chunks, got back " + results.size() + " acks");
         // checkpoint the chunks which were committed
         for (ChukwaHttpSender.CommitListEntry cle : results) {
           agent.reportCommit(cle.adaptor, cle.uuid);
@@ -201,12 +211,18 @@ public class HttpConnector implements Connector, Runnable {
     try {
       destinations = DataFactory.getInstance().getCollectorURLs(agent.getConfiguration());
     } catch (IOException e) {
-      log.error(
-          "Failed to retreive list of collectors from conf/collectors file", e);
+      log.error("Failed to retreive list of collectors from conf/collectors file", e);
     }
     if (destinations != null && destinations.hasNext()) {
       collectors = destinations;
     }
-
+  }
+  
+  public ChukwaSender getSender() {
+    return connectorClient;
+  }
+  
+  public void setCollectors(Iterator<String> list) {
+    collectors = list;
   }
 }

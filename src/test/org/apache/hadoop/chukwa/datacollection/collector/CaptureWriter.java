@@ -32,12 +32,13 @@ public class CaptureWriter implements ChukwaWriter {
   public static ArrayList<Chunk> outputs = new ArrayList<Chunk>();
 
   @Override
-  public void add(List<Chunk> chunks) throws WriterException {
+  public CommitStatus add(List<Chunk> chunks) throws WriterException {
 
     synchronized (outputs) {
       for (Chunk c : chunks)
         outputs.add(c);
     }
+    return COMMIT_OK;
   }
 
   @Override

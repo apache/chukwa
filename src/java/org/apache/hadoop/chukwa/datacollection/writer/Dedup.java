@@ -100,14 +100,15 @@ public class Dedup implements PipelineableWriter {
   }
 
   @Override
-  public void add(List<Chunk> chunks) throws WriterException {
+  public CommitStatus add(List<Chunk> chunks) throws WriterException {
     ArrayList<Chunk> passedThrough = new ArrayList<Chunk>();
     for (Chunk c : chunks)
       if (!cache.addAndCheck(new DedupKey(c.getStreamName(), c.getSeqID())))
         passedThrough.add(c);
 
     if (!passedThrough.isEmpty())
-      next.add(passedThrough);
+      return next.add(passedThrough);
+    else return null;
   }
 
   @Override

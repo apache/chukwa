@@ -37,8 +37,8 @@ public class PipelineStageWriter implements ChukwaWriter {
   ChukwaWriter writer; // head of pipeline
 
   @Override
-  public void add(List<Chunk> chunks) throws WriterException {
-    writer.add(chunks);
+  public CommitStatus add(List<Chunk> chunks) throws WriterException {
+    return writer.add(chunks);
   }
 
   @Override

@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.collector.servlet.ServletCollector;
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
+import org.apache.hadoop.chukwa.datacollection.sender.RetryListOfCollectors;
 import org.apache.hadoop.chukwa.datacollection.writer.NullWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.PipelineStageWriter;
 import org.apache.hadoop.chukwa.util.ConstRateAdaptor;
@@ -39,7 +40,10 @@ public class TestBackpressure extends TestCase {
     
     conf.setInt("chukwaAgent.control.port", 0);
     ChukwaAgent agent = new ChukwaAgent(conf);
-    HttpConnector conn = new HttpConnector(agent, "http://localhost:"+PORTNO+"/chukwa");
+    RetryListOfCollectors clist = new RetryListOfCollectors(conf);
+    clist.add("http://localhost:"+PORTNO+"/chukwa");
+    HttpConnector conn = new HttpConnector(agent);
+    conn.setCollectors(clist);
     conn.start();
     Server server = new Server(PORTNO);
     Context root = new Context(server, "/", Context.SESSIONS);
@@ -50,11 +54,11 @@ public class TestBackpressure extends TestCase {
     Thread.sleep(1000);
     agent.processAddCommand("add constSend = " + ConstRateAdaptor.class.getCanonicalName() + 
         " testData "+ SEND_RATE + " 0");
+    assertNotNull(agent.getAdaptor("constSend"));
     Thread.sleep(TEST_DURATION_SECS * 1000);
 
     String[] stat = agent.getAdaptorList().get("constSend").split(" ");
     long kbytesPerSec = Long.valueOf(stat[stat.length -1]) / TEST_DURATION_SECS / 1000;
-
     System.out.println("data rate was " + kbytesPerSec + " kb /second");
     assertTrue(kbytesPerSec < WRITE_RATE_KB); //write rate should throttle sends
     assertTrue(kbytesPerSec > MIN_ACCEPTABLE_PERCENT* WRITE_RATE_KB / 100);//an assumption, but should hold true

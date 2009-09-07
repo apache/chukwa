@@ -197,10 +197,19 @@ public class ChukwaHttpSender implements ChukwaSender {
     return postAndParseResponse(method, commitResults);
   }
   
-  public List<CommitListEntry> postAndParseResponse(PostMethod method, List<CommitListEntry> commitResults)
+  /**
+   * 
+   * @param method the data to push
+   * @param expectedCommitResults the list
+   * @return the list of committed chunks
+   * @throws IOException
+   * @throws InterruptedException
+   */
+  public List<CommitListEntry> postAndParseResponse(PostMethod method, 
+        List<CommitListEntry> expectedCommitResults)
   throws IOException, InterruptedException{
     reliablySend(method, "chukwa"); //FIXME: shouldn't need to hardcode this here
-    return commitResults;
+    return expectedCommitResults;
   }
 
   /**
@@ -223,8 +232,8 @@ public class ChukwaHttpSender implements ChukwaSender {
 
         return responses;
       } catch (Throwable e) {
-        log.error("Http post exception");
-        log.debug("Http post exception", e);
+        log.error("Http post exception on "+ currCollector +": "+ e.toString());
+        log.debug("Http post exception on "+ currCollector, e);
         ChukwaHttpSender.metrics.httpThrowable.inc();
         if (collectors.hasNext()) {
           ChukwaHttpSender.metrics.collectorRollover.inc();
@@ -292,7 +301,6 @@ public class ChukwaHttpSender implements ChukwaSender {
     // Send POST request
     ChukwaHttpSender.metrics.httpPost.inc();
     
-    // client.setTimeout(15*1000);
     int statusCode = client.executeMethod(method);
 
     if (statusCode != HttpStatus.SC_OK) {

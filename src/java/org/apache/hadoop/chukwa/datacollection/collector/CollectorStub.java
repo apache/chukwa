@@ -22,7 +22,9 @@ package org.apache.hadoop.chukwa.datacollection.collector;
 import org.mortbay.jetty.*;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.servlet.*;
+import org.apache.hadoop.chukwa.datacollection.collector.servlet.CommitCheckServlet;
 import org.apache.hadoop.chukwa.datacollection.collector.servlet.ServletCollector;
+import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
 import org.apache.hadoop.chukwa.datacollection.writer.*;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
@@ -31,7 +33,7 @@ import java.util.*;
 
 public class CollectorStub {
 
-  static int THREADS = 80;
+  static int THREADS = 120;
   public static Server jettyServer = null;
 
   public static void main(String[] args) {
@@ -49,12 +51,12 @@ public class CollectorStub {
 
       ChukwaConfiguration conf = new ChukwaConfiguration();
       int portNum = conf.getInt("chukwaCollector.http.port", 9999);
-      THREADS = conf.getInt("chukwaCollector.http.threads", 80);
+      THREADS = conf.getInt("chukwaCollector.http.threads", THREADS);
 
       // pick a writer.
       ChukwaWriter w = null;
       Map<String, HttpServlet> servletsToAdd = new TreeMap<String, HttpServlet>();
-      
+      ServletCollector servletCollector = new ServletCollector(conf);
       for(String arg: args) {
         if(arg.startsWith("writer=")) {       //custom writer class
           String writerCmd = arg.substring("writer=".length());
@@ -62,7 +64,7 @@ public class CollectorStub {
             boolean verbose = !writerCmd.equals("pretend-quietly");
             w = new ConsoleWriter(verbose);
             w.init(conf);
-            ServletCollector.setWriter(w);
+            servletCollector.setWriter(w);
           } else 
             conf.set("chukwaCollector.writerClass", writerCmd);
         } else if(arg.startsWith("servlet=")) {     //adding custom servlet
@@ -100,7 +102,11 @@ public class CollectorStub {
       
       // Add the collector servlet to server
       Context root = new Context(jettyServer, "/", Context.SESSIONS);
-      root.addServlet(new ServletHolder(new ServletCollector(conf)), "/*");
+      root.addServlet(new ServletHolder(servletCollector), "/*");
+      
+      if(conf.getBoolean(HttpConnector.ASYNC_ACKS_OPT, false))
+        root.addServlet(new ServletHolder(new CommitCheckServlet(conf)), "/"+CommitCheckServlet.DEFAULT_PATH);
+
       root.setAllowNullPathInfo(false);
 
       // Add in any user-specified servlets

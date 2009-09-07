@@ -32,10 +32,10 @@ import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.util.ToolRunner;
 import junit.framework.TestCase;
+import static org.apache.hadoop.chukwa.util.TempFileUtil.writeASinkFile;
 
 public class TestArchive extends TestCase {
 
-  java.util.Random r = new java.util.Random();
   
    public void browseDir(FileSystem fs, Path p, int d) throws IOException {
      for(int i=0; i< d; ++i) {
@@ -52,49 +52,6 @@ public class TestArchive extends TestCase {
      else
        System.out.println( p.getName() );
    }
-  
-   long lastSeqID = 0;
-  public ChunkImpl getARandomChunk() {
-    int ms = r.nextInt(1000);
-    String line = "2008-05-29 10:42:22," + ms
-        + " INFO org.apache.hadoop.dfs.DataNode: Some text goes here"
-        + r.nextInt() + "\n";
-
-    ChunkImpl c = new ChunkImpl("HadoopLogProcessor", "test",
-        line.length()  + lastSeqID, line.getBytes(), null);
-    lastSeqID += line.length();
-    c.addTag("cluster=\"foocluster\"");
-    return c;
-  }
-  
-  public void writeASinkFile(Configuration conf, FileSystem fileSys, Path dest,
-      int chunks) throws IOException {
-    FSDataOutputStream out = fileSys.create(dest);
-
-    Calendar calendar = Calendar.getInstance();
-    SequenceFile.Writer seqFileWriter = SequenceFile.createWriter(conf, out,
-        ChukwaArchiveKey.class, ChunkImpl.class,
-        SequenceFile.CompressionType.NONE, null);
-    for (int i = 0; i < chunks; ++i) {
-      ChunkImpl chunk = getARandomChunk();
-      ChukwaArchiveKey archiveKey = new ChukwaArchiveKey();
-
-      calendar.set(Calendar.YEAR, 2008);
-      calendar.set(Calendar.MONTH, Calendar.MAY);
-      calendar.set(Calendar.DAY_OF_MONTH, 29);
-      calendar.set(Calendar.HOUR, 10);
-      calendar.set(Calendar.MINUTE, 0);
-      calendar.set(Calendar.SECOND, 0);
-      calendar.set(Calendar.MILLISECOND, 0);
-      archiveKey.setTimePartition(calendar.getTimeInMillis());
-      archiveKey.setDataType(chunk.getDataType());
-      archiveKey.setStreamName(chunk.getStreamName());
-      archiveKey.setSeqId(chunk.getSeqID());
-      seqFileWriter.append(archiveKey, chunk);
-    }
-    seqFileWriter.close();
-    out.close();
-  }
 
   static final int NUM_HADOOP_SLAVES = 1;
   static final Path DATASINK = new Path("/chukwa/logs/*");

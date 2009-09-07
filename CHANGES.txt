@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-369. Tolerance of collector failures. (asrabkin)
+
     CHUKWA-368. New data integrity validation tool. (asrabkin)
 
     CHUKWA-383. Added embed mode for HICC.  (Eric Yang)

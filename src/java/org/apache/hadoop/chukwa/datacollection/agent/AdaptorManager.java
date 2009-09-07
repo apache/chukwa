@@ -45,8 +45,9 @@ public interface AdaptorManager {
    *  
    * @param src the adaptor in question
    * @param uuid the number to record as checkpoint.  Must be monotonically increasing.
+   * @return the adaptor ID of the associated adaptor, or null if not running.
    */
-  public void reportCommit(Adaptor src, long uuid);
+  public String reportCommit(Adaptor src, long uuid);
 
   static AdaptorManager NULL = new AdaptorManager() {
 
@@ -81,7 +82,8 @@ public interface AdaptorManager {
     }
     
     @Override
-    public void reportCommit(Adaptor a, long l) {
+    public String reportCommit(Adaptor a, long l) {
+      return null;
     }
   };
   

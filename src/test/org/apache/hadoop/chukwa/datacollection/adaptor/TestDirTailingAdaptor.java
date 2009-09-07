@@ -91,7 +91,7 @@ public class TestDirTailingAdaptor extends TestCase {
   }
 
   //returns true if dir exists
-  private boolean nukeDirContents(File dir) {
+  public static boolean nukeDirContents(File dir) {
     if(dir.exists()) {
       if(dir.isDirectory()) {
         for(File f: dir.listFiles()) {

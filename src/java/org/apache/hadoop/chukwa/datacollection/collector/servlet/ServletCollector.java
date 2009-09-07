@@ -39,21 +39,28 @@ import org.apache.log4j.Logger;
 public class ServletCollector extends HttpServlet {
 
   static final boolean FANCY_DIAGNOSTICS = false;
-  static org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter writer = null;
+  public static final String PATH = "chukwa";
+  /**
+   * If a chunk is committed; then the ack will start with the following string.
+   */
+  public static final String ACK_PREFIX = "ok: ";
+  org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter writer = null;
 
   private static final long serialVersionUID = 6286162898591407111L;
   Logger log = Logger.getRootLogger();// .getLogger(ServletCollector.class);
 
-  public static void setWriter(
-      org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter w)
-      throws WriterException {
+  public void setWriter(ChukwaWriter w) {
     writer = w;
   }
+  
+  public ChukwaWriter getWriter() {
+    return writer;
+  }
 
-  static long statTime = 0L;
-  static int numberHTTPConnection = 0;
-  static int numberchunks = 0;
-  static long lifetimechunks = 0;
+  long statTime = 0L;
+  int numberHTTPConnection = 0;
+  int numberchunks = 0;
+  long lifetimechunks = 0;
 
   Configuration conf;
 
@@ -81,8 +88,7 @@ public class ServletCollector extends HttpServlet {
     }, (1000), (60 * 1000));
 
     if (writer != null) {
-      log
-          .info("writer set up statically, no need for Collector.init() to do it");
+      log.info("writer set up statically, no need for Collector.init() to do it");
       return;
     }
 
@@ -94,10 +100,7 @@ public class ServletCollector extends HttpServlet {
           && ChukwaWriter.class.isAssignableFrom(writerClass))
         writer = (ChukwaWriter) writerClass.newInstance();
     } catch (Exception e) {
-      log
-          .warn(
-              "failed to use user-chosen writer class, defaulting to SeqFileWriter",
-              e);
+      log.warn("failed to use user-chosen writer class, defaulting to SeqFileWriter", e);
     }
 
     // We default to here if the pipeline construction failed or didn't happen.
@@ -108,7 +111,7 @@ public class ServletCollector extends HttpServlet {
       
       writer.init(conf);
     } catch (Throwable e) {
-      log.warn("Exception during Servel init",e);
+      log.warn("Exception trying to initialize SeqFileWriter",e);
       DaemonWatcher.bailout(-1);
     }
   }
@@ -133,18 +136,11 @@ public class ServletCollector extends HttpServlet {
       }
 
       List<Chunk> events = new LinkedList<Chunk>();
-      ChunkImpl logEvent = null;
       StringBuilder sb = new StringBuilder();
 
       for (int i = 0; i < numEvents; i++) {
-        logEvent = ChunkImpl.read(di);
+        ChunkImpl logEvent = ChunkImpl.read(di);
         events.add(logEvent);
-
-        sb.append("ok:");
-        sb.append(logEvent.getData().length);
-        sb.append(" bytes ending at offset ");
-        sb.append(logEvent.getSeqID() - 1).append("\n");
-
 
         if (FANCY_DIAGNOSTICS) {
           diagnosticPage.sawChunk(logEvent, i);
@@ -153,10 +149,23 @@ public class ServletCollector extends HttpServlet {
 
       // write new data to data sync file
       if (writer != null) {
-        writer.add(events);
+        ChukwaWriter.CommitStatus result = writer.add(events);
         numberchunks += events.size();
         lifetimechunks += events.size();
         // this is where we ACK this connection
+
+        if(result == ChukwaWriter.COMMIT_OK) {
+          for(Chunk receivedChunk: events) {
+            sb.append(ACK_PREFIX);
+            sb.append(receivedChunk.getData().length);
+            sb.append(" bytes ending at offset ");
+            sb.append(receivedChunk.getSeqID() - 1).append("\n");
+          }
+        } else if(result instanceof ChukwaWriter.COMMIT_PENDING) {
+          for(String s: ((ChukwaWriter.COMMIT_PENDING) result).pendingEntries)
+            sb.append(s);
+        }
+        
         l_out.print(sb.toString());
       } else {
         l_out.println("can't write: no writer");
@@ -192,12 +201,12 @@ public class ServletCollector extends HttpServlet {
 
     String pingAtt = req.getParameter("ping");
     if (pingAtt != null) {
-      out.println("Date:" + ServletCollector.statTime);
+      out.println("Date:" + statTime);
       out.println("Now:" + System.currentTimeMillis());
       out.println("numberHTTPConnection in time window:"
-          + ServletCollector.numberHTTPConnection);
-      out.println("numberchunks in time window:" + ServletCollector.numberchunks);
-      out.println("lifetimechunks:" + ServletCollector.lifetimechunks);
+          + numberHTTPConnection);
+      out.println("numberchunks in time window:" + numberchunks);
+      out.println("lifetimechunks:" + lifetimechunks);
     } else {
       out.println("<html><body><h2>Chukwa servlet running</h2>");
       if (FANCY_DIAGNOSTICS)

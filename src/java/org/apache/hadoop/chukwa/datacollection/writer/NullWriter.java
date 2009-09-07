@@ -17,7 +17,7 @@ public class NullWriter implements ChukwaWriter {
   int maxDataRate = Integer.MAX_VALUE;
   public static final String RATE_OPT_NAME = "nullWriter.dataRate";
   @Override
-  public void add(List<Chunk> chunks) throws WriterException {
+  public CommitStatus add(List<Chunk> chunks) throws WriterException {
     try {
       int dataBytes =0;
       for(Chunk c: chunks)
@@ -25,7 +25,7 @@ public class NullWriter implements ChukwaWriter {
       if(maxDataRate > 0)
         Thread.sleep(dataBytes / maxDataRate);
     } catch(Exception e) {}
-    return;
+    return COMMIT_OK;
   }
 
   @Override

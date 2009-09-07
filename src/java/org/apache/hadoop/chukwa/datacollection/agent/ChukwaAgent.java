@@ -70,14 +70,14 @@ public class ChukwaAgent implements AdaptorManager {
   Connector connector = null;
 
   // doesn't need an equals(), comparator, etc
-  private static class Offset {
+  static class Offset {
     public Offset(long l, String id) {
       offset = l;
       this.id = id;
     }
 
-    private final String id;
-    private volatile long offset;
+    final String id;
+    volatile long offset;
   }
 
   public static class AlreadyRunningException extends Exception {
@@ -458,7 +458,7 @@ public class ChukwaAgent implements AdaptorManager {
     }
   }
 
-  public void reportCommit(Adaptor src, long uuid) {
+  public String reportCommit(Adaptor src, long uuid) {
     needNewCheckpoint = true;
     Offset o = adaptorPositions.get(src);
     if (o != null) {
@@ -467,12 +467,13 @@ public class ChukwaAgent implements AdaptorManager {
         if (uuid > o.offset)
           o.offset = uuid;
       }
-
-      log.info("got commit up to " + uuid + " on " + src + " = " + o.id);
+      log.debug("got commit up to " + uuid + " on " + src + " = " + o.id);
+      return o.id;
     } else {
       log.warn("got commit up to " + uuid + "  for adaptor " + src
           + " that doesn't appear to be running: " + adaptorCount()
           + " total");
+      return null;
     }
   }
 
@@ -570,6 +571,11 @@ public class ChukwaAgent implements AdaptorManager {
     }
   }
 
+  Offset offset(Adaptor a) {
+    Offset o = adaptorPositions.get(a);
+    return o;
+  }
+  
   Connector getConnector() {
     return connector;
   }

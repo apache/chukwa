@@ -45,9 +45,13 @@ import org.apache.log4j.Logger;
  */
 public class SeqFileWriter implements ChukwaWriter {
   static Logger log = Logger.getLogger(SeqFileWriter.class);
-  public static final boolean ENABLE_ROTATION = true;
+  public static boolean ENABLE_ROTATION_ON_CLOSE = true;
 
-  static final int STAT_INTERVAL_SECONDS = 30;
+  int STAT_INTERVAL_SECONDS = 30;
+  private int rotateInterval = 1000 * 60 * 5;
+  
+  public static final String STAT_PERIOD_OPT = "chukwaCollector.stats.period";
+  public static final String ROTATE_INTERVAL_OPT = "chukwaCollector.rotateInterval";
   static String localHostAddr = null;
   
   final Object lock = new Object();
@@ -61,19 +65,18 @@ public class SeqFileWriter implements ChukwaWriter {
 
   private Path currentPath = null;
   private String currentFileName = null;
-  private FSDataOutputStream currentOutputStr = null;
+  protected FSDataOutputStream currentOutputStr = null;
   private SequenceFile.Writer seqFileWriter = null;
 
-  private int rotateInterval = 1000 * 60;
   private long timePeriod = -1;
   private long nextTimePeriodComputation = -1;
   
-  private Timer rotateTimer = null;  
-  private Timer statTimer = null;
+  protected Timer rotateTimer = null;  
+  protected Timer statTimer = null;
   
   private volatile long dataSize = 0;
-  private volatile boolean chunksWrittenThisRotate = false;
-  private volatile boolean isRunning = false;
+  private volatile long bytesThisRotate = 0;
+  protected volatile boolean isRunning = false;
   
   static {
     try {
@@ -83,7 +86,10 @@ public class SeqFileWriter implements ChukwaWriter {
     }
   }
   
-  public SeqFileWriter() throws WriterException {
+  public SeqFileWriter() {}
+  
+  public long getBytesWritten() {
+    return dataSize;
   }
   
   public void init(Configuration conf) throws WriterException {
@@ -91,9 +97,9 @@ public class SeqFileWriter implements ChukwaWriter {
 
     this.conf = conf;
 
-    rotateInterval = conf.getInt("chukwaCollector.rotateInterval",
-        1000 * 60 * 5);// defaults to 5 minutes
+    rotateInterval = conf.getInt(ROTATE_INTERVAL_OPT,rotateInterval);
     
+    STAT_INTERVAL_SECONDS = conf.getInt(STAT_PERIOD_OPT, STAT_INTERVAL_SECONDS);
 
     // check if they've told us the file system to use
     String fsname = conf.get("writer.hdfs.filesystem");
@@ -126,13 +132,14 @@ public class SeqFileWriter implements ChukwaWriter {
     }
 
     // Setup everything by rotating
+
+    isRunning = true;
     rotate();
 
     statTimer = new Timer();
     statTimer.schedule(new StatReportingTask(), 1000,
         STAT_INTERVAL_SECONDS * 1000);
 
-    isRunning = true;
   }
 
   private class StatReportingTask extends TimerTask {
@@ -156,7 +163,10 @@ public class SeqFileWriter implements ChukwaWriter {
   void rotate() {
      if (rotateTimer != null) {
       rotateTimer.cancel();
-    }
+    } 
+     
+    if(!isRunning)
+      return;
     
     calendar.setTimeInMillis(System.currentTimeMillis());
 
@@ -182,8 +192,8 @@ public class SeqFileWriter implements ChukwaWriter {
 
         if (previousOutputStr != null) {
           previousOutputStr.close();
-          if (chunksWrittenThisRotate) {
-            log.info("rotate file on HDFS");
+          if (bytesThisRotate > 0) {
+            log.info("rotating sink file " + previousPath);
             fs.rename(previousPath, new Path(previousFileName + ".done"));
           } else {
             log.info("no chunks written to " + previousPath + ", deleting");
@@ -195,7 +205,7 @@ public class SeqFileWriter implements ChukwaWriter {
         currentOutputStr = newOutputStr;
         currentPath = newOutputPath;
         currentFileName = newName;
-        chunksWrittenThisRotate = false;
+        bytesThisRotate = 0;
         // Uncompressed for now
         seqFileWriter = SequenceFile.createWriter(conf, newOutputStr,
             ChukwaArchiveKey.class, ChunkImpl.class,
@@ -241,7 +251,8 @@ public class SeqFileWriter implements ChukwaWriter {
   }
   
   @Override
-  public void add(List<Chunk> chunks) throws WriterException {
+  public CommitStatus add(List<Chunk> chunks) throws WriterException {
+    COMMIT_PENDING result = new COMMIT_PENDING(chunks.size());
     if (!isRunning) {
       log.info("Collector not ready");
       throw new WriterException("Collector not ready");
@@ -249,7 +260,6 @@ public class SeqFileWriter implements ChukwaWriter {
 
     if (chunks != null) {
       try {
-        chunksWrittenThisRotate = true;
         ChukwaArchiveKey archiveKey = new ChukwaArchiveKey();
         
         if (System.currentTimeMillis() >= nextTimePeriodComputation) {
@@ -264,20 +274,25 @@ public class SeqFileWriter implements ChukwaWriter {
             archiveKey.setSeqId(chunk.getSeqID());
 
             if (chunk != null) {
-              seqFileWriter.append(archiveKey, chunk);
               // compute size for stats
               dataSize += chunk.getData().length;
+              bytesThisRotate += chunk.getData().length;
+              seqFileWriter.append(archiveKey, chunk);
+
+              String futureName = currentPath.getName().replace(".chukwa", ".done");
+              result.addPend(futureName, currentOutputStr.getPos());
             }
 
           }
         }// End synchro
       } catch (Throwable e) {
         // We don't want to loose anything
-        log.fatal("IOException when trying to write a chunk, Collector is going to exit!");
+        log.fatal("IOException when trying to write a chunk, Collector is going to exit!", e);
         DaemonWatcher.bailout(-1);
         isRunning = false;
       }
     }
+    return result;
   }
 
   public void close() {
@@ -293,18 +308,19 @@ public class SeqFileWriter implements ChukwaWriter {
     }
 
     // If we are here it's either because of an HDFS exception
-    // or Agent has received a kill -TERM
-    // In both cases, we will not be able to execute any
-    // HDFS command so There's no point in trying to 
-    // close or rename the file
-    // see HDFS shutdownHook Jira
-    // but just in case someone fixes this issue
+    // or Collector has received a kill -TERM
+  
     try {
       synchronized(lock) {
         if (this.currentOutputStr != null) {
           this.currentOutputStr.close();
         }
-        fs.rename(currentPath, new Path(currentFileName + ".done"));
+        if(ENABLE_ROTATION_ON_CLOSE)
+          if(bytesThisRotate > 0)
+            fs.rename(currentPath, new Path(currentFileName + ".done"));
+          else
+            fs.delete(currentPath, false);
+
       }
     } catch (Throwable e) {
      log.warn("cannot rename dataSink file:" + currentPath,e);
