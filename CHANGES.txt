@@ -52,6 +52,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-387.  Summarize mode for dumpChunks should count bytes. (asrabkin)
+
     CHUKWA-379.  Refactor sender code. (asrabkin)
 
     CHUKWA-374.  Adaptor.getStatus() shouldn't throw exceptions. (asrabkin)

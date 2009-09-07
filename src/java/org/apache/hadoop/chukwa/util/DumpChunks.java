@@ -185,23 +185,31 @@ public class DumpChunks {
 
   static class DumpAndSummarize extends DumpChunks {
     Map<String, Integer> matchCounts = new LinkedHashMap<String, Integer>();
+    Map<String, Long> byteCounts = new LinkedHashMap<String, Long>();
     
 
     protected void displayResults(PrintStream out) throws IOException{
       for(Map.Entry<String, Integer> s: matchCounts.entrySet()) {
         out.print(s.getKey());
         out.print(" ");
-        out.println(s.getValue());
+        out.print(s.getValue());
+        out.print(" chunks ");
+        out.print(byteCounts.get(s.getKey()));
+        out.println(" bytes");
       }
         
     }
     
     protected void updateMatchCatalog(String streamName,  ChunkImpl chunk) {
       Integer i = matchCounts.get(streamName);
-      if(i != null)
+      if(i != null) {
         matchCounts.put(streamName, i+1);
-      else
+        Long b = byteCounts.get(streamName);
+        byteCounts.put(streamName, b + chunk.getLength());
+      } else {
         matchCounts.put(streamName, new Integer(1));
+        byteCounts.put(streamName, new Long(chunk.getLength()));
+      }
     }
     
   }
