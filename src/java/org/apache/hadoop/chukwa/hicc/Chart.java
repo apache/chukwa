@@ -41,6 +41,7 @@ public class Chart {
   private String graphType;
   private ArrayList<TreeMap<String, TreeMap<String, Double>>> dataset;
   private ArrayList<String> chartType;
+  private ArrayList<String> restData;
   private boolean xLabelOn;
   private boolean yLabelOn;
   private boolean yRightLabelOn;
@@ -123,13 +124,26 @@ public class Chart {
   }
 
   public void setDataSet(String chartType,
-      TreeMap<String, TreeMap<String, Double>> data) {
+    TreeMap<String, TreeMap<String, Double>> data) {
     if (this.dataset == null) {
       this.dataset = new ArrayList<TreeMap<String, TreeMap<String, Double>>>();
       this.chartType = new ArrayList<String>();
     }
     this.dataset.add(data);
     this.chartType.add(chartType);
+  }
+
+  public void setDataSet(String chartType, String series, String data) {
+    if (this.dataset == null) {
+      this.restData = new ArrayList<String>();
+      this.dataset = new ArrayList<TreeMap<String, TreeMap<String, Double>>>();
+      this.chartType = new ArrayList<String>();
+    }
+    this.chartType.add(chartType);
+    this.restData.add(data);
+    TreeMap<String, TreeMap<String, Double>> tree = new TreeMap<String, TreeMap<String, Double>>();
+    tree.put(series, new TreeMap<String, Double>()); 
+    this.dataset.add(tree);
   }
 
   public void setSeriesOrder(String[] metrics) {
@@ -177,38 +191,41 @@ public class Chart {
   public String plot() {
     SimpleDateFormat format = new SimpleDateFormat("m:s:S");
     StringBuilder output = new StringBuilder();
-    if (dataset == null) {
+    if (dataset == null && restData == null) {
       output.append("No Data available.");
       return output.toString();
     }
     String dateFormat = "%H:%M";
     if (xLabel.intern() == "Time".intern()) {
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-      try {
-        long xMin = 0;
-        long xMax = 0;
-        if(xLabelRange!=null && xLabelRange.size()>0) {
-          xMin = Long.parseLong(xLabelRange.get(0));
-          xMax = Long.parseLong(xLabelRange.get(xLabelRange.size() - 1));
-        }
-        if (xMax - xMin > 31536000000L) {
-          dateFormat = "%y";
-        } else if (xMax - xMin > 2592000000L) {
-          dateFormat = "%y-%m";
-        } else if (xMax - xMin > 604800000L) {
-          dateFormat = "%m-%d";
-        } else if (xMax - xMin > 86400000L) {
-          dateFormat = "%m-%d %H:%M";
-        }
-      } catch (NumberFormatException e) {
-        dateFormat = "%y-%m-%d %H:%M";
-      }
+//      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//      try {
+//        long xMin = 0;
+//        long xMax = 0;
+//        if(xLabelRange!=null && xLabelRange.size()>0) {
+//          xMin = Long.parseLong(xLabelRange.get(0));
+//          xMax = Long.parseLong(xLabelRange.get(xLabelRange.size() - 1));
+//        }
+//        if (xMax - xMin > 31536000000L) {
+//          dateFormat = "%y";
+//        } else if (xMax - xMin > 2592000000L) {
+//          dateFormat = "%y-%m";
+//        } else if (xMax - xMin > 604800000L) {
+//          dateFormat = "%m-%d";
+//        } else if (xMax - xMin > 86400000L) {
+//          dateFormat = "%m-%d %H:%M";
+//        }
+//      } catch (NumberFormatException e) {
+//        dateFormat = "%y-%m-%d %H:%M";
+//      }
     }
     StringBuilder xAxisOptions = new StringBuilder();
     if (xLabel.intern() == "Time".intern()) {
-      xAxisOptions.append("timeformat: \"");
-      xAxisOptions.append(dateFormat);
-      xAxisOptions.append("\",mode: \"time\"");
+//      if(this.restData==null) {
+//        xAxisOptions.append("timeformat: \"");
+//        xAxisOptions.append(dateFormat);
+//        xAxisOptions.append("\",");
+//      }
+      xAxisOptions.append("mode: \"time\"");
     } else {
       xAxisOptions
           .append("tickFormatter: function (val, axis) { if(val!=0) { return xLabels[Math.round(val)]; } else { return \" \"; }; }, ticks: 5");
@@ -349,7 +366,7 @@ public class Chart {
       }
       for (String seriesName : keyNames) {
         int counter2 = 0;
-        if (counter != 0) {
+        if ((counter != 0) || (i != 0)) {
           output.append(",");
         }
         String param = "fill: false";
@@ -371,7 +388,7 @@ public class Chart {
         output.append(": { show: true, ");
         output.append(param);
         output.append(" }, color: \"");
-        output.append(cp.get(counter + 1));
+        output.append(cp.getNext());
         output.append("\", label: \"");
         output.append(seriesName);
         output.append("\", ");
@@ -436,9 +453,27 @@ public class Chart {
       i++;
     }
     output.append(" ];\n");
+    if(this.restData!=null) {
+        output.append("var _rest = [");
+        boolean first=true;
+        for(String url : restData) {
+            if(!first) {
+                output.append(",");
+            }
+            output.append("\"");
+            output.append(url);
+            output.append("\"");
+            first=false;
+        }
+        output.append("];");
+    }
     if (request != null && xf.getParameter("format") == null) {
-	output.append("$(document).ready(function() { \n");	
-	output.append("   wholePeriod();\n");
+	output.append("$(document).ready(function() { \n");
+        if(this.restData!=null) {
+            output.append("   loadData();\n");
+        } else {
+	    output.append("   wholePeriod();\n");
+        }
 	output.append("   $(window).resize(function() { wholePeriod(); });\n");
 	output.append("});\n");
 	output.append("</script>\n");

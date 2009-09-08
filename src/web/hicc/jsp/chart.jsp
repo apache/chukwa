@@ -17,56 +17,136 @@
  * limitations under the License.
  */
 %>
-<%@ page import = "org.apache.hadoop.chukwa.util.XssFilter"  %>
-
+<%@ page import = "java.sql.*" %>
+<%@ page import = "java.io.*" %>
+<%@ page import = "java.util.Calendar" %>
+<%@ page import = "java.util.Date" %>
+<%@ page import = "java.text.SimpleDateFormat" %>
+<%@ page import = "java.util.*" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.ClusterConfig" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.TimeHandler" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.Chart" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.DatasetMapper" %>
+<%@ page import = "org.apache.hadoop.chukwa.database.DatabaseConfig" %>
+<%@ page import = "org.apache.hadoop.chukwa.database.Macro" %>
+<%@ page import = "org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
-   XssFilter = new XssFilter(request);
-   response.setHeader("boxId", xf.getParameter("boxId"));
-%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<div style="height:250px">
-<%
-if(request.getParameter("period")==null && ((request.getParameter("start")==null || request.getParameter("end")==null))) {
-  out.println("<h2>Select a time range, and host list.</h2>");
-} else {
-String base = "";
-int width = 500;
-int height = 250;
-String dataurl = request.getRequestURL().toString();
-//
-// escape the & and stuff:
-//
-String url = java.net.URLEncoder.encode(dataurl.replace("/chart.jsp", "/chart-data.jsp?"+request.getQueryString()), "UTF-8");
+    XssFilter xf = new XssFilter(request);
+    String boxId=xf.getParameter("boxId");
+    response.setHeader("boxId", xf.getParameter("boxId"));
+    response.setContentType("text/html; chartset=UTF-8//IGNORE");
 
-//
-// if there are more than one charts on the
-// page, give each a different ID
-//
-//int open_flash_chart_seqno;
-String obj_id = "chart";
-//String div_name = "flashcontent";
-// These values are for when there is >1 chart per page
-//    $open_flash_chart_seqno++;
-//    $obj_id .= '_<%=open_flash_chart_seqno;
-//    $div_name .= '_<%=open_flash_chart_seqno;
-// Not using swfobject: <script type="text/javascript" src="< % = base % >js/swfobject.js"></script>
+    /*
+     * Set chart title, and output type.
+     */
+    String title = xf.getParameter("title");
+    String graphType = xf.getParameter("graph_type");
+
+    /*
+     * Set chart width.
+     */
+    int width=300;
+    if(request.getParameter("width")!=null) {
+      width=Integer.parseInt(request.getParameter("width"));
+    }
+
+    /*
+     * Set chart height.
+     */
+    int height=200;
+    if(request.getParameter("height")!=null) {
+      height=Integer.parseInt(request.getParameter("height"));
+    }
+
+    /*
+     * Set series data source.
+     */
+    String[] seriesName = xf.getParameterValues("series_name");
+    String[] data = xf.getParameterValues("data");
+
+    /*
+     * Set series render format.
+     */
+    String[] render = null;
+    if(request.getParameter("render")!=null) {
+      render=xf.getParameterValues("render");
+    } 
+    if(render==null || render.length!=data.length) { 
+      render = new String[data.length];
+      for(int i=0;i<data.length;i++) {
+        render[i] = "line";
+      }
+    }
+
+    Chart c = new Chart(request);
+
+    /*
+     * Setup x axis display.
+     */
+    if(request.getParameter("x_label")!=null && xf.getParameter("x_label").equals("on")) {
+      c.setXAxisLabels(true);
+    } else {
+      c.setXAxisLabels(false);
+    }
+    if(request.getParameter("x_axis_label")!=null) {
+      c.setXAxisLabel(xf.getParameter("x_axis_label"));
+    } else {
+      c.setXAxisLabel("Time");
+    }
+
+    /*
+     * Setup y axis display.
+     */
+    if(request.getParameter("y_label")!=null && xf.getParameter("y_label").equals("on")) {
+      c.setYAxisLabels(true);
+      c.setYAxisLabel(xf.getParameter("y_axis_label"));
+    } else {
+      c.setYAxisLabels(false);
+      c.setYAxisLabel("");
+    }
+    if(request.getParameter("y_axis_max")!=null) {
+      double max = Double.parseDouble(xf.getParameter("y_axis_max"));
+      c.setYMax(max);
+    }
+    if(request.getParameter("display_percentage")!=null) {
+      c.setDisplayPercentage(true);
+    }
+
+    /*
+     * Setup title.
+     */
+    if(title!=null) {
+      c.setTitle(title);
+    }
+
+    /*
+     * Setup legend display.
+     */
+    if(request.getParameter("legend")!=null && xf.getParameter("legend").equals("off")) {
+      c.setLegend(false);
+    }
+
+    /*
+     * Setup series display.
+     */
+    c.setGraphType(graphType);
+    c.setSize(width,height);
+
+    /*
+     * Setup data structure.
+     */
+    if(seriesName!=null && data.length==seriesName.length) {
+      for(int i=0;i<data.length;i++) {
+        c.setDataSet(render[i],seriesName[i],data[i]);
+      }
+    } else {
+      for(int i=0;i<data.length;i++) {
+        c.setDataSet(render[i],"",data[i]);
+      }
+    }
+
+    /*
+     * Render graph
+     */
+    out.println(c.plot());
 %>
-<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" 
-	codebase="<%= request.getProtocol() %>://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0"
-	width="100%" height="100%" id="ie_<%=obj_id %>" align="middle" style="z-index: 1;">
-  <param name="allowScriptAccess" value="sameDomain" />
-  <param name="movie" value="<%=base%>open-flash-chart.swf?width=<%=width%>&height=<%=height%>&data=<%=url%>" />
-  <param name="quality" value="high" />
-  <param name="bgcolor" value="#ffffff" />
-  <param name="wmode" value="transparent" />
-  <embed src="<%=base%>open-flash-chart.swf?data=<%=url%>&metric=CPUBusy" 
-    quality="high" bgcolor="#ffffff" 
-  	width="100%" height="100%" name="<%=obj_id%>" align="middle" allowScriptAccess="sameDomain"
-	type="application/x-shockwave-flash" 
-	pluginspage="<%=request.getProtocol()%>://www.macromedia.com/go/getflashplayer" 
-	id="<%=obj_id%>"
-	/>
-</object>
-<% } %>
-</div>

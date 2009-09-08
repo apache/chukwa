@@ -597,7 +597,8 @@ portalWidget.prototype = {
     closeEditBox: function() {
 	// close the edit box
    	var editBox= $('dragableBoxEdit' + this.pageid+"_"+this.boxIndex);
-      	editBox.style.display='none';
+        new Effect.BlindUp(editBox);
+      	//editBox.style.display='none';
         $('dragableBoxHeader' + this.pageid+"_"+this.boxIndex).style.height = '20px';
     },
 
@@ -996,7 +997,7 @@ function mouseoutBoxHeader(e,obj) {
    if(!obj)obj=this;
    
    var id = obj.id.replace(/[^0-9|_]/g,'');
-   showHeader(id, 'hidden');
+   showHeader(id, 'visible');
 }
 	
 function initDragDropBox(e) {
@@ -1191,9 +1192,12 @@ function editContent() {
    var numericId = this.id.replace(/[^0-9|_]/g,'');
    var obj = $('dragableBoxEdit' + numericId);
    if(obj.style.display=='none'){
-      obj.style.display='block';
+      //obj.style.display='block';
+      new Effect.BlindDown($('dragableBoxEdit'+numericId));
+
    }else{
-      obj.style.display='none';
+      new Effect.BlindUp($('dragableBoxEdit'+numericId));
+      //obj.style.display='none';
    }
    setTimeout('dragDropCounter=-5',5);
 }
@@ -1233,7 +1237,7 @@ function loadContentComplete(request) {
                 alert(e);
             }
 	}
-        showHeader(boxId, 'hidden');
+        showHeader(boxId, 'visible');
    }
 }
 

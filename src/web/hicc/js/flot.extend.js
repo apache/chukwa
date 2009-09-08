@@ -1,5 +1,6 @@
 var zoom=false;
 var bound=null;
+var _chartSeriesSize=0;
 
 /*
  * calculcate the min, max, average of the data set
@@ -119,6 +120,7 @@ function wholePeriod() {
     total_height+=$("#placeholderLegend").height();
     total_height+=$("#statisLegend").height();
   }
+  total_height+=25;
   setIframeHeight(document.getElementById('boxId').value, total_height);
 };
 
@@ -127,15 +129,15 @@ function wholePeriod() {
  */
 options={
  points: { show: true },
- xaxis: {                timeformat: "%y/%O/%D<br/>%H:%M:%S",
-			 mode: "time"
+ xaxis: {
+   mode: "time"
  },
  selection: { mode: "xy" },
  grid: {
-  hoverable: false,
-  clickable: true,
-  tickColor: "#C0C0C0",
-  backgroundColor:"#FFFFFF"
+   hoverable: false,
+   clickable: true,
+   tickColor: "#C0C0C0",
+   backgroundColor:"#FFFFFF"
  },
  legend: { show: false }
 };
@@ -258,11 +260,32 @@ function refresh(url, parameters) {
       } catch(err) {
         return false;
       }
-    });
+    });a
+    if(_rest!=null) {
+      loadData(url, parameters);
+    }
   }
   return true;
 }
 
+/*
+ * Initialize data from REST API.
+ */
+function loadData() {
+  for(var i=0;i<_series.length;i++) {
+    $.getJSON(_rest[i], function(json) {
+      var name=json.name;
+      _series[_chartSeriesSize].label=name
+      _series[_chartSeriesSize].data=json.data;
+      _chartSeriesSize++;
+      wholePeriod();
+    }); 
+  }
+}
+
+/*
+ * Generate static image report
+ */ 
 function saveReport() {
   var pattern = /https?:\/\/(.*?)\//;
   var baseUrl = pattern.exec(location.href)[0];

@@ -38,6 +38,7 @@
     String render="line";
     String cluster = (String) session.getAttribute("cluster");
     String graphType = xf.getParameter("graph_type");
+    String data = xf.getParameter("data");
     ArrayList<Object> parms = new ArrayList<Object>();
     int width=300;
     int height=200;
@@ -135,30 +136,31 @@
     if(start<=0 || end<=0) { %>
 No time range specified.  Select a time range through widget preference, or use Time widget.
 <%  } else {
-       String dateclause = " timestamp between ? and ? ";
-       if(request.getParameter("period")!=null && request.getParameter("period").equals("0")) {
-           dateclause = "";
-       }
-       try {
-           org.apache.hadoop.chukwa.util.DriverManagerUtil.loadDriver().newInstance();
-       } catch (Exception ex) {
-       }
-       Connection conn = null;
-       Statement stmt = null;
-       ResultSet rs = null;
-       String table = (String)xf.getParameter("table");
-       if(table==null) {
-           table = "cluster_system_metrics";
-       }
-       if(request.getParameter("group_override")!=null) {
-           group=(xf.getParameter("group_override").replaceAll("%27","'").replaceAll(";",""));
-       }
-       String[] tables = null;
-       DatabaseConfig dbc = new DatabaseConfig();
-       tables = dbc.findTableNameForCharts(table,start,end);
        ArrayList<String> labels = new ArrayList<String>();
        TreeMap<String, TreeMap<String, Double>> dataMap = new TreeMap<String, TreeMap<String, Double>>();
-       for(String tmpTable : tables) {
+       if(data==null) {
+         String dateclause = " timestamp between ? and ? ";
+         if(request.getParameter("period")!=null && request.getParameter("period").equals("0")) {
+             dateclause = "";
+         }
+         try {
+             org.apache.hadoop.chukwa.util.DriverManagerUtil.loadDriver().newInstance();
+         } catch (Exception ex) {
+         }
+         Connection conn = null;
+         Statement stmt = null;
+         ResultSet rs = null;
+         String table = (String)xf.getParameter("table");
+         if(table==null) {
+             table = "cluster_system_metrics";
+         }
+         if(request.getParameter("group_override")!=null) {
+             group=(xf.getParameter("group_override").replaceAll("%27","'").replaceAll(";",""));
+         }
+         String[] tables = null;
+         DatabaseConfig dbc = new DatabaseConfig();
+         tables = dbc.findTableNameForCharts(table,start,end);
+         for(String tmpTable : tables) {
            String query = null;
            StringBuilder q = new StringBuilder();
            q.append("select ");
@@ -214,47 +216,50 @@ No time range specified.  Select a time range through widget preference, or use 
                    dataMap.put(ts,tmpDataMap.get(ts));
                }
            } 
+         }
        }
+       if(request.getParameter("render")!=null) {
+           render=xf.getParameter("render");
+       }
+       Chart c = new Chart(request);
+       c.setYAxisLabels(false);
+       if(request.getParameter("x_label")!=null && xf.getParameter("x_label").equals("on")) {
+           c.setXAxisLabels(true);
+       } else {
+           c.setXAxisLabels(false);
+       }
+       c.setYAxisLabel("");
+       if(request.getParameter("x_axis_label")!=null) {
+           c.setXAxisLabel(xf.getParameter("x_axis_label"));
+       } else {
+           c.setXAxisLabel("Time");
+       }
+       if(title!=null) {
+           c.setTitle(title);
+       } else {
+           c.setTitle(metrics.toString());
+       }
+       if(request.getParameter("y_axis_max")!=null) {
+           double max = Double.parseDouble(xf.getParameter("y_axis_max"));
+           c.setYMax(max);
+       }
+       if(request.getParameter("display_percentage")!=null) {
+           c.setDisplayPercentage(true);
+       }
+       if(request.getParameter("legend")!=null && xf.getParameter("legend").equals("off")) {
+           c.setLegend(false);
+       }
+       c.setGraphType(graphType);
+       c.setXLabelsRange(labels);
+       c.setSize(width,height);
        if(dataMap.size()!=0) {
-           if(request.getParameter("render")!=null) {
-               render=xf.getParameter("render");
-           }
-           Chart c = new Chart(request);
-           c.setYAxisLabels(false);
-           if(request.getParameter("x_label")!=null && xf.getParameter("x_label").equals("on")) {
-               c.setXAxisLabels(true);
-           } else {
-               c.setXAxisLabels(false);
-           }
-           c.setYAxisLabel("");
-           if(request.getParameter("x_axis_label")!=null) {
-               c.setXAxisLabel(xf.getParameter("x_axis_label"));
-           } else {
-               c.setXAxisLabel("Time");
-           }
-           if(title!=null) {
-               c.setTitle(title);
-           } else {
-               c.setTitle(metrics.toString());
-           }
-           if(request.getParameter("y_axis_max")!=null) {
-               double max = Double.parseDouble(xf.getParameter("y_axis_max"));
-               c.setYMax(max);
-           }
-           if(request.getParameter("display_percentage")!=null) {
-	       c.setDisplayPercentage(true);
-	   }
-           if(request.getParameter("legend")!=null && xf.getParameter("legend").equals("off")) {
-               c.setLegend(false);
-           }
-           c.setGraphType(graphType);
-           c.setXLabelsRange(labels);
-           c.setSize(width,height);
            c.setDataSet(render,dataMap);
-           if(metric!=null && group==null) {
-               c.setSeriesOrder(metric);
-           }
-           out.println(c.plot());
-        }
+       } else if(data!=null) {
+           c.setDataSet(render,"series",data);
+       }
+       if(metric!=null && group==null) {
+           c.setSeriesOrder(metric);
+       }
+       out.println(c.plot());
     }
 %>
