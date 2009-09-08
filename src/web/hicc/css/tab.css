@@ -2,14 +2,14 @@
         font: bold 11px/16px arial, helvetica, sans-serif;
         border-style:normal;border-top:1px;border-bottom:0px;border-width:5px;border-color:#ffffff; 
         white-space: nowrap; background-color: #FDB5FF; background-image: url('images/titlebar.gif');
-        background: #9970A8;
+        background: #3875D7;
 }       
         
 .tab-hover {
         font: bold 11px/16px arial, helvetica, sans-serif;
         border-style:normal;border-top:1px;border-bottom:0px;border-width:5px;border-color:#ffffff; cursor:pointer;
         white-space: nowrap;
-        background: #9970A8;
+        background: #3875D7;
 }
         
 .tab-off {
@@ -51,7 +51,7 @@
 
 #tablist { font: bold 11px verdana, arial, sans-serif;
 	list-style-type: none;
-	height: 24px; margin: 4px 0px 0px 0px;
+	margin: 4px 0px 0px 0px;
 }
 #tablist li {
 	float: left;

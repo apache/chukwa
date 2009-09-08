@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-384. Added REST API charting capability. (Eric Yang)
+
     CHUKWA-369. Tolerance of collector failures. (asrabkin)
 
     CHUKWA-368. New data integrity validation tool. (asrabkin)
@@ -54,8 +56,13 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+<<<<<<< .mine
+    CHUKWA-388.  Clean up user interface color.  (Eric Yang)
+
+=======
     CHUKWA-387.  Summarize mode for dumpChunks should count bytes. (asrabkin)
 
+>>>>>>> .r812501
     CHUKWA-379.  Refactor sender code. (asrabkin)
 
     CHUKWA-374.  Adaptor.getStatus() shouldn't throw exceptions. (asrabkin)

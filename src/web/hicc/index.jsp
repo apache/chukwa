@@ -65,13 +65,12 @@
 </table>
 </td></tr></table>
 </div>
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.6.0/build/treeview/assets/skins/sam/treeview.css" />
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <style type="text/css">@import url('css/calendar.css');</style>
 <link href="css/menu.css" rel="stylesheet" type="text/css">
 <link href="css/tab.css" rel="stylesheet" type="text/css">
 <link href="css/timeframe.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.6.0/build/fonts/fonts-min.css" />
-<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.6.0/build/treeview/assets/skins/sam/treeview.css" />
 <!-- all the necessary js files -->
 <script type="text/javascript" src="./js/yahoo-dom-event.js"></script>
 <script type="text/javascript" src="./js/treeview-min.js"></script>

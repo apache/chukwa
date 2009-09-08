@@ -1,15 +1,15 @@
 .menubar {
 background-repeat: repeat-x;
-background-image: url('images/titlebar.gif');
+background-image: url('images/titlebar.png');
 }
 
 #menu {
-color: #fff;
+color: #000;
 font: bold 11px/16px arial, helvetica, sans-serif;
 width: 100%;
 float: left;
 background-repeat: repeat-x;
-background-image: url('images/titlebar.gif');
+background-image: url('images/titlebar.png');
 }
 
 #menu ul {
@@ -23,13 +23,13 @@ float: left;
 }
 
 #menu h2 {
-color: #fff;
+color: #000;
 background: #000;
 text-transform: uppercase;
 }
 
 #menu a {
-color: #fff;
+color: #000;
 text-decoration: none;
 display: block;
 border-width: 0px;
@@ -38,11 +38,13 @@ padding: 2px 3px;
 }
 
 #menu a:hover {
-background: #9970A8;
+color: #fff;
+background: #3875D7;
 }
 
 #menu ul:hover {
-background: #9970A8;
+color: #fff;
+background: #3875D7;
 }
 
 #menu li {position: relative;}
@@ -71,14 +73,14 @@ div#menu ul ul ul li:hover ul
 
 div#menu ul ul table {
 width:100%;
-color: #fff;
+color: #000;
 font: bold 11px/16px arial, helvetica, sans-serif;
-background-color: #785088;
+background-color: #eeeeee;
 }
 
 div#menu ul ul td:hover {
 width:100%;
 color: #fff;
-background-color: #9970A8;
+background-color: #3875D7;
 cursor:pointer;
 }

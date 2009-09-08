@@ -1,18 +1,9 @@
 a:hover {text-decoration:underline;}
 a:link {text-decoration:none;}
 
-.formTableContent {background-color:#FFFFFF;text-align:left;vertical-align:top;}
-.formTableLeft {font-weight:bold;text-align:right;background-color:#CCCCCC;vertical-align:top;text-indent:3pt;}
-.formInput {font:normal 11px Arial;color:#3A5A87;padding-left:0px;}
-.formInput-disabled { font:normal 11px Arial;color:#3A5A87;background-color:#DDDDDD;padding-left:0px; }
-.formReadOnly {border-style:solid;border-width:1px;border-color:#C0C0C0;font:bold 11px Arial;color:#3A5A87;padding-left:0px;}
-.formTable {font:normal 11px Arial;background-color:#AAAAAA;}
-.formControlRow {font:normal 11px Arial;color:#333333;background-image:url(/images/controlBackground.jpg);background-repeat:repeat-x;}
-.formButton {font:bold 11px Arial;color:#FFFFFF;background-image:url(images/titlebar.gif);background-color:#7B0099;vertical-align:middle;border-width:1px;height:20px;border:1px solid #000;}
+.formButton {font:bold 11px Arial;color:#000000;background-image:url(images/titlebar.png);background-color:#7B0099;vertical-align:middle;border-width:1px;height:20px;border:1px solid #000;}
 .formButton:hover { font:bold 11px Arial;color:#000000;background-image:url(images/navbar-selected.gif);vertical-align:middle;border-width:1px;height:20px;border:1px solid #000; }
 .formButton-disabled {font:bold 11px Arial;color:#AAAAAA;background-color:#DDDDDD;vertical-align:middle;border-width:1px;height:20px;}
-.formRadio {width:14px;}
-.formSelect {font:normal 11px Arial;color:#3A5A87;z-index:100;}
 a.hyperlink:link {color:inherit;text-decoration:underline; }
 a.hyperlink:visited {color:inherit;text-decoration:underline; }
 a.hyperlink:hover {color:#5E76AA;text-decoration:underline;background:#E9EE94; }
@@ -132,10 +123,10 @@ body {font-family:Arial;background-color:#ffffff;}
 }
 
 .dragableBox{	/* The RSS box */
-	border-top: 1px solid #795089;
-	border-left: 1px solid #795089;
-	border-right: 1px solid #795089;
-	border-bottom: 1px solid #795089;
+	border-top: 1px solid #DBE1E6;
+	border-left: 1px solid #DBE1E6;
+	border-right: 1px solid #DBE1E6;
+	border-bottom: 1px solid #DBE1E6;
 	background-color:#FFFFFF;
 	margin:0px 0px 5px 0px; 
 }
@@ -148,8 +139,8 @@ body {font-family:Arial;background-color:#ffffff;}
 }
 
 .dragableBoxHeader{	/* Header inside RSS box */
-        color:#FFFFFF;
-        background-image:url(images/titlebar.gif);
+        color:#000000;
+        background-image:url(images/titlebar.png);
         background-repeat: repeat-x;
 	height:20px;
 	font:bold 12 Helvetica, Arial;vertical-align:middle;
@@ -221,7 +212,7 @@ body {font-family:Arial;background-color:#ffffff;}
 	
 .dragableBoxEdit {
 	font-size: 10px;
-	background-color:#eeeeee;
+	background-color:#F1F4F6;
 }
 
 .dragableBoxEditLink{	/* Edit link on top of a box */
@@ -417,12 +408,12 @@ a {
 }
 
 .page_selector_table {
-border-bottom: 1px solid #cccccc;
+border-bottom: 1px solid #3875D7;
 margin: 0;
 }
 
 
-table.titlebar {font:bold 11px Arial;color:#FFFFFF;vertical-align:middle;border-width:1px;height:14px;border:1px solid #000;background-image:url(images/titlebar.gif);background-repeat:repeat-x;background-color:#7B0099;}
+table.titlebar {font:bold 11px Arial;color:#000000;vertical-align:middle;border-width:1px;height:14px;border:1px solid #000;background-image:url(images/titlebar.png);background-repeat:repeat-x;background-color:#7B0099;}
 
 table.simple {
 	border-width: 1px;
@@ -702,3 +693,6 @@ fieldset > .row:last-child {
     line-height:normal;
 }
 
+*.ygtvlabel {
+    font-size:11px;
+}
