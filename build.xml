@@ -478,6 +478,12 @@
                                 <include name="chukwa-core*.jar" />
                         </fileset>
                 </copy>
+                <copy todir="${test.build.classes}/webapps">
+                  <fileset dir="${build.dir}">
+                    <include name="chukwa.war" />
+                    <include name="hicc.war" />
+                  </fileset>
+                </copy>
                 <copy file="${basedir}/conf/chukwa-demux-conf.xml.template" tofile="${test.build.dir}/conf/chukwa-demux-conf.xml"></copy>
                 <copy file="${basedir}/conf/log4j.properties" tofile="${test.build.dir}/conf/log4j.properties"></copy>
                 <copy file="${build.dir}/hicc.war" tofile="${test.build.classes}/webapps/hicc.war"></copy>

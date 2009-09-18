@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-344. State-Machine Generation for input to SALSA visualizations. (Jiaqi Tan via asrabkin)
+
     CHUKWA-384. Added REST API charting capability. (Eric Yang)
 
     CHUKWA-369. Tolerance of collector failures. (asrabkin)
