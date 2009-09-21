@@ -37,8 +37,19 @@ public class TestRawAdaptor extends TestCase {
     chunks = new ChunkCatcherConnector();
     chunks.start();
   }
+  
+  public void testRawAdaptor() throws Exception {
+    System.out.println("testing raw fta");
+    runTest("FileTailingAdaptor"); 
+  }
 
-  public void testRawAdaptor() throws IOException, InterruptedException,
+
+  public void testLWRawAdaptor() throws Exception {
+    System.out.println("testing lightweight fta");
+    runTest("LWFTAdaptor"); 
+  }
+
+  public void runTest(String name) throws IOException, InterruptedException,
       ChukwaAgent.AlreadyRunningException {
 
     // Remove any adaptor left over from previous run
@@ -49,10 +60,12 @@ public class TestRawAdaptor extends TestCase {
 
     File testFile = makeTestFile("chukwaRawTest", 80);
     String adaptorId = agent
-        .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.FileTailingAdaptor"
+        .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor."
+            +"filetailer." + name
             + " raw " + testFile + " 0");
     assertNotNull(adaptorId);
-    Chunk c = chunks.waitForAChunk();
+    Chunk c = chunks.waitForAChunk(1000);
+    assertNotNull(c);
     assertEquals(testFile.length(), c.getData().length);
     assertTrue(c.getDataType().equals("raw"));
     assertTrue(c.getRecordOffsets().length == 1);
@@ -87,13 +100,5 @@ public class TestRawAdaptor extends TestCase {
     return tmpOutput;
   }
 
-  public static void main(String[] args) {
-    try {
-      TestRawAdaptor tests = new TestRawAdaptor();
-      tests.testRawAdaptor();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
 
 }

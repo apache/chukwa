@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 class FileTailer extends Thread {
   static Logger log = Logger.getLogger(FileTailer.class);
 
-  private List<FileTailingAdaptor> adaptors;
+  private List<LWFTAdaptor> adaptors;
   private volatile boolean isRunning = true;
   ChunkQueue eq; // not private -- useful for file tailing adaptor classes
 
@@ -49,6 +49,7 @@ class FileTailer extends Thread {
   int DEFAULT_SAMPLE_PERIOD_MS = 1000 * 2;
   int SAMPLE_PERIOD_MS = DEFAULT_SAMPLE_PERIOD_MS;
   private static Configuration conf = null;
+  public static final int MAX_SAMPLE_PERIOD = 60 * 1000;
 
   FileTailer() {
     if (conf == null) {
@@ -65,19 +66,19 @@ class FileTailer extends Thread {
     eq = DataFactory.getInstance().getEventQueue();
 
     // iterations are much more common than adding a new adaptor
-    adaptors = new CopyOnWriteArrayList<FileTailingAdaptor>();
+    adaptors = new CopyOnWriteArrayList<LWFTAdaptor>();
 
     this.setDaemon(true);
     start();// start the file-tailing thread
   }
 
   // called by FileTailingAdaptor, only
-  void startWatchingFile(FileTailingAdaptor f) {
+  void startWatchingFile(LWFTAdaptor f) {
     adaptors.add(f);
   }
 
   // called by FileTailingAdaptor, only
-  void stopWatchingFile(FileTailingAdaptor f) {
+  void stopWatchingFile(LWFTAdaptor f) {
     adaptors.remove(f);
   }
 
@@ -86,11 +87,13 @@ class FileTailer extends Thread {
       try {
         boolean shouldISleep = true;
         long startTime = System.currentTimeMillis();
-        for (FileTailingAdaptor f : adaptors) {
+        for (LWFTAdaptor f : adaptors) {
           boolean hasMoreData = f.tailFile(eq);
           shouldISleep &= !hasMoreData;
         }
         long timeToReadFiles = System.currentTimeMillis() - startTime;
+        if(timeToReadFiles > MAX_SAMPLE_PERIOD)
+          log.warn("took " + timeToReadFiles + " ms to check all files being tailed");
         if (timeToReadFiles < SAMPLE_PERIOD_MS || shouldISleep) {
           Thread.sleep(SAMPLE_PERIOD_MS);
         }

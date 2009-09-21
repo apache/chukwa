@@ -39,8 +39,9 @@ public class TestStartAtOffset extends TestCase {
     chunks = new ChunkCatcherConnector();
     chunks.start();
   }
+  
 
-  public void testStartAtOffset() throws IOException, InterruptedException,
+  public void startAtOffset() throws IOException, InterruptedException,
       ChukwaAgent.AlreadyRunningException {
     Configuration conf = new Configuration();
     conf.set("chukwaAgent.control.port", "0");
@@ -49,7 +50,8 @@ public class TestStartAtOffset extends TestCase {
     File testFile = makeTestFile();
     int startOffset = 0; // skip first line
     String adaptorId = agent
-        .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8 "
+       .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor"+
+            "filetailer.CharFileTailingAdaptorUTF8 "
             + "lines " + startOffset + " " + testFile + " " + startOffset);
     assertTrue(adaptorId != null);
     System.out.println("getting a chunk...");

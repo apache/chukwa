@@ -37,72 +37,27 @@ import org.apache.log4j.Logger;
  * file. Subclasses can alter this behavior by overriding extractRecords().
  * 
  */
-public class FileTailingAdaptor extends AbstractAdaptor {
+public class FileTailingAdaptor extends LWFTAdaptor {
 
-  static Logger log;
 
-  /**
-   * This is the maximum amount we'll read from any one file before moving on to
-   * the next. This way, we get quick response time for other files if one file
-   * is growing rapidly.
-   */
-  public static final int DEFAULT_MAX_READ_SIZE = 128 * 1024;
-  public static int MAX_READ_SIZE = DEFAULT_MAX_READ_SIZE;
   public static int MAX_RETRIES = 300;
   public static int GRACEFUL_PERIOD = 3 * 60 * 1000; // 3 minutes
 
-  protected Configuration conf = null;
   private int attempts = 0;
   private long gracefulPeriodExpired = 0l;
   private boolean adaptorInError = false;
-  File toWatch;
-  /**
-   * next PHYSICAL offset to read
-   */
-  protected long fileReadOffset;
+
   protected RandomAccessFile reader = null;
 
-  /**
-   * The logical offset of the first byte of the file
-   */
-  private long offsetOfFirstByte = 0;
-
-  private static FileTailer tailer;
-
-  static {
-    tailer = new FileTailer();
-    log = Logger.getLogger(FileTailingAdaptor.class);
-  }
-
   public void start(long bytes) {
-    
-    conf = control.getConfiguration();
-    MAX_READ_SIZE = conf.getInt(
-        "chukwaAgent.fileTailingAdaptor.maxReadSize",
-        DEFAULT_MAX_READ_SIZE);
-    log.info("chukwaAgent.fileTailingAdaptor.maxReadSize: "
-        + MAX_READ_SIZE);
+    super.start(bytes);
+    log.info("chukwaAgent.fileTailingAdaptor.maxReadSize: " + MAX_READ_SIZE);
     this.attempts = 0;
 
     log.info("started file tailer on file " + toWatch
         + " with first byte at offset " + offsetOfFirstByte);
-
-    this.fileReadOffset = bytes;
-    tailer.startWatchingFile(this);
   }
-  
-  @Override
-  public String parseArgs(String params) { 
-    Pattern cmd = Pattern.compile("(\\d+)\\s+(.+)\\s?");
-    Matcher m = cmd.matcher(params);
-    if (m.matches()) {
-      offsetOfFirstByte = Long.parseLong(m.group(1));
-      toWatch = new File(m.group(2));
-    } else {
-      toWatch = new File(params.trim());
-    }
-    return toWatch.getAbsolutePath();
-  }
+ 
 
   /**
    * Do one last tail, and then stop
@@ -178,22 +133,6 @@ public class FileTailingAdaptor extends AbstractAdaptor {
     return fileReadOffset + offsetOfFirstByte;
   }
   
-  
-  /**
-   * @see org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor#getCurrentStatus()
-   */
-  public String getCurrentStatus() {
-    return type.trim() + " " + offsetOfFirstByte + " " + toWatch.getPath();
-    // can make this more efficient using a StringBuilder
-  }
-
-  public String toString() {
-    return "Tailer on " + toWatch;
-  }
-
-  public String getStreamName() {
-    return toWatch.getPath();
-  }
 
   /**
    * Looks at the tail of the associated file, adds some of it to event queue
@@ -263,8 +202,7 @@ public class FileTailingAdaptor extends AbstractAdaptor {
           
           reader = newReader;
           fileReadOffset = 0L;
-          log.debug("Adaptor|" + adaptorID
-              + "| File size mismatched, rotating: "
+          log.debug("Adaptor|"+ adaptorID + "| File size mismatched, rotating: "
               + toWatch.getAbsolutePath());
         } else {
           try {
@@ -288,50 +226,7 @@ public class FileTailingAdaptor extends AbstractAdaptor {
           offsetOfFirstByte = 0L;
           log.warn("offsetOfFirstByte>fileReadOffset, resetting offset to 0");
         }
-
-        log.debug("Adaptor|" + adaptorID + "|seeking|" + fileReadOffset);
-        reader.seek(fileReadOffset);
-
-        long bufSize = len - fileReadOffset;
-
-       if (bufSize > MAX_READ_SIZE) {
-          bufSize = MAX_READ_SIZE;
-          hasMoreData = true;
-        }
-        byte[] buf = new byte[(int) bufSize];
-
-        long curOffset = fileReadOffset;
-
-        int bufferRead = reader.read(buf);
-        assert reader.getFilePointer() == fileReadOffset + bufSize : " event size arithmetic is broken: "
-            + " pointer is "
-            + reader.getFilePointer()
-            + " but offset is "
-            + fileReadOffset + bufSize;
-
-        int bytesUsed = extractRecords(dest,
-            fileReadOffset + offsetOfFirstByte, buf);
-
-        // === WARNING ===
-        // If we couldn't found a complete record AND
-        // we cannot read more, i.e bufferRead == MAX_READ_SIZE
-        // it's because the record is too BIG
-        // So log.warn, and drop current buffer so we can keep moving
-        // instead of being stopped at that point for ever
-        if (bytesUsed == 0 && bufferRead == MAX_READ_SIZE) {
-          log.warn("bufferRead == MAX_READ_SIZE AND bytesUsed == 0, droping current buffer: startOffset="
-                  + curOffset
-                  + ", MAX_READ_SIZE="
-                  + MAX_READ_SIZE
-                  + ", for "
-                  + toWatch.getPath());
-          bytesUsed = buf.length;
-        }
-
-        fileReadOffset = fileReadOffset + bytesUsed;
-
-        log.debug("Adaptor|" + adaptorID + "|start|" + curOffset + "|end|"
-            + fileReadOffset);
+        hasMoreData = slurp(len, reader);
 
       } else {
         // file has rotated and no detection
@@ -352,27 +247,6 @@ public class FileTailingAdaptor extends AbstractAdaptor {
     attempts = 0;
     adaptorInError = false;
     return hasMoreData;
-  }
-
-  /**
-   * Extract records from a byte sequence
-   * 
-   * @param eq the queue to stick the new chunk[s] in
-   * @param buffOffsetInFile the byte offset in the stream at which buf[] begins
-   * @param buf the byte buffer to extract records from
-   * @return the number of bytes processed
-   * @throws InterruptedException
-   */
-  protected int extractRecords(ChunkReceiver eq, long buffOffsetInFile,
-      byte[] buf) throws InterruptedException {
-    if(buf.length == 0)
-      return 0;
-    
-    ChunkImpl chunk = new ChunkImpl(type, toWatch.getAbsolutePath(),
-        buffOffsetInFile + buf.length, buf, this);
-
-    eq.add(chunk);
-    return buf.length;
   }
 
 

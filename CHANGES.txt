@@ -58,13 +58,10 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
-<<<<<<< .mine
     CHUKWA-388.  Clean up user interface color.  (Eric Yang)
 
-=======
     CHUKWA-387.  Summarize mode for dumpChunks should count bytes. (asrabkin)
 
->>>>>>> .r812501
     CHUKWA-379.  Refactor sender code. (asrabkin)
 
     CHUKWA-374.  Adaptor.getStatus() shouldn't throw exceptions. (asrabkin)
@@ -220,6 +217,8 @@ Release 0.1.2 - 2009-05-14
   INCOMPATIBLE CHANGES
 
   NEW FEATURES
+
+    CHUKWA-97.  Refactored FileTailers, added LWFTAdaptor. (asrabkin)
 
     CHUKWA-236. Added migration script for moving database schema for Chukwa 0.1.1 to Chukwa 0.1.2. (Eric Yang)
 
