@@ -58,6 +58,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-392.  FIFO queueing of threads in collector. (asrabkin)
+
     CHUKWA-388.  Clean up user interface color.  (Eric Yang)
 
     CHUKWA-387.  Summarize mode for dumpChunks should count bytes. (asrabkin)
