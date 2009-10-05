@@ -58,6 +58,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-393. Support using pig on Chunks. (asrabkin)
+
     CHUKWA-392.  FIFO queueing of threads in collector. (asrabkin)
 
     CHUKWA-388.  Clean up user interface color.  (Eric Yang)
