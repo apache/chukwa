@@ -49,6 +49,8 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
   private long offset;
   private int bytesPerSec;
   private ChunkReceiver dest;
+
+  Random timeCoin;
   long seed;
   
   private volatile boolean stopping = false;
@@ -67,6 +69,12 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
     Configuration conf = c.getConfiguration();
     MIN_SLEEP = conf.getInt("constAdaptor.minSleep", MIN_SLEEP);
     SLEEP_VARIANCE = conf.getInt("constAdaptor.sleepVariance", SLEEP_VARIANCE);
+    
+    timeCoin = new Random(seed);
+    long o =0;
+    while(o < offset)
+      o += (int) ((timeCoin.nextInt(SLEEP_VARIANCE) + MIN_SLEEP) *
+          (long) bytesPerSec / 1000L) + 8;
     super.start(); // this is a Thread.start
   }
 
@@ -89,12 +97,11 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
   }
 
   public void run() {
-    Random timeCoin = new Random(seed);
     try {
       while (!stopping) {
         int MSToSleep = timeCoin.nextInt(SLEEP_VARIANCE) + MIN_SLEEP; 
-        int arraySize = (int) (MSToSleep * (long) bytesPerSec / 1000L);
-        ChunkImpl evt = nextChunk(arraySize + 8);
+        int arraySize = (int) (MSToSleep * (long) bytesPerSec / 1000L) + 8;
+        ChunkImpl evt = nextChunk(arraySize );
 
         dest.add(evt);
 

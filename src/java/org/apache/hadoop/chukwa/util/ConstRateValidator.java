@@ -156,6 +156,7 @@ public class ConstRateValidator extends Configured implements Tool{
             msg =" dupchunk of length " + b.len + " at " + b.start;
           } else {
             duplicatedBytes = b.start + b.len - nextExpectedStart;
+            ok += b.len - duplicatedBytes;
             msg = "  overlap of " + duplicatedBytes+ " starting at " + b.start +
             " (total chunk len ="+b.len+")";
           }

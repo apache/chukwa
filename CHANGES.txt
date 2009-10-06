@@ -144,6 +144,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-398. Make ConstRateAdaptor more deterministic. (asrabkin)
+
     CHUKWA-386. Fix a bug in echo id to the browser for the iframe servlet. (Eric Yang)
 
     CHUKWA-380. FTA shouldn't emit empty chunks. (asrabkin)
