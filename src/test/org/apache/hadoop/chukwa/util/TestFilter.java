@@ -29,18 +29,23 @@ public class TestFilter extends TestCase {
      byte[] dat = "someText".getBytes();
      ChunkImpl chunkNone = new ChunkImpl("badData","aname", dat.length, dat, null);
      assertFalse(rules.matches(chunkNone));
+     assertTrue(Filter.ALL.matches(chunkNone));
+
 
        //do the right thing on a non-match
      ChunkImpl chunkSome = new ChunkImpl("badData", "aname", dat.length, dat, null);
      chunkSome.setSource("fooly");
      chunkSome.addTag("cluster=\"bar\"");
      assertFalse(rules.matches( chunkSome));
+     assertTrue(Filter.ALL.matches(chunkSome));
 
      ChunkImpl chunkAll = new ChunkImpl("Data", "aname", dat.length, dat, null);
      chunkAll.setSource("fooly");
      chunkAll.addTag("cluster=\"bar\"");
 
      assertTrue(rules.matches(chunkAll));
+     assertTrue(Filter.ALL.matches(chunkAll));
+
      
        //check that we match content correctly
      rules = new Filter("content=someText");
@@ -59,6 +64,7 @@ public class TestFilter extends TestCase {
     byte[] dat = "someText".getBytes();
     ChunkImpl chunk1 = new ChunkImpl("Data", "aname", dat.length, dat, null);
     chunk1.setSource("asource");
+    assertTrue(Filter.ALL.matches(chunk1));
     Filter rule = new Filter("tags.foo=bar");
     
     assertFalse(rule.matches(chunk1));
@@ -66,6 +72,7 @@ public class TestFilter extends TestCase {
     assertTrue(rule.matches(chunk1));
     chunk1.addTag("baz=\"quux\"");
     assertTrue(rule.matches(chunk1));
+    assertTrue(Filter.ALL.matches(chunk1));
   }
   
 }

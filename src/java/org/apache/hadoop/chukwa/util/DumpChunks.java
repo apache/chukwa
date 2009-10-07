@@ -84,7 +84,11 @@ public class DumpChunks {
       summarize = true;
     }
     
-    Filter patterns = new Filter(args[filterArg]);
+    Filter patterns;
+    if(args[filterArg].toLowerCase().equals("all"))
+      patterns = Filter.ALL;
+    else
+      patterns = new Filter(args[filterArg]);
 
     System.err.println("Patterns:" + patterns);
     ArrayList<Path> filesToSearch = new ArrayList<Path>();

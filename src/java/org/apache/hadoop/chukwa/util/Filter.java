@@ -105,7 +105,7 @@ public class Filter {
     return true;
   }
   
-  public int size() {
+  int size() {
     return compiledPatterns.size();
   }
   
@@ -118,4 +118,20 @@ public class Filter {
     }
     return sb.toString();
   }
+  
+  private static final class MatchAll extends Filter {
+    public MatchAll() {
+      super("datatype=.*");
+    }
+    
+    public boolean matches(Chunk c) {
+      return true;
+    }
+    
+    public String toString() {
+      return "ALL";
+    }
+  } 
+  public static final Filter ALL = new MatchAll();
+  
 }//end class
