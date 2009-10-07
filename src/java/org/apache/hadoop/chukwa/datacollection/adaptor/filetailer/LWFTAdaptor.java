@@ -34,6 +34,10 @@ import org.apache.log4j.Logger;
  * A base class for file tailing adaptors.  
  * Intended to mandate as little policy as possible, and to use as 
  * few system resources as possible.
+ * 
+ * 
+ * If the file does not exist, this class will continue to retry quietly
+ * forever and will start tailing if it's eventually created.
  */
 public class LWFTAdaptor extends AbstractAdaptor {
   
@@ -41,6 +45,7 @@ public class LWFTAdaptor extends AbstractAdaptor {
    * This is the maximum amount we'll read from any one file before moving on to
    * the next. This way, we get quick response time for other files if one file
    * is growing rapidly.
+   * 
    */
   public static final int DEFAULT_MAX_READ_SIZE = 128 * 1024;
   public static final String MAX_READ_SIZE_OPT = 
@@ -200,11 +205,15 @@ public class LWFTAdaptor extends AbstractAdaptor {
   throws InterruptedException {
     boolean hasMoreData = false;
     try {
+      
+       //if file doesn't exist, length =0 and we just keep waiting for it.
+      //if(!toWatch.exists())
+      //  deregisterAndStop(false);
+      
       long len = toWatch.length();
       if(len < fileReadOffset) {
         //file shrank; probably some data went missing.
         handleShrunkenFile(len);
-        
       } else if(len > fileReadOffset) {
         RandomAccessFile reader = new RandomAccessFile(toWatch, "r");
         slurp(len, reader);

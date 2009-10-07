@@ -31,6 +31,9 @@ import org.apache.log4j.Logger;
  *  
  *  Mandatory first parameter is a directory.  Mandatory second parameter
  *  is the name of an adaptor to start.  
+ *  
+ *  If the specified directory does not exist, the DirTailer will continue
+ *  running, and will start tailing if the directory is later created.
  *
  */
 public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
@@ -45,8 +48,6 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
   long scanInterval;
   String adaptorName; //name of adaptors to start
   
-  
-
   static Pattern cmd = Pattern.compile("(.+)\\s+(\\S+)");
   @Override
   public void start(long offset) throws AdaptorException {
@@ -69,10 +70,10 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
           scanDirHierarchy(baseDir);
           lastSweepStartTime=sweepStartTime;
           control.reportCommit(this, lastSweepStartTime);
-          Thread.sleep(scanInterval);
         } catch(IOException e) {
           log.warn(e);
         }
+        Thread.sleep(scanInterval);
       }
     } catch(InterruptedException e) {
     }
@@ -82,6 +83,8 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
    * Coded recursively.  Base case is a single non-dir file.
    */
   private void scanDirHierarchy(File dir) throws IOException {
+    if(!dir.exists())
+      return;
     if(!dir.isDirectory() ) {
       //Don't start tailing if we would have gotten it on the last pass 
       if(dir.lastModified() >= lastSweepStartTime) {
@@ -128,7 +131,6 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy)
       throws AdaptorException {
     continueScanning = false;
-    
     return lastSweepStartTime;
   }
 

@@ -53,6 +53,7 @@ public class SeqFileWriter implements ChukwaWriter {
   
   public static final String STAT_PERIOD_OPT = "chukwaCollector.stats.period";
   public static final String ROTATE_INTERVAL_OPT = "chukwaCollector.rotateInterval";
+  public static final String OUTPUT_DIR_OPT= "chukwaCollector.outputDir";
   static String localHostAddr = null;
   
   final Semaphore lock = new Semaphore(1, true);
@@ -94,7 +95,7 @@ public class SeqFileWriter implements ChukwaWriter {
   }
   
   public void init(Configuration conf) throws WriterException {
-    outputDir = conf.get("chukwaCollector.outputDir", "/chukwa");
+    outputDir = conf.get(OUTPUT_DIR_OPT, "/chukwa");
 
     this.conf = conf;
 

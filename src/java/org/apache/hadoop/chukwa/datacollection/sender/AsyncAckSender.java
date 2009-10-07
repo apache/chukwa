@@ -58,28 +58,39 @@ public class AsyncAckSender extends ChukwaHttpSender{
    */
   public static class DelayedCommit extends CommitListEntry implements Comparable<DelayedCommit> {
     final String fname;
-    final long offset;
-    public DelayedCommit(Adaptor a, long uuid, String fname, long offset) {
-      super(a, uuid);
+    long fOffset;
+    final String aName;
+    public DelayedCommit(Adaptor a, long uuid, long len, String fname, 
+        long offset, String aName) {
+      super(a, uuid, len);
       this.fname = fname;
-      this.offset = offset;
+      this.fOffset = offset;
+      this.aName = aName;
     }
 
     @Override
     public int hashCode() {
-      return super.hashCode() ^ fname.hashCode() ^ (int)(offset) ^ (int) (offset >> 32);
+      return super.hashCode() ^ fname.hashCode() ^ (int)(fOffset) ^ (int) (fOffset >> 32);
     }
     
+    //sort by adaptor name first, then by start offset
+    //note that returning 1 means this is "greater" than RHS
     public int compareTo(DelayedCommit o) {
-      if(o.uuid < uuid)
+      int c = o.aName.compareTo(this.aName);
+      if(c != 0)
+        return c;
+      c = fname.compareTo(this.fname);
+      if(c != 0)
+        return c;
+      if(o.start < start)
         return 1;
-      else if(o.uuid > uuid)
+      else if(o.start > start)
         return -1;
       else return 0;
     }
     
     public String toString() {
-      return adaptor +" commits up to " + uuid + " when " + fname + " hits " + offset;
+      return adaptor +" commits from" + start + " to " + uuid + " when " + fname + " hits " + fOffset;
     }
   }
   
@@ -88,35 +99,29 @@ public class AsyncAckSender extends ChukwaHttpSender{
   final ChukwaAgent agent;
   
   /*
-   * The merge table stores commits that we're expecting, before they're handed
-   * to the CommitPollThread.  There will be only one entry for each adaptor.
+   * The list of commits that we're expecting.
+   * This is the structure used to pass the list to the CommitPollThread.  
+   * Adjacent commits to the same file will be coalesced.
    * 
-   * values are a collection of delayed commits, one per adaptor.
-   * keys are unspecified
    */
-  final Map<String, DelayedCommit> mergeTable;
+  final List<DelayedCommit> mergedList;
   
   /**
    * Periodically scans a subset of the collectors, looking for committed files.
    * This way, not every collector is pestering the namenode with periodic lses.
    */
-  static final class CommitPollThread extends Thread {
+  final class CommitPollThread extends Thread {
     private ChukwaHttpSender scanPath;
     private int pollPeriod = 1000 * 30;
 
 
     private final Map<String, PriorityQueue<DelayedCommit>> pendingCommits;
-    private final Map<String, DelayedCommit> mergeTable;
-    private final ChukwaAgent agent;
 
-    CommitPollThread(Configuration conf, ChukwaAgent agent, 
-        Map<String, DelayedCommit> mergeTable, Iterator<String> tryList) {
+    CommitPollThread(Configuration conf, Iterator<String> tryList) {
       pollPeriod = conf.getInt(POLLPERIOD_OPT, pollPeriod);
       scanPath = new ChukwaHttpSender(conf);
       scanPath.setCollectors(tryList);
       pendingCommits = new HashMap<String, PriorityQueue<DelayedCommit>>();
-      this.mergeTable = mergeTable;
-      this.agent = agent;
     }
 
     private volatile boolean running = true;
@@ -144,18 +149,18 @@ public class AsyncAckSender extends ChukwaHttpSender{
      * from the same thread that will later check for commits
      */
     private void mergePendingTable() {
-      synchronized(mergeTable) {
-        for(DelayedCommit dc: mergeTable.values()) {
+      synchronized(mergedList) {
+        for(DelayedCommit dc:mergedList) {
           
-          PriorityQueue<DelayedCommit> map = pendingCommits.get(dc.fname);
-          if(map == null) {
-            map = new PriorityQueue<DelayedCommit>();
-            pendingCommits.put(dc.fname, map);
+          PriorityQueue<DelayedCommit> pendList = pendingCommits.get(dc.fname);
+          if(pendList == null) {
+            pendList = new PriorityQueue<DelayedCommit>();
+            pendingCommits.put(dc.fname, pendList);
           }
-          map.add(dc);
+          pendList.add(dc);
         }
-        mergeTable.clear();
-      }
+        mergedList.clear();
+      } //end synchronized
     }
     
     Pattern respLine = Pattern.compile("<li>(.*) ([0-9]+)</li>");
@@ -177,24 +182,29 @@ public class AsyncAckSender extends ChukwaHttpSender{
         if(delayedOnFile == null)
           continue;
        
+        HashSet<Adaptor> committed = new HashSet<Adaptor>();
         while(!delayedOnFile.isEmpty()) {
           DelayedCommit fired = delayedOnFile.element();
-          if(fired.offset > committedOffset)
+          if(fired.fOffset > committedOffset)
             break;
-          else
+          else {
+            ChukwaAgent.Offset o = agent.offset(fired.adaptor);
+            if(o != null && fired.start > o.offset()) {
+              log.error("can't commit without ordering assumption");
+              break; //don't commit
+            }
             delayedOnFile.remove();
-          String s = agent.reportCommit(fired.adaptor, fired.uuid);
-          //TODO: if s == null, then the adaptor has been stopped.
-          //should we stop sending acks?
-          log.info("COMMIT to "+ committedOffset+ " on "+ path+ ", updating " +s);
+            String s = agent.reportCommit(fired.adaptor, fired.uuid);
+            committed.add(fired.adaptor);
+            //TODO: if s == null, then the adaptor has been stopped.
+            //should we stop sending acks?
+            log.info("COMMIT to "+ committedOffset+ " on "+ path+ ", updating " +s);
+          }
         }
+        adaptorReset.reportCommits(committed);
       }
     }
 
-    void setScannableCollectors(Iterator<String> collectorURLs) {
-      // TODO Auto-generated method stub
-      
-    }
   } 
   
   CommitPollThread pollThread;
@@ -208,9 +218,10 @@ public class AsyncAckSender extends ChukwaHttpSender{
     log.info("delayed-commit processing enabled");
     agent = a;
     
-    mergeTable = new LinkedHashMap<String, DelayedCommit>();
+    mergedList = new ArrayList<DelayedCommit>();
     this.conf = conf;
     adaptorReset = new AdaptorResetThread(conf, a);
+    adaptorReset.start();
     //initialize the commitpoll later, once we have the list of collectors
   }
   
@@ -239,7 +250,7 @@ public class AsyncAckSender extends ChukwaHttpSender{
        tryList = l.iterator();
    }
 
-   pollThread = new CommitPollThread(conf, agent, mergeTable, tryList);
+   pollThread = new CommitPollThread(conf, tryList);
    pollThread.setDaemon(true);
    pollThread.start();
   }
@@ -252,19 +263,24 @@ public class AsyncAckSender extends ChukwaHttpSender{
    *  read by the CommitPollThread when it figures out what commits are expected.
    */
   private void delayCommits(List<DelayedCommit> delayed) {
-    String[] keys = new String[delayed.size()];
-    int i = 0;
-    for(DelayedCommit c: delayed) {
-      String adaptorKey = c.adaptor.hashCode() + "_" + c.adaptor.getCurrentStatus().hashCode();
-      keys[i++] = c.fname +"::" + adaptorKey;
-    }
-    synchronized(mergeTable) {
-      for(i = 0; i < keys.length; ++i) {
-        DelayedCommit cand = delayed.get(i);
-        DelayedCommit cur = mergeTable.get(keys[i]);
-        if(cur == null || cand.offset > cur.offset) 
-          mergeTable.put(keys[i], cand);
+    Collections.sort(delayed);
+    
+    synchronized(mergedList) {
+      DelayedCommit region =null;
+      for(DelayedCommit cur: delayed) {
+        if(region == null)
+          region = cur;
+        else if((cur.adaptor == region.adaptor) &&
+            cur.fname.equals(region.fname) && (cur.start <= region.uuid)) {
+          //since the list is sorted, region.start < cur.start
+          region.uuid = Math.max(region.uuid, cur.uuid); //merge
+          region.fOffset = Math.max(region.fOffset, cur.fOffset);
+        } else {
+          mergedList.add(region);
+          region= cur;
+        }
       }
+      mergedList.add(region);
     }
   }
   
@@ -276,8 +292,10 @@ public class AsyncAckSender extends ChukwaHttpSender{
   throws IOException, InterruptedException {
     adaptorReset.reportPending(expectedCommitResults);
     List<String> resp = reliablySend(method, ServletCollector.PATH);
-    List<DelayedCommit> toDelay = new ArrayList<DelayedCommit>();
+      //expect most of 'em to be delayed
+    List<DelayedCommit> toDelay = new ArrayList<DelayedCommit>(resp.size());
     ArrayList<CommitListEntry> result =  new ArrayList<CommitListEntry>();
+    
     for(int i = 0; i < resp.size(); ++i)  {
       if(resp.get(i).startsWith(ServletCollector.ACK_PREFIX))
         result.add(expectedCommitResults.get(i));
@@ -288,8 +306,11 @@ public class AsyncAckSender extends ChukwaHttpSender{
           log.warn("unexpected response: "+ resp.get(i));
         else
           log.info("waiting for " + m.group(1) + " to hit " + m.group(2) + " before committing "+ cle.adaptor);
-        toDelay.add(new DelayedCommit(cle.adaptor, cle.uuid, m.group(1), 
-            Long.parseLong(m.group(2))));
+        
+        String name = agent.getAdaptorName(cle.adaptor);
+        if(name != null)//null name implies adaptor no longer running
+          toDelay.add(new DelayedCommit(cle.adaptor, cle.uuid, cle.start, m.group(1), 
+                Long.parseLong(m.group(2)), name));
       }
     }
     delayCommits(toDelay);

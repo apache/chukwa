@@ -84,16 +84,17 @@ public class TestDelayedAcks extends TestCase {
     Chunk c1 = chunks.waitForAChunk();
     assertNotNull(c1);
     List<CommitListEntry> pendingAcks = new ArrayList<CommitListEntry>();
-    pendingAcks.add(new DelayedCommit(c1.getInitiator(), c1.getSeqID(), "foo", c1.getSeqID()));
+    pendingAcks.add(new DelayedCommit(c1.getInitiator(), c1.getSeqID(),
+        c1.getData().length, "foo", c1.getSeqID(), agent.getAdaptorName(c1.getInitiator())));
     restart.reportPending(pendingAcks);
 
     assertEquals(len, c1.getData().length);
     Thread.sleep(ACK_TIMEOUT*2);
-    restart.resetTimedOutAdaptors(ACK_TIMEOUT);
+    int resetCount = restart.resetTimedOutAdaptors(ACK_TIMEOUT);
     Chunk c2 = chunks.waitForAChunk(1000);
     assertNotNull(c2);
     assertEquals(len, c2.getData().length);
-    assertTrue(restart.getResetCount() > 0);
+    assertTrue(resetCount > 0);
     agent.shutdown();
 //start an adaptor -- chunks should appear in the connector
     //wait for timeout.  More chunks should appear.
@@ -119,7 +120,7 @@ public class TestDelayedAcks extends TestCase {
     String outputDirectory = tempDir.getPath() + "/test_DA" + System.currentTimeMillis();
 
     String seqWriterOutputDir = outputDirectory +"/seqWriter/seqOutputDir";
-    conf.set("chukwaCollector.outputDir", seqWriterOutputDir );
+    conf.set(SeqFileWriter.OUTPUT_DIR_OPT, seqWriterOutputDir );
 
     writer.init(conf);
     ArrayList<Chunk> oneChunk = new ArrayList<Chunk>();
@@ -178,7 +179,7 @@ public class TestDelayedAcks extends TestCase {
     conf.setInt("chukwaCollector.rotateInterval", ROTATEPERIOD);
     conf.set("writer.hdfs.filesystem", "file:///");
     String seqWriterOutputDir = outputDirectory +"/chukwa_sink";
-    conf.set("chukwaCollector.outputDir", seqWriterOutputDir );
+    conf.set(SeqFileWriter.OUTPUT_DIR_OPT, seqWriterOutputDir );
     conf.setInt(AsyncAckSender.POLLPERIOD_OPT, CLIENT_SCANPERIOD);
     conf.setInt(CommitCheckServlet.SCANPERIOD_OPT, SERVER_SCANPERIOD);
     conf.setBoolean(HttpConnector.ASYNC_ACKS_OPT, true);

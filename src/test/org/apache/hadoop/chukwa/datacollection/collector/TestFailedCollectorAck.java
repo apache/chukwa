@@ -41,9 +41,9 @@ public class TestFailedCollectorAck extends TestCase {
     sinkB.mkdir();
     conf.set(CommitCheckServlet.SCANPATHS_OPT, sinkA.getCanonicalPath()
         + "," + sinkB.getCanonicalPath());
-    conf.set("chukwaCollector.outputDir", sinkA.getCanonicalPath() );
+    conf.set(SeqFileWriter.OUTPUT_DIR_OPT, sinkA.getCanonicalPath() );
     ServletCollector collector1 = new ServletCollector(new Configuration(conf));
-    conf.set("chukwaCollector.outputDir",sinkB.getCanonicalPath() );
+    conf.set(SeqFileWriter.OUTPUT_DIR_OPT,sinkB.getCanonicalPath() );
     ServletCollector collector2 = new ServletCollector(conf);
     Server collector1_s = TestDelayedAcks.startCollectorOnPort(conf, PORTNO+1, collector1);
     Server collector2_s = TestDelayedAcks.startCollectorOnPort(conf, PORTNO+2, collector2);
@@ -86,7 +86,8 @@ public class TestFailedCollectorAck extends TestCase {
     }
   }
   
-  public void checkDirs(Configuration conf, String paths) throws IOException {
+  //returns number of dup chunks
+  public static long checkDirs(Configuration conf, String paths) throws IOException {
     
     ArrayList<Path> toScan = new ArrayList<Path>();
     ArrayList<ByteRange> bytes = new ArrayList<ByteRange>();
@@ -100,9 +101,7 @@ public class TestFailedCollectorAck extends TestCase {
     for(Path p: toScan) {
       
       FileStatus[] dataSinkFiles = localfs.listStatus(p, SinkArchiver.DATA_SINK_FILTER);
-      for(FileStatus fstatus: dataSinkFiles) {
-        System.out.println(fstatus.getPath().getName());
-      }
+   
       for(FileStatus fstatus: dataSinkFiles) {
         if(!fstatus.getPath().getName().endsWith(".done"))
           continue;
@@ -129,6 +128,7 @@ public class TestFailedCollectorAck extends TestCase {
         System.out.println(s);
     }
     assertEquals(0, sm.missingBytes);
+    return sm.dupBytes;
   }
 
 }

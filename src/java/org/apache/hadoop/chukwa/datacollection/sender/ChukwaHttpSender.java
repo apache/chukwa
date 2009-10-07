@@ -89,10 +89,11 @@ public class ChukwaHttpSender implements ChukwaSender {
   public static class CommitListEntry {
     public Adaptor adaptor;
     public long uuid;
-
-    public CommitListEntry(Adaptor a, long uuid) {
+    public long start; //how many bytes of stream
+    public CommitListEntry(Adaptor a, long uuid, long start) {
       adaptor = a;
       this.uuid = uuid;
+      this.start = start;
     }
   }
 
@@ -183,7 +184,8 @@ public class ChukwaHttpSender implements ChukwaSender {
       // store a CLE for this chunk which we will use to ack this chunk to the
       // caller of send()
       // (e.g. the agent will use the list of CLE's for checkpointing)
-      commitResults.add(new CommitListEntry(c.getInitiator(), c.getSeqID()));
+      commitResults.add(new CommitListEntry(c.getInitiator(), c.getSeqID(), 
+         c.getSeqID() - c.getData().length));
     }
     toSend.clear();
 

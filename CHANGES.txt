@@ -58,6 +58,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-390. Improvements to asynchronous acknowledgement mechanism. (asrabkin)
+
     CHUKWA-397. Allow "all" as search pattern. (asrabkin)
 
     CHUKWA-393. Support using pig on Chunks. (asrabkin)

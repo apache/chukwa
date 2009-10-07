@@ -21,6 +21,7 @@ import java.util.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.chukwa.datacollection.DataFactory;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
+import org.apache.hadoop.chukwa.datacollection.collector.servlet.CommitCheckServlet;
 import org.apache.hadoop.chukwa.datacollection.sender.AsyncAckSender;
 import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter;
@@ -28,7 +29,9 @@ import org.apache.log4j.Logger;
 
 public class AdaptorResetThread extends Thread {
   
-  Logger log = Logger.getLogger(AdaptorResetThread.class);
+  static Logger log = Logger.getLogger(AdaptorResetThread.class);
+  public static final String TIMEOUT_OPT = "connector.commitpoll.timeout";
+  
   
   int resetCount = 0;
   private static class AdaptorStat {
@@ -40,24 +43,34 @@ public class AdaptorResetThread extends Thread {
     }
   }
 
+
+  int timeout = 15*60 * 1000; //default to wait fifteen minutes for an ack
+               //note that this is overridden using the poll and rotate periods.
+  
   Map<Adaptor, AdaptorStat> status;
-  int timeout = 10*60 * 1000; //default to wait ten minutes for an ack
   ChukwaAgent agent;
-  public static final String TIMEOUT_OPT = "connector.commitpoll.timeout";
   private volatile boolean running = true;
   
   public AdaptorResetThread(Configuration conf, ChukwaAgent a) {
-    timeout = 2* conf.getInt(SeqFileWriter.ROTATE_INTERVAL_OPT, timeout/2);
-      //default to 2x rotation interval, if rotate interval is defined.
-    timeout = conf.getInt(TIMEOUT_OPT, timeout);
-      //or explicitly set timeout
+        //
+    timeout =  conf.getInt(SeqFileWriter.ROTATE_INTERVAL_OPT, timeout/3) 
+        + conf.getInt(AsyncAckSender.POLLPERIOD_OPT, timeout/3) 
+        + conf.getInt(CommitCheckServlet.SCANPERIOD_OPT, timeout/3);
+    
+    timeout = conf.getInt(TIMEOUT_OPT, timeout); //unless overridden
+     
     status = new LinkedHashMap<Adaptor, AdaptorStat>();
     this.agent = a;
     this.setDaemon(true);
   }
   
-  public void resetTimedOutAdaptors(int timeSinceLastCommit) {
-    
+  /**
+   * Resets all adaptors with outstanding data more than timeSinceLastCommit old.
+   * @param timeSinceLastCommit
+   * @return the number of reset adaptors
+   */
+  public int resetTimedOutAdaptors(int timeSinceLastCommit) {
+    int resetThisTime = 0;
     long timeoutThresh = System.currentTimeMillis() - timeSinceLastCommit;
     List<Adaptor> toResetList = new ArrayList<Adaptor>(); //also contains stopped 
     //adaptors
@@ -67,42 +80,52 @@ public class AdaptorResetThread extends Thread {
         ChukwaAgent.Offset off = agent.offset(ent.getKey());
         if(off == null) {
           toResetList.add(ent.getKey());
-        } else if(stat.maxByteSent > off.offset 
-            && stat.lastCommitTime < timeoutThresh) {
+        } else if(stat.maxByteSent > off.offset  //some data outstanding
+            && stat.lastCommitTime < timeoutThresh) { //but no progress made
           toResetList.add(ent.getKey());
-          log.warn("restarting " + off.id + " at " + off.offset + " due to collector timeout");
+          log.warn("restarting " + off.id + " at " + off.offset + " due to timeout; "+
+              "last commit was ");
         }
       }
     }
     
     for(Adaptor a: toResetList) {
-      status.remove(a);
+      status.remove(a); //it'll get added again when adaptor resumes, if it does
       ChukwaAgent.Offset off = agent.offset(a);
       if(off != null) {
         agent.stopAdaptor(off.id, false);
         
-          //We can do this safely if we're called in the same thread as the sends,
-        //since then we'll be synchronous with sends, and guaranteed to be
-        //interleaved between two successive sends
-        //DataFactory.getInstance().getEventQueue().purgeAdaptor(a);
-        
         String a_status = a.getCurrentStatus();
         agent.processAddCommand("add " + off.id + "= " + a.getClass().getCanonicalName()
              + " "+ a_status + " " + off.offset);
-        resetCount ++;
+        resetThisTime ++;
         //will be implicitly added to table once adaptor starts sending
       } 
-       //implicitly do nothing if adaptor was stopped
+       //implicitly do nothing if adaptor was stopped. We already removed
+      //its entry from the status table.
     }
+    resetCount += resetThisTime;
+    return resetThisTime;
   }
   
   public synchronized void reportPending(List<AsyncAckSender.CommitListEntry> delayedCommits) {
+    long now = System.currentTimeMillis();
     for(AsyncAckSender.CommitListEntry dc: delayedCommits) {
       AdaptorStat a = status.get(dc.adaptor);
       if(a == null)
-        status.put(dc.adaptor, new AdaptorStat(0, dc.uuid));
+        status.put(dc.adaptor, new AdaptorStat(now, dc.uuid));
       else if(a.maxByteSent < dc.uuid)
           a.maxByteSent = dc.uuid;
+    }
+  }
+  
+  public synchronized void reportCommits(Set<Adaptor> commits) {
+    long now = System.currentTimeMillis();
+    for(Adaptor a: commits) {
+      if(status.containsKey(a)) {
+        status.get(a).lastCommitTime = now;
+      } else
+        log.warn("saw commit for adaptor " + a + " before seeing sends"); 
     }
   }
   

@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import java.util.*;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
+import org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter;
 import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
 import org.apache.hadoop.chukwa.extraction.archive.SinkArchiver;
 import org.apache.hadoop.conf.Configuration;
@@ -129,7 +130,7 @@ public class CommitCheckServlet extends HttpServlet {
       oldEntries = new PriorityQueue<PurgeTask>();
       checkInterval = conf.getInt(SCANPERIOD_OPT, checkInterval);
       
-      String sinkPath = conf.get("chukwaCollector.outputDir", "/chukwa/logs");
+      String sinkPath = conf.get(SeqFileWriter.OUTPUT_DIR_OPT, "/chukwa/logs");
       pathsToSearch.add(new Path(sinkPath));
       
       String additionalSearchPaths = conf.get(SCANPATHS_OPT, "");

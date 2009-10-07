@@ -43,6 +43,7 @@ import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
 import org.apache.hadoop.chukwa.datacollection.agent.metrics.AgentMetrics;
 import org.apache.hadoop.chukwa.datacollection.connector.Connector;
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
+import org.apache.hadoop.chukwa.datacollection.sender.ChukwaHttpSender.CommitListEntry;
 import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
 import org.apache.hadoop.chukwa.util.AdaptorNamingUtils;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
@@ -70,7 +71,7 @@ public class ChukwaAgent implements AdaptorManager {
   Connector connector = null;
 
   // doesn't need an equals(), comparator, etc
-  static class Offset {
+  public static class Offset {
     public Offset(long l, String id) {
       offset = l;
       this.id = id;
@@ -78,6 +79,9 @@ public class ChukwaAgent implements AdaptorManager {
 
     final String id;
     volatile long offset;
+    public long offset() {
+      return this.offset;
+    }
   }
 
   public static class AlreadyRunningException extends Exception {
@@ -571,7 +575,7 @@ public class ChukwaAgent implements AdaptorManager {
     }
   }
 
-  Offset offset(Adaptor a) {
+  public Offset offset(Adaptor a) {
     Offset o = adaptorPositions.get(a);
     return o;
   }
@@ -646,19 +650,16 @@ public class ChukwaAgent implements AdaptorManager {
   }
 
   /**
-   * Returns the last offset at which a given adaptor was checkpointed
-   * 
-   * @param a the adaptor in question
-   * @return that adaptor's last-checkpointed offset
-   */
-  long getOffset(Adaptor a) { //FIXME: do we need this method?
-    return adaptorPositions.get(a).offset;
-  }
-
-  /**
    * Returns the control socket for this agent.
    */
   private AgentControlSocketListener getControlSock() {
     return controlSock;
+  }
+
+  public String getAdaptorName(Adaptor initiator) {
+    Offset o = adaptorPositions.get(initiator);
+    if(o != null)
+      return o.id;
+    else return null;
   }
 }

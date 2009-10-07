@@ -80,7 +80,7 @@ public class TestChukwaWriters extends TestCase{
       confSeqWriter.set("chukwaCollector.rotateInterval", "300000");
       confSeqWriter.set("writer.hdfs.filesystem", "file:///");
       String seqWriterOutputDir = outputDirectory +"/seqWriter/seqOutputDir";
-      confSeqWriter.set("chukwaCollector.outputDir", seqWriterOutputDir );
+      confSeqWriter.set(SeqFileWriter.OUTPUT_DIR_OPT, seqWriterOutputDir );
       
       seqWriter.init(confSeqWriter);
       Thread.sleep(5000);

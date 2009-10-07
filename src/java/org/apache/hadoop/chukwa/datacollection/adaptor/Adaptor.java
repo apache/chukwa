@@ -37,6 +37,13 @@ import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
  * with k < n, it is allowed to send different values for bytes k through n the
  * second time around. However, the stream must still be parseable, assuming
  * that bytes 0-k come from the first run,and bytes k - n come from the second.
+ * 
+ * Note that Adaptor implements neither equals() nor hashCode(). It is never
+ * safe to compare two adaptors with equals(). It is safe to use adaptors
+ * as hash table keys, though two distinct Adaptors will appear as two distinct
+ * keys.  This is the desired behavior, since it means that messages intended
+ * for one Adaptor will never be received by another, even across Adaptor
+ *  restarts.
  */
 public interface Adaptor {
   /**
