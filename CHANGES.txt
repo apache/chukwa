@@ -2,6 +2,8 @@ Chukwa Change Log
 
 Trunk (unreleased changes)
 
+Release 0.3
+
   NEW FEATURES
 
     CHUKWA-344. State-Machine Generation for input to SALSA visualizations. (Jiaqi Tan via asrabkin)
@@ -221,6 +223,8 @@ Trunk (unreleased changes)
     CHUKWA-216. postProcess.sh should use HADOOP_CONF_DIR to find hadoop-site.xml. (Jerome Boulon via asrabkin)
 
     CHUKWA-261. Added X axis label for non Time Series graphs. (Eric Yang)
+
+Release 0.2 - Unreleased
 
 Release 0.1.2 - 2009-05-14
 
