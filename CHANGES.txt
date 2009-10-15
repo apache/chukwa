@@ -150,6 +150,8 @@ Release 0.3
 
   BUG FIXES
 
+    CHUKWA-401. Fix race condition in Dir Tailing adaptor test case. (asrabkin) 
+
     CHUKWA-398. Make ConstRateAdaptor more deterministic. (asrabkin)
 
     CHUKWA-386. Fix a bug in echo id to the browser for the iframe servlet. (Eric Yang)

@@ -29,6 +29,7 @@ public class TestDirTailingAdaptor extends TestCase {
 
   ChukwaAgent agent;
   File baseDir;
+  static final int SCAN_INTERVAL = 1000;
 
   public void testDirTailer() throws IOException,
   ChukwaAgent.AlreadyRunningException, InterruptedException {
@@ -38,6 +39,7 @@ public class TestDirTailingAdaptor extends TestCase {
     File checkpointDir = new File(baseDir, "dirtailerTestCheckpoints");
     createEmptyDir(checkpointDir);
     
+    conf.setInt("adaptor.dirscan.intervalMs", SCAN_INTERVAL);
     conf.set("chukwaAgent.checkpoint.dir", checkpointDir.getCanonicalPath());
     conf.set("chukwaAgent.checkpoint.name", "checkpoint_");
     conf.setInt("chukwaAgent.control.port", 0);
@@ -73,7 +75,8 @@ public class TestDirTailingAdaptor extends TestCase {
     anOldFile.setLastModified(10);//just after epoch
     agent = new ChukwaAgent(conf); //restart agent.
     
-
+    Thread.sleep(3 * SCAN_INTERVAL); //wait a bit for the new file to be detected.
+    
     //make sure we started tailing the new, not the old, file.
     for(Map.Entry<String, String> adaptors : agent.getAdaptorList().entrySet()) {
       System.out.println(adaptors.getKey() +": " + adaptors.getValue());
