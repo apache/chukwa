@@ -35,7 +35,7 @@ public class TestDirTailingAdaptor extends TestCase {
   ChukwaAgent.AlreadyRunningException, InterruptedException {
     
     Configuration conf = new Configuration();
-    baseDir = new File(System.getProperty("test.build.data", "/tmp"));
+    baseDir = new File(System.getProperty("test.build.data", "/tmp")).getCanonicalFile();
     File checkpointDir = new File(baseDir, "dirtailerTestCheckpoints");
     createEmptyDir(checkpointDir);
     
@@ -75,8 +75,9 @@ public class TestDirTailingAdaptor extends TestCase {
     anOldFile.setLastModified(10);//just after epoch
     agent = new ChukwaAgent(conf); //restart agent.
     
-    Thread.sleep(3 * SCAN_INTERVAL); //wait a bit for the new file to be detected.
-    
+   Thread.sleep(3 * SCAN_INTERVAL); //wait a bit for the new file to be detected.
+   assertTrue(aNewFile.exists());
+   
     //make sure we started tailing the new, not the old, file.
     for(Map.Entry<String, String> adaptors : agent.getAdaptorList().entrySet()) {
       System.out.println(adaptors.getKey() +": " + adaptors.getValue());
@@ -85,6 +86,7 @@ public class TestDirTailingAdaptor extends TestCase {
     //should be four adaptors: the DirTailer on emptyDir, the DirTailer on the full dir,
     //and FileTailers for File inDir and file newfile
     assertEquals(4, agent.adaptorCount());
+    agent.shutdown();
     
     nukeDirContents(checkpointDir);//nuke dir
     checkpointDir.delete();
