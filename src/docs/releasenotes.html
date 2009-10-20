@@ -1,33 +1,19 @@
-<html><title>Chukwa 0.2.0 Release Notes</title>
+<html><title>Chukwa 0.3.0 Release Notes</title>
 <body>
-<h2>Release Notes - Hadoop Chukwa - Version 0.2</h2>
+<h2>Release Notes - Hadoop Chukwa - Version 0.3</h2>
 
 <h3>Overall status</h3>
 
-This is the first public release of Chukwa, a log analysis framework on top of Hadoop.  Chukwa has been tested at scale, and is reasonably robust and well behaved.
+This is the first public release of Chukwa, a log analysis framework on top of Hadoop.  Chukwa has been tested at scale and used in some production settings, and is reasonably robust and well behaved.  For instructions on setting up Chukwa, see <a href="http://hadoop.apache.org/chukwa/docs/current/admin.html">the administration guide</a> and the rest of the Chukwa documentation.
 
-Documentation is still sparse, and error reporting isn't adequately clear.  For instructions on setting up Chukwa, see <a href="http://hadoop.apache.org/chukwa/docs/current/admin.html">the administration guide</a>.
+The collection components of Chukwa -- adaptors, agents, and collectors -- are approaching general-use quality. They've been fairly aggressively tested, and can be counted on to perform properly and recover from failures.
+
+HICC, the visualization component, is "beta" quality.  It's been used succesfully at multiple sites, but it's still brittle. Work is ongoing. Documentation is still sparse, and error reporting isn't always sufficiently clear. 
 
 <h3>Requirements</h3>
 Chukwa relies on Java 1.6
 The back-end processing requires Hadoop 0.18+.
 Collecting Hadoop logs and metrics requires Hadoop 0.20+.
-
-<h3>Bug fixes</h3>
-Innumerable bugs have been fixed; see the changes file for details.
-
-<h3>Major Changes:</h3>
-
-<ul><li>
-As of Chukwa 0.2, adaptor IDs are now arbitrary strings, instead of sequentially assigned integers. These IDs can be specified by the user.  The agent control protocol has been modified slightly to accommodate this.
-</li><li>
-HICC now supports graphing the results of arbitrary SQL statements.
-</li> <li>
-Tools have been added to support bulk-loading old data.
-</li> <li>
-Support for processing Chukwa data with Pig
-</li>
-</ul>
 
 <h3>Known Limitations</h3>
 
@@ -44,12 +30,8 @@ HDFSUsage script for monitoring hdfs usage in /user, this one needs to run as sp
 <li> System metrics collection may fail or be incomplete if your versions of sar and iostat do not match the ones that Chukwa expects.  (See also <a href="https://issues.apache.org/jira/browse/CHUKWA-260">CHUKWA-260)</a></li>
 </li>
 
-<li> 
-Spill files pile up for JobData in the 19700101 folder because one of the parsed line doesn't contain a timestamp. (<a href="https://issues.apache.org/jira/browse/CHUKWA-335">CHUKWA-335</a>)
-</li>
-
 <li>
-The data in some of the chukwa agent metrics monthly, quarterly, yearly, decade tables is wrong. The recordname column holds host data, and the host column holds recordname data. 
+The data in a few of the chukwa agent metrics monthly, quarterly, yearly, decade tables is wrong. The recordname column holds host data, and the host column holds recordname data. 
 (<a href="https://issues.apache.org/jira/browse/CHUKWA-337">CHUKWA-337</a>)
 </li>
 
