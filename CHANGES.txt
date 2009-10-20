@@ -150,6 +150,8 @@ Release 0.3
 
   BUG FIXES
 
+    CHUKWA-402. Added readme and license notice file. (asrabkin)
+
     CHUKWA-401. Fix race condition in Dir Tailing adaptor test case. (asrabkin)
 
     CHUKWA-398. Make ConstRateAdaptor more deterministic. (asrabkin)
