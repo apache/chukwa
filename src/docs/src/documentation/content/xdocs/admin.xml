@@ -89,8 +89,8 @@
 
 <section>
 <title>Chukwa Binary</title>
-<p>To get a Chukwa distribution, download a recent stable release of Hadoop from one of the Apache Download Mirrors (see 
- <a href="http://hadoop.apache.org/chukwa/releases.html)./">Hadoop Chukwa Releases</a>.  
+<p>To get a Chukwa distribution, download a recent stable release of Chukwa from one of the Apache Download Mirrors (see 
+ <a href="http://hadoop.apache.org/chukwa/">Hadoop Chukwa Releases</a>.  
 </p>
 </section>
 
@@ -106,7 +106,7 @@ For example, copy the TODO-JAVA-HOME environment variable from the default.prope
 
 <section>
 <title>Hadoop Configuration Files</title>
-<p>The Hadoop configuration files are located in the HADOOP_HOME/conf directory. To setup Chukwa, you need to change some of the hadoop configuration files.</p>
+<p>The Hadoop configuration files are located in the HADOOP_HOME/conf directory. To setup Chukwa to collect logs from Hadoop, you need to change some of the hadoop configuration files.</p>
 <ol>
 	<li>Copy CHUKWA_HOME/conf/hadoop-log4j.properties file to HADOOP_HOME/conf/log4j.properties</li>
 	<li>Copy CHUKWA_HOME/conf/hadoop-metrics.properties file to HADOOP_HOME/conf/hadoop-metrics.properties</li>
