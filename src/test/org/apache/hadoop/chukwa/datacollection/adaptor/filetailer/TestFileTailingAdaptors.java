@@ -42,6 +42,7 @@ public class TestFileTailingAdaptors extends TestCase {
     conf.set("chukwaAgent.checkpoint.dir", baseDir.getCanonicalPath());
     conf.setBoolean("chukwaAgent.checkpoint.enabled", false);
     conf.setInt("chukwaAgent.adaptor.context.switch.time", 100);
+    conf.set("chukwaAgent.control.port", "0");
 
     testFile = makeTestFile("chukwaCrSepTest", 80);
 
@@ -49,7 +50,7 @@ public class TestFileTailingAdaptors extends TestCase {
 
   public void testCrSepAdaptor() throws IOException, InterruptedException,
       ChukwaAgent.AlreadyRunningException {
-    ChukwaAgent agent = new ChukwaAgent();
+    ChukwaAgent agent = new ChukwaAgent(conf);
     // Remove any adaptor left over from previous run
 
     // sleep for some time to make sure we don't get chunk from existing streams
@@ -132,15 +133,6 @@ public class TestFileTailingAdaptors extends TestCase {
     assertEquals(1, agent.adaptorCount());
     chunks.clear();
     agent.shutdown();
-  }
-
-  public static void main(String[] args) {
-    try {
-      TestFileTailingAdaptors tests = new TestFileTailingAdaptors();
-      tests.testCrSepAdaptor();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
   }
 
 }
