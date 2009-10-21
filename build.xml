@@ -484,7 +484,7 @@
                     <include name="hicc.war" />
                   </fileset>
                 </copy>
-                <copy file="${basedir}/conf/chukwa-demux-conf.xml.template" tofile="${test.build.dir}/conf/chukwa-demux-conf.xml"></copy>
+                <copy file="${basedir}/conf/chukwa-demux-conf.xml" tofile="${test.build.dir}/conf/chukwa-demux-conf.xml"></copy>
                 <copy file="${basedir}/conf/log4j.properties" tofile="${test.build.dir}/conf/log4j.properties"></copy>
                 <copy file="${build.dir}/hicc.war" tofile="${test.build.classes}/webapps/hicc.war"></copy>
 		<junit showoutput="${test.output}" fork="yes" printsummary="${test.printsummary}" forkmode="${test.junit.fork.mode}" maxmemory="${test.junit.maxmemory}" dir="${test.build.dir}/classes/" timeout="${test.timeout}" errorProperty="tests.failed" failureProperty="tests.failed">
@@ -1018,6 +1018,9 @@
 			</fileset>
 		</copy>
 
+		<copy file="${basedir}/conf/jdbc.conf.template" tofile="${build.dir}/conf/jdbc.conf.template">
+		</copy>
+
 		<copy file="${basedir}/conf/alert.template" tofile="${build.dir}/conf/alert">
 			<filterchain>
 				<replacetokens>
@@ -1123,11 +1126,13 @@
                 <mkdir dir="${build.dir}/${final.name}/script" />
                 <mkdir dir="${build.dir}/${final.name}/script/pig" />
 		<mkdir dir="${build.dir}/${final.name}/docs" />
+		<mkdir dir="${build.dir}/${final.name}/ivy" />
+		<mkdir dir="${build.dir}/${final.name}/logs" />
 		<mkdir dir="${build.dir}/${final.name}/opt" />
+		<mkdir dir="${build.dir}/${final.name}/test" />
 		<mkdir dir="${build.dir}/${final.name}/tools" />
 		<mkdir dir="${build.dir}/${final.name}/var" />
 		<mkdir dir="${build.dir}/${final.name}/var/run" />
-		<mkdir dir="${build.dir}/${final.name}/logs" />
 		<mkdir dir="${build.dir}/${final.name}/webapps" />
 		<mkdir dir="${build.dir}/${final.name}/webapps/sandbox" />
 		
@@ -1176,6 +1181,10 @@
 			<fileset dir="${basedir}/contrib/chukwa-pig" />
 		</copy>
 		
+		<copy todir="${build.dir}/${final.name}/contrib/xtrace" failonerror="false">
+			<fileset dir="${basedir}/contrib/xtrace" />
+		</copy>
+		
 		<copy todir="${build.dir}/${final.name}/tools">
 			<fileset dir="${tools.dir}" />
 		</copy>
@@ -1215,6 +1224,14 @@
 		</copy>
 
 		<copy todir="${build.dir}/${final.name}" file="build.xml" />
+		<copy todir="${build.dir}/${final.name}" file="ivy.xml" />
+		<copy todir="${build.dir}/${final.name}" file="default.properties" />
+		<copy todir="${build.dir}/${final.name}/ivy">
+			<fileset dir="ivy"/>
+		</copy>
+		<copy todir="${build.dir}/${final.name}/test">
+			<fileset dir="test"/>
+		</copy>
 
 	</target>
 
