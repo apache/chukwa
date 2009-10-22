@@ -48,7 +48,6 @@ public class TestFileAdaptor extends TestCase {
 
     chunks = new ChunkCatcherConnector();
     chunks.start();
-    Logger.getRootLogger().setLevel(Level.WARN);
   }
   
   public File makeTestFile() throws IOException {
