@@ -14,7 +14,7 @@ The NagiosAppender library was written by Jar Lyons and is under the Apache Lice
 Prefuse is under BSD License
 * Available from http://prefuse.org/.
 
-iUI is licensed under a Creative Commons Attribution-Share Alike 3.0 License.
+iUI is under a BSD license, with media portions under a Creative Commons Attribution-Share Alike 3.0 License.
 * Available from http://code.google.com/p/iui/
 
 JChronic is under an MIT license.
