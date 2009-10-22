@@ -6,11 +6,17 @@ The Apache Software Foundation (http://www.apache.org/).
 
 
 HTMLFilter was written by Joseph O'Connell and is licensed under a Creative Commons Attribution-ShareAlike 2.5 License
- * http://creativecommons.org/licenses/by-sa/2.5/
+* http://josephoconnell.com/java/xss-html-filter/
 
 The NagiosAppender library was written by Jar Lyons and is under the Apache License, version 2.0
-* http://sourceforge.net/projects/nagiosappender/
+* Available from http://sourceforge.net/projects/nagiosappender/
 
-Prefuse is under BSD License, and is available from http://prefuse.org/.
+Prefuse is under BSD License
+* Available from http://prefuse.org/.
 
+iUI is licensed under a Creative Commons Attribution-Share Alike 3.0 License.
+* Available from http://code.google.com/p/iui/
+
+JChronic is under an MIT license.
+* Available from https://jchronic.dev.java.net/
 
