@@ -27,6 +27,8 @@ The collection components of Chukwa -- adaptors, agents, and collectors -- are a
 
 HICC, the visualization component, is "beta" quality.  It's been used succesfully at multiple sites, but it's still brittle. Work is ongoing. Documentation is still sparse, and error reporting isn't always sufficiently clear. 
 
+Chukwa has not been extensively audited for security vulnerabilities. Do not run it except in trusted environments. Never run Chukwa as root: By default, the ExecAdaptor allows arbitrary remote execution.
+
 <h3>Requirements</h3>
 Chukwa relies on Java 1.6
 The back-end processing requires Hadoop 0.18+.
