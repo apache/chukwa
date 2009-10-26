@@ -58,7 +58,7 @@
 	    <code>chukwaCollector.writerClass</code> specifies a Java class to instantiate
 	    and use as a writer. See the <code>ChukwaWriter</code> javadoc for details.
 	  </p>  <p>
-	  	One particularly useful Writer class is <code>PipelineWriter</code>, which
+	  	One particularly useful Writer class is <code>PipelineStageWriter</code>, which
 	  	lets you string together a series of <code>PipelineableWriters</code>
 	  	for pre-processing or post-processing incoming data.
 	  	As an example, the SocketTeeWriter class allows other programs to get incoming chunks

@@ -26,8 +26,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.josephoconnell.html.HTMLInputFilter;
-
 public class XssFilter {
     private HttpServletRequest request = null;
     private static Log log = LogFactory.getLog(XssFilter.class);
@@ -85,7 +83,7 @@ public class XssFilter {
         if(input==null) {
             return null;
         }
-        String clean = new HTMLInputFilter().filter( input.replaceAll("\"", "%22").replaceAll("\'","%27"));
+        String clean = input.replaceAll("\"", "%22").replaceAll("\'","%27");
         return clean.replaceAll("<", "%3C").replaceAll(">", "%3E");
     }
 }

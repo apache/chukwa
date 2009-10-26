@@ -4,19 +4,28 @@ Copyright 2009 The Apache Software Foundation
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
+Chukwa incorporates a number of components, not copyright by the Apache
+Foundation, and under permissive licenses.
 
-HTMLFilter was written by Joseph O'Connell and is licensed under a Creative Commons Attribution-ShareAlike 2.5 License
-* http://josephoconnell.com/java/xss-html-filter/
+Script.aculo.us is Copyright © 2005-2008 Thomas Fuchs, under a BSD License
+* http://script.aculo.us/
+
+YUI is copyright 2009 by Yahoo, Inc, and distributed under a BSD license.
+* Available from http://developer.yahoo.com/yui/
+
+The Prototype AJAX library is freely redistributable.
+* http://www.prototypejs.org/
 
 The NagiosAppender library was written by Jar Lyons and is under the Apache License, version 2.0
 * Available from http://sourceforge.net/projects/nagiosappender/
 
-Prefuse is under BSD License
+Prefuse is under BSD License.
 * Available from http://prefuse.org/.
 
-iUI is under a BSD license, with media portions under a Creative Commons Attribution-Share Alike 3.0 License.
+iUI is under a BSD license, with media portions under a Creative Commons Attribution-Share Alike 3.0 License. 
+Copyright is held by its developers.
 * Available from http://code.google.com/p/iui/
 
-JChronic is under an MIT license.
+JChronic is under an MIT license, copyright is held by the developers.
 * Available from https://jchronic.dev.java.net/
 

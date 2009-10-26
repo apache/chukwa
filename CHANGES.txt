@@ -60,6 +60,8 @@ Release 0.3
 
   IMPROVEMENTS
 
+    CHUKWA-406. Improvements to documentation, plus license audit and improved notice. (asrabkin)
+
     CHUKWA-390. Improvements to asynchronous acknowledgement mechanism. (asrabkin)
 
     CHUKWA-397. Allow "all" as search pattern. (asrabkin)
