@@ -7,6 +7,10 @@ The Apache Software Foundation (http://www.apache.org/).
 Chukwa incorporates a number of components, not copyright by the Apache
 Foundation, and under permissive licenses.
 
+
+Chukwa uses JUnit for testing. JUnit is under the Common Public License: http://junit.sourceforge.net/cpl-v10.html
+* Available from http://junit.sourceforge.net/
+
 Script.aculo.us is Copyright © 2005-2008 Thomas Fuchs, under a BSD License
 * http://script.aculo.us/
 
