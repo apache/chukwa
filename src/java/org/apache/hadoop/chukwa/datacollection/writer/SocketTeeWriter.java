@@ -159,6 +159,7 @@ public class SocketTeeWriter implements PipelineableWriter {
         sock.setSoTimeout(timeout);
         sock.setKeepAlive(USE_KEEPALIVE);
         in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+        out = new DataOutputStream(sock.getOutputStream());
         String cmd = in.readLine();
         if(!cmd.contains(" ")) {
           
@@ -175,7 +176,6 @@ public class SocketTeeWriter implements PipelineableWriter {
         
         String cmdAfterSpace = cmd.substring(cmd.indexOf(' ')+1);
         rules = new Filter(cmdAfterSpace);
-        out = new DataOutputStream(sock.getOutputStream());
 
           //now that we read everything OK we can add ourselves to list, and return.
         synchronized(tees) {
