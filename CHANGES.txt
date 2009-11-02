@@ -2,6 +2,15 @@ Chukwa Change Log
 
 Trunk (unreleased changes)
 
+  NEW FEATURES
+
+  IMPROVEMENTS
+
+    CHUKWA-408. Add optional metadata to real-time feed. (asrabkin)
+
+  BUG FIXES
+  
+
 Release 0.3
 
   NEW FEATURES

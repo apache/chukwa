@@ -101,7 +101,9 @@
 	  	Specifying "WRITABLE" will cause the chunks to be written using Hadoop's 
 	  	Writable serialization framework. "RAW" will send the internal data of the
 	  	Chunk, without any metadata, prefixed by its length encoded as a 32-bit int,
-	  	big-endian.  
+	  	big-endian.  "HEADER" is similar to "RAW", but with a one-line header in
+	  	front of the content. Header format is <code>hostname</code> 
+	  	<code>datatype</code> <code>stream name</code> <code>offset</code>, separated by spaces.
 	  	</p>
 	  	<p>
 	  	The filter will be inactivated when the socket is closed.

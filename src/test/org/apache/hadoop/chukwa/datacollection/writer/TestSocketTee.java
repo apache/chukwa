@@ -108,8 +108,26 @@ public class TestSocketTee  extends TestCase{
     l.add(new ChunkImpl("dt3", "name", 3, new byte[] {'c', 'a', 'd'}, null));
     psw.add(l);
     assertEquals(5, CaptureWriter.outputs.size());
-//    Thread.sleep(1000);
-   
+    
+    
+    Socket s3 = new Socket("localhost", SocketTeeWriter.DEFAULT_PORT);
+    s3.getOutputStream().write((SocketTeeWriter.ASCII_HEADER+" all\n").getBytes());
+    dis = new DataInputStream(s3.getInputStream());
+    dis.readFully(new byte[3]); //read "OK\n"
+    l = new ArrayList<Chunk>();
+    chunk= new ChunkImpl("dataTypeFoo", "streamName", 4, new byte[] {'t','e','x','t'}, null);
+    chunk.setSource("hostNameFoo");
+    l.add(chunk);
+    psw.add(l);
+    assertEquals(6, CaptureWriter.outputs.size());
+    len = dis.readInt();
+    data = new byte[len];
+    read = dis.read(data);
+    String rcvd = new String(data);
+    System.out.println("got: " + rcvd);
+    assertTrue(rcvd.equals("hostNameFoo dataTypeFoo streamName 4\ntext"));
+    s3.close();
+    dis.close();
     
   }
   

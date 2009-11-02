@@ -61,6 +61,10 @@ public class SocketTeeWriter implements PipelineableWriter {
 
   public static final String WRITABLE = "WRITABLE";
   public static final String RAW = "RAW";
+  public static final String ASCII_HEADER = "HEADER";
+  
+  static enum DataFormat {Raw, Writable, Header};
+  
   static boolean USE_KEEPALIVE = true;
   static final int DEFAULT_PORT = 9094;
   static int QUEUE_LENGTH = 1000;
@@ -115,17 +119,18 @@ public class SocketTeeWriter implements PipelineableWriter {
     BufferedReader in;
     DataOutputStream out;
     Filter rules;
-    boolean sendRawBytes;
+    DataFormat fmt;
     final BlockingQueue<Chunk> sendQ;
+    
     public Tee(Socket s) throws IOException {
       sock = s;
       //now initialize asynchronously
       sendQ = new ArrayBlockingQueue<Chunk>(QUEUE_LENGTH);
       
-    Thread t = new Thread(this);
-    t.setDaemon(true);
-    t.start();
-  }
+      Thread t = new Thread(this);
+      t.setDaemon(true);
+      t.start();
+    }
     
     public void run() {
       setup();
@@ -133,15 +138,23 @@ public class SocketTeeWriter implements PipelineableWriter {
         while(sock.isConnected()) {
           Chunk c = sendQ.take();
           
-          if(sendRawBytes) {
+          if(fmt == DataFormat.Raw) {
             byte[] data = c.getData();
             out.writeInt(data.length);
             out.write(data);
-          } else
+          } else if(fmt == DataFormat.Writable)
             c.write(out);
+          else {
+            byte[] data = c.getData();
+            byte[] header = (c.getSource()+ " " + c.getDataType() + " " + c.getStreamName()+ " "+  
+                c.getSeqID()+"\n").getBytes(); 
+            out.writeInt(data.length+ header.length);
+            out.write(header);
+            out.write(data);
+          }
         }
       } catch(IOException e) {
-        log.info("lost tee", e);
+        log.info("lost tee: "+ e.toString());
         synchronized(tees) {
           tees.remove(this);
         }
@@ -168,14 +181,22 @@ public class SocketTeeWriter implements PipelineableWriter {
         }
         String uppercased = cmd.substring(0, cmd.indexOf(' ')).toUpperCase();
         if(RAW.equals(uppercased))
-          sendRawBytes = true;
-        else if(!WRITABLE.equals(uppercased)) {
+          fmt = DataFormat.Raw;
+        else if(WRITABLE.equals(uppercased))
+          fmt = DataFormat.Writable;
+        else if(ASCII_HEADER.equals(uppercased))
+          fmt = DataFormat.Header;
+        else {
           throw new PatternSyntaxException("bad command '" + uppercased+
-              "' -- starts with neither '"+ RAW+ "' nor '"+ WRITABLE+"'.", cmd, -1);
+              "' -- starts with neither '"+ RAW+ "' nor '"+ WRITABLE + " nor " 
+              + ASCII_HEADER+"'.", cmd, -1);
         }
         
         String cmdAfterSpace = cmd.substring(cmd.indexOf(' ')+1);
-        rules = new Filter(cmdAfterSpace);
+        if(cmdAfterSpace.toLowerCase().equals("all"))
+          rules = Filter.ALL;
+        else
+          rules = new Filter(cmdAfterSpace);
 
           //now that we read everything OK we can add ourselves to list, and return.
         synchronized(tees) {
