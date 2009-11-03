@@ -6,6 +6,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-407. Make SocketTeeWriter work in single-stage pipeline. (Thushara Wijeratna via asrabkin)
+
     CHUKWA-408. Add optional metadata to real-time feed. (asrabkin)
 
   BUG FIXES

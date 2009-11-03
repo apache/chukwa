@@ -246,7 +246,9 @@ public class SocketTeeWriter implements PipelineableWriter {
 
   @Override
   public CommitStatus add(List<Chunk> chunks) throws WriterException {
-    CommitStatus rv = next.add(chunks); //pass data through
+    CommitStatus rv = ChukwaWriter.COMMIT_OK;
+    if (next != null)
+	rv = next.add(chunks); //pass data through
     synchronized(tees) {
       Iterator<Tee> loop = tees.iterator();
       while(loop.hasNext()) {
@@ -261,7 +263,8 @@ public class SocketTeeWriter implements PipelineableWriter {
 
   @Override
   public void close() throws WriterException {
-    next.close();
+    if (next != null) 
+	next.close();
     running = false;
     listenThread.shutdown();
   }
