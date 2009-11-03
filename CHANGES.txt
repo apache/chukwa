@@ -4,9 +4,11 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
-  IMPROVEMENTS
+    CHUKWA-405  Add a "stop all" command. (asrabkin)
+ 
+   IMPROVEMENTS
 
-    CHUKWA-407. Make SocketTeeWriter work in single-stage pipeline. (Thushara Wijeratna via asrabkin)
+    CHUKWA-409. Make SocketTeeWriter work in single-stage pipeline. (Thushara Wijeratna via asrabkin)
 
     CHUKWA-408. Add optional metadata to real-time feed. (asrabkin)
 

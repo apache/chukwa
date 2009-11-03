@@ -115,6 +115,7 @@ public class AgentControlSocketListener extends Thread {
         out.println("list -- list running adaptors");
         out.println("close -- close this connection");
         out.println("stopagent -- stop the whole agent process");
+        out.println("stopall -- stop all adaptors");
         out.println("reloadCollectors -- reload the list of collectors");
         out.println("help -- print this message");
         out.println("\t Command names are case-blind.");
@@ -166,11 +167,18 @@ public class AgentControlSocketListener extends Thread {
         out.println("stopping agent process.");
         connection.close();
         agent.shutdown(true);
+      } else if(words[0].equalsIgnoreCase("stopall")) {
+        int stopped = 0;
+        for(String id: agent.getAdaptorList().keySet()) {
+          agent.stopAdaptor(id, false);
+          stopped++;
+         }
+        out.println("stopped " + stopped + " adaptors");
       } else if (words[0].equals("")) {
         out.println(getStatusLine());
       } else {
         log.warn("unknown command " + words[0]);
-        out.println("unknown command" + words[0]);
+        out.println("unknown command " + words[0]);
         out.println("say 'help' for a list of legal commands");
       }
       out.flush();
