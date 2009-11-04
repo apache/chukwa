@@ -44,11 +44,7 @@ public interface Chunk {
   public String getStreamName();
 
   public void setStreamName(String streamName);
-
-  public String getApplication();
-
-  public void setApplication(String a);
-
+  
   // These describe the format of the data buffer
   public String getDataType();
 

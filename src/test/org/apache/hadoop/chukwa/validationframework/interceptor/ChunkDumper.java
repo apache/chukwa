@@ -33,7 +33,7 @@ public class ChunkDumper {
 
   public static void dump(String component, Chunk chunk) {
 
-    String fileName = chunk.getApplication();
+    String fileName = chunk.getStreamName();
 
     if (!hash.containsKey(component + "-" + fileName)) {
       File directory = new File(testRepositoryDumpDir + "/" + component);

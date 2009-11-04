@@ -58,7 +58,7 @@ public class JobConfProcessor extends AbstractProcessor {
     if (matcher.matches()) {
       time = Long.parseLong(matcher.group(2));
     }
-    String capp = this.chunk.getApplication();
+    String capp = this.chunk.getStreamName();
       String jobID = "";
         matcher = jobPattern.matcher(capp);
         if(matcher.matches()) {

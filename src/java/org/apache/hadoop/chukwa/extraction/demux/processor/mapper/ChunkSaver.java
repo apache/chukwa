@@ -55,7 +55,7 @@ public class ChunkSaver {
 
       record.add(Record.tagsField, chunk.getTags());
       record.add(Record.sourceField, chunk.getSource());
-      record.add(Record.applicationField, chunk.getApplication());
+      record.add(Record.applicationField, chunk.getStreamName());
 
       DataOutputBuffer ob = new DataOutputBuffer(chunk
           .getSerializedSizeEstimate());

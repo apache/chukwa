@@ -103,7 +103,7 @@ public abstract class AbstractProcessor implements MapProcessor {
 
     record.add(Record.tagsField, chunk.getTags());
     record.add(Record.sourceField, chunk.getSource());
-    record.add(Record.applicationField, chunk.getApplication());
+    record.add(Record.applicationField, chunk.getStreamName());
 
   }
 

@@ -35,7 +35,7 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
 
   protected DataFactory dataFactory = DataFactory.getInstance();
   private String source = "";
-  private String application = "";
+  private String streamName = "";
   private String dataType = "";
   private String tags = "";
   private byte[] data = null;
@@ -72,7 +72,7 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
     this.seqID = seq;
     this.source = localHostAddr;
     this.tags = dataFactory.getDefaultTags();
-    this.application = streamName;
+    this.streamName = streamName;
     this.dataType = dataType;
     this.data = data;
     this.initiator = source;
@@ -96,11 +96,11 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
    * @see org.apache.hadoop.chukwa.Chunk#getStreamName()
    */
   public String getStreamName() {
-    return application;
+    return streamName;
   }
 
   public void setStreamName(String logApplication) {
-    this.application = logApplication;
+    this.streamName = logApplication;
   }
 
   public String getSource() {
@@ -136,14 +136,6 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
 
   public void setProtocolVersion(int pv) {
     this.protocolVersion = pv;
-  }
-
-  public String getApplication() {
-    return application;
-  }
-
-  public void setApplication(String a) {
-    application = a;
   }
 
   public Adaptor getInitiator() {
@@ -215,7 +207,7 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
     setSeqID(in.readLong());
     setSource(in.readUTF());
     tags = in.readUTF(); // no public set method here
-    setApplication(in.readUTF());
+    setStreamName(in.readUTF());
     setDataType(in.readUTF());
     setDebugInfo(in.readUTF());
 
@@ -236,7 +228,7 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
     out.writeLong(seqID);
     out.writeUTF(source);
     out.writeUTF(tags);
-    out.writeUTF(application);
+    out.writeUTF(streamName);
     out.writeUTF(dataType);
     out.writeUTF(debuggingInfo);
 
@@ -259,7 +251,7 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
 
   // FIXME: should do something better here, but this is OK for debugging
   public String toString() {
-    return source + ":" + application + ":" + new String(data) + "/" + seqID;
+    return source + ":" + streamName + ":" + new String(data) + "/" + seqID;
   }
 
 
@@ -268,7 +260,7 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
    * @see org.apache.hadoop.chukwa.Chunk#getSerializedSizeEstimate()
    */
   public int getSerializedSizeEstimate() {
-    int size = 2 * (source.length() + application.length() + dataType.length() 
+    int size = 2 * (source.length() + streamName.length() + dataType.length() 
         + debuggingInfo.length()); // length of strings (pessimistic)
     size += data.length + 4;
     if (recordEndOffsets == null)

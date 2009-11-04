@@ -159,7 +159,7 @@ public class TestChukwaWriters extends TestCase{
         sb.append("Cluster : " + chunk.getTags());
         sb.append("DataType : " + chunk.getDataType());
         sb.append("Source : " + chunk.getSource());
-        sb.append("Application : " + chunk.getApplication());
+        sb.append("Application : " + chunk.getStreamName());
         sb.append("SeqID : " + chunk.getSeqID());
         sb.append("Data : " + new String(chunk.getData()));
         return sb.toString();

@@ -103,7 +103,7 @@ public class DumpArchive {
       while (r.next(key, chunk)) {
         
         String entryKey = chunk.getSource() +":"+chunk.getDataType() +":" +
-        chunk.getApplication();
+        chunk.getStreamName();
         
         Integer oldC = counts.get(entryKey);
         if(oldC != null)
@@ -121,7 +121,7 @@ public class DumpArchive {
           System.out.println("Cluster : " + chunk.getTags());
           System.out.println("DataType : " + chunk.getDataType());
           System.out.println("Source : " + chunk.getSource());
-          System.out.println("Application : " + chunk.getApplication());
+          System.out.println("Application : " + chunk.getStreamName());
           System.out.println("SeqID : " + chunk.getSeqID());
           System.out.println("Data : " + new String(chunk.getData()));
         }
