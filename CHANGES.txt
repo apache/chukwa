@@ -13,7 +13,8 @@ Trunk (unreleased changes)
     CHUKWA-408. Add optional metadata to real-time feed. (asrabkin)
 
   BUG FIXES
-  
+
+    CHUKWA-229. Fix file descriptor leak in ExecAdaptor. (asrabkin)  
 
 Release 0.3
 

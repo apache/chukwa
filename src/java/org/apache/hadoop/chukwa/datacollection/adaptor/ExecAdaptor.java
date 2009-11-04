@@ -66,9 +66,10 @@ public class ExecAdaptor extends AbstractAdaptor {
       JSONObject o = exec.execute();
       try {
 
-        if (o.getInt("status") == exec.statusKO)
+        if (o.getInt("status") == exec.statusKO) {
           deregisterAndStop(false);
-
+          return;
+        }
 
         // FIXME: downstream customers would like timestamps here.
         // Doing that efficiently probably means cutting out all the

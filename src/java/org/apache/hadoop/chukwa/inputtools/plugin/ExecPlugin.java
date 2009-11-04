@@ -63,8 +63,6 @@ public abstract class ExecPlugin implements IPlugin {
 
       Runtime runtime = Runtime.getRuntime();
       process = runtime.exec(getCmde());
-      // ProcessBuilder builder = new ProcessBuilder(cmde);
-      // Process process = builder.start();
 
       OutputReader stdOut = new OutputReader(process, Output.stdOut);
       stdOut.start();
@@ -78,10 +76,16 @@ public abstract class ExecPlugin implements IPlugin {
       result.put("stdout", stdOut.output.toString());
       result.put("stderr", stdErr.output.toString());
       result.put("status", statusOK);
+      process.getOutputStream().close();
+      process.getErrorStream().close();
     } catch (Throwable e) {
       try {
         result.put("status", statusKO);
         result.put("errorLog", e.getMessage());
+        if(e.getMessage().contains("Too many open files")) {
+          //maybe die abruptly?  Error is ir-recoverable and runtime can reboot us.
+//        System.exit(1); 
+        }
       } catch (Exception e1) {
         e1.printStackTrace();
       }
