@@ -60,7 +60,7 @@ public class DataNodeClientTraceMapper
 	protected static final String SEP = "/";
 	protected static String FSM_CRK_ReduceType = FSMType.NAMES[FSMType.FILESYSTEM_FSM];
 	private final Pattern ipPattern =
-    Pattern.compile(".*[a-zA-Z\\-_:\\/]([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)[a-zA-Z\\-_:\\/].*");
+    Pattern.compile(".*[a-zA-Z\\-_:\\/]([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)[a-zA-Z0-9\\-_:\\/].*");
   private final Pattern logMsgPattern = Pattern.compile("^(.{23}) ([A-Z]+) ([a-zA-Z0-9\\.]+): (.*)");
 
   public void map
@@ -140,8 +140,8 @@ public class DataNodeClientTraceMapper
       datanodeserver_add = new String("");
     }
     
-    start_rec.host_exec = new String(datanodeserver_add);
-    end_rec.host_exec = new String(datanodeserver_add);
+    start_rec.host_exec = new String(src_add);
+    end_rec.host_exec = new String(src_add);
         
     blkid = val.getValue("blockid").trim();
     if (fieldNamesList.contains("cliID")) {
