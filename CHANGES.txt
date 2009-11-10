@@ -16,6 +16,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-414. Better error messaging for pid file errors. (Bill Graham via asrabkin)
+
     CHUKWA-411. Hosts for DataNode ClientTrace messages parsed incorrectly. (Jiaqi Tan via asrabkin)
 
     CHUKWA-229. Fix file descriptor leak in ExecAdaptor. (asrabkin)  

@@ -71,10 +71,10 @@ public class PidFile extends Thread {
       if (PidFile.lock != null) {
         log.debug("Initlization succeeded...");
       } else {
-        throw (new IOException());
+        throw (new IOException("Can not get lock on pid file: " + pidFilesb));
       }
     } catch (IOException ex) {
-      System.out.println("Initializaiton failed: can not write pid file.");
+      System.out.println("Initialization failed: can not write pid file to " + pidFilesb);
       log.error("Initialization failed...");
       log.error(ex.getMessage());
       System.exit(-1);
