@@ -25,38 +25,44 @@
 
 <section>
 <title> Purpose </title>
-<p>The purpose of this document is to help you install and configure Chukwa.</p>
+<p> Chukwa is a system for large-scale reliable log collection and processing
+with Hadoop. The <a href="design.html">Chukwa design overview</a> discusses the overall architecture of Chukwa.
+You should read that document before this one.
+The purpose of this document is to help you install and configure Chukwa.</p>
 </section>
 
 <section>
 <title> Pre-requisites</title>
-<section>
-<title>Supported Platforms</title>
-<p>GNU/Linux is supported as a development and production platform. Chukwa has been demonstrated on Hadoop clusters with 2000 nodes.</p>
-</section>
-<section>
-<title>Required Software</title>
-<p>Required software for Linux include:</p>
-<ol>
-<li> Java 1.6.10, preferably from Sun, installed (see <a href="http://java.sun.com/">http://java.sun.com/</a>)
-</li> <li> MySQL 5.1.30 (see <a href="#4.+Set+Up+the+Database">Set Up the Database)</a>
-</li> <li> Hadoop cluster, installed (see <a href="http://hadoop.apache.org/" >http://hadoop.apache.org/</a>)
-</li> <li> ssh must be installed and sshd must be running to use the Chukwa scripts that manage remote Chukwa daemons 
-</li></ol> 
-</section>
+<p>Chukwa should work on any POSIX platform, but  GNU/Linux is the only
+ production platform that has been tested extensively. Chukwa has also been used
+ successfully on Mac OS X, which several members of the Chukwa team use for 
+ development. </p>
+ <p>
+ The only absolute software requirements are <a href="http://java.sun.com">Java 1.6
+ </a> or better and <a href="http://hadoop.apache.org/" >Hadoop 0.18+</a>.
+  
+
+ HICC, the Chukwa
+ visualization interface, <a href="#Set+Up+the+Database">requires MySQL 5.1.30+.</a></p>
+ <p>
+The Chukwa cluster management scripts rely on <code>ssh</code>; these scripts, however,
+are not required if you have some alternate mechanism for starting and stopping
+daemons.
+ </p>
 </section>
 
 
 <section>
-<title>Install Chukwa</title>
-<p>Chukwa is installed on: </p>
+<title>Installing Chukwa</title>
+<p>A minimal Chukwa deployment has three components: </p>
 <ul>
-<li> A hadoop cluster created specifically for Chukwa (referred to as the Chukwa cluster).</li> 
-<li> The source nodes that Chukwa monitors (referred to as the monitored source nodes).</li>
+<li> A Hadoop cluster on which Chukwa will store data (referred to as the Chukwa cluster).</li> 
+<li> A collector process, that writes collected data to HDFS, the Hadoop file system.</li>
+<li> One or more agent processes, that send monitoring data to the collector. 
+The nodes with active agent processes are referred to as the monitored source nodes.</li>
 </ul> 
-<p></p>
-<p></p>
-<p>Chukwa can also be installed on a single node, in which case the machine must have at least 16 GB of memory. </p>
+<p>In addition, you may wish to run the Chukwa Demux jobs, which parse collected
+data, or HICC, the Chukwa visualization tool.</p>
 <p></p>
 <p></p>
 <p></p>
@@ -64,11 +70,55 @@
 <figure  align="left" alt="Chukwa Components" src="images/components.gif" />
 
 <section>
-<title>General  Install Procedure </title>
-<p>1. Select one of the nodes in the Chukwa cluster: </p>
+<title>First Steps </title>
+
+<ol>
+<li>Obtain a copy of Chukwa. You can find the latest release on the 
+<a href="http://hadoop.apache.org/chukwa/releases.html">Chukwa release page</a>.</li>
+<li>Un-tar the release, via <code>tar xzf</code>.</li>
+<li>Make sure a copy of Chukwa is available on each node being monitored, and on
+each node that will run a collector.</li>
+<li>
+We refer to the directory containing Chukwa as <code>CHUKWA_HOME</code>. It may
+be helpful to set <code>CHUKWA_HOME</code> explicitly in your environment,
+but Chukwa does not require that you do so.</li>
+</ol>
+</section>
+
+<!-- 
+<section>
+<title>Chukwa Configuration Files </title>
+<p>The Chukwa configuration files are located in the CHUKWA_HOME/conf directory.</p>
 <ul>
-<li> Create a directory for the Chukwa installation (Chukwa will set the  environment variable <strong>CHUKWA_HOME</strong> to point to this directory during the the install).
-</li> <li> Move to the new directory.
+<li> <code>chukwa-env.sh</code> contains environment variables.
+</li></ul>
+</section>
+ -->
+
+<section>
+<title>General Configuration</title>
+
+<p>Agents and collectors are configured differently, but part of the process
+is common to both. </p>
+<ul>
+<li>Make sure that <code>JAVA_HOME</code> is set correctly and points to a Java 1.6 JRE. 
+It's generally best to set this in <code>conf/chukwa-env.sh</code>.</li>
+<li>
+In <code>conf/chukwa-env.sh</code>, set <code>CHUKWA_LOG_DIR</code> and
+<code>CHUKWA_PID_DIR</code> to the directories where Chukwa should store its
+console logs and pid files.  The pid directory must not be shared between
+different Chukwa instances: it should be local, not NFS-mounted.
+</li>
+ <li> Optionally, set CHUKWA_IDENT_STRING. This string is
+ used to name Chukwa's own console log files.</li>
+<!--
+<li>Set <b>either</b> <code>HADOOP_HOME</code> or <code>HADOOP_JAR</code></li>
+-->
+</ul>
+</section>
+</section>
+
+<!-- 
 </li> <li> Download and un-tar the Chukwa binary.
 </li> <li> Configure the components for the Chukwa cluster (see <a href="#Chukwa+Cluster+Deployment">Chukwa Cluster Deployment</a>).
 </li> <li> Configure the Hadoop configuration files (see <a href="#Hadoop+Configuration+Files">Hadoop Configuration Files</a>).
@@ -86,70 +136,231 @@
 </li> <li> Zip the directory and deploy to all source nodes to be monitored.
 </li></ul> 
 </section>
+ -->
 
 <section>
-<title>Chukwa Binary</title>
-<p>To get a Chukwa distribution, download a recent stable release of Chukwa from one of the Apache Download Mirrors (see 
- <a href="http://hadoop.apache.org/chukwa/">Hadoop Chukwa Releases</a>.  
+<title>Agents </title>
+<p>Agents are the Chukwa processes that actually produce data. This section
+describes how to configure and run them. More details are available in the
+<a href="agent.html">Agent configuration guide</a>.</p>
+
+<section>
+<title>Configuration</title>
+<p>This section describes how to set up the agent process on the source nodes. </p>
+
+<!-- 
+<p>Edit <code>$CHUKWA_HOME/conf/agents</code> configuration file. </p>
+<p>Create a list of hosts that are running the Chukwa agent:</p>
+
+<source>
+localhost
+localhost
+localhost
+</source>
+ -->
+ 
+<p>The one mandatory configuration step is to set up 
+<code> $CHUKWA_HOME/conf/collectors</code>. This file should contain a list
+of hosts that will run Chukwa collectors. Agents will pick a random collector
+from this list to try sending to, and will fail-over to another listed collector
+on error.  The file should look something like:</p>
+
+<source>
+http://&#60;collector1HostName&#62;:&#60;collector1Port&#62;/
+http://&#60;collector2HostName&#62;:&#60;collector2Port&#62;/
+http://&#60;collector3HostName&#62;:&#60;collector3Port&#62;/
+</source>
+
+<p>Edit the CHUKWA_HOME/conf/initial_adaptors configuration file. This is 
+where you tell Chukwa what log files to monitor. See
+<a href="agent.html#Adaptors">the adaptor configuration guide</a> for
+a list of available adaptors.</p>
+
+<p>There are a number of optional settings in 
+<code>$CHUKWA_HOME/conf/chukwa-agent-conf.xml</code>:</p>
+<ul>
+<li>The most important of these is the cluster/group name that identifies the
+monitored source nodes. This value is stored in each Chunk of collected data;
+you can therefore use it to distinguish data coming from different groups of 
+machines.
+<source>
+ &#60;property&#62;
+    &#60;name&#62;chukwaAgent.tags&#60;/name&#62;
+    &#60;value&#62;cluster&#61;&#34;demo&#34;&#60;/value&#62;
+    &#60;description&#62;The cluster&#39;s name for this agent&#60;/description&#62;
+  &#60;/property&#62;
+</source>
+</li>
+<li>
+Another important option is <code>chukwaAgent.checkpoint.dir</code>.
+This is the directory Chukwa will use for its periodic checkpoints of running adaptors.
+It <strong>must not</strong> be a shared directory; use a local, not NFS-mount, directory.
+</li>
+</ul>
+
+
+</section>
+
+
+<!--
+<section>
+<title>Start the Chukwa Processes </title>
+
+<p>Start the Chukwa agent and system metrics processes on the monitored source nodes.</p>
+
+<p>The Chukwa startup scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
+
+<p>Run both of these commands on all monitored source nodes: </p>
+
+<ul>
+<li> Start the Chukwa agent script:
+</li></ul> 
+<source>CHUKWA&#95;HOME /tools/init.d/chukwa-agent start</source> <ul>
+<li> Start the Chukwa system metrics script:
+</li></ul> 
+<source>CHUKWA&#95;HOME /tools/init.d/chukwa-system-metrics start</source>
+</section>
+
+<section>
+<title>Validate the Chukwa Processes </title>
+
+<p>The Chukwa status scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
+
+<p>Verify that that agent and system metrics processes are running on all source nodes: </p>
+
+<ul>
+<li> To obtain the status for the Chukwa agent, run:
+</li></ul> 
+<source>CHUKWA&#95;HOME/tools/init.d/chukwa-agent status </source> <ul>
+<li> To obtain the status for the system metrics, run:
+</li></ul> 
+<source>CHUKWA&#95;HOME/tools/init.d/chukwa-system-metrics status </source>
+</section>-->
+
+
+<section>
+<title>Starting, stopping, and monitoring</title>
+<p>To run an agent process on a single node, use <code>bin/agent.sh</code>.
+</p>
+
+<p>
+Typically, agents run as daemons. The script <code>bin/start-agents.sh</code> 
+will ssh to each machine listed in <code>conf/agents</code> and start an agent,
+running in the background. The script <code>bin/stop-agents.sh</code> 
+does the reverse.</p>
+<p>You can, of course, use any other daemon-management system you like. 
+For instance, <code>tools/init.d</code> includes init scripts for running
+Chukwa agents.</p>
+<p>To check if an agent is working properly, you can telnet to the control
+port (9093 by default) and hit "enter". You will get a status message if
+the agent is running normally.
 </p>
 </section>
 
 <section>
-<title>Chukwa Configuration Files </title>
-<p>The Chukwa configuration files are located in the CHUKWA_HOME/conf directory. The configuration files that you modify are named <strong> *.template. </strong>
-To set up your Chukwa installation (configure various components), copy, rename, and modify the *.template files as necessary. 
-For example, copy the chukwa-collector-conf.xml.template file to a file named chukwa-collector-conf.xml and then modify the file to include the cluster/group name for the source nodes.
-</p>
-<p>The <strong>default.properties</strong> file contains default parameter settings. To override these default settings use the <strong>build.properties </strong> file. 
-For example, copy the TODO-JAVA-HOME environment variable from the default.properties file to the build.properties file and change the setting.</p>
-</section>
-
-<section>
-<title>Hadoop Configuration Files</title>
-<p>The Hadoop configuration files are located in the HADOOP_HOME/conf directory. To setup Chukwa to collect logs from Hadoop, you need to change some of the hadoop configuration files.</p>
+<title>Configuring Hadoop for monitoring</title>
+<p>
+One of the key goals for Chukwa is to collect logs from Hadoop clusters. This section
+describes how to configure Hadoop to send its logs to Chukwa. Note that 
+these directions require Hadoop 0.20.0+.  Earlier versions of Hadoop do not have
+the hooks that Chukwa requires in order to grab MapReduce job logs.</p>
+<p>The Hadoop configuration files are located in <code>HADOOP_HOME/conf</code>.
+ To setup Chukwa to collect logs from Hadoop, you need to change some of the 
+ Hadoop configuration files.</p>
 <ol>
 	<li>Copy CHUKWA_HOME/conf/hadoop-log4j.properties file to HADOOP_HOME/conf/log4j.properties</li>
 	<li>Copy CHUKWA_HOME/conf/hadoop-metrics.properties file to HADOOP_HOME/conf/hadoop-metrics.properties</li>
 	<li>Edit HADOOP_HOME/conf/hadoop-metrics.properties file and change @CHUKWA_LOG_DIR@ to your actual CHUKWA log dirctory (ie, CHUKWA_HOME/var/log)</li>	
-	<li>ln -s HADOOP_HOME/conf/hadoop-site.xml CHUKWA_HOME/conf/hadoop-site.xml</li>
-</ol>
-	
+<!-- <li>ln -s HADOOP_HOME/conf/hadoop-site.xml CHUKWA_HOME/conf/hadoop-site.xml</li>
+ -->	
+ </ol>
 </section>
 
 </section>
 
 
 <section>
-<title>Chukwa Cluster Deployment </title>
-<p>This section describes how to set up the Chukwa cluster and related components.</p>
+<title>Collectors </title>
+<p>This section describes how to set up the Chukwa collectors.
+For more details, see <a href="collector.html">the collector configuration guide</a>.</p>
 
 <section>
-<title>1. Set the Environment Variables</title>
-<p>Edit the CHUKWA_HOME/conf/chukwa-env.sh configuration file: </p> 
-<ul>
-<li> Set JAVA_HOME to your Java installation.
-</li> <li> Set HADOOP_JAR to $CHUKWA_HOME/hadoopjars/hadoop-0.18.2.jar 
-</li> <li> Set CHUKWA_IDENT_STRING to the Chukwa cluster name. 
-</li></ul> 
+<title>Configuration</title>
+<p>First, edit <code>$CHUKWA_HOME/conf/chukwa-env.sh</code> In addition to 
+the general directions given above, you should set <code>
+HADOOP_HOME</code>. This should be the Hadoop deployment Chukwa will use to
+store collected data.
+You will get a version mismatch error if this is configured incorrectly.
+</p>
+
+<p>Next, edit <code>$CHUKWA_HOME/conf/chukwa-collector-conf.xml</code>.
+The one mandatory configuration parameter is <code>writer.hdfs.filesystem</code>.
+This should be set to the HDFS root URL on which Chukwa will store data.
+Various optional configuration options are described in <a href="collector.html">the collector configuration guide</a>
+and in the collector configuration file itself.
+</p>
 </section>
 
 <section>
-<title>2. Set Up the Hadoop jar File </title>
-<p>Do the following:</p>
+<title>Starting, stopping, and monitoring</title>
+<p>To run a collector process on a single node, use <code>bin/jettyCollector.sh</code>.
+</p>
+
+<p>
+Typically, collectors run as daemons. The script <code>bin/start-collectors.sh</code> 
+will ssh to each collector listed in <code>conf/collectors</code> and start a
+collector, running in the background. The script <code>bin/stop-collectors.sh
+</code> does the reverse.</p>
+<p>You can, of course, use any other daemon-management system you like. 
+For instance, <code>tools/init.d</code> includes init scripts for running
+Chukwa collectors.</p>
+<p>To check if a collector is working properly, you can simply access
+<code>http://collectorhost:collectorport/chukwa?ping=true</code> with a web browser.
+If the collector is running, you should see a status page with a handful of statistics.</p>
+
+</section>
+
+</section>
+
+<section>
+<title>Demux and HICC</title>
+
+
+<!-- 
+<section>
+<title>Migrate Existing Data From Chukwa 0.1.1</title>
+<p>Start the MySQL shell:</p>
 <source>
-cp $HADOOP_HOME/lib hadoop-&#42;-core.jar file $CHUKWA&#95;HOME/hadoopjars
+mysql -u root -p
+Enter password:
 </source>
+
+<p>From the MySQL shell, enter these commands (replace &#60;database_name&#62; with an actual value):</p>
+<source>
+use &#60;database_name&#62;
+source /path/to/chukwa/conf/database_create_table.sql
+source /path/to/chukwa/conf/database_upgrade.sql
+</source>
+</section> -->
+
+
+<section>
+<title>Start the Chukwa Processes </title>
+
+<p>The Chukwa startup scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
+<ul>
+<li> Start the Chukwa data processors script (execute this command only on the data processor node):
+</li></ul> 
+<source>CHUKWA&#95;HOME/tools/init.d/chukwa-data-processors start </source>
+<ul>
+<li> Create down sampling daily cron job:
+</li></ul> 
+<source>CHUKWA&#95;HOME/bin/downSampling.sh --config &#60;path to chukwa conf&#62; -n add </source>
 </section>
 
 
 <section>
-<title> 3. Configure the Collector  </title>
-<p>Edit the CHUKWA_HOME/conf/chukwa-collector-conf.xml configuration file.</p>
-<p>Set the writer.hdfs.filesystem property to the HDFS root URL. </p>
-</section>
-
-<section>
-<title> 4. Set Up the Database </title>
+<title>Set Up the Database </title>
 <p>Set up and configure the MySQL database.</p>
 
 <section>
@@ -195,67 +406,30 @@ FLUSH PRIVILEGES;
 </source>
 </section>
 
-
-<section>
-<title>Migrate Existing Data From Chukwa 0.1.1</title>
-<p>Start the MySQL shell:</p>
-<source>
-mysql -u root -p
-Enter password:
-</source>
-
-<p>From the MySQL shell, enter these commands (replace &#60;database_name&#62; with an actual value):</p>
-<source>
-use &#60;database_name&#62;
-source /path/to/chukwa/conf/database_create_table.sql
-source /path/to/chukwa/conf/database_upgrade.sql
-</source>
-
-
 </section>
 
-</section>
-
+<!-- 
 <section>
-<title>5. Start the Chukwa Processes </title>
-
-<p>The Chukwa startup scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
-<ul>
-<li> Start the Chukwa collector  script (execute this command only on those nodes that have the Chukwa Collector installed):
-</li></ul> 
-<source>CHUKWA&#95;HOME/tools/init.d/chukwa-collector start </source> <ul>
-<li> Start the Chukwa data processors script (execute this command only on the data processor node):
-</li></ul> 
-<source>CHUKWA&#95;HOME/tools/init.d/chukwa-data-processors start </source>
-<ul>
-<li> Create down sampling daily cron job:
-</li></ul> 
-<source>CHUKWA&#95;HOME/bin/downSampling.sh --config &#60;path to chukwa conf&#62; -n add </source>
-</section>
-
-<section>
-<title>6. Validate the Chukwa Processes </title>
+<title>Validate the Chukwa Processes </title>
 
 <p>The Chukwa status scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
-<ul>
-<li> To obtain the status for the Chukwa collector, run:</li>
-</ul> 
-<source>CHUKWA&#95;HOME/tools/init.d/chukwa-collector status </source> <ul>
+
+ <ul>
 <li> To verify that the data processors are functioning correctly: </li>
 </ul> 
 <source>Visit the Chukwa hadoop cluster&#39;s Job Tracker UI for job status. 
 Refresh to the Chukwa Cluster Configuration page for the Job Tracker URL. </source>
-</section>
+</section> -->
 
 <section>
-<title>7. Set Up HICC </title>
+<title>Set Up HICC </title>
 <p>The Hadoop Infrastructure Care Center (HICC) is the Chukwa web user interface. To set up HICC, do the following:</p>
 <ul>
 <li>Download apache-tomcat 6.0.18+ from <a href="http://tomcat.apache.org/download-60.cgi">Apache Tomcat</a> and decompress the tarball to CHUKWA_HOME/opt. </li> 
 <li>Copy CHUKWA_HOME/hicc.war to apache-tomcat-6.0.18/webapps. </li> 
 <li>Start up HICC by running: </li> 
 </ul>
-<source>CHUKWA_HOME/bin/hicc.sh start</source>
+<source>$CHUKWA_HOME/bin/hicc.sh start</source>
 <ul>
 <li>Point your favorite browser to: http://&#60;server&#62;:8080/hicc  </li> 
 </ul>
@@ -263,124 +437,6 @@ Refresh to the Chukwa Cluster Configuration page for the Job Tracker URL. </sour
 
 </section>
 
-<section>
-<title>Monitored Source Node Deployment </title>
-<p>This section describes how to set up the source nodes. </p>
-
-<section>
-<title>1. Set the Environment Variables </title>
-<p>Edit the CHUKWA_HOME/conf/chukwa-current/chukwa-env.sh configuration file: </p>
-<ul>
-<li> Set JAVA_HOME to the root of your Java installation.
-</li><li> Set other environment variables as necessary.
-</li></ul> 
-
-<source>
-export JAVA&#95;HOME&#61;/path/to/java
-export HADOOP&#95;HOME&#61;/path/to/hadoop
-export chuwaRecordsRepository&#61;&#34;/chukwa/repos/&#34;
-export JDBC&#95;DRIVER&#61;com.mysql.jdbc.Driver
-export JDBC&#95;URL&#95;PREFIX&#61;jdbc:mysql://
-</source>
-</section>
-
-
-<section>
-<title>2. Configure the Agent</title>
-
-<p>Edit the CHUKWA_HOME/conf/chukwa-current/chukwa-agent-conf.xml configuration file. </p>
-<p>Enter the cluster/group name that identifies the monitored source nodes:</p>
-
-<source>
- &#60;property&#62;
-    &#60;name&#62;chukwaAgent.tags&#60;/name&#62;
-    &#60;value&#62;cluster&#61;&#34;demo&#34;&#60;/value&#62;
-    &#60;description&#62;The cluster&#39;s name for this agent&#60;/description&#62;
-  &#60;/property&#62;
-</source>
-
-<p>Edit the CHUKWA_HOME/conf/chukwa-current/agents configuration file. </p>
-<p>Create a list of hosts that are running the Chukwa agent:</p>
-
-<source>
-localhost
-localhost
-localhost
-</source>
-
-<p>Edit the CHUKWA_HOME/conf/collectors configuration file. </p>
-<p>The Chukwa agent needs to know about the Chukwa collectors. Create a list of hosts that are running the Chukwa collector:</p>
-
-<ul>
-	<li>This ...</li>
-</ul>
-
-<source>
-&#60;collector1HostName&#62;
-&#60;collector2HostName&#62;
-&#60;collector3HostName&#62;
-</source>
-
-<ul>
-	<li>Or this ...</li>
-</ul>
-<source>
-http://&#60;collector1HostName&#62;:&#60;collector1Port&#62;/
-http://&#60;collector2HostName&#62;:&#60;collector2Port&#62;/
-http://&#60;collector3HostName&#62;:&#60;collector3Port&#62;/
-</source>
-</section>
-
-
-
-<section>
-<title>3. Configure Adaptors</title>
-<p>Edit the CHUKWA_HOME/conf/initial_adaptors configuration file.</p>
-
-<p>Define the default adaptors:</p>
-<source>
-add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped SysLog 0 /var/log/messages 0
-</source>
-<p>Make sure Chukwa has a Read access to /var/log/messages. </p>
-</section>
-
-
-<section>
-<title>4. Start the Chukwa Processes </title>
-
-<p>Start the Chukwa agent and system metrics processes on the monitored source nodes.</p>
-
-<p>The Chukwa startup scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
-
-<p>Run both of these commands on all monitored source nodes: </p>
-
-<ul>
-<li> Start the Chukwa agent script:
-</li></ul> 
-<source>CHUKWA&#95;HOME /tools/init.d/chukwa-agent start</source> <ul>
-<li> Start the Chukwa system metrics script:
-</li></ul> 
-<source>CHUKWA&#95;HOME /tools/init.d/chukwa-system-metrics start</source>
-</section>
-
-
-<section>
-<title>5. Validate the Chukwa Processes </title>
-
-<p>The Chukwa status scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
-
-<p>Verify that that agent and system metrics processes are running on all source nodes: </p>
-
-<ul>
-<li> To obtain the status for the Chukwa agent, run:
-</li></ul> 
-<source>CHUKWA&#95;HOME/tools/init.d/chukwa-agent status </source> <ul>
-<li> To obtain the status for the system metrics, run:
-</li></ul> 
-<source>CHUKWA&#95;HOME/tools/init.d/chukwa-system-metrics status </source>
-</section>
-
-</section>
 
 
 <section>
@@ -388,6 +444,8 @@ add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAd
 
 <section>
 <title>UNIX Processes For Chukwa Agents</title>
+
+<!-- 
 <p>The system metrics data loader process names are uniquely defined by:</p>
 <ul>
 <li> org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec sar -q -r -n ALL 55
@@ -396,6 +454,7 @@ add org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAd
 </li> <li> org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec df -l
 </li> <li> org.apache.hadoop.chukwa.inputtools.plugin.metrics.Exec CHUKWA_HOME/bin/../bin/netstat.sh
 </li></ul> 
+-->
 <p>The Chukwa agent process name is identified by:</p>
 <ul>
 <li> org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent

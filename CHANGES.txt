@@ -8,6 +8,8 @@ Trunk (unreleased changes)
  
    IMPROVEMENTS
 
+    CHUKWA-413. Improve admin guide. (asrabkin)
+
     CHUKWA-345. Remove redundant 'application' field from Chunk API. (asrabkin)
 
     CHUKWA-409. Make SocketTeeWriter work in single-stage pipeline. (Thushara Wijeratna via asrabkin)

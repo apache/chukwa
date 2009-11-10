@@ -25,12 +25,15 @@
   	<section>
   	  <title>Basic Operation</title>
   		<p>Chukwa Collectors are responsible for accepting incoming data from Agents,
-  		and storing the data.  Most commonly, collectors simply write to HDFS.  
+  		and storing the data.
+  		 Most commonly, collectors simply write all received to HDFS.  
   		In this mode, the filesystem to write to is determined by the option
   		<code>writer.hdfs.filesystem</code> in  <code>chukwa-collector-conf.xml</code>.
   		 This is the only option that you really need to specify to get a working 
   		 collector.
   		</p>
+  		<p> By default, collectors listen on port 8080. This can be configured
+  		in <code>chukwa-collector.conf.xml</code></p>
   	</section>
   	
   	<section><title>Configuration Knobs</title>

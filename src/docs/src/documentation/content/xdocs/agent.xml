@@ -39,7 +39,7 @@ parameters.</p>
 
 <p>There are a number of Adaptors built into Chukwa, and you can also develop
 your own. Chukwa will use them if you add them to the Chukwa library search path
- (e.g., by putting them in a jarfile in <code>/lib</code>.)</p>
+ (e.g., by putting them in a jarfile in <code>$CHUKWA_HOME/lib</code>.)</p>
 </section>
 
 
