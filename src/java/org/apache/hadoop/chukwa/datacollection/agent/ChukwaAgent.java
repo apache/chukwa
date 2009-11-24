@@ -240,10 +240,8 @@ public class ChukwaAgent implements AdaptorManager {
     }
 
     try {
-      if (initialAdaptors != null && initialAdaptors.exists()
-          && checkpointNumber == 0)
-        readAdaptorsFile(initialAdaptors); // don't read after checkpoint
-                                           // restore
+      if (initialAdaptors != null && initialAdaptors.exists())
+        readAdaptorsFile(initialAdaptors); 
     } catch (IOException e) {
       log.warn("couldn't read user-specified file "
           + initialAdaptors.getAbsolutePath());
@@ -425,6 +423,7 @@ public class ChukwaAgent implements AdaptorManager {
 
   private void readAdaptorsFile(File checkpoint) throws FileNotFoundException,
       IOException {
+    log.info("starting adaptors listed in " + checkpoint.getAbsolutePath());
     BufferedReader br = new BufferedReader(new InputStreamReader(
         new FileInputStream(checkpoint)));
     String cmd = null;

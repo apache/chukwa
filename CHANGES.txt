@@ -8,6 +8,8 @@ Trunk (unreleased changes)
  
    IMPROVEMENTS
 
+    CHUKWA-415. Read initial adaptors at start every time. (asrabkin)
+
     CHUKWA-413. Improve admin guide. (asrabkin)
 
     CHUKWA-345. Remove redundant 'application' field from Chunk API. (asrabkin)

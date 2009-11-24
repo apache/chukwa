@@ -72,9 +72,8 @@ public class TestAgentConfig extends TestCase {
       assertEquals(0, agent.adaptorCount());
       // at this point, there should be a checkpoint file with a tailer reading
       // foo.
-      // we're going to rewrite initial adaptors to read bar; but after reboot
-      // we should
-      // still only be looking at foo.
+      // we're going to rewrite initial adaptors to read bar; after reboot
+      // we should  be looking at both foo andn bar.
       ps = new PrintStream(new FileOutputStream(initialAdaptors, false));// overwrite
       ps.println("add bar= org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8  raw 0 "
               + bar.getAbsolutePath() + " 0  ");
@@ -84,7 +83,7 @@ public class TestAgentConfig extends TestCase {
       agent = new ChukwaAgent(conf);
       conn = new ConsoleOutConnector(agent, true);
       conn.start();
-      assertEquals(1, agent.adaptorCount());// check that we processed initial
+      assertEquals(2, agent.adaptorCount());// check that we processed initial
                                             // adaptors
       assertNotNull(agent.getAdaptor("testAdaptor"));
       assertTrue(agent.getAdaptor("testAdaptor").getCurrentStatus().contains("foo"));
