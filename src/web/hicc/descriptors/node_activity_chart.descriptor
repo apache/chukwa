@@ -3,7 +3,7 @@
 "title":"Node Activity Graph",
 "version":"0.1",
 "categories":"Global,Status",
-"module":"iframe/jsp/single-series-chart-javascript.jsp",
+"url":"iframe/jsp/single-series-chart-javascript.jsp",
 "description":"Display Node Activity Graph",
 "screendump":"\/images\/server_load.gif",
 "refresh":"15",

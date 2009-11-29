@@ -3,7 +3,7 @@
 "title":"Host Selector",
 "version":"0.1",
 "categories":"Global,Utility",
-"module":"jsp\/host_selector.jsp",
+"url":"jsp\/host_selector.jsp",
 "description":"Global control to manipulate host selection across widgets",
 "refresh":"15",
 "parameters":[

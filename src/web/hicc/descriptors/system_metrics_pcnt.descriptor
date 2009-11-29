@@ -3,7 +3,7 @@
 "title":"System Metrics By Percentage",
 "version":"0.1",
 "categories":"System Metrics,Server,Status",
-"module":"iframe/jsp/single-series-chart-javascript.jsp",
+"url":"iframe/jsp/single-series-chart-javascript.jsp",
 "description":"Display system related stats by utilization percentage",
 "screendump":"\/images\/server_load.gif",
 "refresh":"15",

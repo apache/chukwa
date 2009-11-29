@@ -50,6 +50,9 @@ public class ChukwaConfiguration extends Configuration {
 
       log.info("chukwaConf is " + chukwaConf);
 
+      super.addResource(new Path(chukwaConf + "/chukwa-common.xml"));
+      log.debug("added chukwa-agent-conf.xml to ChukwaConfiguration");
+
       super.addResource(new Path(chukwaConf + "/chukwa-agent-conf.xml"));
       log.debug("added chukwa-agent-conf.xml to ChukwaConfiguration");
 

@@ -3,7 +3,7 @@
 "title":"Session Debugger",
 "version":"0.1",
 "categories":"Developer,Utilities",
-"module":"jsp\/debug.jsp",
+"url":"jsp\/debug.jsp",
 "description":"Display session stats",
 "refresh":"15",
 "parameters":[

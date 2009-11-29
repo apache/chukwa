@@ -3,7 +3,7 @@
 "title":"SQL Client",
 "version":"0.1",
 "categories":"Developer,Utility",
-"module":"iframe/jsp/sql_client.jsp",
+"url":"iframe/jsp/sql_client.jsp",
 "description":"Display table or chart from SQL queries",
 "refresh":"0",
 "parameters":[

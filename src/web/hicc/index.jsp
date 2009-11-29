@@ -17,7 +17,16 @@
  * limitations under the License.
  */
 %>
-<%@ page import = "java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.regex.Pattern, java.util.regex.Matcher, java.util.*, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.util.XssFilter"  %>
+<%@ page import = "java.sql.*,java.io.*" %>
+<%@ page import = "java.util.Calendar" %>
+<%@ page import = "java.util.Date" %>
+<%@ page import = "java.text.SimpleDateFormat" %>
+<%@ page import = "java.util.regex.Pattern" %>
+<%@ page import = "java.util.regex.Matcher" %>
+<%@ page import = "java.util.*" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.ClusterConfig" %>
+<%@ page import = "org.apache.hadoop.chukwa.hicc.TimeHandler" %>
+<%@ page import = "org.apache.hadoop.chukwa.util.XssFilter"  %>
 <%
     XssFilter xf = new XssFilter(request);
     for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
@@ -74,6 +83,7 @@
 <!-- all the necessary js files -->
 <script type="text/javascript" src="./js/yahoo-dom-event.js"></script>
 <script type="text/javascript" src="./js/treeview-min.js"></script>
+<script type="text/javascript" src="/hicc/js/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="/hicc/js/workspace/prototype.js"></script>
 <script type="text/javascript" src="/hicc/js/calendar.js"></script>
 <script type="text/javascript" src="/hicc/js/timeframe.js"></script>
@@ -152,22 +162,19 @@ function toggle_view_all() {
 <div id="manage_view" style="display:none;overflow:hidden;width:100%;">
 <table cellspacing="10" cellpadding="0" width="100%" class="ppsmenu">
 <tr><td>
-<table width="100%" class="titlebar"><tr><td>Dashboard</td><td align="right"><span class="glossy_icon"><a href="#" onClick="manage_content('close');"><img src="images/close.png" align="absmiddle"></a></span></td></tr></table>
-<div id="views_list_div">
-</div>
-</td></tr>
-<tr><td colspan="2">
-<input class="formButton" type="button" name="new_workspace" value="Create New Dashboard" onClick="createNewView();"/>
-</td></tr>
+<table width="100%" class="titlebar"><tr><td width="16"><span class="glossy_icon"><a href="#" onClick="javascript:manage_content('close'); return false;" class='glossy_icon'><img src="images/bullet_arrow_top.png" alig
+n="absmiddle"></a></span></td><td>Dashboard</td></tr></table>
+<table id="views_list" class="portal_table" cellspacing="0" cellpadding="2" width="100%">
+<tr><th width="32"></th><th width="15%" align="center">Permission</th><th>View Name</th><th>Owner</th></tr>
+</table></td></tr>
 </table>
 </div>
 <!-- end of manage view -->
-
-<!-- panel 3 for creation widgets -->
+<!-- widget catalog -->
 <div id="widget_view" style="display:none;overflow:hidden;width:100%;">
 <table cellspacing="10" cellpadding="0" width="100%" class="ppsmenu">
 <tr><td>
-<table width=100% class="titlebar"><tr><td>Widget Menu</td><td width="18"><span class="glossy_icon"><a href="#" onClick="add_widget_menu('close');"><img src="images/close.png"></span></a></td></tr></table>
+<table width=100% class="titlebar"><tr><td>Widget Menu</td><td width="18"><span class="glossy_icon"><a href="#" onClick="javascript:add_widget_menu('close'); return false;"><img src="images/close.png"></span></a></td></tr></table>
 <table width="100%" cellpadding="1" cellspacing="1" class="mailListBorder">
 <tr><td class="table-subhead" align="center">Widgets Catalog</td><td class="table-subhead" align="center">Widget Details</td></tr>
 <tr><td valign="top" width="250" class="white">
@@ -193,9 +200,7 @@ Select the widget from the widget tree to see the detail.
 </td></tr>
 </table>
 </div>
-<DIV ID="popup-div" class="ppsPopup" STYLE="max-width:300px;position:absolute;visibility:hidden;z-index:100;">
-</DIV>
-<!-- end of panel 3 -->
+<!-- end of widget catalog -->
 <!-- page selector -->
 <table class="page_selector_table" width="100%" cellspacing=0 cellpadding=0>
 <tr><td>
@@ -237,7 +242,6 @@ Select the widget from the widget tree to see the detail.
 // initialize the script
 update_views_list();
 initScript('<% if(request.getParameter("view") != null) { out.print(request.getParameter("view")); } else { out.print("default"); } %>',<% if (request.getParameter("_page")!=null) { out.print(request.getParameter("_page")); } else { out.print("0"); } %>);
-set_current_view('<% if(request.getParameter("view") != null) { out.print(request.getParameter("view")); } else { out.print("default"); } %>');
 $('shadow').style.display='none';
 
 function debugMode() {

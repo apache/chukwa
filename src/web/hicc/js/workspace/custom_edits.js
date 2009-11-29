@@ -69,12 +69,12 @@ function build_custom_edit(control_id, param) {
 		    ];
 
     content+='<select class="formSelect periodControl" id="'+control_id+'" name="'+control_id+'" >';
-    for (var j=0;j<time_options.length;j++) {
+    for (var j=0;j<time_options.length-1;j++) {
       var option=time_options[j];
       var selected=false;
       var param_value=param.value;
 
-      if (param_value==option[1]) {
+      if (option[1]!=null && param_value==option[1]) {
 	selected=true;
       } else {
 	if ((option[1]=='custom') && (param_value.startsWith('custom;'))) {
@@ -126,29 +126,39 @@ function build_custom_edit(control_id, param) {
  * hook up the event notification javascript
  */
 function after_build_custom_edits(box) {
-  for (iCount=0;iCount<box.block_obj.parameters.length;iCount++) {
-    if (box.block_obj.parameters[iCount].edit!=0) {
-      var param_id='param_'+box.pageid+'_'+box.boxIndex + '_'+iCount;
-      var param=box.block_obj.parameters[iCount];
-      if (param.type=='custom') {
+  if(box.block_obj.parameters!=null) {
+	  for (iCount=0;iCount<box.block_obj.parameters.length-1;iCount++) {
+	    if (box.block_obj.parameters[iCount].edit!=0) {
+	      var param_id='param_'+box.pageid+'_'+box.boxIndex + '_'+iCount;
+	      var param=box.block_obj.parameters[iCount];
+	      if (param.type=='custom') {
 
-	// setup the period control
-	if ("period_control" == param.control) {
+		// setup the period control
+		if ("period_control" == param.control) {
 
-	  // hook up the event notification stuff
-	  period_control=document.getElementById(param_id);
-	  if (period_control != null) {
-	    period_control.observe('change',togglePeriodControl);
+		  // hook up the event notification stuff
+		  period_control=document.getElementById(param_id);
+		  if (period_control != null) {
+		    Event.observe(param_id,'change',function(event) {
+                      var element = Event.element(event);
+                      value=$F(element.id);
+                      if (value=='custom') {
+                        $(element.id+'_custom_block').show();
+                      } else {
+                        $(element.id+'_custom_block').hide();
+                      }
+                    });
+		  }
+
+		  // hook up the help
+		  help_controls=document.getElementsByClassName("help_control");
+		  for (i=0;i<help_controls.length;i++) {
+		    help_controls[i].observe('click',popup_help);
+		  }
+		}
+	      }
+	    }
 	  }
-
-	  // hook up the help
-	  help_controls=document.getElementsByClassName("help_control");
-	  for (i=0;i<help_controls.length;i++) {
-	    help_controls[i].observe('click',popup_help);
-	  }
-	}
-      }
-    }
   }
 }
 

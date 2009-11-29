@@ -228,10 +228,6 @@ form{	/* No borders in forms */
 	display:inline;
 }
 
-body#main_body, div#workspaceContainer {
-	height: 100%;
-}
-
 .tabcontent{
 	display:none;
 	background-color: #ffffff;

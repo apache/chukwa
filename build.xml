@@ -466,6 +466,7 @@
 	<target name="test-chukwa" depends="compile,compile-test,compress" description="Run Chukwa unit tests">
 		<mkdir dir="${test.build.dir}/var" />
 		<mkdir dir="${test.build.dir}/var/log" />
+		<mkdir dir="${test.build.dir}/var/run" />
 		<mkdir dir="${test.build.classes}/webapps" />
 		<mkdir dir="${test.build.classes}/logs" />
                 <copy todir="${test.build.dir}/var/log">
@@ -480,22 +481,52 @@
                 </copy>
                 <copy todir="${test.build.classes}/webapps">
                   <fileset dir="${build.dir}">
-                    <include name="chukwa.war" />
+                    <!-- include name="chukwa.war" / -->
                     <include name="hicc.war" />
                   </fileset>
                 </copy>
-                <copy file="${basedir}/conf/chukwa-demux-conf.xml" tofile="${test.build.dir}/conf/chukwa-demux-conf.xml"></copy>
+                <copy file="${conf.dir}/chukwa-common.xml.template" tofile="${test.build.dir}/conf/chukwa-common.xml">
+			<filterchain>
+				<replacetokens>
+					<token key="CHUKWA_DIR" value="/tmp/chukwa" />
+				</replacetokens>
+			</filterchain>
+                </copy>
+                <copy file="${basedir}/conf/chukwa-demux-conf.xml.template" tofile="${test.build.dir}/conf/chukwa-demux-conf.xml">
+			<filterchain>
+		
+			    <replacetokens>
+					<token key="TODO-DEMUX-IO-SORT-MB" value="${TODO-DEMUX-IO-SORT-MB}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO-DEMUX-FS-INMEMORY-SIZE_MB" value="${TODO-DEMUX-FS-INMEMORY-SIZE_MB}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO-DEMUX-IO-SORT-FACTOR" value="${TODO-DEMUX-IO-SORT-FACTOR}" />
+				</replacetokens>
+
+			</filterchain>
+                </copy>
                 <copy file="${basedir}/conf/log4j.properties" tofile="${test.build.dir}/conf/log4j.properties"></copy>
                 <copy file="${build.dir}/hicc.war" tofile="${test.build.classes}/webapps/hicc.war"></copy>
+                <copy file="${basedir}/conf/auth.conf" tofile="${test.build.dir}/var/auth.conf"></copy>
 		<junit showoutput="${test.output}" fork="yes" printsummary="${test.printsummary}" forkmode="${test.junit.fork.mode}" maxmemory="${test.junit.maxmemory}" dir="${test.build.dir}/classes/" timeout="${test.timeout}" errorProperty="tests.failed" failureProperty="tests.failed">
 			<classpath refid="testClasspath" />
 			<env key="CHUKWA_CONF_DIR" value="${test.build.dir}/conf" />
 			<env key="CHUKWA_DATA_DIR" value="${test.build.dir}/var" />
 			<env key="CHUKWA_LOG_DIR" value="${test.build.dir}/var/log" />
+			<env key="CHUKWA_PID_DIR" value="${test.build.dir}/var/run" />
+			<env key="CHUKWA_HDFS" value="/chukwa" />
 			<env key="CHUKWA_HOME" value="${test.build.classes}" />
 			<sysproperty key="test.src.dir" value="${test.src.dir}" />
 			<sysproperty key="test.build.classes" value="${test.build.classes}" />
 			<sysproperty key="log4j.configuration" value="log4j.properties" />
+			<sysproperty key="CHUKWA_DATA_DIR" value="${test.build.dir}/var" />
+			<sysproperty key="CHUKWA_CONF_DIR" value="${test.build.dir}/conf" />
+			<sysproperty key="CHUKWA_LOG_DIR" value="${test.build.dir}/var/log" />
+			<sysproperty key="CHUKWA_PID_DIR" value="${test.build.dir}/var/run" />
+			<sysproperty key="CHUKWA_HDFS" value="/chukwa" />
+			<sysproperty key="CHUKWA_HOME" value="${test.build.classes}" />
 			<formatter type="${test.junit.output.format}" />
 			<batchtest todir="${test.build.dir}" unless="testcase">
 				<fileset dir="${test.src.dir}">
@@ -1011,7 +1042,7 @@
 	</target>
 
 	<target name="chukwa-config" description="create real files based on templates" depends="init">
-
+                <mkdir dir="${build.dir}/conf" />
 		<copy todir="${build.dir}/conf">
 			<fileset dir="${basedir}/conf">
 				<exclude name="*.template" />
@@ -1020,6 +1051,14 @@
 
 		<copy file="${basedir}/conf/jdbc.conf.template" tofile="${build.dir}/conf/jdbc.conf.template">
 		</copy>
+
+                <copy file="${conf.dir}/chukwa-common.xml.template" tofile="${build.dir}/conf/chukwa-common.xml">
+			<filterchain>
+				<replacetokens>
+					<token key="CHUKWA_DIR" value="/chukwa" />
+				</replacetokens>
+			</filterchain>
+                </copy>
 
 		<copy file="${basedir}/conf/alert.template" tofile="${build.dir}/conf/alert">
 			<filterchain>

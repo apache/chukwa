@@ -55,7 +55,7 @@
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 <link href="/hicc/css/flexigrid/flexigrid.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="/hicc/js/jquery-1.2.6.min.js"></script>
+<script type="text/javascript" src="/hicc/js/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="/hicc/js/flexigrid.js"></script>
 </head>
 <body>

@@ -3,7 +3,7 @@
 "title":"Event Viewer",
 "version":"0.1",
 "categories":"Global,Utilities",
-"module":"jsp\/event_viewer.jsp",
+"url":"jsp\/event_viewer.jsp",
 "description":"Display Time sorted events",
 "screendump":"",
 "refresh":"15",

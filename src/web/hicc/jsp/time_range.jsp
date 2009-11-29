@@ -104,6 +104,7 @@ Time Period
     </div>
 <input type="button" name="<%= boxId %>apply" value="Apply" onclick="save_time_range('<%= boxId %>')" class="formButton">
 
+<script type='text/javascript' src="/hicc/js/"></script>
 <script>
 /*
  * popup the online help
@@ -132,10 +133,10 @@ function togglePeriodControl(event) {
 period_control = document.getElementById("<%= boxId %>period");
 
 if (period_control != null) {
-   period_control.observe('change',togglePeriodControl);
+   //period_control.observe('change',togglePeriodControl);
    help_controls=document.getElementsByClassName("<%= boxId %>help_control");
    for (i=0;i<help_controls.length;i++) {
-       help_controls[i].observe("click",popup_help);
+       //help_controls[i].observe("click",popup_help);
    }
 }
 </script>

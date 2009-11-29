@@ -32,8 +32,8 @@
 <%@ page import = "org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
     XssFilter xf = new XssFilter(request);
-    String boxId=xf.getParameter("boxId");
-    response.setHeader("boxId", xf.getParameter("boxId"));
+    //String boxId=xf.getParameter("boxId");
+    //response.setHeader("boxId", xf.getParameter("boxId"));
     response.setContentType("text/html; chartset=UTF-8//IGNORE");
 
     /*

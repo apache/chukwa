@@ -3,7 +3,7 @@
 "title":"HDFS FS Name System Metrics",
 "version":"0.1",
 "categories":"Hadoop,Status",
-"module":"iframe/jsp/single-series-chart-javascript.jsp",
+"url":"iframe/jsp/single-series-chart-javascript.jsp",
 "description":"Display File System Name System related stats",
 "screendump":"\/images\/server_load.gif",
 "refresh":"15",

@@ -57,7 +57,7 @@ prettyStatisticNames.put("total_volume", "Total Volume<br />(bytes)");
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
       <title>2D Spectrum Viewer</title> 
       <link href="/hicc/css/heatmap/layout.css" rel="stylesheet" type="text/css"> 
-        <script language="javascript" type="text/javascript" src="/hicc/js/jquery-1.2.6.min.js"></script>
+        <script language="javascript" type="text/javascript" src="/hicc/js/jquery-1.3.2.min.js"></script>
         <script language="javascript" type="text/javascript" src="/hicc/js/jquery.flot.pack.js"></script>
 
         <script language="javascript" type="text/javascript" src="/hicc/js/excanvas.pack.js"></script>

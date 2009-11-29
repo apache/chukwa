@@ -16,10 +16,12 @@
  * limitations under the License.
  */
 
+var _widget_catalog=null;
+
 var portalView = Class.create();
 	
-function showView (request) {
-      	            _currentView.viewObj=request.responseText.evalJSON();
+function showView (data) {
+      	            _currentView.viewObj=data;
                     _currentView.createView();
 	            _currentView.getCurrentPage().pageSelected();
 }
@@ -28,7 +30,7 @@ portalView.prototype = {
 
     initialize: function(id,tab) {
 	// initialize values
-	this.baseURL='/hicc/Workspace';
+	this.baseURL='/hicc/v1/view';
 
     	this.id=id;			// id of the view
 	this.pagesCount=0;		// total number of pages
@@ -39,6 +41,9 @@ portalView.prototype = {
         }
         this.pages=new Array();		// list of pages
 	this.description='';		// description of view
+        this.owner='';
+        this.name='';
+        this.permissionType='private';
 	this.modified=0;
 
 	this.columnParentBox=null;	
@@ -68,23 +73,26 @@ portalView.prototype = {
     getView: function() {
    	var id=this.id;
    	var json_text='';
-   	var myAjax=new Ajax.Request(
-            this.baseURL,
-	    {
-		//asynchronous: false,
-		method: 'get',
-		parameters: {"_s":(new Date().getTime()),"method":"get_view","id":id},
-                onSuccess: showView,
-                onException: function(request, error) {
-                    alert("Cannot load workspace information.");
-                }
-	    }
-   	);
+        var url = this.baseURL+"/vid/"+id;
+        jQuery.ajax({
+            type:'GET',
+            dataType:'json',
+            url: url,
+            success: function(data) {
+                showView(data);
+            },
+            error: function(data) {
+                alert("Error in loading dashboard.");
+            }
+        });
     },
 
     getConfig: function() {
 	var v=new Object();
 	v.description=this.description;
+	v.name=this.name;
+	v.owner=this.owner;
+        v.permissionType=this.permissionType;
 	if (this.viewObj) {
 	    v.description=this.viewObj.description;
         }
@@ -109,6 +117,10 @@ portalView.prototype = {
 
     createView: function() {
    	if (this.viewObj != null) {
+            this.name = this.viewObj.name;
+            this.description = this.viewObj.description;
+            this.owner = this.viewObj.owner;
+            this.permissionType = this.viewObj.permissionType;
 	    for (var j=0;j<this.viewObj.pages.length;j++) {
 	   	// create a div
 	   	page=this.addNewPage(this.viewObj.pages[j].title, this.viewObj.pages[j].columns, this.viewObj.pages[j]);
@@ -393,11 +405,11 @@ portalWidget.prototype = {
 
     getWidgetUrl: function() { 
         var url="/hicc/";
-        if(this.block_obj.module) {
-            if(this.block_obj.module.match(/^http:\/\//)) {
-                url=this.block_obj.module;
+        if(this.block_obj.url) {
+            if(this.block_obj.url.match(/^http:\/\//)) {
+                url=this.block_obj.url;
             } else {
-                url=url+this.block_obj.module;
+                url=url+this.block_obj.url;
             }
         }
 	return url;
@@ -425,123 +437,131 @@ portalWidget.prototype = {
 	content+='<table cellpadding="0" cellspacing="0" width="100%"><tr><td>';
 	content+= '<form id="widgeteditform_'+this.pageid+'_'+this.boxIndex+'" name="widgeteditform_'+this.pageid+'_'+this.boxIndex+'"><table class="widget">';
 	// loop through parameters list
-	for (iCount=0;iCount<this.block_obj.parameters.length;iCount++) {
-	    if (this.block_obj.parameters[iCount].edit!=0) {
-		var param_id='param_'+this.pageid+'_'+this.boxIndex + '_'+iCount;
-		var param=this.block_obj.parameters[iCount];
-		var label=param.name;
-	 	if ((param.label) && (param.label!='')) {
-		    label=param.label;
-		}
-		label=label;
-	        content+='<tr><td valign="top">'+label+':<\/td><td>';
-	        if (param.type=='string') {
-		    content+='<input type="text" id="'+param_id+'" value="' + param.value + '" size="20" maxlength="255"\/>'
-	        } else if (param.type=='text') {
-		    content+='<textarea id="'+param_id+'" style="width: 300px; height: 100px">' + param.value + '</textarea>'
-	        } else if (param.type=='checkbox') {
-		    content+='<input type="checkbox" id="'+param_id+'" name="'+param_id+'" ' + ((param.value==1 || param.value == "on") ? "checked":"") + ' \/>'
-	        } else if (param.type=='radio') {
-		    for (var j=0;j<param.options.length;j++) {
-		        var option=param.options[j];
-		    	content+='<input type="radio" id="'+param_id+'" name="'+param_id+'" '+((param.value==option.value)?'checked':'')+' value="'+option.value+'">'+option.label+'</input>&nbsp;';
-		    }
-	        } else if (param.type=='select_callback') {
-		    // call the backend to get a list
-   		    var json_text='';
-   		    var myAjax=new Ajax.Request(
-	    		param.callback,
-	    		{
-			    asynchronous: false,
-			    method: 'get',
-                            onSuccess: function(transport) {
-      	                        param_options=transport.responseText.evalJSON();
-    		                content+='<select class="formSelect" id="'+param_id+'" name="'+param_id+'" >';
-		                for (var j=0;j<param_options.length;j++) {
-		    	            var option=param_options[j];
-		    	            content+='<option '+((param.value==option.value)?'selected':'')+' value="'+option.value+'">'+option.label+'</option>';
-		                }
-		                content+='</select>';
-                            }
-	    		}
-   		    );
-
-                } else if (param.type=='select_multiple_callback') {
-                    // call the backend to get a list
-                    var json_text='';
-                    var myAjax=new Ajax.Request(
-                        param.callback,
-                        {                             asynchronous: false,
-                            method: 'get'
-                        }
-                    );
-                    if (myAjax.success()) {
-                        json_text=myAjax.transport.responseText;
-                    }
-                    param_options=json_text.evalJSON();
-		    content+='<table cellpadding="0" cellspacing="0" style="font-size:10px;"><tr><td>';
-                    content+='Available:<br/><select multiple size="10" class="formSelect" id="available_'+param_id+'" name="available_'+param_id+'" >';
-                    for (var j=0;j<param_options.length;j++) {
-                        var option=param_options[j];
-                        var selected="";
-                        for (var k=0;k<param.value.length;k++) {
-                           if (param.value[k] == option.value) {
-                                selected="selected";
-                           }
-                        }
-			if (selected != 'selected') {
-                            content+='<option '+selected+' value="'+option.value+'">'+option.label+'</option>';
+        if(this.block_obj.parameters!=null) {
+		for (iCount=0;iCount<this.block_obj.parameters.length;iCount++) {
+		    if (this.block_obj.parameters[iCount].edit!=0) {
+			var param_id='param_'+this.pageid+'_'+this.boxIndex + '_'+iCount;
+			var param=this.block_obj.parameters[iCount];
+			var label=param.name;
+			if ((param.label) && (param.label!='')) {
+			    label=param.label;
 			}
-                    }
-		    content+='</select>';
-                    content+='</td><td valign="middle">';
-		    content+='<table cellspacing="2" cellpadding="0"><tr><td><input class=formButton type=button name="add" value=" >> " onclick="moveItem(\'available_'+param_id+'\',\''+param_id+'\');" /></td></tr><tr><td><input class=formButton type=button name="delete" value=" << " onclick="moveItem(\''+param_id+'\',\'available_'+param_id+'\');" /></td></tr></table>';
-                    content+='</td><td>';
-                    content+='Selected:<br/><select multiple size="10" class="formSelect" id="'+param_id+'" name="'+param_id+'" >';
-                    for (var k=0;k<param.value.length;k++) {
-                        for (var j=0;j<param_options.length;j++) {
-                           var option=param_options[j];
-                           if (param.value[k] == option.value) {
-                               content+='<option value="'+option.value+'">'+option.label+'</option>';
-                           }
-                        }
-                    }
-		    content+='</select>';
-                    content+='</td><td valign="middle">';
-		    content+='<table cellspacing="2" cellpadding="0"><tr><td>';
-		    content+='<input class=formButton border=0 type=image src="/hicc/images/u.gif" name="up" value="up" onclick="moveUpList(\''+param_id+'\');return false;"></td></tr>';
-		    content+='<tr><td>';
-		    content+='<input class=formButton border=0 type=image src="/hicc/images/d.gif" name="down" value="down" onclick="moveDownList(\''+param_id+'\');return false;">';
-		    content+='</td></tr>';
-		    content+='</table>';
-                    content+='</td></tr>';
-		    content+='</table>';
-	        } else if (param.type=='select') {
-    		    content+='<select class="formSelect" id="'+param_id+'" name="'+param_id+'" >';
-		    for (var j=0;j<param.options.length;j++) {
-		    	var option=param.options[j];
-		    	content+='<option '+((param.value==option.value)?'selected':'')+' value="'+option.value+'">'+option.label+'</option>';
-		    }
-		    content+='</select>';
-	        } else if (param.type=='select_multiple') {
-    		    content+='<select class="formSelect" id="'+param_id+'" name="'+param_id+'" multiple>';
-		    for (var j=0;j<param.options.length;j++) {
-		    	var option=param.options[j];
-                        var param_selected=false;
-                        for(var k=0;k<param.value.length;k++) {
-                            if(param.value[k] == option.value) {
-                                param_selected=true;
+			label=label;
+			content+='<tr><td valign="top">'+label+':<\/td><td>';
+			if (param.type=='string') {
+			    content+='<input type="text" id="'+param_id+'" value="' + param.value + '" size="20" maxlength="255"\/>'
+			} else if (param.type=='text') {
+			    content+='<textarea id="'+param_id+'" style="width: 300px; height: 100px">' + param.value + '</textarea>'
+			} else if (param.type=='checkbox') {
+			    content+='<input type="checkbox" id="'+param_id+'" name="'+param_id+'" ' + ((param.value==1 || param.value == "on") ? "checked":"") + ' \/>'
+			} else if (param.type=='radio') {
+                            if(param.options!=null) {
+			        for (var j=0;j<param.options.length;j++) {
+				    var option=param.options[j];
+				    content+='<input type="radio" id="'+param_id+'" name="'+param_id+'" '+((param.value==option.value)?'checked':'')+' value="'+option.value+'">'+option.label+'</input>&nbsp;';
+			        }
                             }
-                        }
-		    	content+='<option '+(param_selected ?'selected':'')+' value="'+option.value+'">'+option.label+'</option>';
+			} else if (param.type=='select_callback') {
+			    // call the backend to get a list
+			    var json_text='';
+			    var myAjax=new Ajax.Request(
+				param.callback,
+				{
+				    asynchronous: false,
+				    method: 'get',
+				    onSuccess: function(transport) {
+					param_options=transport.responseText.evalJSON();
+					content+='<select class="formSelect" id="'+param_id+'" name="'+param_id+'" >';
+					for (var j=0;j<param_options.length;j++) {
+					    var option=param_options[j];
+					    content+='<option '+((param.value==option.value)?'selected':'')+' value="'+option.value+'">'+option.label+'</option>';
+					}
+					content+='</select>';
+				    }
+				}
+			    );
+
+			} else if (param.type=='select_multiple_callback') {
+			    // call the backend to get a list
+			    var json_text='';
+			    var myAjax=new Ajax.Request(
+				param.callback,
+				{                             asynchronous: false,
+				    method: 'get'
+				}
+			    );
+			    if (myAjax.success()) {
+				json_text=myAjax.transport.responseText;
+			    }
+			    param_options=json_text.evalJSON();
+			    content+='<table cellpadding="0" cellspacing="0" style="font-size:10px;"><tr><td>';
+			    content+='Available:<br/><select multiple size="10" class="formSelect" id="available_'+param_id+'" name="available_'+param_id+'" >';
+			    for (var j=0;j<param_options.length;j++) {
+				var option=param_options[j];
+				var selected="";
+				for (var k=0;k<param.value.length;k++) {
+				   if (param.value[k] == option.value) {
+					selected="selected";
+				   }
+				}
+				if (selected != 'selected') {
+				    content+='<option '+selected+' value="'+option.value+'">'+option.label+'</option>';
+				}
+			    }
+			    content+='</select>';
+			    content+='</td><td valign="middle">';
+			    content+='<table cellspacing="2" cellpadding="0"><tr><td><input class=formButton type=button name="add" value=" >> " onclick="moveItem(\'available_'+param_id+'\',\''+param_id+'\');" /></td></tr><tr><td><input class=formButton type=button name="delete" value=" << " onclick="moveItem(\''+param_id+'\',\'available_'+param_id+'\');" /></td></tr></table>';
+			    content+='</td><td>';
+			    content+='Selected:<br/><select multiple size="10" class="formSelect" id="'+param_id+'" name="'+param_id+'" >';
+			    for (var k=0;k<param.value.length;k++) {
+				for (var j=0;j<param_options.length;j++) {
+				   var option=param_options[j];
+				   if (param.value[k] == option.value) {
+				       content+='<option value="'+option.value+'">'+option.label+'</option>';
+				   }
+				}
+			    }
+			    content+='</select>';
+			    content+='</td><td valign="middle">';
+			    content+='<table cellspacing="2" cellpadding="0"><tr><td>';
+			    content+='<input class=formButton border=0 type=image src="/hicc/images/u.gif" name="up" value="up" onclick="moveUpList(\''+param_id+'\');return false;"></td></tr>';
+			    content+='<tr><td>';
+			    content+='<input class=formButton border=0 type=image src="/hicc/images/d.gif" name="down" value="down" onclick="moveDownList(\''+param_id+'\');return false;">';
+			    content+='</td></tr>';
+			    content+='</table>';
+			    content+='</td></tr>';
+			    content+='</table>';
+			} else if (param.type=='select') {
+			    content+='<select class="formSelect" id="'+param_id+'" name="'+param_id+'" >';
+                            if(param.options!=null) {
+			        for (var j=0;j<param.options.length;j++) {
+				    var option=param.options[j];
+				    content+='<option '+((param.value==option.value)?'selected':'')+' value="'+option.value+'">'+option.label+'</option>';
+			        }
+                            }
+			    content+='</select>';
+			} else if (param.type=='select_multiple') {
+			    content+='<select class="formSelect" id="'+param_id+'" name="'+param_id+'" multiple>';
+                            if(param.options!=null) {
+			        for (var j=0;j<param.options.length;j++) {
+				    var option=param.options[j];
+				    var param_selected=false;
+				    for(var k=0;k<param.value.length;k++) {
+				        if(param.value[k] == option.value) {
+					    param_selected=true;
+				        }
+				    }
+				    content+='<option '+(param_selected ?'selected':'')+' value="'+option.value+'">'+option.label+'</option>';
+			        }
+                            }
+			    content+='</select>';
+			} else if (param.type=='custom') {
+			  // build a custom widget
+			  content+=build_custom_edit(param_id, param);
+			}
+			content+='<\/td><\/tr>'
 		    }
-		    content+='</select>';
-		} else if (param.type=='custom') {
-		  // build a custom widget
-		  content+=build_custom_edit(param_id, param);
 		}
-		content+='<\/td><\/tr>'
-	    }
         }
 
 	content+='<tr><td>'+'Refresh (min)'+':<\/td><td>';
@@ -597,8 +617,7 @@ portalWidget.prototype = {
     closeEditBox: function() {
 	// close the edit box
    	var editBox= $('dragableBoxEdit' + this.pageid+"_"+this.boxIndex);
-        new Effect.BlindUp(editBox);
-      	//editBox.style.display='none';
+        jQuery(editBox).slideUp("fast");
         $('dragableBoxHeader' + this.pageid+"_"+this.boxIndex).style.height = '20px';
     },
 
@@ -881,10 +900,11 @@ portalWidget.prototype = {
 	}
 	var string=module+"/";
 	string+='&_page='+this.pageid+'&boxIndex='+this.boxIndex+'&boxId='+this.pageid+'_'+this.boxIndex;
-
-	for (iCount=0;iCount<this.block_obj.parameters.length;iCount++) {
-	    string+="&";
-	    string+=this.block_obj.parameters[iCount].name+"="+escape(this.block_obj.parameters[iCount].value);
+        if(this.block_obj.parameters!=null) {
+	    for (iCount=0;iCount<this.block_obj.parameters.length;iCount++) {
+	        string+="&";
+	        string+=this.block_obj.parameters[iCount].name+"="+escape(this.block_obj.parameters[iCount].value);
+            }
         }
 	return string;
     },
@@ -1190,16 +1210,8 @@ function moveDownList(c1) {
 		
 function editContent() {
    var numericId = this.id.replace(/[^0-9|_]/g,'');
-   var obj = $('dragableBoxEdit' + numericId);
-   if(obj.style.display=='none'){
-      //obj.style.display='block';
-      new Effect.BlindDown($('dragableBoxEdit'+numericId));
-
-   }else{
-      new Effect.BlindUp($('dragableBoxEdit'+numericId));
-      //obj.style.display='none';
-   }
-   setTimeout('dragDropCounter=-5',5);
+   jQuery('#dragableBoxEdit'+numericId).slideToggle("fast");
+   return false;
 }
 
 function refreshContent()
@@ -1599,7 +1611,7 @@ portalPage.prototype = {
 
     	    for (var j=0;j<cols.length;j++) {
 	        if (cols[j].id.indexOf('_dragColumn')!=(-1)) {
-    	            var c=new Array;
+    	            var c=new Array();
     	            var widgets=cols[j].childNodes;
 	            var count=0;
     	            for (var k=0;k<widgets.length;k++) {	
@@ -1614,7 +1626,8 @@ portalPage.prototype = {
 		            }
 		        }
     	            }
-	    	    p.layout[colIndex]=c;
+                    p.layout[colIndex]=new Object();
+	    	    p.layout[colIndex].widgets=c;
 		    p.colSize[colIndex]=getWidth(cols[j]);
                     colIndex++;
 	        }
@@ -1899,8 +1912,8 @@ portalPage.prototype = {
 
     createBoxes: function() {
     	for (var i=0;i<this.pageLayout.layout.length;i++) {
-	    for (var j=this.pageLayout.layout[i].length-1;j>=0;j--) {
-		this.addWidget(this.pageLayout.layout[i][j], i+1,false);
+	    for (var j=this.pageLayout.layout[i].widgets.length-1;j>=0;j--) {
+		this.addWidget(this.pageLayout.layout[i].widgets[j], i+1,false);
             }
     	}
     },
@@ -2268,203 +2281,173 @@ function saveView() {
     need_save=0;
     close_all_popup();
     var config=_currentView.getConfig();
-    var myAjax=new Ajax.Request(	
-	'/hicc/Workspace',
-	{
-	    asynchronous: false,
-	    method: 'post',
-	    parameters: "_s="+(new Date().getTime())+"&"+'method=save_view&force=1&name='+_currentView.id+'&config='+escape(config)
-	}
-   );
-   if (myAjax.success()) {
-      	var return_text=myAjax.transport.responseText;
-	// alert(return_text);
-   } 
+    var url='/hicc/v1/view';
+    jQuery.ajax({
+        type:'PUT',
+        contentType: 'application/json',
+        dataType:'json',
+        url: url,
+        data: config,
+        success: function(data) {
+        },
+        error: function(request) {
+            alert("Error saving dashboard, reason: "+request.responseText);
+        }
+    });
+
 }
 
-//
-// Clone the current view
-//
-function cloneView(id) {
-    var myAjax=new Ajax.Request(	
-	'/hicc/Workspace',
-	{
-	    asynchronous: false,
-	    method: 'post',
-	    parameters: "&method=clone_view&name="+id+"&clone_name="+id+".view&_s="+(new Date().getTime())
-	}
-    );
-    if (myAjax.success()) {
-      	var return_text=myAjax.transport.responseText;
-	// alert(return_text);
-    } 
-    update_views_list();
-}
-
-//
-// restore the default view
-//
-function restoreView() {
-//    var myAjax=new Ajax.Request(	
-//	'/admin/',
-//	{
-//	    asynchronous: false,
-//	    method: 'post',
-//	    parameters: "_s="+(new Date().getTime())+"&"+'module=Workspace&method=restore_view'
-//	}
-//    );
-alert("TODO: implement this");
-//    if (myAjax.success()) {
-//      	var return_text=myAjax.transport.responseText;
-	// alert(return_text);
-//    } 
-    update_views_list();
-    initScript('default');
-    set_current_view('default');
-}
-
-function createNewView() {
-    var myAjax=new Ajax.Request(	
-	'/hicc/Workspace',
-	{
-	    asynchronous: false,
-	    method: 'post',
-	    parameters: "&method=clone_view&name=NewView&clone_name=newview.tpl&_s="+(new Date().getTime())
-	}
-    );
-    if (myAjax.success()) {
-      	var return_text=myAjax.transport.responseText;
-	// alert(return_text);
-    } 
-    update_views_list();
-}
-
-function changeViewName(id, save) {
-    if ($("changeViewNameButtonBlock"+id).style.display=="block") {
-	$("displayViewPermissionBlock"+id).style.display="none";
-	$("editViewPermissionBlock"+id).style.display="block";
-	$("changeViewNameButtonBlock"+id).style.display="none";
-	$("cancelChangeViewNameBlock"+id).style.display="block";
-	$("displayViewNameBlock"+id).style.display="none";
-	$("changeViewNameBlock"+id).style.display="block";
-    } else {
-	// save it
-	if (save) {	
-	    // make sure the description name cannot contain '
-            if ($("changeViewNameField"+id).value.indexOf("'")>=0) {
-		alert("Name cannot contain '.");
-		return false;
-    	    }
-
-	    // make sure that we have at least one permission
-
-	    var tbl=$('permissionTable'+id);
-	    var trTags=$A(tbl.getElementsByTagName('tr'));
-	    if (trTags.length <= 0) {
-		alert("At least one permissions level must be enabled");
-		return false;
-	    }
-
-	    var okay=0;
-	    trTags.each(function(node) {
-	        var selectObjArray=node.getElementsByTagName('select');
-		var read_permission=0;
-		var modify_permission=0;
-	        if (selectObjArray.length > 0) {
-		    var obj=selectObjArray[0];
-	            var userid=obj.options[obj.selectedIndex].value;
-		    var inputArray=node.getElementsByTagName('input');
-		    for (var i=0;i<inputArray.length;i++) {
-		        obj=inputArray[i];
-		        if (obj.id == 'read_permission') {	
-	    		    read_permission=(obj.checked)?1:0;
-		        }
-		        if (obj.id == 'modify_permission') {	
-	    		    modify_permission=(obj.checked)?1:0;
-		        }
-		    }
-		    if ((userid != '') && (read_permission==1) && (modify_permission==1)) {
-			okay=1;
-		    }
-	        }
-            });
-	    //if (okay==0) {
-		//alert("You must have at least one user with read and modify permissions enabled");
-		//return false;
-	    //}
-
-
-	    var permissionObj=new permissionRowObj(id);
-	    var json=permissionObj.getJson();
-
-	    var myAjax=new Ajax.Request(	
-		'/hicc/Workspace',
-		{
-	    	    asynchronous: false,
-	    	    method: 'post',
-	    	    parameters: "_s="+(new Date().getTime())+"&method=change_view_info&name="+id+'&config='+json
-		}
-    	    );
-    	    if (myAjax.success()) {
-      		var return_text=myAjax.transport.responseText;
-		alert(return_text);
-	    }
-
-    	    update_views_list();
-	}
-	$("displayViewPermissionBlock"+id).style.display="block";
-	$("editViewPermissionBlock"+id).style.display="none";
-	$("changeViewNameButtonBlock"+id).style.display="block";
-	$("cancelChangeViewNameBlock"+id).style.display="none";
-	$("displayViewNameBlock"+id).style.display="block";
-	$("changeViewNameBlock"+id).style.display="none";
+function create_new_view() {
+  var viewName=prompt("Enter a name for the new dashboard.");
+  if(viewName==null) {
+    return false;
+  }
+  jQuery.ajax({
+    type:'POST',
+    contentType:'application/json; charset=utf-8',
+    dataType:'text',
+    url:'/hicc/v1/view',
+    data: { view_name: viewName },
+    success: function(data) {
+      update_views_list();
+    },
+    error: function(data) {
+      alert("Error in creating new dashboard.");
     }
+  });
+  return false;
+}
+
+function clone_view(owner,vid) {
+  var viewName=prompt("Enter a new name for "+vid+" dashboard.");
+  if(viewName==null) {
+    return false;
+  }
+  jQuery.ajax({
+    type:'POST',
+    contentType:'application/json; charset=utf-8',
+    dataType:'text',
+    url:'/hicc/v1/view',
+    data: { owner: owner, view_vid: vid, view_name: viewName },
+    success: function(data) {
+      update_views_list();
+    },
+    error: function(data) {
+      alert("Error in cloning dashboard.");
+    }
+  });
+  return false;
+}
+
+function rename_view(owner,vid) {
+  var viewName=prompt("Enter a new name for "+vid+" dashboard.");
+  if(viewName==null) {
+    return false;
+  }
+  jQuery.ajax({
+    type:'POST',
+    contentType:'application/json; charset=utf-8',
+    dataType:'text',
+    url:'/hicc/v1/view',
+    data: { owner: owner, view_vid: vid, view_name: viewName },
+    success: function(data) {
+      delete_view(owner,vid);
+    },
+    error: function(data) {
+      alert("Error in renaming dashboard.");
+    }
+  });
+  return false;
+}
+
+function delete_view(owner,vid) {
+  var url = '/hicc/v1/view/delete/'+owner+'/vid/'+vid;
+  jQuery.ajax({
+    type:'DELETE',
+    dataType:'text',
+    url: url,
+    success: function(data) {
+      update_views_list();
+    },
+    error: function(data) {
+      alert("Error in deleting "+vid+" dashboard.");
+    }
+  });
+  return false;
+}
+
+function update_permission(owner,vid,permission) {
+  jQuery.ajax({
+    type:'POST',
+    contentType:'application/json; charset=utf-8',
+    dataType:'text',
+    url:'/hicc/v1/view/permission',
+    data: { owner: owner, view_vid: vid, permission: permission },
+    success: function(data) {
+      if(_currentView.owner==owner && _currentView.id==vid) {
+        _currentView.permissionType=permission;
+      }
+    },
+    error: function(data) {
+      alert("Error in updating permission for "+vid+" dashboard.");
+    }
+  });
+  return false;
 }
 
 function update_views_list() {
-    var viewListUpdater = new Ajax.Updater(
-	"views_list_div",
-	"/hicc/jsp/workspace/manage_view.jsp", {
-	parameters: { "_s" : (new Date().getTime()),
-                      "method" : "get_views_list" },
-	onException: function(resp) {
-	    alert("Cannot load view.");
-	}
-    });
-    var param="_s="+(new Date().getTime())+"&method=get_views_list&format=dropdown";
-    var myAjax=new Ajax.Request(	
-        '/hicc/Workspace',
-        {
-    	    asynchronous: false,
-	    method: 'post',
-	    parameters:  { "_s" : (new Date().getTime()),
-                           "method" : "get_views_list",
-                           "format" : "dropdown"
-                         },
-            onSuccess : function(transport) {
-      	                    var view_array=transport.responseText.evalJSON();
-	                    $('currentpage').options.length=0;
-	                    for (i=0;i<view_array.length;i++) {
-		                $('currentpage').options[i]=new Option(view_array[i].description,view_array[i].key);
-		                if (view_array[i].key == _currentViewId) {
-		                    $('currentpage').selectedIndex=i;
-		                }
-	                    }
-            },
-            onException : function(request, error) {
-                              alert(error);
-            }
-	}
-    );
-}
-
-function set_current_view(id) {
-	var control=$('currentpage');
-	for (i=0;i<control.options.length;i++) {
-	    if (control.options[i].value == id) {
-		control.selectedIndex=i;
-	    }
-	}
+  jQuery.getJSON('/hicc/v1/view/list',
+    function(data) {
+      jQuery('#currentpage').find("option").remove();
+      jQuery('#views_list').find("tr:gt(0)").remove();
+      for (i=0;i<data.length;i++) {
+        var view = "";
+        if (data[i].name == _currentViewId) {
+          jQuery('#currentpage').append(jQuery("<option></option>").attr("value",data[i].name).text(data[i].name).attr("selected","selected"));
+        } else {
+          jQuery('#currentpage').append(jQuery("<option></option>").attr("value",data[i].name).text(data[i].name));
+        }
+        var view="<tr>";
+        if(data[i].editable=="true") {
+          view=view+"<td>";
+          view=view+"<a href='#' class='glossy_icon' onclick='delete_view(\""+data[i].owner+"\",\""+data[i].name+"\")'><img src='images/close.png'></a>";
+          view=view+"<a href='#' class='glossy_icon' onclick='clone_view(\""+data[i].owner+"\",\""+data[i].name+"\")'><img src='images/clone.png'></a>";
+          view=view+"</td>";
+          view=view+"<td><input type='radio' name='permission."+data[i].name+"."+data[i].owner+"' value='public' ";
+          if(data[i].type=="public") {
+            view=view+"checked";
+          }
+          view=view+" onclick='update_permission(\""+data[i].owner+"\",\""+data[i].name+"\",\"public\")'> Public";
+          view=view+"<input type='radio' name='permission."+data[i].name+"."+data[i].owner+"' value='private' ";
+          if(data[i].type=="private") {
+            view=view+"checked";
+          }
+          view=view+" onclick='update_permission(\""+data[i].owner+"\",\""+data[i].name+"\",\"private\")'> Private</td>";
+          view=view+"<td>"+data[i].name;
+          view=view+"<a href='#' class='glossy_icon' onclick='rename_view(\""+data[i].owner+"\",\""+data[i].name+"\")'><img src='images/application_edit.png' align='right'></a></td>";
+        } else {
+          view=view+"<td>";
+          view=view+"<img src='images/bullet_white.png' width='16'>";
+          view=view+"<a href='#' class='glossy_icon' onclick='clone_view(\""+data[i].owner+"\",\""+data[i].name+"\")'><img src='images/clone.png'></a>";
+          view=view+"</td>";
+          view=view+"<td><input type='radio' name='permission."+data[i].name+"."+data[i].owner+"' value='public' ";
+          if(data[i].type=="public") {
+            view=view+"checked";
+          }
+          view=view+" disabled> Public";
+          view=view+"<input type='radio' name='permission."+data[i].name+"."+data[i].owner+"' value='private' ";
+          if(data[i].type=="private") {
+            view=view+"checked";
+          }
+          view=view+" disabled> Private</td>";
+          view=view+"<td>"+data[i].name+"</td>";
+        }
+        view=view+"<td>"+data[i].owner+"</td>";
+        view=view+"</tr>";
+        jQuery('#views_list tr:last').after(view);
+      }
+    }
+  );
 }
 
 function changeView(obj) {
@@ -2571,85 +2554,41 @@ function renamePageButtonClick() {
     _currentView.renamePage(_configPageTag, $F('new_page_name'));
 }
 
-function _addTextNode(node, thisId, title) {
-	var data = {	
-		id: thisId,
-		label: title,
-		href: "javascript:onLabelClick('" + thisId + "')"
-	}
-	new YAHOO.widget.TextNode(data, node, false);
-}
-
 function _findNode(id) {
-    for (var i=0;i<_plugin_hash.detail.length;i++) {
-	if (_plugin_hash.detail[i].id==id) {
-	    return _plugin_hash.detail[i];
-	}
-    }
-    return null;
-}
-
-function _addNode(parent, node) {
-    if (node != null) {	
-	for (x in node) {
-	    if (x.indexOf('node:')==0) {
-	    	var newNode=new YAHOO.widget.TextNode(x.substring(5), parent, false);
-		_addNode(newNode, node[x]);
-	    } else if (x.indexOf('leaf:')==0) {
-		tmpNode=_findNode(node[x]);
-		_addTextNode(parent, node[x], tmpNode.title)
-	    } 
-	}
-    }
 }
 
 function onLabelClick(id) {
-    // create detail panel
+  jQuery.getJSON('/hicc/v1/widget/wid/'+id,
+    function(node) {
+      var detail='';
+      detail+="<table class='configurationTableContent' width='95%'><tr><td valign='top' width='40%'><table class='configurationTableContent'>";
+      detail+="<tr><td><b>"+'Name'+":</b>&nbsp;</td><td>";
+      detail+=node.title;
+      detail+="</td></tr>";
+      detail+="<tr><td><b>"+'Version'+":&nbsp;</b></td><td>";
+      detail+=node.version;
+      detail+="</td></tr>";
+      detail+="<tr><td valign='top'><b>"+'Description'+":&nbsp;</b></td><td>";
+      detail+=node.description;
+      detail+='</td></tr><tr><td><input class="formButton" type="button" name="addwidget" value="Add Widget" onClick="add_widget(\''+id+'\');"/>';
+      detail+="</td></tr>";
+      detail+="</table></td>";
+      detail+="<td width='55%'><div id='_preview' style='width:100%;overflow:hidden;'>";
+      detail+="<div id='_preview' class='dragableBoxContent' style='width:100%;height:200px;overflow:hidden;'><img src='/hicc/images/loading.gif'></div></div></td></tr></table>";
 
-    var node=_findNode(id);
-    var boxId="widget"+new Date().getTime();
-    var detail='';
-    detail+="<table class='configurationTableContent' width='95%'><tr><td valign='top' width='40%'><table class='configurationTableContent'>";
-    detail+="<tr><td><b>"+'Name'+":</b>&nbsp;</td><td>";
-    detail+=node.title;
-    detail+="</td></tr>";
-    detail+="<tr><td><b>"+'Version'+":&nbsp;</b></td><td>";
-    detail+=node.version;
-    detail+="</td></tr>";
-    detail+="<tr><td valign='top'><b>"+'Description'+":&nbsp;</b></td><td>";
-    detail+=node.description;
-    detail+='</td></tr><tr><td><input class="formButton" type="button" name="addwidget" value="Add Widget" onClick="add_widget(\''+id+'\');"/>';
-    detail+="</td></tr>";
-    detail+="</table></td>";	
-    detail+="<td width='55%'><div id='_"+boxId+"' style='width:100%;overflow:hidden;'>";
-    detail+="<div id='"+boxId+"' class='dragableBoxContent' style='width:100%;height:200px;overflow:hidden;'><img src='/hicc/images/loading.gif'></div></div></td></tr></table>";
-
-    $('widget_detail').innerHTML=detail;
-    var url="";
-    var parameters="";
-    if(node.module) {
-        if(node.module.match(/^http:\/\//)) {
-            url=node.module;
-        } else {
-            url=node.module;
-	    var string=node.module+"?";
-            string+="&boxId="+boxId;
-	    for (iCount=0;iCount<node.parameters.length;iCount++) {
-	        string+="&";
-	        string+=node.parameters[iCount].name+"="+escape(node.parameters[iCount].value);
-            }
-            parameters=string;
+      jQuery('#widget_detail').empty();
+      jQuery('#widget_detail').append(detail);
+      var url=node.url;
+      var parameters = {};
+      jQuery.each(node.parameters,
+        function(i,param) {
+          parameters[param.name]=param.value;
         }
+      );
+      jQuery('#_preview').load(url, parameters);
     }
-    var myAjax = new Ajax.Updater(
-            boxId,
-            url,
-            { 
-                method: 'get',
-                parameters: parameters,
-                onComplete: renderWidget
-            }
-            );
+  );
+
 }
 
 function renderWidget(request) {
@@ -2790,10 +2729,12 @@ function configPage(id) {
    add widget
 ***************************************************/
 function add_widget(id) {
-    var node=_findNode(id);
-    eval("var tmp ="+ Object.toJSON(node));
     need_save=1;
-    _currentView.getCurrentPage().addWidget(tmp,1,false);
+    jQuery.getJSON('/hicc/v1/widget/wid/'+id,
+      function(node) {
+        _currentView.getCurrentPage().addWidget(node,1,false);
+      }
+    );
 }
 
 
@@ -2807,75 +2748,42 @@ function refresh_all() {
 
 var _menu_open=false;
 
-function manage_content(close) {
-    if ((_menu_open) || (close)) {
-	//$('manage_button').value='Workspace Builder >>';
-	if(_menu_open) {
-            new Effect.BlindUp($('manage_view'));
-        }
-    	//$('manage_view').style.display="none";
-	_menu_open=false;
-    } else {
-	close_all_popup();
-	//$('manage_button').value='Workspace Builder <<';
-        $('manage_view').style.zIndex='20';
-	new Effect.BlindDown($('manage_view'));
-    	//$('manage_view').style.display="block";
-	_menu_open=true;
-    }
-    return false;
-}
-
 var _widget_menu_open=false;
 
-var TreeBuilder = {
-     buildTree:function (treeNodes){
-         tree = new YAHOO.widget.TreeView("myWidgetContainer");
-         _addNode(tree.getRoot(), treeNodes);
-         tree.subscribe("labelClick", function(node) {
-              onLabelClick(node);
-         });
+function add_widget_menu(close) {
+	// manage widget
+  if (_widget_catalog == null) {
+    var json_text='';
+    jQuery.getJSON('/hicc/v1/widget/catalog',
+      function(data) {
+        TreeBuilder.buildTree(data.children);
+      }
+    );
+  }
+  jQuery('#manage_view').slideUp("fast");
+  jQuery('#widget_view').slideToggle("fast");
+  return false;
+}
 
+var TreeBuilder = {
+     buildTree:function (data){
+         tree = new YAHOO.widget.TreeView("myWidgetContainer",data);
+         tree.subscribe("labelClick", function(node) {
+              onLabelClick(node.data.id);
+         });
          tree.draw();
      }
 }
 
-function add_widget_menu(close) {
-	// manage widget
-	if (_plugin_hash == null) {
-   	    var json_text='';
-   	    var myAjax=new Ajax.Request(
-	        '/hicc/Workspace',
-	        {
-		    asynchronous: false,
-		    method: 'get',
-		    parameters: "_s="+(new Date().getTime())+"&"+
-			'method=get_widget_list&id='+'userid',
-                    onSuccess : function(transport) {
-      	                           _plugin_hash=transport.responseText.evalJSON();
-                                   TreeBuilder.buildTree(_plugin_hash.children);
-                                }
-	        }
-   	    );
-	}
-    if ((_widget_menu_open) || (close)) {
-        if(_widget_menu_open) {
-	    new Effect.BlindUp($('widget_view'));
-        }
-	_widget_menu_open=false;
-    } else {
-	close_all_popup();
-        $('widget_view').style.zIndex='15';
-	new Effect.BlindDown($('widget_view'));
-	_widget_menu_open=true;
-    }
-    return false;
+function manage_content(close) {
+  jQuery('#widget_view').slideUp("fast");
+  jQuery('#manage_view').slideToggle("fast");
+  return false;
 }
 
 function close_all_popup() {
-	manage_content('close');
-	add_widget_menu('close');
-	configPage('');
+  jQuery('#manage_view').slideUp("fast");
+  jQuery('#widget_view').slideUp("fast");
 }
 
 var permissionRowObj = Class.create();

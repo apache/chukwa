@@ -3,7 +3,7 @@
 "title":"Cluster Metrics",
 "version":"0.1",
 "categories":"System Metrics,Cluster,Status",
-"module":"iframe/jsp/single-series-chart-javascript.jsp",
+"url":"iframe/jsp/single-series-chart-javascript.jsp",
 "description":"Display cluster related stats",
 "screendump":"\/images\/server_load.gif",
 "refresh":"15",

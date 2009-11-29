@@ -33,7 +33,7 @@
       </servlet-class>
       <init-param>
 	<param-name>com.sun.jersey.config.property.packages</param-name>
-	<param-value>org.apache.hadoop.chukwa.rest.actions</param-value>
+	<param-value>org.apache.hadoop.chukwa.rest.resource</param-value>
       </init-param>
       <load-on-startup>1</load-on-startup>
     </servlet>
@@ -41,4 +41,24 @@
       <servlet-name>REST_API</servlet-name>
       <url-pattern>/v1/*</url-pattern>
     </servlet-mapping>    
+
+    <security-role>
+    <role-name>user</role-name>
+    </security-role>
+
+    <login-config>
+    <realm-name>Auth</realm-name>
+    </login-config>
+
+    <security-constraint>
+    <web-resource-collection>
+    <web-resource-name>File Upload</web-resource-name>
+    <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+
+    <auth-constraint>
+    <role-name>user</role-name>
+    </auth-constraint>
+    </security-constraint>
+
 </web-app>

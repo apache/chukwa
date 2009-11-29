@@ -8,6 +8,8 @@ Trunk (unreleased changes)
  
    IMPROVEMENTS
 
+    CHUKWA-207. Store HICC dashboard data in HDFS. (Eric Yang)
+
     CHUKWA-415. Read initial adaptors at start every time. (asrabkin)
 
     CHUKWA-413. Improve admin guide. (asrabkin)

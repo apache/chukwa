@@ -3,7 +3,7 @@
 "title":"Swimlanes (Static)",
 "version":"0.1",
 "categories":"Hadoop,Status",
-"module":"iframe/jsp/swimlanes-static.jsp",
+"url":"iframe/jsp/swimlanes-static.jsp",
 "description":"Display Time sorted events",
 "screendump":"\/images\/start.png",
 "refresh":"15",
