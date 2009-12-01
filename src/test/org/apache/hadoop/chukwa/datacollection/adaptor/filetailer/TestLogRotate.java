@@ -51,7 +51,7 @@ public class TestLogRotate extends TestCase {
     String adaptorId = agent
         .processAddCommand("add lr =org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8"
             + " lines " + testFile + " 0");
-    assertTrue(adaptorId.equals("lr"));
+    assertTrue(adaptorId.equals("adaptor_lr"));
     System.out.println("getting a chunk...");
     Chunk c = chunks.waitForAChunk();
     System.out.println("got chunk");

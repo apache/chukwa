@@ -32,6 +32,7 @@ public class AdaptorNamingUtils {
     md.update(dataType.getBytes());
     md.update(params.getBytes());
     StringBuilder sb = new StringBuilder();
+    sb.append("adaptor_");
     byte[] bytes = md.digest();
     for(int i=0; i < bytes.length; ++i) {
       if( (bytes[i] & 0xF0) == 0)

@@ -43,7 +43,7 @@ public class TestAgentConfig extends TestCase {
       File initialAdaptors = File.createTempFile("initial", "adaptors");
       initialAdaptors.deleteOnExit();
       ps = new PrintStream(new FileOutputStream(initialAdaptors));
-      ps.println("add testAdaptor= org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8  raw 0 "
+      ps.println("add adaptor_testAdaptor= org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8  raw 0 "
               + foo.getAbsolutePath() + " 0  ");
       ps.close();
 
@@ -62,8 +62,8 @@ public class TestAgentConfig extends TestCase {
       conn.start();
       assertEquals(1, agent.adaptorCount());// check that we processed initial
                                             // adaptors
-      assertNotNull(agent.getAdaptor("testAdaptor"));
-      assertTrue(agent.getAdaptor("testAdaptor").getCurrentStatus().contains("foo"));
+      assertNotNull(agent.getAdaptor("adaptor_testAdaptor"));
+      assertTrue(agent.getAdaptor("adaptor_testAdaptor").getCurrentStatus().contains("foo"));
 
       System.out
           .println("---------------------done with first run, now stopping");
@@ -85,8 +85,8 @@ public class TestAgentConfig extends TestCase {
       conn.start();
       assertEquals(2, agent.adaptorCount());// check that we processed initial
                                             // adaptors
-      assertNotNull(agent.getAdaptor("testAdaptor"));
-      assertTrue(agent.getAdaptor("testAdaptor").getCurrentStatus().contains("foo"));
+      assertNotNull(agent.getAdaptor("adaptor_testAdaptor"));
+      assertTrue(agent.getAdaptor("adaptor_testAdaptor").getCurrentStatus().contains("foo"));
       agent.shutdown();
       Thread.sleep(2000);
       System.out.println("---------------------done");

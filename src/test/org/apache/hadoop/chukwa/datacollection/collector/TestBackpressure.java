@@ -69,12 +69,12 @@ public class TestBackpressure extends TestCase {
     server.start();
     server.setStopAtShutdown(false);
     Thread.sleep(1000);
-    agent.processAddCommand("add constSend = " + ConstRateAdaptor.class.getCanonicalName() + 
+    agent.processAddCommand("add adaptor_constSend = " + ConstRateAdaptor.class.getCanonicalName() + 
         " testData "+ SEND_RATE + " 0");
-    assertNotNull(agent.getAdaptor("constSend"));
+    assertNotNull(agent.getAdaptor("adaptor_constSend"));
     Thread.sleep(TEST_DURATION_SECS * 1000);
 
-    String[] stat = agent.getAdaptorList().get("constSend").split(" ");
+    String[] stat = agent.getAdaptorList().get("adaptor_constSend").split(" ");
     long kbytesPerSec = Long.valueOf(stat[stat.length -1]) / TEST_DURATION_SECS / 1000;
     System.out.println("data rate was " + kbytesPerSec + " kb /second");
     assertTrue(kbytesPerSec < WRITE_RATE_KB); //write rate should throttle sends

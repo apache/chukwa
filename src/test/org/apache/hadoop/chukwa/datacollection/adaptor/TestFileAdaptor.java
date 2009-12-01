@@ -72,8 +72,9 @@ public class TestFileAdaptor extends TestCase {
     
     assertEquals(0, agent.adaptorCount());
 
-    agent.processAddCommand("add test = FileAdaptor raw " +testFile.getCanonicalPath() + " 0");
+    String name =agent.processAddCommand("add test = FileAdaptor raw " +testFile.getCanonicalPath() + " 0");
     assertEquals(1, agent.adaptorCount());
+    assertEquals(name, "adaptor_test");
     Chunk c = chunks.waitForAChunk(5000);
     assertNotNull(c);
     String dat = new String(c.getData());
@@ -93,8 +94,9 @@ public class TestFileAdaptor extends TestCase {
         System.out.println("buzzed " + i + " times");
       
       assertEquals(0, agent.adaptorCount());
-      agent.processAddCommand("add test = FileAdaptor raw " +testFile.getCanonicalPath() + " 0");
+      String name = agent.processAddCommand("add test = FileAdaptor raw " +testFile.getCanonicalPath() + " 0");
       assertEquals(1, agent.adaptorCount());
+      assertEquals(name, "adaptor_test");
       Chunk c = chunks.waitForAChunk(5000);
       assertNotNull(c);
       String dat = new String(c.getData());
@@ -102,7 +104,7 @@ public class TestFileAdaptor extends TestCase {
       assertTrue(dat.endsWith("9 abcdefghijklmnopqrstuvwxyz\n"));
       assertTrue(c.getDataType().equals("raw"));
       if(agent.adaptorCount() > 0)
-        agent.stopAdaptor("test", false);
+        agent.stopAdaptor("adaptor_test", false);
     }
     agent.shutdown();
   }

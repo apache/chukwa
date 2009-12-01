@@ -57,7 +57,6 @@ public class SeqFileWriter implements ChukwaWriter {
   static String localHostAddr = null;
   
   final Semaphore lock = new Semaphore(1, true);
-
   
   private FileSystem fs = null;
   private Configuration conf = null;
@@ -171,9 +170,6 @@ public class SeqFileWriter implements ChukwaWriter {
       return;
     
     calendar.setTimeInMillis(System.currentTimeMillis());
-
-    log.info("start Date [" + calendar.getTime() + "]");
-    log.info("Rotate from " + Thread.currentThread().getName());
 
     String newName = new java.text.SimpleDateFormat("yyyyddHHmmssSSS")
         .format(calendar.getTime());

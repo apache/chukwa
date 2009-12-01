@@ -125,7 +125,7 @@ public class TestSocketTee  extends TestCase{
     read = dis.read(data);
     String rcvd = new String(data);
     System.out.println("got: " + rcvd);
-    assertTrue(rcvd.equals("hostNameFoo dataTypeFoo streamName 4\ntext"));
+    assertTrue("hostNameFoo dataTypeFoo streamName 4\ntext".equals(rcvd));
     s3.close();
     dis.close();
     

@@ -208,15 +208,15 @@ public class TestDelayedAcks extends TestCase {
       conn.start();
       String resp = agent.processAddCommand("add constSend = " + ConstRateAdaptor.class.getCanonicalName() + 
           " testData "+ SEND_RATE + " 0");
-      assertTrue("constSend".equals(resp));
+      assertTrue("adaptor_constSend".equals(resp));
       Thread.sleep(END2END_TEST_SECS * 1000);
 
       //do the shutdown directly, here, so that acks are still processed.
-      assertNotNull(agent.getAdaptor("constSend"));
-      long bytesOutput = agent.getAdaptor("constSend").shutdown();
+      assertNotNull(agent.getAdaptor("adaptor_constSend"));
+      long bytesOutput = agent.getAdaptor("adaptor_constSend").shutdown();
       Thread.sleep(CLIENT_SCANPERIOD + SERVER_SCANPERIOD + ROTATEPERIOD + 3000);
       
-      String[] stat = agent.getAdaptorList().get("constSend").split(" ");
+      String[] stat = agent.getAdaptorList().get("adaptor_constSend").split(" ");
       long bytesCommitted = Long.valueOf(stat[stat.length -1]);
       
       long bytesPerSec = bytesOutput / (1000 * END2END_TEST_SECS);

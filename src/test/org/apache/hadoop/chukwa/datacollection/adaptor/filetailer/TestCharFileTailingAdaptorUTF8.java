@@ -44,9 +44,9 @@ public class TestCharFileTailingAdaptorUTF8 extends TestCase {
     ChukwaAgent agent = new ChukwaAgent(conf);
     File testFile = makeTestFile("chukwaTest", 80);
     String adaptorId = agent
-        .processAddCommand("add test = org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8"
+        .processAddCommand("add adaptor_test = org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8"
             + " lines " + testFile + " 0");
-    assertTrue(adaptorId.equals("test"));
+    assertTrue(adaptorId.equals("adaptor_test"));
     System.out.println("getting a chunk...");
     Chunk c = chunks.waitForAChunk();
     assertTrue(c.getSeqID() == testFile.length());

@@ -190,7 +190,7 @@ public class AsyncAckSender extends ChukwaHttpSender{
           else {
             ChukwaAgent.Offset o = agent.offset(fired.adaptor);
             if(o != null && fired.start > o.offset()) {
-              log.error("can't commit without ordering assumption");
+              log.error("can't commit "+ o.adaptorID() +  "  without ordering assumption");
               break; //don't commit
             }
             delayedOnFile.remove();
@@ -305,7 +305,8 @@ public class AsyncAckSender extends ChukwaHttpSender{
         if(!m.matches())
           log.warn("unexpected response: "+ resp.get(i));
         else
-          log.info("waiting for " + m.group(1) + " to hit " + m.group(2) + " before committing "+ cle.adaptor);
+          log.info("waiting for " + m.group(1) + " to hit " + m.group(2) + 
+              " before committing "+ agent.getAdaptorName(cle.adaptor));
         
         String name = agent.getAdaptorName(cle.adaptor);
         if(name != null)//null name implies adaptor no longer running

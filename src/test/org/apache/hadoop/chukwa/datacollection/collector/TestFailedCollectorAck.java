@@ -76,15 +76,15 @@ public class TestFailedCollectorAck extends TestCase {
     //FIXME: somehow need to clue in commit checker which paths to check.
     //       Somehow need 
 
-    String resp = agent.processAddCommand("add constSend = " + ConstRateAdaptor.class.getCanonicalName() + 
+    String resp = agent.processAddCommand("add adaptor_constSend = " + ConstRateAdaptor.class.getCanonicalName() + 
         " testData "+ TestDelayedAcks.SEND_RATE + " 12345 0");
-    assertTrue("constSend".equals(resp));
+    assertTrue("adaptor_constSend".equals(resp));
     Thread.sleep(10 * 1000);
     collector1_s.stop();
     Thread.sleep(10 * 1000);
     SeqFileWriter.ENABLE_ROTATION_ON_CLOSE = true;
 
-    String[] stat = agent.getAdaptorList().get("constSend").split(" ");
+    String[] stat = agent.getAdaptorList().get("adaptor_constSend").split(" ");
     long bytesCommitted = Long.valueOf(stat[stat.length -1]);
     assertTrue(bytesCommitted > 0);
     agent.shutdown();

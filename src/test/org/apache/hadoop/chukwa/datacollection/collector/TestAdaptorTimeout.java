@@ -51,7 +51,7 @@ public class TestAdaptorTimeout extends TestCase {
     conn.start();
     String resp = agent.processAddCommand("add constSend = " + ConstRateAdaptor.class.getCanonicalName() + 
         " testData "+ SEND_RATE + " 0");
-    assertTrue("constSend".equals(resp));
+    assertTrue("adaptor_constSend".equals(resp));
     Thread.sleep(TEST_DURATION_SECS * 1000);
     
     AsyncAckSender sender = (AsyncAckSender)conn.getSender();

@@ -37,9 +37,6 @@ public class DaemonWatcher extends PidFile {
   }
   
   public static void bailout(int status) {
-    if(instance != null) {
-      Runtime.getRuntime().removeShutdownHook(instance);
-    }
     System.exit(status);
   }
 }

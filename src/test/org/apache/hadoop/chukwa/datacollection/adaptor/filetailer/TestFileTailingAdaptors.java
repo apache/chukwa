@@ -93,7 +93,7 @@ public class TestFileTailingAdaptors extends TestCase {
         System.out.println("buzzed " + i + " times");
       
       assertEquals(0, agent.adaptorCount());
-      agent.processAddCommand("add test = filetailer.FileTailingAdaptor raw " +testFile.getCanonicalPath() + " 0");
+      agent.processAddCommand("add adaptor_test = filetailer.FileTailingAdaptor raw " +testFile.getCanonicalPath() + " 0");
       assertEquals(1, agent.adaptorCount());
       Chunk c = chunks.waitForAChunk();
       String dat = new String(c.getData());
@@ -101,7 +101,7 @@ public class TestFileTailingAdaptors extends TestCase {
       assertTrue(dat.endsWith("9 abcdefghijklmnopqrstuvwxyz\n"));
       assertTrue(c.getDataType().equals("raw"));
       if(agent.adaptorCount() > 0)
-        agent.stopAdaptor("test", false);
+        agent.stopAdaptor("adaptor_test", false);
     }
     agent.shutdown();
   }

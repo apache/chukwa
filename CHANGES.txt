@@ -8,6 +8,8 @@ Trunk (unreleased changes)
  
    IMPROVEMENTS
 
+    CHUKWA-418. Standardize logging. Mark adaptor IDs. (asrabkin)
+
     CHUKWA-207. Store HICC dashboard data in HDFS. (Eric Yang)
 
     CHUKWA-415. Read initial adaptors at start every time. (asrabkin)

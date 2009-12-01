@@ -82,6 +82,10 @@ public class ChukwaAgent implements AdaptorManager {
     public long offset() {
       return this.offset;
     }
+    
+    public String adaptorID() {
+      return id;
+    }
   }
 
   public static class AlreadyRunningException extends Exception {
@@ -337,7 +341,8 @@ public class ChukwaAgent implements AdaptorManager {
           log.fatal("MD5 apparently doesn't work on your machine; bailing", e);
           shutdown(true);
         }
-      }
+      } else if(!adaptorID.startsWith("adaptor_"))
+        adaptorID = "adaptor_"+adaptorID;
       
       synchronized (adaptorsByName) {
         
@@ -349,7 +354,7 @@ public class ChukwaAgent implements AdaptorManager {
         try {
           adaptor.start(adaptorID, dataType, offset, DataFactory
               .getInstance().getEventQueue(), this);
-          log.info("started a new adaptor, id = " + adaptorID);
+          log.info("started a new adaptor, id = " + adaptorID + " function=["+adaptor.toString()+"]");
           ChukwaAgent.agentMetrics.adaptorCount.set(adaptorsByName.size());
           ChukwaAgent.agentMetrics.addedAdaptor.inc();
           return adaptorID;
@@ -504,7 +509,7 @@ public class ChukwaAgent implements AdaptorManager {
  * @return
  */
   public Map<String, String> getAdaptorList() {
-    Map<String, String> adaptors = new HashMap<String, String>();
+    Map<String, String> adaptors = new HashMap<String, String>(adaptorsByName.size());
     synchronized (adaptorsByName) {
       for (Map.Entry<String, Adaptor> a : adaptorsByName.entrySet()) {
         adaptors.put(a.getKey(), formatAdaptorStatus(a.getValue()));
