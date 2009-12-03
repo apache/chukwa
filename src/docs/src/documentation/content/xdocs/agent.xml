@@ -81,7 +81,10 @@ the adaptor parameters.
 
 <p>The adaptor name, if specified, should go after the add command, and be 
 followed with an equals sign. It should be a string of printable characters, 
-without whitespace or '='.  
+without whitespace or '='.  Chukwa Adaptor names all start with "adaptor_".
+If you specify an adaptor name which does not start with that prefix, it will
+be added automatically.  This convention is intended to make the Chukwa logs
+easier to parse.
 </p>
 
 <p>Adaptor parameters aren't required by the add command, but adaptor 

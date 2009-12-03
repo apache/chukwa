@@ -131,7 +131,7 @@ public class AgentControlSocketListener extends Thread {
         if (words.length < 2) {
           out.println("need to specify an adaptor to shut down, by number");
         } else {
-          santizeAdaptorName(out, words);
+          sanitizeAdaptorName(out, words);
           long offset = agent.stopAdaptor(words[1], true);
           if (offset != -1)
             out.println("OK adaptor " + words[1] + " stopping gracefully at "
@@ -143,7 +143,7 @@ public class AgentControlSocketListener extends Thread {
         if (words.length < 2) {
           out.println("need to specify an adaptor to shut down, by number");
         } else {
-          santizeAdaptorName(out, words);
+          sanitizeAdaptorName(out, words);
           agent.stopAdaptor(words[1], false);
           out.println("OK adaptor " + words[1] + " stopped");
         }
@@ -186,7 +186,7 @@ public class AgentControlSocketListener extends Thread {
       out.flush();
     }
 
-    private void santizeAdaptorName(PrintStream out, String[] words) {
+    private void sanitizeAdaptorName(PrintStream out, String[] words) {
       if(!words[1].startsWith("adaptor_")) {
         words[1] = "adaptor_" + words[1];
         out.println("adaptor names should start with adaptor_; "
