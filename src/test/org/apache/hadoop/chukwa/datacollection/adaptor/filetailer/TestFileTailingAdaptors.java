@@ -19,6 +19,7 @@ package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 
 
 import java.io.*;
+
 import junit.framework.TestCase;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
 import org.apache.hadoop.conf.Configuration;
+import static org.apache.hadoop.chukwa.util.TempFileUtil.*;
 
 public class TestFileTailingAdaptors extends TestCase {
   ChunkCatcherConnector chunks;
@@ -44,7 +46,7 @@ public class TestFileTailingAdaptors extends TestCase {
     conf.setInt("chukwaAgent.adaptor.context.switch.time", 100);
     conf.set("chukwaAgent.control.port", "0");
 
-    testFile = makeTestFile("chukwaCrSepTest", 80);
+    testFile = makeTestFile("chukwaCrSepTest", 80,baseDir);
 
   }
 
@@ -106,24 +108,10 @@ public class TestFileTailingAdaptors extends TestCase {
     agent.shutdown();
   }
 
-  private File makeTestFile(String name, int size) throws IOException {
-    File tmpOutput = new File(baseDir, name);
-    tmpOutput.deleteOnExit();
-    FileOutputStream fos = new FileOutputStream(tmpOutput);
-
-    PrintWriter pw = new PrintWriter(fos);
-    for (int i = 0; i < size; ++i) {
-      pw.print(i + " ");
-      pw.println("abcdefghijklmnopqrstuvwxyz");
-    }
-    pw.flush();
-    pw.close();
-    return tmpOutput;
-  }
   
   public void testOffsetInAdaptorName() throws IOException, ChukwaAgent.AlreadyRunningException,
   InterruptedException{
-    File testFile = makeTestFile("foo", 120);
+    File testFile = makeTestFile("foo", 120,baseDir);
     ChukwaAgent agent = new ChukwaAgent(conf);
     assertEquals(0, agent.adaptorCount());
     agent.processAddCommand("add test = filetailer.FileTailingAdaptor raw " +testFile.getCanonicalPath() + " 0");

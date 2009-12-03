@@ -77,8 +77,8 @@ public interface Adaptor {
    * 
    * @return Stream name as a string, null if params are malformed
    */
-  public String parseArgs(String params);
-
+  public String parseArgs(String datatype, String params);
+  
   /**
    * Signals this adaptor to come to an orderly stop. The adaptor ought to push
    * out all the data it can before exiting.

@@ -25,7 +25,6 @@ public class ChukwaTestAdaptor extends AbstractAdaptor {
 
   private String params = null;
   private long startOffset = 0l;
-  private ChunkReceiver dest = null;
 
   @Override
   public String getCurrentStatus() {

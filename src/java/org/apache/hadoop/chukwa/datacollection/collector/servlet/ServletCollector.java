@@ -178,7 +178,7 @@ public class ServletCollector extends HttpServlet {
       resp.setStatus(200);
 
     } catch (Throwable e) {
-      log.warn("Exception talking to " + req.getRemoteHost() + " at "
+      log.warn("Exception talking to " + req.getRemoteHost() + " at t="
           + currentTime, e);
       throw new ServletException(e);
     }

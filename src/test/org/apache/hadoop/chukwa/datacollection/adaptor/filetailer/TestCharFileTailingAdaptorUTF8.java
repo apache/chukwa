@@ -27,11 +27,14 @@ import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
 import org.apache.hadoop.conf.Configuration;
+import static org.apache.hadoop.chukwa.util.TempFileUtil.*;
 
 public class TestCharFileTailingAdaptorUTF8 extends TestCase {
   ChunkCatcherConnector chunks;
-
+  File baseDir;
   public TestCharFileTailingAdaptorUTF8() {
+
+    baseDir = new File(System.getProperty("test.build.data", "/tmp"));
     chunks = new ChunkCatcherConnector();
     chunks.start();
   }
@@ -42,7 +45,7 @@ public class TestCharFileTailingAdaptorUTF8 extends TestCase {
     Configuration conf = new Configuration();
     conf.set("chukwaAgent.control.port", "0");
     ChukwaAgent agent = new ChukwaAgent(conf);
-    File testFile = makeTestFile("chukwaTest", 80);
+    File testFile = makeTestFile("chukwaTest", 80,baseDir);
     String adaptorId = agent
         .processAddCommand("add adaptor_test = org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8"
             + " lines " + testFile + " 0");
@@ -65,19 +68,6 @@ public class TestCharFileTailingAdaptorUTF8 extends TestCase {
     Thread.sleep(2000);
   }
 
-  private File makeTestFile(String name, int size) throws IOException {
-    File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"),
-        name);
-    FileOutputStream fos = new FileOutputStream(tmpOutput);
-
-    PrintWriter pw = new PrintWriter(fos);
-    for (int i = 0; i < size; ++i) {
-      pw.print(i + " ");
-      pw.println("abcdefghijklmnopqrstuvwxyz");
-    }
-    pw.flush();
-    pw.close();
-    return tmpOutput;
-  }
+  
 
 }

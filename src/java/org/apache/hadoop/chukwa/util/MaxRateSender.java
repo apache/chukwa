@@ -51,7 +51,7 @@ public class MaxRateSender extends Thread implements Adaptor {
   }
 
   @Override
-  public String parseArgs(String s) {
+  public String parseArgs(String d, String s) {
     return s;
   }
 

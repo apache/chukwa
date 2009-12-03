@@ -71,7 +71,7 @@ public class BackfillingLoader {
     File file = new File(logFile);
     connector.start();
     Adaptor adaptor = AdaptorFactory.createAdaptor(adaptorName);
-    adaptor.parseArgs( "0 " +file.getAbsolutePath());
+    adaptor.parseArgs(recordType, "0 " +file.getAbsolutePath());
     adaptor.start("", recordType,  0l,queue, AdaptorManager.NULL );
     adaptor.shutdown(AdaptorShutdownPolicy.WAIT_TILL_FINISHED);
     connector.shutdown();

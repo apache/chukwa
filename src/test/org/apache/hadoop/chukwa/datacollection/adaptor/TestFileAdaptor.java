@@ -29,11 +29,12 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import junit.framework.TestCase;
+import static org.apache.hadoop.chukwa.util.TempFileUtil.*;
 
 public class TestFileAdaptor extends TestCase {
 
   Configuration conf = new Configuration();
-  File baseDir;
+  static File baseDir;
   File testFile;
   ChunkCatcherConnector chunks;
   
@@ -44,26 +45,12 @@ public class TestFileAdaptor extends TestCase {
     conf.setBoolean("chukwaAgent.checkpoint.enabled", false);
     conf.setInt("chukwaAgent.adaptor.fileadaptor.timeoutperiod", 100);
     conf.setInt("chukwaAgent.adaptor.context.switch.time", 100);
-    testFile = makeTestFile();
+    testFile = makeTestFile("test", 10, baseDir);
 
     chunks = new ChunkCatcherConnector();
     chunks.start();
   }
   
-  public File makeTestFile() throws IOException {
-    File inDir = File.createTempFile("atemp", "file", baseDir);
-    inDir.deleteOnExit();
-    FileOutputStream fos = new FileOutputStream(inDir);
-
-    PrintWriter pw = new PrintWriter(fos);
-    for (int i = 0; i < 10; ++i) {
-      pw.print(i + " ");
-      pw.println("abcdefghijklmnopqrstuvwxyz");
-    }
-    pw.flush();
-    pw.close();
-    return inDir;
-  }
   
   public void testOnce()  throws IOException,
   ChukwaAgent.AlreadyRunningException, InterruptedException {

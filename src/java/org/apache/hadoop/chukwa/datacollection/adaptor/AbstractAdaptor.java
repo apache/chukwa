@@ -44,8 +44,15 @@ public abstract class AbstractAdaptor implements Adaptor {
   }
   
   public abstract void start(long offset) throws AdaptorException;
+  public abstract String parseArgs(String s);
 
   public void deregisterAndStop(boolean gracefully) {
     control.stopAdaptor(adaptorID, gracefully);
   }
+  
+  public String parseArgs(String d, String s) {
+    return parseArgs(s);
+  }
+  
+  
 }

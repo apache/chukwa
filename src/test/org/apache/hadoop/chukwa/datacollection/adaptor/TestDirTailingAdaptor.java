@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.Map;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.conf.*;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import junit.framework.TestCase;
 
 public class TestDirTailingAdaptor extends TestCase {
@@ -33,6 +35,8 @@ public class TestDirTailingAdaptor extends TestCase {
 
   public void testDirTailer() throws IOException,
   ChukwaAgent.AlreadyRunningException, InterruptedException {
+    
+    DirTailingAdaptor.log.setLevel(Level.DEBUG);
     
     Configuration conf = new Configuration();
     baseDir = new File(System.getProperty("test.build.data", "/tmp")).getCanonicalFile();
@@ -67,7 +71,7 @@ public class TestDirTailingAdaptor extends TestCase {
     agent.shutdown();
 
     conf.setBoolean("chukwaAgent.checkpoint.enabled", true);
-
+    Thread.sleep(500); //wait a little bit to make sure new file ts is > last checkpoint time.
     File anOldFile = File.createTempFile("oldXYZ","file", dirWithFile);
     File aNewFile = File.createTempFile("new", "file", dirWithFile);
     anOldFile.deleteOnExit();

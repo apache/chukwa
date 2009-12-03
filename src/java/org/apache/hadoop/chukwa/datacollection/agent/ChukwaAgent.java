@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import org.apache.hadoop.chukwa.datacollection.DataFactory;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
+import org.apache.hadoop.chukwa.datacollection.adaptor.NotifyOnCommitAdaptor;
 import org.apache.hadoop.chukwa.datacollection.agent.metrics.AgentMetrics;
 import org.apache.hadoop.chukwa.datacollection.connector.Connector;
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
@@ -328,7 +329,7 @@ public class ChukwaAgent implements AdaptorManager {
         log.warn("Error creating adaptor of class " + adaptorClassName);
         return null;
       }
-      String coreParams = adaptor.parseArgs(params);
+      String coreParams = adaptor.parseArgs(dataType,params);
       if(coreParams == null) {
         log.warn("invalid params for adaptor: " + params);
         return null;
@@ -476,6 +477,9 @@ public class ChukwaAgent implements AdaptorManager {
           o.offset = uuid;
       }
       log.debug("got commit up to " + uuid + " on " + src + " = " + o.id);
+      if(src instanceof NotifyOnCommitAdaptor) {
+        ((NotifyOnCommitAdaptor) src).committed(uuid);
+      }
       return o.id;
     } else {
       log.warn("got commit up to " + uuid + "  for adaptor " + src

@@ -117,18 +117,7 @@ public class TestStartAtOffset extends TestCase {
   }
 
   private File makeTestFile() throws IOException {
-    File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"),
-        "chukwaTest");
-    FileOutputStream fos = new FileOutputStream(tmpOutput);
-
-    PrintWriter pw = new PrintWriter(fos);
-    for (int i = 0; i < 80; ++i) {
-      pw.print(i + " ");
-      pw.println("abcdefghijklmnopqrstuvwxyz");
-    }
-    pw.flush();
-    pw.close();
-    return tmpOutput;
+    return org.apache.hadoop.chukwa.util.TempFileUtil.makeTestFile();
   }
 
 }

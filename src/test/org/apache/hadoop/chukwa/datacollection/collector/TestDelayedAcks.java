@@ -49,6 +49,7 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import junit.framework.TestCase;
 import static org.apache.hadoop.chukwa.datacollection.sender.AsyncAckSender.DelayedCommit;
+import static org.apache.hadoop.chukwa.util.TempFileUtil.*;
 
 public class TestDelayedAcks extends TestCase {
   
@@ -60,6 +61,10 @@ public class TestDelayedAcks extends TestCase {
   static int ROTATEPERIOD = 2000;
   
   int ACK_TIMEOUT = 200;
+  
+
+//start an adaptor -- chunks should appear in the connector
+    //wait for timeout.  More chunks should appear.
   public void testAdaptorTimeout() throws Exception {
     Configuration conf = new Configuration();
     conf.set("chukwaAgent.control.port", "0");
@@ -71,7 +76,7 @@ public class TestDelayedAcks extends TestCase {
     ChunkCatcherConnector chunks = new ChunkCatcherConnector();
     chunks.start();
     assertEquals(0, agent.adaptorCount());
-    File testFile = TestRawAdaptor.makeTestFile("testDA", 50);
+    File testFile = makeTestFile("testDA", 50, new File(System.getProperty("test.build.data", "/tmp")));
     long len = testFile.length();
     System.out.println("wrote data to " + testFile);
     AdaptorResetThread restart = new AdaptorResetThread(conf, agent);
@@ -96,8 +101,6 @@ public class TestDelayedAcks extends TestCase {
     assertEquals(len, c2.getData().length);
     assertTrue(resetCount > 0);
     agent.shutdown();
-//start an adaptor -- chunks should appear in the connector
-    //wait for timeout.  More chunks should appear.
     
     testFile.delete();
   }

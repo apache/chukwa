@@ -19,6 +19,7 @@ package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 
 
 import java.io.*;
+
 import junit.framework.TestCase;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
 import org.apache.hadoop.conf.Configuration;
+import static org.apache.hadoop.chukwa.util.TempFileUtil.*;
 
 public class TestRawAdaptor extends TestCase {
   ChunkCatcherConnector chunks;
@@ -58,7 +60,9 @@ public class TestRawAdaptor extends TestCase {
     conf.setInt("chukwaAgent.adaptor.context.switch.time", 100);
     ChukwaAgent agent = new ChukwaAgent(conf);
 
-    File testFile = makeTestFile("chukwaRawTest", 80);
+    File testFile = makeTestFile("chukwaRawTest", 80, 
+        new File(System.getProperty("test.build.data", "/tmp")));
+    
     String adaptorId = agent
         .processAddCommand("add org.apache.hadoop.chukwa.datacollection.adaptor."
             +"filetailer." + name
@@ -76,28 +80,6 @@ public class TestRawAdaptor extends TestCase {
     
     agent.stopAdaptor(adaptorId, false);
     agent.shutdown();
-  }
-
-  /**
-   * 
-   * @param name
-   * @param size size in lines
-   * @return
-   * @throws IOException
-   */
-  public static File makeTestFile(String name, int size) throws IOException {
-    File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"),
-        name);
-    FileOutputStream fos = new FileOutputStream(tmpOutput);
-
-    PrintWriter pw = new PrintWriter(fos);
-    for (int i = 0; i < size; ++i) {
-      pw.print(i + " ");
-      pw.println("abcdefghijklmnopqrstuvwxyz");
-    }
-    pw.flush();
-    pw.close();
-    return tmpOutput;
   }
 
 

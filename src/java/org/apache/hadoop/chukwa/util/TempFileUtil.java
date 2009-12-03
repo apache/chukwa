@@ -94,5 +94,28 @@ public class TempFileUtil {
      out.close();
    }
    
+
+   public static File makeTestFile(String name, int size,File baseDir) throws IOException {
+     File tmpOutput = new File(baseDir, name);
+     FileOutputStream fos = new FileOutputStream(tmpOutput);
+
+     PrintWriter pw = new PrintWriter(fos);
+     for (int i = 0; i < size; ++i) {
+       pw.print(i + " ");
+       pw.println("abcdefghijklmnopqrstuvwxyz");
+     }
+     pw.flush();
+     pw.close();
+     return tmpOutput;
+   }
+   
+   public static File makeTestFile(File baseDir) throws IOException {
+     return makeTestFile("atemp",10, baseDir);
+   }
+   
+
+   public static File makeTestFile() throws IOException {
+     return makeTestFile("atemp",80, new File(System.getProperty("test.build.data", "/tmp")));
+   }
   
 }

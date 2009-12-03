@@ -64,6 +64,7 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
   
   public void run() {
     try {
+      log.debug("dir tailer starting to scan");
       while(continueScanning) {
         try {
           long sweepStartTime = System.currentTimeMillis();
@@ -90,7 +91,7 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
       if(dir.lastModified() >= lastSweepStartTime) {
         control.processAddCommand(
             "add " + adaptorName +" " + type + " " + dir.getCanonicalPath() + " 0");
-      }
+      } 
     } else {
       for(File f: dir.listFiles()) {
         scanDirHierarchy(f);
@@ -113,9 +114,7 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
     baseDir = new File(m.group(1));
     adaptorName = m.group(2);
     return baseDir + " " + adaptorName; //both params mandatory
-
   }
-
 
   @Deprecated
   public long shutdown() throws AdaptorException {

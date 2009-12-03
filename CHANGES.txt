@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-395. Support for generalized buffering of adaptor data. (asrabkin)
+
     CHUKWA-405  Add a "stop all" command. (asrabkin)
  
    IMPROVEMENTS

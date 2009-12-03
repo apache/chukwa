@@ -40,15 +40,13 @@ import org.apache.hadoop.conf.Configuration;
  * with the time-of-generation. The time of generation is stored, big-endian,
  * in the first eight bytes of each chunk.
  */
-public class ConstRateAdaptor extends Thread implements Adaptor {
+public class ConstRateAdaptor extends AbstractAdaptor implements Runnable {
 
   private int SLEEP_VARIANCE = 200;
   private int MIN_SLEEP = 300;
 
-  private String type;
   private long offset;
   private int bytesPerSec;
-  private ChunkReceiver dest;
 
   Random timeCoin;
   long seed;
@@ -59,14 +57,10 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
     return type.trim() + " " + bytesPerSec + " " + seed;
   }
 
-  public void start(String adaptorID, String type, 
-      long offset, ChunkReceiver dest, AdaptorManager c) throws AdaptorException {
+  public void start(long offset) throws AdaptorException {
 
     this.offset = offset;
-    this.type = type;
-    this.dest = dest;
-    this.setName("ConstRate Adaptor_" + type);
-    Configuration conf = c.getConfiguration();
+    Configuration conf = control.getConfiguration();
     MIN_SLEEP = conf.getInt("constAdaptor.minSleep", MIN_SLEEP);
     SLEEP_VARIANCE = conf.getInt("constAdaptor.sleepVariance", SLEEP_VARIANCE);
     
@@ -75,7 +69,7 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
     while(o < offset)
       o += (int) ((timeCoin.nextInt(SLEEP_VARIANCE) + MIN_SLEEP) *
           (long) bytesPerSec / 1000L) + 8;
-    super.start(); // this is a Thread.start
+    new Thread(this).start(); // this is a Thread.start
   }
 
   public String parseArgs(String bytesPerSecParam) {
@@ -139,12 +133,6 @@ public class ConstRateAdaptor extends Thread implements Adaptor {
   public long shutdown() throws AdaptorException {
     return shutdown(AdaptorShutdownPolicy.GRACEFULLY);
   }
-
-  @Override
-  public String getType() {
-    return type;
-  }
-
 
   @Override
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy) {
