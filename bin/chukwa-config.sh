@@ -95,14 +95,20 @@ if [ -f "${CHUKWA_CONF_DIR}/chukwa-env.sh" ]; then
   . "${CHUKWA_CONF_DIR}/chukwa-env.sh"
 fi
 
-export DATACONFIG=${CHUKWA_CONF_DIR}/mdl.xml
-COMMON=`ls ${CHUKWA_HOME}/lib/*.jar`
+if [ -d "${CHUKWA_HOME}/build/ivy/lib/chukwa/common" ]; then
+  COMMON=`ls ${CHUKWA_HOME}/lib/*.jar ${CHUKWA_HOME}/build/ivy/lib/chukwa/common/*.jar`
+else
+  COMMON=`ls ${CHUKWA_HOME}/lib/*.jar`
+fi
 export COMMON=`echo ${COMMON} | sed 'y/ /:/'`
+
 export CHUKWA_CORE=${CHUKWA_HOME}/chukwa-core-${CHUKWA_VERSION}.jar
 export CHUKWA_AGENT=${CHUKWA_HOME}/chukwa-agent-${CHUKWA_VERSION}.jar
 export HICC_JAR=${CHUKWA_HOME}/hicc.war
-
 export CURRENT_DATE=`date +%Y%m%d%H%M`
+
+# Deprecated configuration for loading data to database.
+export DATACONFIG=${CHUKWA_CONF_DIR}/mdl.xml
 
 if [ -z ${HADOOP_JAR} ]; then
   if [ -z ${HADOOP_HOME} ]; then
