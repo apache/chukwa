@@ -112,24 +112,23 @@ export DATACONFIG=${CHUKWA_CONF_DIR}/mdl.xml
 
 if [ -z ${HADOOP_JAR} ]; then
   if [ -z ${HADOOP_HOME} ]; then
-        export HADOOP_HOME=../../..
-    fi
-    if [ -d ${HADOOP_HOME} ]; then
-        export HADOOP_JAR=`ls ${HADOOP_HOME}/hadoop-*-core.jar`
-        if [ -z ${HADOOP_JAR} ]; then
-            echo "Please make sure hadoop-*-core.jar exists in ${HADOOP_HOME}"
-            exit -1
-        fi
+    if [ -d ${CHUKWA_HOME}/hadoopjars ]; then
+      echo "WARNING: neither HADOOP_HOME nor HADOOP_JAR is set we we are reverting to defaults in $CHUKWA_HOME/hadoopjars dir"
+      export HADOOP_JAR=`ls ${CHUKWA_HOME}/hadoopjars/hadoop-*-core.jar`
     else
-        if [ -d ${CHUKWA_HOME}/hadoopjars ]; then
-            echo "WARNING: neither HADOOP_HOME nor HADOOP_JAR is set we we are reverting to defaults in $CHUKWA_HOME/hadoopjars dir"
-            export HADOOP_JAR=`ls ${CHUKWA_HOME}/hadoopjars/hadoop-*-core.jar`
-        else
-            echo "Please make sure hadoop-*-core.jar exists in ${CHUKWA_HOME}/hadoopjars"
-            exit -1
-        fi
+      echo "Please make sure hadoop-*-core.jar exists in ${CHUKWA_HOME}/hadoopjars"
+      exit -1
     fi
-fi
+  else
+    if [ -d ${HADOOP_HOME} ]; then
+      export HADOOP_JAR=`ls ${HADOOP_HOME}/hadoop-*-core.jar`
+      if [ -z ${HADOOP_JAR} ]; then
+        echo "Please make sure hadoop-*-core.jar exists in ${HADOOP_HOME}"
+        exit -1
+      fi
+    fi
+  fi    #end if no HADOOP_HOME 
+fi    
 
 if [ -z "$JAVA_HOME" ] ; then
   echo ERROR! You forgot to set JAVA_HOME in conf/chukwa-env.sh   
