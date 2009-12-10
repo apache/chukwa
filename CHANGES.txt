@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-427. Automate FSM state calculation and load to database. (Eric Yang)
+
     CHUKWA-424. FSMBuilder driver script. (Jiaqi Tan via asrabkin)
 
     CHUKWA-395. Support for generalized buffering of adaptor data. (asrabkin)

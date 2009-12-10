@@ -66,7 +66,7 @@
 
   <property>
     <name>chukwa.post.demux.data.loader</name>
-    <value>org.apache.hadoop.chukwa.dataloader.MetricDataLoaderPool</value>
+    <value>org.apache.hadoop.chukwa.dataloader.MetricDataLoaderPool,org.apache.hadoop.chukwa.dataloader.FSMDataLoader</value>
   </property>
 
 <!-- -->
