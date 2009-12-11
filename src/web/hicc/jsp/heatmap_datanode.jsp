@@ -84,7 +84,7 @@ prettyStatisticNames.put("total_volume", "Total Volume<br />(bytes)");
             var COLOR_MAX = 255;
             var COLOR_MIN = 0;
             var SCALE=1;
-            
+
             color_array = new Array(heatmap_size * heatmap_size);
             graph_data_array = new Array(heatmap_size * heatmap_size);
             graph_data_array_small = new Array(heatmap_size * heatmap_size);
@@ -135,16 +135,45 @@ prettyStatisticNames.put("total_volume", "Total Volume<br />(bytes)");
             $("#scale_mid_placeholder").text(((maxvalue-minvalue)/2)+minvalue);
             $("#scale_min_placeholder").text(minvalue);
             
+            var colorMap = new Array(7);
+            colorMap[0]="0000ff";
+            colorMap[1]="0099ff"; 
+            colorMap[2]="00ffff";
+            colorMap[3]="00ff00"; 
+            colorMap[4]="ffff00";
+            colorMap[5]="ff9900"; 
+            colorMap[6]="ff0000";
             count = 0;
             for (i = 0; i < heatmap_size; i++) {
               for (j = 0; j < heatmap_size; j++) {
+                var opacity=0.9;
                 if (heatmap_data[count][2] == 0) {
-                  colorstring = '999999';
+                  colorstring = '000099';
+                  opacity=0;
                 } else {
-                  colorstring = d2h((((heatmap_data[count][2] - minvalue) / (maxvalue - minvalue)) * (COLOR_MAX - COLOR_MIN)) + COLOR_MIN);
-                  var len=colorstring.length;
-                  for (k = len; k < 2; k++) colorstring = '0' + colorstring;
-                  colorstring = colorstring + '0000';
+                  opacity=0.9;
+                  var index = Math.round((heatmap_data[count][2] - minvalue) / (maxvalue - minvalue) * 7);
+                  if(index>6) {
+                    index=6;
+                  } else if(index<0) {
+                    index=0;
+                  }
+                  if(index==6) {
+                    opacity=0.9;
+                  } else if(index==5) {
+                    opacity=0.8;
+                  } else if(index==4) {
+                    opacity=0.7;
+                  } else if(index==3) {
+                    opacity=0.6;
+                  } else if(index==2) {
+                    opacity=0.5;
+                  } else if(index==1) {
+                    opacity=0.4;
+                  } else if(index==0) {
+                    opacity=0.3;
+                  }
+                  colorstring = colorMap[index];
                 }
                 
                 colorstring = '#' + colorstring;
@@ -152,12 +181,12 @@ prettyStatisticNames.put("total_volume", "Total Volume<br />(bytes)");
                 series_array[count] = { lines: {show: true, radius:999} };
 
                 graph_data_array[count] = {
-                  points: {show: true, radius: 15, fill: true, fillColor: false}, 
+                  points: {show: true, radius: 20*opacity, lineWidth: 0, fill: opacity, fillColor: false }, 
                   color: colorstring,
                   data: [[(heatmap_data[count][0]+1)/SCALE, (heatmap_data[count][1]+1)/SCALE]]
                 }
                 graph_data_array_small[count] = {
-                  points: {show: true, radius: 4, fill: true, fillColor: false}, 
+                  points: {show: true, radius: 4*opacity, lineWidth: 0, fill: opacity, fillColor: false}, 
                   color: colorstring,
                   data: [[(heatmap_data[count][0]+1)/SCALE, (heatmap_data[count][1]+1)/SCALE]]
                 }
@@ -167,14 +196,14 @@ prettyStatisticNames.put("total_volume", "Total Volume<br />(bytes)");
             }
 
             graph_options = {
-              grid: { hoverable: true },
-              yaxis: {autoscaleMargin: 0.1, ticks: ticknames_array },
-              xaxis: {autoscaleMargin: 0.1, ticks: ticknames_array },
+              grid: { hoverable: true, backgroundColor: '#000099' },
+              yaxis: {autoscaleMargin: 0.1, ticks: [] },
+              xaxis: {autoscaleMargin: 0.1, ticks: [] },
               selection: { mode: "xy" },
               shadowSize: 0
             };
             graph_options_small = {
-              grid: { hoverable: true },
+              grid: { hoverable: true, backgroundColor: '#000099' },
               yaxis: {autoscaleMargin: 0.1, ticks: [] },
               xaxis: {autoscaleMargin: 0.1, ticks: [] },
               selection: { mode: "xy" },
@@ -265,11 +294,11 @@ function showTooltip(x, y, contents) {
         <tbody>
           <tr>
 
-            <td align="right" valign="top" rowspan="1"><div id="placeholder" style="width: 600px; height: 400px; position: relative;"><canvas width="600" height="400"></canvas><canvas style="position: absolute; left: 0px; top: 0px;" width="600" height="400"></canvas></div></td>
+            <td align="right" valign="top" rowspan="1"><div id="placeholder" style="width: 400px; height: 400px; position: relative;"><canvas width="400" height="400"></canvas><canvas style="position: absolute; left: 0px; top: 0px;" width="400" height="400"></canvas></div></td>
 
             <td rowspan="1"><div style="width:10px">&nbsp;</div></td>
 
-            <td align="middle"><div id="smallplotplaceholder", style="width:166px;height:100px;"><canvas style="position: absolute; left: 0px; top: 0px;" width="166" height="100"></canvas></div>
+            <td align="middle"><div id="smallplotplaceholder", style="width:100px;height:100px;"><canvas style="position: absolute; left: 0px; top: 0px;" width="100" height="100"></canvas></div>
             
               <br />
               
@@ -293,13 +322,13 @@ function showTooltip(x, y, contents) {
                 <tr><th colspan="2">Scale</th></tr>
                 <tr>
                   <td bgcolor="#ff0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                  <td bgcolor="#cc0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                  <td bgcolor="#990000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                  <td bgcolor="#7F0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                  <td bgcolor="#660000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                  <td bgcolor="#330000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                  <td bgcolor="#000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                  <td bgcolor="#999999">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                  <td bgcolor="#ff9900">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                  <td bgcolor="#ffff00">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                  <td bgcolor="#00ff00">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                  <td bgcolor="#00ffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                  <td bgcolor="#0099ff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                  <td bgcolor="#0000ff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                  <td bgcolor="#000099">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                 </tr>
                 
                 <tr>

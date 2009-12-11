@@ -14,6 +14,8 @@ Trunk (unreleased changes)
  
    IMPROVEMENTS
 
+    CHUKWA-429. Update HDFS heatmap color with rainbow colors. (Eric Yang)
+
     CHUKWA-418. Standardize logging. Mark adaptor IDs. (asrabkin)
 
     CHUKWA-207. Store HICC dashboard data in HDFS. (Eric Yang)
