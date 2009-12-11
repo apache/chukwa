@@ -25,11 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.Map;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
@@ -53,6 +49,8 @@ public class AgentControlSocketListener extends Thread {
   protected ServerSocket s = null;
   volatile boolean closing = false;
   static final String VERSION = "0.2.0-dev";
+  public boolean ALLOW_REMOTE = true;
+  public static final String REMOTE_ACCESS_OPT = "chukwaAgent.control.remote";
 
   private class ListenThread extends Thread {
     Socket connection;
@@ -207,6 +205,7 @@ public class AgentControlSocketListener extends Thread {
     this.agent = agent;
     this.portno = agent.getConfiguration().getInt("chukwaAgent.control.port",
         9093);
+    this.ALLOW_REMOTE = agent.getConfiguration().getBoolean(REMOTE_ACCESS_OPT, ALLOW_REMOTE);
     log.info("AgentControlSocketListerner ask for port: " + portno);
     this.setName("control socket listener");
   }
@@ -262,7 +261,12 @@ public class AgentControlSocketListener extends Thread {
   }
 
   public void tryToBind() throws IOException {
-    s = new ServerSocket(portno);
+    if(ALLOW_REMOTE)
+      s = new ServerSocket(portno);
+    else {
+      s = new ServerSocket();
+      s.bind(new InetSocketAddress(InetAddress.getByAddress(new byte[] {127,0,0,1}), portno));
+    }
     s.setReuseAddress(true);
     portno = s.getLocalPort();
     if (s.isBound())

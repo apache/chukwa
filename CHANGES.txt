@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-46. Ability to allow only local connections to agent control port. (asrabkin)
+
     CHUKWA-427. Automate FSM state calculation and load to database. (Eric Yang)
 
     CHUKWA-424. FSMBuilder driver script. (Jiaqi Tan via asrabkin)
