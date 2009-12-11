@@ -54,7 +54,7 @@ public class FileTailingAdaptor extends LWFTAdaptor {
     log.info("chukwaAgent.fileTailingAdaptor.maxReadSize: " + MAX_READ_SIZE);
     this.attempts = 0;
 
-    log.info("started file tailer on file " + toWatch
+    log.info("started file tailer " + adaptorID +  "  on file " + toWatch
         + " with first byte at offset " + offsetOfFirstByte);
   }
  

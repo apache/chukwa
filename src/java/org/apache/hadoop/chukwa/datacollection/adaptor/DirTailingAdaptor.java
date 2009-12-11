@@ -89,8 +89,9 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
     if(!dir.isDirectory() ) {
       //Don't start tailing if we would have gotten it on the last pass 
       if(dir.lastModified() >= lastSweepStartTime) {
-        control.processAddCommand(
+        String newAdaptorID = control.processAddCommand(
             "add " + adaptorName +" " + type + " " + dir.getCanonicalPath() + " 0");
+        log.info("DirTailingAdaptor " + adaptorID +  "  started new adaptor " + newAdaptorID);
       } 
     } else {
       for(File f: dir.listFiles()) {

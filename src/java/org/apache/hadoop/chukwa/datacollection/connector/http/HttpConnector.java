@@ -170,7 +170,6 @@ public class HttpConnector implements Connector, Runnable {
         int toSend = newQueue.size();
         List<ChukwaHttpSender.CommitListEntry> results = connectorClient
             .send(newQueue);
-        log.info("sent " + toSend + " chunks, got back " + results.size() + " acks");
         // checkpoint the chunks which were committed
         for (ChukwaHttpSender.CommitListEntry cle : results) {
           agent.reportCommit(cle.adaptor, cle.uuid);

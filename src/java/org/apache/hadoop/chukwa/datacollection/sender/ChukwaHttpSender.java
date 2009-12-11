@@ -54,6 +54,8 @@ import org.apache.log4j.Logger;
  * The Connector is responsible for picking what to send and to whom;
  * retry policy is encoded in the collectors iterator.
  * 
+ * This class is not thread safe. Synchronization is the caller's responsibility.
+ * 
  * <p>
  * On error, tries the list of available collectors, pauses for a minute, and
  * then repeats.
@@ -77,6 +79,7 @@ public class ChukwaHttpSender implements ChukwaSender {
   static HttpClient client = null;
   static MultiThreadedHttpConnectionManager connectionManager = null;
   String currCollector = null;
+  int postID = 0;
 
   protected Iterator<String> collectors;
 
@@ -169,7 +172,8 @@ public class ChukwaHttpSender implements ChukwaSender {
     List<DataOutputBuffer> serializedEvents = new ArrayList<DataOutputBuffer>();
     List<CommitListEntry> commitResults = new ArrayList<CommitListEntry>();
 
-    log.info("collected " + toSend.size() + " chunks");
+    int thisPost = postID++;
+    log.info("collected " + toSend.size() + " chunks for post_"+thisPost);
 
     // Serialize each chunk in turn into it's own DataOutputBuffer and add that
     // buffer to serializedEvents
@@ -194,9 +198,11 @@ public class ChukwaHttpSender implements ChukwaSender {
 
     PostMethod method = new PostMethod();
     method.setRequestEntity(postData);
-    log.info(">>>>>> HTTP post to " + currCollector + " length = " + postData.getContentLength());
+    log.info(">>>>>> HTTP post_"+thisPost + " to " + currCollector + " length = " + postData.getContentLength());
 
-    return postAndParseResponse(method, commitResults);
+    List<CommitListEntry> results =  postAndParseResponse(method, commitResults);
+    log.info("post_" + thisPost + " sent " + toSend.size() + " chunks, got back " + results.size() + " acks");
+    return results;
   }
   
   /**
@@ -256,7 +262,7 @@ public class ChukwaHttpSender implements ChukwaSender {
             Thread.sleep(WAIT_FOR_COLLECTOR_REBOOT);
             retries--;
           } else {
-            log.error("No more collectors to try rolling over to; aborting");
+            log.error("No more collectors to try rolling over to; aborting post");
             throw new IOException("no collectors");
           }
         }
