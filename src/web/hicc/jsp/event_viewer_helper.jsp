@@ -52,7 +52,7 @@
 <script type="text/javascript">
 $('.flexme1').flexigrid(
 			{
-                        url: '/hicc/jsp/event_viewer_data.jsp?<% for(int i=0;i<database.length;i++) { out.print("database="+XssFilter.filter(database[i])+"&"); } %>',
+                        url: '/hicc/jsp/event_viewer_data.jsp?<% for(int i=0;i<database.length;i++) { out.print("database="+xf.filter(database[i])+"&"); } %>',
                         dataType: 'json',
 			searchitems : [
 				{display: 'Event', name : 'event', isdefault: true}

@@ -42,7 +42,7 @@ public class DsDirectory {
 
   private DsDirectory() {
     dataConfig = new DataConfig();
-    conf = new ChukwaConfiguration();
+    conf = new Configuration();
     try {
       fs = FileSystem.get(conf);
     } catch (IOException e) {

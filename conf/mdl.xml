@@ -21,6 +21,13 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
+
+<property>
+  <name>chukwa.engine.dsDirectory.rootFolder</name>
+  <value>/chukwa/repos</value>
+  <description>Chukwa Data location on HDFS</description>
+</property>
+
 <!-- database tables -->
 
 <property>

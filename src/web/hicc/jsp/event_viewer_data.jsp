@@ -22,7 +22,7 @@
    XssFilter xf = new XssFilter(request);
    response.setHeader("boxId", xf.getParameter("boxId"));
 %>
-<% String filter=xf.getParameter("query"));
+<% String filter=xf.getParameter("query");
    if(filter==null) {
        filter="";
    }
