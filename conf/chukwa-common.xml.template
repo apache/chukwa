@@ -27,4 +27,10 @@
     <description>Location of Chukwa data on HDFS</description>
   </property>
   
+  <property>
+    <name>chukwa.tmp.data.dir</name>
+    <value>@CHUKWA_DIR@/temp</value>
+    <description>Location of Chukwa data on HDFS</description>
+  </property>
+
 </configuration>
