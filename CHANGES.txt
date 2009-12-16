@@ -34,6 +34,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-430. Narrow down the list of demux output for FSM to improve processing time. (Eric Yang)
+
     CHUKWA-428. Revised location for Chukwa HDFS repository. (Eric Yang)
 
     CHUKWA-241. Revise chukwa-config.sh so that chukwa runs after building from source. (Eric Yang via asrabkin)

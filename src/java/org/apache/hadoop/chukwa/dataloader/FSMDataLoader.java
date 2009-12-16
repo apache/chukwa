@@ -81,24 +81,34 @@ public class FSMDataLoader extends DataLoaderFactory {
           inputPaths.add(temp);
         }
       }
-      String[] args = new String[inputPaths.size()+3];
       String outputDir= conf.get("chukwa.tmp.data.dir")+File.separator+"fsm_"+System.currentTimeMillis()+"_";
       if(inputPaths.size()>0) {
         Configuration fsmConf = new Configuration();
-        args[0]="-in";
-        args[1]=inputPaths.size()+"";
-        int k=2;
-        for(Path temp : inputPaths) {
-          args[k]=temp.toUri().toString();
-          k++;
-        }
         // Run fsm map reduce job for dn, tt, and jobhist.
         for(String mapper : mappers) {
+          String[] args = new String[inputPaths.size()+3];
+          args[0]="-in";
+          int k=2;
+          boolean hasData=false;
+          for(Path temp : inputPaths) {
+            String tempPath = temp.toUri().toString();
+            if((mapper.intern()==mappers[0].intern() && tempPath.indexOf("ClientTraceDetailed")>0) ||
+                (mapper.intern()==mappers[1].intern() && tempPath.indexOf("ClientTraceDetailed")>0) ||
+                (mapper.intern()==mappers[2].intern() && tempPath.indexOf("TaskData")>0) ||
+                (mapper.intern()==mappers[2].intern() && tempPath.indexOf("JobData")>0)) {
+              args[k]=tempPath;
+              k++;
+              hasData=true;
+            }
+          }
+          args[1]=k-2+"";
           fsmConf.set("chukwa.salsa.fsm.mapclass", mapper);
           args[k]=outputDir+mapper;
           Path outputPath = new Path(args[k]);
           outputPaths.add(outputPath);
-          int res = ToolRunner.run(fsmConf, new FSMBuilder(), args);
+          if(hasData) {
+            int res = ToolRunner.run(fsmConf, new FSMBuilder(), args);
+          }
         }
       }
       // Find the mapreduce output and load to MDL.
