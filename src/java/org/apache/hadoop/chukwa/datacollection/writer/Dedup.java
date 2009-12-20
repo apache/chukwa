@@ -25,8 +25,12 @@ import java.util.List;
 import java.util.Queue;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.conf.Configuration;
-
-public class Dedup implements PipelineableWriter {
+/**
+ * Uses a fixed size cache to check for and filter out duplicate chunks.
+ * Duplicate detection uses chunk metadata, not content.
+ *
+ */
+public class Dedup extends PipelineableWriter {
 
   static final class DedupKey {
     String name;
@@ -92,12 +96,7 @@ public class Dedup implements PipelineableWriter {
   }
 
   FixedSizeCache<DedupKey> cache;
-  ChukwaWriter next;
 
-  @Override
-  public void setNextStage(ChukwaWriter next) {
-    this.next = next;
-  }
 
   @Override
   public CommitStatus add(List<Chunk> chunks) throws WriterException {

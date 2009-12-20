@@ -18,7 +18,22 @@
 
 package org.apache.hadoop.chukwa.datacollection.writer;
 
+import java.util.List;
+import org.apache.hadoop.chukwa.Chunk;
 
-public interface PipelineableWriter extends ChukwaWriter {
-  public void setNextStage(ChukwaWriter next);
+
+public abstract class PipelineableWriter implements ChukwaWriter {
+  ChukwaWriter next;
+  public void setNextStage(ChukwaWriter next) {
+    this.next = next;
+  }
+  
+  public CommitStatus add(List<Chunk> chunks) throws WriterException {
+    if (next != null)
+      return next.add(chunks); //pass data through
+    else
+      return ChukwaWriter.COMMIT_OK;
+  }
+  
+  
 }

@@ -18,6 +18,8 @@ Trunk (unreleased changes)
  
    IMPROVEMENTS
 
+    CHUKWA-432. PipelineableWriter becomes an abstract class. (asrabkin)
+
     CHUKWA-429. Update HDFS heatmap color with rainbow colors. (Eric Yang)
 
     CHUKWA-418. Standardize logging. Mark adaptor IDs. (asrabkin)

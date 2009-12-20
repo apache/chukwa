@@ -57,7 +57,7 @@ import java.io.*;
  *  Option chukwaCollector.tee.keepalive controls using TCP keepalive. Defaults to true.
  *  
  */
-public class SocketTeeWriter implements PipelineableWriter {
+public class SocketTeeWriter extends PipelineableWriter {
 
   public static final String WRITABLE = "WRITABLE";
   public static final String RAW = "RAW";
@@ -248,7 +248,7 @@ public class SocketTeeWriter implements PipelineableWriter {
   public CommitStatus add(List<Chunk> chunks) throws WriterException {
     CommitStatus rv = ChukwaWriter.COMMIT_OK;
     if (next != null)
-	rv = next.add(chunks); //pass data through
+       rv = next.add(chunks); //pass data through
     synchronized(tees) {
       Iterator<Tee> loop = tees.iterator();
       while(loop.hasNext()) {
