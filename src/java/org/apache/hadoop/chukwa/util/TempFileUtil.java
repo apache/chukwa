@@ -109,6 +109,12 @@ public class TempFileUtil {
      return tmpOutput;
    }
    
+
+   public static File makeTestFile(String name, int size) throws IOException {
+     return makeTestFile(name, size, new File(System.getProperty("test.build.data", "/tmp")));
+
+   }
+   
    public static File makeTestFile(File baseDir) throws IOException {
      return makeTestFile("atemp",10, baseDir);
    }

@@ -35,11 +35,10 @@ public abstract class AbstractAdaptor implements Adaptor {
 
   @Override
   public final void start(String adaptorID, String type, long offset,
-      ChunkReceiver dest, AdaptorManager c) throws AdaptorException {
+      ChunkReceiver dest) throws AdaptorException {
     this.adaptorID = adaptorID;
     this.type = type;
     this.dest=dest;
-    control = c;
     start(offset);
   }
   
@@ -50,7 +49,8 @@ public abstract class AbstractAdaptor implements Adaptor {
     control.stopAdaptor(adaptorID, gracefully);
   }
   
-  public String parseArgs(String d, String s) {
+  public String parseArgs(String d, String s, AdaptorManager c) {
+    control = c;
     return parseArgs(s);
   }
   

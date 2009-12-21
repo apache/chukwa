@@ -50,6 +50,12 @@ public class TestRawAdaptor extends TestCase {
     System.out.println("testing lightweight fta");
     runTest("LWFTAdaptor"); 
   }
+  
+
+  public void testRotAdaptor() throws Exception {
+    System.out.println("testing lightweight fta");
+    runTest("LWFTAdaptor"); 
+  }
 
   public void runTest(String name) throws IOException, InterruptedException,
       ChukwaAgent.AlreadyRunningException {

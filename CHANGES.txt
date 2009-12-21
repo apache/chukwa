@@ -18,6 +18,8 @@ Trunk (unreleased changes)
  
    IMPROVEMENTS
 
+    CHUKWA-421. Use modification time to detect rotation. (asrabkin)
+
     CHUKWA-432. PipelineableWriter becomes an abstract class. (asrabkin)
 
     CHUKWA-429. Update HDFS heatmap color with rainbow colors. (Eric Yang)

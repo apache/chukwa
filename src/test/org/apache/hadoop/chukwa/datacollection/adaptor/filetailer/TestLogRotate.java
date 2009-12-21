@@ -28,6 +28,7 @@ import org.apache.hadoop.chukwa.datacollection.adaptor.*;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
+import static org.apache.hadoop.chukwa.util.TempFileUtil.*;
 
 public class TestLogRotate extends TestCase {
   ChunkCatcherConnector chunks;
@@ -91,28 +92,5 @@ public class TestLogRotate extends TestCase {
     Thread.sleep(2000);
   }
 
-  private File makeTestFile(String name, int size) throws IOException {
-    File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"),
-        name);
-    FileOutputStream fos = new FileOutputStream(tmpOutput);
-
-    PrintWriter pw = new PrintWriter(fos);
-    for (int i = 0; i < size; ++i) {
-      pw.print(i + " ");
-      pw.println("abcdefghijklmnopqrstuvwxyz");
-    }
-    pw.flush();
-    pw.close();
-    return tmpOutput;
-  }
-
-  public static void main(String[] args) {
-    try {
-      TestLogRotate tests = new TestLogRotate();
-      tests.testLogRotate();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
 
 }

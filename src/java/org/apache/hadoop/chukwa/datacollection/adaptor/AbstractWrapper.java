@@ -13,6 +13,7 @@ public class AbstractWrapper implements NotifyOnCommitAdaptor,ChunkReceiver {
   String innerClassName;
   String innerType;
   ChunkReceiver dest;
+  AdaptorManager manager;
 
   @Override
   public String getCurrentStatus() {
@@ -30,14 +31,15 @@ public class AbstractWrapper implements NotifyOnCommitAdaptor,ChunkReceiver {
    * Note that the name of the inner class will get parsed out as a type
    */
   @Override
-  public String parseArgs(String innerClassName, String params) {
+  public String parseArgs(String innerClassName, String params, AdaptorManager a) {
+    manager = a;
     Matcher m = p.matcher(params);
     this.innerClassName = innerClassName;
     String innerCoreParams;
     if(m.matches()) {
       innerType = m.group(1);
       inner = AdaptorFactory.createAdaptor(innerClassName);
-      innerCoreParams = inner.parseArgs(innerType,m.group(2));
+      innerCoreParams = inner.parseArgs(innerType,m.group(2),a);
       return innerClassName + innerCoreParams;
     }
     else return null;
@@ -64,10 +66,10 @@ public class AbstractWrapper implements NotifyOnCommitAdaptor,ChunkReceiver {
    */
   @Override
   public void start(String adaptorID, String type, long offset,
-      ChunkReceiver dest, AdaptorManager c) throws AdaptorException {
+      ChunkReceiver dest) throws AdaptorException {
     String dummyAdaptorID = adaptorID;
     this.dest = dest;
-    inner.start(dummyAdaptorID, type, offset, this, c);
+    inner.start(dummyAdaptorID, type, offset, this);
   }
 
   @Override

@@ -41,7 +41,7 @@ public class MaxRateSender extends Thread implements Adaptor {
   }
 
   public void start(String adaptorID, String type, long offset,
-      ChunkReceiver dest, AdaptorManager c) throws AdaptorException {
+      ChunkReceiver dest) throws AdaptorException {
     this.setName("MaxRateSender adaptor");
     this.adaptorID = adaptorID;
     this.offset = offset;
@@ -51,7 +51,7 @@ public class MaxRateSender extends Thread implements Adaptor {
   }
 
   @Override
-  public String parseArgs(String d, String s) {
+  public String parseArgs(String d, String s,AdaptorManager c) {
     return s;
   }
 

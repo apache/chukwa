@@ -263,7 +263,7 @@ public class AgentControlSocketListener extends Thread {
   public void tryToBind() throws IOException {
     if(ALLOW_REMOTE)
       s = new ServerSocket(portno);
-    else {
+    else {  //FIXME: is there a way to allow all local addresses? (including IPv6 local)
       s = new ServerSocket();
       s.bind(new InetSocketAddress(InetAddress.getByAddress(new byte[] {127,0,0,1}), portno));
     }

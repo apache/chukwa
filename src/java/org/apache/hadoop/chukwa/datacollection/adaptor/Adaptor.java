@@ -55,7 +55,7 @@ public interface Adaptor {
    * @throws AdaptorException
    */
   public void start(String adaptorID, String type, long offset,
-      ChunkReceiver dest, AdaptorManager c) throws AdaptorException;
+      ChunkReceiver dest) throws AdaptorException;
 
   /**
    * Return the adaptor's state Should not include class name or byte
@@ -77,7 +77,7 @@ public interface Adaptor {
    * 
    * @return Stream name as a string, null if params are malformed
    */
-  public String parseArgs(String datatype, String params);
+  public String parseArgs(String datatype, String params, AdaptorManager c);
   
   /**
    * Signals this adaptor to come to an orderly stop. The adaptor ought to push

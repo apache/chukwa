@@ -63,7 +63,7 @@ public class MemBuffered extends AbstractWrapper {
   
   @Override
   public void start(String adaptorID, String type, long offset,
-      ChunkReceiver dest, AdaptorManager manager) throws AdaptorException {
+      ChunkReceiver dest) throws AdaptorException {
     try {
       String dummyAdaptorID = adaptorID;
       this.dest = dest;
@@ -81,7 +81,7 @@ public class MemBuffered extends AbstractWrapper {
       for(Chunk c:myBuffer.chunks)
         dest.add(c);
       
-      inner.start(dummyAdaptorID, innerType, offset, this, manager);
+      inner.start(dummyAdaptorID, innerType, offset, this);
     } catch(InterruptedException e) {
      throw new AdaptorException(e);
     }

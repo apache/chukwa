@@ -115,7 +115,7 @@ public class TestDirTailingAdaptor extends TestCase {
     return false;
   }
   
-  private void createEmptyDir(File dir) {
+  public static void createEmptyDir(File dir) {
     if(!nukeDirContents(dir))
       dir.mkdir();
     assertTrue(dir.isDirectory() && dir.listFiles().length == 0);

@@ -48,21 +48,14 @@ class FileTailer extends Thread {
    */
   int DEFAULT_SAMPLE_PERIOD_MS = 1000 * 2;
   int SAMPLE_PERIOD_MS = DEFAULT_SAMPLE_PERIOD_MS;
-  private static Configuration conf = null;
+//  private Configuration conf = null;
   public static final int MAX_SAMPLE_PERIOD = 60 * 1000;
 
-  FileTailer() {
-    if (conf == null) {
-      ChukwaAgent agent = ChukwaAgent.getAgent();
-      if (agent != null) {
-        conf = agent.getConfiguration();
-        if (conf != null) {
-          SAMPLE_PERIOD_MS = conf.getInt(
-              "chukwaAgent.adaptor.context.switch.time",
-              DEFAULT_SAMPLE_PERIOD_MS);
-        }
-      }
-    }
+  FileTailer(Configuration conf) {
+ //   this.conf = conf;
+    SAMPLE_PERIOD_MS = conf.getInt(
+        "chukwaAgent.adaptor.context.switch.time",
+        DEFAULT_SAMPLE_PERIOD_MS);
     eq = DataFactory.getInstance().getEventQueue();
 
     // iterations are much more common than adding a new adaptor

@@ -57,7 +57,7 @@ public class LWFTAdaptor extends AbstractAdaptor {
   protected static FileTailer tailer;
   
   static {
-    tailer = new FileTailer();
+    tailer = null;
     log = Logger.getLogger(FileTailingAdaptor.class);
   }
   
@@ -77,9 +77,11 @@ public class LWFTAdaptor extends AbstractAdaptor {
 
   @Override
   public void start(long offset) {
-    conf = control.getConfiguration();
-    MAX_READ_SIZE = conf.getInt(MAX_READ_SIZE_OPT, DEFAULT_MAX_READ_SIZE);
-    this.fileReadOffset = offset;    
+    synchronized(LWFTAdaptor.class) {
+      if(tailer == null)
+        tailer = new FileTailer(control.getConfiguration());
+    }
+    this.fileReadOffset = offset - offsetOfFirstByte;    
     tailer.startWatchingFile(this);
   }
   
@@ -97,12 +99,15 @@ public class LWFTAdaptor extends AbstractAdaptor {
   public String getStreamName() {
     return toWatch.getPath();
   }
-
+  
   @Override
   public String parseArgs(String params) { 
+    conf = control.getConfiguration();
+    MAX_READ_SIZE = conf.getInt(MAX_READ_SIZE_OPT, DEFAULT_MAX_READ_SIZE);
+
     Pattern cmd = Pattern.compile("(\\d+)\\s+(.+)\\s?");
     Matcher m = cmd.matcher(params);
-    if (m.matches()) {
+    if (m.matches()) { //check for first-byte offset. If absent, assume we just got a path.
       offsetOfFirstByte = Long.parseLong(m.group(1));
       toWatch = new File(m.group(2));
     } else {
@@ -228,6 +233,7 @@ public class LWFTAdaptor extends AbstractAdaptor {
   }
 
   private void handleShrunkenFile(long measuredLen) {
+    log.info("file "+ toWatch +"shrank from " + fileReadOffset + " to " + measuredLen);
     offsetOfFirstByte = measuredLen;
     fileReadOffset = 0;
   }

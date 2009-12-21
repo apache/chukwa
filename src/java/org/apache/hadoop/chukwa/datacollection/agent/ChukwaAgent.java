@@ -329,7 +329,7 @@ public class ChukwaAgent implements AdaptorManager {
         log.warn("Error creating adaptor of class " + adaptorClassName);
         return null;
       }
-      String coreParams = adaptor.parseArgs(dataType,params);
+      String coreParams = adaptor.parseArgs(dataType,params,this);
       if(coreParams == null) {
         log.warn("invalid params for adaptor: " + params);
         return null;
@@ -354,7 +354,7 @@ public class ChukwaAgent implements AdaptorManager {
         needNewCheckpoint = true;
         try {
           adaptor.start(adaptorID, dataType, offset, DataFactory
-              .getInstance().getEventQueue(), this);
+              .getInstance().getEventQueue());
           log.info("started a new adaptor, id = " + adaptorID + " function=["+adaptor.toString()+"]");
           ChukwaAgent.agentMetrics.adaptorCount.set(adaptorsByName.size());
           ChukwaAgent.agentMetrics.addedAdaptor.inc();
