@@ -41,7 +41,7 @@ class FileTailer extends Thread {
 
   private List<LWFTAdaptor> adaptors;
   private volatile boolean isRunning = true;
-  ChunkQueue eq; // not private -- useful for file tailing adaptor classes
+//  ChunkQueue eq; // not private -- useful for file tailing adaptor classes
 
   /**
    * How often to tail each file.
@@ -56,7 +56,7 @@ class FileTailer extends Thread {
     SAMPLE_PERIOD_MS = conf.getInt(
         "chukwaAgent.adaptor.context.switch.time",
         DEFAULT_SAMPLE_PERIOD_MS);
-    eq = DataFactory.getInstance().getEventQueue();
+//    eq = DataFactory.getInstance().getEventQueue();
 
     // iterations are much more common than adding a new adaptor
     adaptors = new CopyOnWriteArrayList<LWFTAdaptor>();
@@ -81,7 +81,7 @@ class FileTailer extends Thread {
         boolean shouldISleep = true;
         long startTime = System.currentTimeMillis();
         for (LWFTAdaptor f : adaptors) {
-          boolean hasMoreData = f.tailFile(eq);
+          boolean hasMoreData = f.tailFile();
           shouldISleep &= !hasMoreData;
         }
         long timeToReadFiles = System.currentTimeMillis() - startTime;

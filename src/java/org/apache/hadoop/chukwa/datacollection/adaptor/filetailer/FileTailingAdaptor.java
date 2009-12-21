@@ -100,7 +100,7 @@ public class FileTailingAdaptor extends LWFTAdaptor {
         if (toWatch.exists()) {
           int retry = 0;
           tailer.stopWatchingFile(this);
-          TerminatorThread lastTail = new TerminatorThread(this, tailer.eq);
+          TerminatorThread lastTail = new TerminatorThread(this);
           lastTail.setDaemon(true);
           lastTail.start();
           
@@ -129,7 +129,7 @@ public class FileTailingAdaptor extends LWFTAdaptor {
       }
       break;
     }
-    log.info("Exist Shutdown:" + shutdownPolicy.name()+ " - ObjectId:" + this);
+    log.info("Exit Shutdown:" + shutdownPolicy.name()+ " - ObjectId:" + this);
     return fileReadOffset + offsetOfFirstByte;
   }
   
@@ -141,7 +141,8 @@ public class FileTailingAdaptor extends LWFTAdaptor {
    * 
    * @param eq the queue to write Chunks into
    */
-  public synchronized boolean tailFile(ChunkReceiver eq)
+  @Override
+  public synchronized boolean tailFile()
       throws InterruptedException {
     boolean hasMoreData = false;
 

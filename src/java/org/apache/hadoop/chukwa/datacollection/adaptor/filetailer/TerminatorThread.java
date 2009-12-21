@@ -26,11 +26,9 @@ public class TerminatorThread extends Thread {
   private static Logger log = Logger.getLogger(TerminatorThread.class);
 
   private FileTailingAdaptor adaptor = null;
-  private ChunkReceiver eq = null;
 
-  public TerminatorThread(FileTailingAdaptor adaptor, ChunkReceiver eq) {
+  public TerminatorThread(FileTailingAdaptor adaptor) {
     this.adaptor = adaptor;
-    this.eq = eq;
   }
 
   public void run() {
@@ -40,7 +38,7 @@ public class TerminatorThread extends Thread {
     int count = 0;
     log.info("Terminator thread started." + adaptor.toWatch.getPath());
     try {
-      while (adaptor.tailFile(eq)) {
+      while (adaptor.tailFile()) {
         if (log.isDebugEnabled()) {
           log.debug("Terminator thread:" + adaptor.toWatch.getPath()
               + " still working");

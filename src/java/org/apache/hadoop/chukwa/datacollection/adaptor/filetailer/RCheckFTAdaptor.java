@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 
 import java.io.File;
@@ -35,8 +52,9 @@ public class RCheckFTAdaptor extends LWFTAdaptor implements FileFilter {
         return -1;
       else if (mod > o.mod)
         return 1;
-      //want toWatch to be last
-      else return (o.f.getName().compareTo(f.getName()));//shouldn't happen?
+      //want toWatch to be last after a rotation; otherwise, this is basically 
+      //just a heuristic that hasn't been tuned yet
+      else return (o.f.getName().compareTo(f.getName()));
     }
   }
   
@@ -81,7 +99,7 @@ public class RCheckFTAdaptor extends LWFTAdaptor implements FileFilter {
     File toWatchDir = toWatch.getParentFile();
     File[] candidates = toWatchDir.listFiles(this);
     if(candidates == null) {
-      log.error(toWatchDir + " is not a directory");
+      log.error(toWatchDir + " is not a directory in "+adaptorID);
     } else {
       log.debug("saw " + candidates.length + " files matching pattern");
       fileQ = new LinkedList<FPair>();
@@ -113,7 +131,7 @@ public class RCheckFTAdaptor extends LWFTAdaptor implements FileFilter {
   }
   
   @Override
-  public synchronized boolean tailFile(ChunkReceiver eq)
+  public synchronized boolean tailFile()
   throws InterruptedException {
     boolean hasMoreData = false;
     try {
@@ -126,10 +144,13 @@ public class RCheckFTAdaptor extends LWFTAdaptor implements FileFilter {
       if(cur == null) //file we're watching doesn't exist
         return false;
       
-      log.debug("treating " + cur + " as " + toWatch);
       
       long len = cur.length();
       long tsPreTail = cur.exists() ? cur.lastModified() : prevFileLastModDate;
+
+      if(log.isDebugEnabled())
+        log.debug(adaptorID + " treating " + cur + " as " + toWatch + " len = " + len);
+      
       if(len < fileReadOffset) {
         log.info("file "+ cur +" shrank from " + fileReadOffset + " to " + len);
         //no unseen changes to prev version, since mod date is older than last scan.
@@ -155,10 +176,15 @@ public class RCheckFTAdaptor extends LWFTAdaptor implements FileFilter {
       }
         
     } catch(IOException e) {
-      log.warn("IOException in tailer", e);
+      log.warn("IOException in "+adaptorID, e);
       deregisterAndStop(false);
     }
     
     return hasMoreData;
+  }
+  
+
+  public String toString() {
+    return "Rotation-aware Tailer on " + toWatch;
   }
 }

@@ -206,7 +206,7 @@ public class LWFTAdaptor extends AbstractAdaptor {
     return hasMoreData;
   }
   
-  public synchronized boolean tailFile(ChunkReceiver eq)
+  public synchronized boolean tailFile()
   throws InterruptedException {
     boolean hasMoreData = false;
     try {
