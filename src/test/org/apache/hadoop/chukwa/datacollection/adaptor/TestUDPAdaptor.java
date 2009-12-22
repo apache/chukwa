@@ -19,7 +19,6 @@ package org.apache.hadoop.chukwa.datacollection.adaptor;
 
 import junit.framework.TestCase;
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
-import org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.RCheckFTAdaptor;
 import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 import org.apache.hadoop.chukwa.*;
 import java.net.*;

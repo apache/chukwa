@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-433. File-per-post writer for benchmark purposes. (asrabkin)
+
     CHUKWA-431. UDP Adaptor. (asrabkin)
 
     CHUKWA-46. Ability to allow only local connections to agent control port. (asrabkin)

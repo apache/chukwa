@@ -54,20 +54,20 @@ public class SeqFileWriter implements ChukwaWriter {
   public static final String STAT_PERIOD_OPT = "chukwaCollector.stats.period";
   public static final String ROTATE_INTERVAL_OPT = "chukwaCollector.rotateInterval";
   public static final String OUTPUT_DIR_OPT= "chukwaCollector.outputDir";
-  static String localHostAddr = null;
+  protected static String localHostAddr = null;
   
-  final Semaphore lock = new Semaphore(1, true);
+  protected final Semaphore lock = new Semaphore(1, true);
   
-  private FileSystem fs = null;
-  private Configuration conf = null;
+  protected FileSystem fs = null;
+  protected Configuration conf = null;
 
-  private String outputDir = null;
+  protected String outputDir = null;
   private Calendar calendar = Calendar.getInstance();
 
-  private Path currentPath = null;
-  private String currentFileName = null;
+  protected Path currentPath = null;
+  protected String currentFileName = null;
   protected FSDataOutputStream currentOutputStr = null;
-  private SequenceFile.Writer seqFileWriter = null;
+  protected SequenceFile.Writer seqFileWriter = null;
 
   private long timePeriod = -1;
   private long nextTimePeriodComputation = -1;
