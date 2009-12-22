@@ -1628,7 +1628,7 @@ portalPage.prototype = {
     	            }
                     p.layout[colIndex]=new Object();
 	    	    p.layout[colIndex].widgets=c;
-		    p.colSize[colIndex]=getWidth(cols[j]);
+		    p.colSize[colIndex]=""+getWidth(cols[j]);
                     colIndex++;
 	        }
 	    }

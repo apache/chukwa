@@ -36,6 +36,13 @@ public class PagesBean {
         ColumnBean c = new ColumnBean(layout.getJSONArray(i));
         this.layout[i]=c;
       }
+      if(json.has("colSize")) {
+        JSONArray ja = json.getJSONArray("colSize");
+        columnSizes = new int[ja.length()];
+        for(int i=0; i< ja.length(); i++) {
+          columnSizes[i] = ja.getInt(i);
+        }
+      }
     } catch (JSONException e) {
       log.error(ExceptionUtil.getStackTrace(e));
       throw new ParseException(ExceptionUtil.getStackTrace(e), 0);
@@ -77,7 +84,7 @@ public class PagesBean {
   }
   
   public void setColSize(int[] size) {
-    this.columnSizes = size;    
+    this.columnSizes = size;
   }
 
   @XmlElement(name="columns")

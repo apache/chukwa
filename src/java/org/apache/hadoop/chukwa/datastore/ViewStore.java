@@ -29,8 +29,8 @@ public class ViewStore {
   private static String viewPath = config.get("fs.default.name")+File.separator+chukwaConf.get("chukwa.data.dir")+File.separator+"hicc"+File.separator+"views";
   private static String publicViewPath = viewPath+File.separator+"public";
   private static String usersViewPath = viewPath+File.separator+"users";
-  private static String PUBLIC = "PUBLIC".intern();
-  private static String PRIVATE = "PRIVATE".intern();
+  private static String PUBLIC = "public".intern();
+  private static String PRIVATE = "private".intern();
 
   public ViewStore() throws IllegalAccessException {
     ViewStore.config = HiccWebServer.getConfig();
