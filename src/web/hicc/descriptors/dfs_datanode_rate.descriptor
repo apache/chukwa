@@ -2,7 +2,7 @@
 "id":"dfs_datanode_rate",
 "title":"Data Node Metrics By Rate",
 "version":"0.1",
-"categories":"Hadoop,Data Node,Status",
+"categories":"Hadoop,HDFS,Data Node",
 "url":"iframe/jsp/single-series-chart-javascript.jsp",
 "description":"Display HDFS data node stats",
 "screendump":"\/images\/server_load.gif",

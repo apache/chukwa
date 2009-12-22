@@ -2,7 +2,7 @@
 "id":"utilization",
 "title":"Utilization",
 "version":"0.1",
-"categories":"Accounting,Utilities",
+"categories":"Accounting",
 "url":"iframe\/jsp\/table_viewer.jsp",
 "description":"Display Queue/User utilization of the hadoop cluter",
 "screendump":"",

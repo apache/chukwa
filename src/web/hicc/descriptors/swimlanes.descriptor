@@ -2,7 +2,7 @@
 "id":"swimlanes_viewer",
 "title":"Swimlanes",
 "version":"0.1",
-"categories":"Hadoop,Status",
+"categories":"Hadoop,Map/Reduce",
 "url":"iframe/jsp/swimlanes_viewer.jsp",
 "description":"Display Time sorted events",
 "screendump":"\/images\/start.png",

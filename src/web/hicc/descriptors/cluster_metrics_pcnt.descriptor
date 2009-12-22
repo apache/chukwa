@@ -2,7 +2,7 @@
 "id":"cluster_metrics_pcnt",
 "title":"Cluster Metrics By Percentage",
 "version":"0.1",
-"categories":"System Metrics,Cluster,Status",
+"categories":"System Metrics,Cluster",
 "url":"iframe/jsp/single-series-chart-javascript.jsp",
 "description":"Display cluster related stats by percentage",
 "screendump":"\/images\/server_load.gif",

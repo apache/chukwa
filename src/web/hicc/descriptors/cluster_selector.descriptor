@@ -2,7 +2,7 @@
 "id":"cluster_selector",
 "title":"Cluster Selector",
 "version":"0.1",
-"categories":"Global,Utility",
+"categories":"Global,Utilities",
 "url":"jsp\/cluster_selector.jsp",
 "description":"Global control to manipulate cluster selection across widgets",
 "screendump":"",

@@ -2,7 +2,7 @@
 "id":"host_selector",
 "title":"Host Selector",
 "version":"0.1",
-"categories":"Global,Utility",
+"categories":"Global,Utilities",
 "url":"jsp\/host_selector.jsp",
 "description":"Global control to manipulate host selection across widgets",
 "refresh":"15",

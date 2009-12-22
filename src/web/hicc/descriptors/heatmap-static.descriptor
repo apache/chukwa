@@ -2,7 +2,7 @@
 "id":"heatmap_viewer_static",
 "title":"HDFS Heatmap (Static)",
 "version":"0.1",
-"categories":"Hadoop,Status",
+"categories":"Hadoop,HDFS",
 "url":"iframe/jsp/heatmap-static.jsp",
 "description":"Display time-aggregated HDFS events",
 "screendump":"\/images\/start.png",

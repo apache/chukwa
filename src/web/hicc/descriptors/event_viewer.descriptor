@@ -2,7 +2,7 @@
 "id":"event_browser",
 "title":"Event Viewer",
 "version":"0.1",
-"categories":"Global,Utilities",
+"categories":"Global",
 "url":"jsp\/event_viewer.jsp",
 "description":"Display Time sorted events",
 "screendump":"",

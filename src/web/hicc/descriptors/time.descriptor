@@ -2,7 +2,7 @@
 "id":"time",
 "title":"Time",
 "version":"0.1",
-"categories":"Global,Utility",
+"categories":"Global,Utilities",
 "url":"jsp\/time.jsp",
 "javascripts":"time.js",
 "description":"Global control to manipulate time across widgets",

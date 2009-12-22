@@ -2,7 +2,7 @@
 "id":"rpc_metrics",
 "title":"RPC Metrics",
 "version":"0.1",
-"categories":"Hadoop,Status",
+"categories":"Hadoop,RPC",
 "url":"iframe/jsp/single-series-chart-javascript.jsp",
 "description":"Display RPC metrics from Hadoop",
 "screendump":"\/images\/server_load.gif",

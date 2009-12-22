@@ -2,7 +2,7 @@
 "id":"heatmap_datanode_viewer",
 "title":"HDFS Heatmap",
 "version":"0.1",
-"categories":"Hadoop,Status",
+"categories":"Hadoop,HDFS",
 "url":"iframe/jsp/heatmap_datanode.jsp",
 "description":"Display Time sorted events",
 "screendump":"\/images\/start.png",
