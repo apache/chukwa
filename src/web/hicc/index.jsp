@@ -97,6 +97,7 @@
 <script type="text/javascript" src="/hicc/js/workspace/workspace.js"></script>
 <script type="text/javascript" src="/hicc/js/slider.js"></script>
 <script type="text/javascript" src="/hicc/js/swfobject.js"></script>
+<script type="text/javascript" src="/hicc/js/time.js"></script>
 
 <script type="text/javascript">
 var _users_list=''; //'[% users_list_json %]'.evalJSON();
