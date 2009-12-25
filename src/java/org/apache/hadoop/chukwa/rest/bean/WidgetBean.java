@@ -1,6 +1,7 @@
 package org.apache.hadoop.chukwa.rest.bean;
 
 import java.text.ParseException;
+import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -141,7 +142,7 @@ public class WidgetBean {
           this.description=widget.getDescription();
           ParametersBean[] plist = widget.getParameters();
           for(int i=0;i<this.parameters.length;i++) {
-            String value = this.parameters[i].getValue();
+            Collection<String> value = this.parameters[i].getValue();
             for(int j=0;j<plist.length;j++) {
               if(plist[i].getName().intern()==this.parameters[j].getName().intern()) {
                 plist[j].setValue(value);
