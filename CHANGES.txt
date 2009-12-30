@@ -46,6 +46,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-443. Updated HDFS metrics logging filename. (Eric Yang)
+
     CHUKWA-442. Updated Apache license for HICC Rest API. (Eric Yang)
 
     CHUKWA-438. Fixed column resizing issue in HICC (Eric Yang)

@@ -28,6 +28,7 @@ chunkQueue.directory=@TODO-CHUKWA_LOG_DIR@/metrics/
 dfs.class=org.apache.hadoop.chukwa.inputtools.log4j.Log4JMetricsContext
 dfs.period=60
 dfs.directory=@TODO-CHUKWA_LOG_DIR@/metrics/
+dfs.uuid=true
 
 jvm.class=org.apache.hadoop.chukwa.inputtools.log4j.Log4JMetricsContext
 jvm.period=60
