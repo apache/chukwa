@@ -46,6 +46,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-442. Updated Apache license for HICC Rest API. (Eric Yang)
+
     CHUKWA-438. Fixed column resizing issue in HICC (Eric Yang)
 
     CHUKWA-439. Added blank image for HICC. (Eric Yang)
