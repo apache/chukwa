@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
  * this object.
  * 
  */
-public class SeqFileWriter implements ChukwaWriter {
+public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
   static Logger log = Logger.getLogger(SeqFileWriter.class);
   public static boolean ENABLE_ROTATION_ON_CLOSE = true;
 

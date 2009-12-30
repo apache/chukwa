@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-441. Added real time Hadoop activity monitor. (Eric Yang)
+
     CHUKWA-433. File-per-post writer for benchmark purposes. (asrabkin)
 
     CHUKWA-431. UDP Adaptor. (asrabkin)

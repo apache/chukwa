@@ -21,7 +21,15 @@
 
 <configuration>
 
+  <property>
+    <name>chukwaCollector.writerClass</name>
+    <value>org.apache.hadoop.chukwa.datacollection.writer.PipelineStageWriter</value>
+  </property>
 
+  <property>
+    <name>chukwaCollector.pipeline</name>
+    <value>org.apache.hadoop.chukwa.datacollection.writer.SocketTeeWriter,org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter</value>
+  </property>
 
 <!-- LocalWriter parameters
   <property>

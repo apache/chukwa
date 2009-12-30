@@ -485,6 +485,7 @@
                     <include name="hicc.war" />
                   </fileset>
                 </copy>
+                <echo message="localhost" file="${test.build.dir}/conf/collectors"/>
                 <copy file="${conf.dir}/chukwa-common.xml.template" tofile="${test.build.dir}/conf/chukwa-common.xml">
 			<filterchain>
 				<replacetokens>

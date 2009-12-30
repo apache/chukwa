@@ -66,7 +66,7 @@ public class SocketTeeWriter extends PipelineableWriter {
   static enum DataFormat {Raw, Writable, Header};
   
   static boolean USE_KEEPALIVE = true;
-  static final int DEFAULT_PORT = 9094;
+  public static final int DEFAULT_PORT = 9094;
   static int QUEUE_LENGTH = 1000;
   
   static Logger log = Logger.getLogger(SocketTeeWriter.class);

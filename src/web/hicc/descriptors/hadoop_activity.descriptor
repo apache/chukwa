@@ -1,0 +1,14 @@
+{
+"id":"hadoop_activity",
+"title":"Hadoop Activity",
+"version":"0.1",
+"categories":"Hadoop",
+"url":"iframe/jsp/hadoop_activity.jsp?height=650",
+"description":"Monitor clienttrace log file for Hadoop Activities",
+"screendump":"\/images\/start.png",
+"refresh":"15",
+"parameters":[
+{"name":"height","type":"string","value":"650","edit":"0"}
+]
+}
+
