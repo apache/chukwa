@@ -48,7 +48,7 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
   static Logger log = Logger.getLogger(SeqFileWriter.class);
   public static boolean ENABLE_ROTATION_ON_CLOSE = true;
 
-  int STAT_INTERVAL_SECONDS = 30;
+  protected int STAT_INTERVAL_SECONDS = 30;
   private int rotateInterval = 1000 * 60 * 5;
   
   public static final String STAT_PERIOD_OPT = "chukwaCollector.stats.period";
@@ -69,14 +69,14 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
   protected FSDataOutputStream currentOutputStr = null;
   protected SequenceFile.Writer seqFileWriter = null;
 
-  private long timePeriod = -1;
-  private long nextTimePeriodComputation = -1;
+  protected long timePeriod = -1;
+  protected long nextTimePeriodComputation = -1;
   
   protected Timer rotateTimer = null;  
   protected Timer statTimer = null;
   
-  private volatile long dataSize = 0;
-  private volatile long bytesThisRotate = 0;
+  protected volatile long dataSize = 0;
+  protected volatile long bytesThisRotate = 0;
   protected volatile boolean isRunning = false;
   
   static {
@@ -143,7 +143,7 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
 
   }
 
-  private class StatReportingTask extends TimerTask {
+  public class StatReportingTask extends TimerTask {
     private long lastTs = System.currentTimeMillis();
 
     public void run() {
@@ -159,6 +159,8 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
       log.info("stat:datacollection.writer.hdfs dataSize=" + currentDs
           + " dataRate=" + dataRate);
     }
+    
+    public StatReportingTask() {}
   };
 
   void rotate() {
