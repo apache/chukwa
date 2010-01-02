@@ -36,7 +36,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.dataloader.SocketDataLoader;
 import org.apache.hadoop.chukwa.rest.bean.ClientTraceBean;
-import org.apache.hadoop.chukwa.rest.bean.EventBean;
 import org.apache.hadoop.chukwa.util.RecordConstants;
 
 /**
