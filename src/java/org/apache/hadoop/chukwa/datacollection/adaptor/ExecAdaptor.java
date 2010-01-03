@@ -67,7 +67,7 @@ public class ExecAdaptor extends AbstractAdaptor {
       try {
 
         if (o.getInt("status") == exec.statusKO) {
-          deregisterAndStop(false);
+          deregisterAndStop();
           return;
         }
 

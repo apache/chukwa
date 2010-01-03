@@ -148,7 +148,7 @@ public class FileTailingAdaptor extends LWFTAdaptor {
           return false;
         }
 
-        deregisterAndStop(false);
+        deregisterAndStop();
         return false;
       } else if (!toWatch.exists() || !toWatch.canRead()) {
         if (adaptorInError == false) {

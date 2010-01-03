@@ -177,7 +177,7 @@ public class RCheckFTAdaptor extends LWFTAdaptor implements FileFilter {
         
     } catch(IOException e) {
       log.warn("IOException in "+adaptorID, e);
-      deregisterAndStop(false);
+      deregisterAndStop();
     }
     
     return hasMoreData;

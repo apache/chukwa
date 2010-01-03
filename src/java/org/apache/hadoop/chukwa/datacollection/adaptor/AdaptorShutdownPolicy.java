@@ -19,4 +19,15 @@ package org.apache.hadoop.chukwa.datacollection.adaptor;
 
 public enum AdaptorShutdownPolicy {
   HARD_STOP,GRACEFULLY,WAIT_TILL_FINISHED;
+  
+  public String toString() {
+    if(this.equals(GRACEFULLY))
+      return "Gracefully";
+    else if(this.equals(HARD_STOP))
+      return "Abruptly";
+    else if(this.equals(WAIT_TILL_FINISHED))
+      return "Once finished";
+    else
+        return "unknown mode";
+  }
 }

@@ -51,7 +51,7 @@ public class TestExecAdaptor extends TestCase {
    */
   public void testForLeaks()  throws ChukwaAgent.AlreadyRunningException, InterruptedException {
     Configuration conf = new Configuration();
-//    conf.set("chukwaAgent.control.port", "0");
+    conf.set("chukwaAgent.control.port", "0");
     conf.setBoolean("chukwaAgent.checkpoint.enabled", false);
     ChukwaAgent agent = new ChukwaAgent(conf);
 

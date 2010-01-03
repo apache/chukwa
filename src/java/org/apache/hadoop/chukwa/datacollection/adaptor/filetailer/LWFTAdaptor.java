@@ -215,7 +215,7 @@ public class LWFTAdaptor extends AbstractAdaptor {
       }
     } catch(IOException e) {
       log.warn("IOException in tailer", e);
-      deregisterAndStop(false);
+      deregisterAndStop();
     }
     
     return hasMoreData;

@@ -29,6 +29,7 @@ import java.net.*;
 import java.util.Map;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
+import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy;
 import org.apache.log4j.Logger;
 
 /**
@@ -130,7 +131,7 @@ public class AgentControlSocketListener extends Thread {
           out.println("need to specify an adaptor to shut down, by number");
         } else {
           sanitizeAdaptorName(out, words);
-          long offset = agent.stopAdaptor(words[1], true);
+          long offset = agent.stopAdaptor(words[1], AdaptorShutdownPolicy.GRACEFULLY);
           if (offset != -1)
             out.println("OK adaptor " + words[1] + " stopping gracefully at "
                 + offset);
@@ -142,7 +143,7 @@ public class AgentControlSocketListener extends Thread {
           out.println("need to specify an adaptor to shut down, by number");
         } else {
           sanitizeAdaptorName(out, words);
-          agent.stopAdaptor(words[1], false);
+          agent.stopAdaptor(words[1], AdaptorShutdownPolicy.HARD_STOP);
           out.println("OK adaptor " + words[1] + " stopped");
         }
       } else if (words[0].equalsIgnoreCase("reloadCollectors")) {

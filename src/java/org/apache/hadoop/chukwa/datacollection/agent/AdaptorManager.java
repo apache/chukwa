@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
+import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy;
 
 /**
  * The interface to the agent that is exposed to adaptors.
@@ -31,7 +32,11 @@ public interface AdaptorManager {
 
   Configuration getConfiguration();
   int adaptorCount();
+  @Deprecated
   long stopAdaptor(String id, boolean gracefully);
+  
+
+  long stopAdaptor(String id, AdaptorShutdownPolicy mode);
   Adaptor getAdaptor(String id);
   String processAddCommand(String cmd);
   Map<String, String> getAdaptorList();
@@ -76,8 +81,12 @@ public interface AdaptorManager {
       return "";
     }
 
-    @Override
     public long stopAdaptor(String id, boolean gracefully) {
+      return 0;
+    }
+
+    @Override
+    public long stopAdaptor(String id, AdaptorShutdownPolicy mode) {
       return 0;
     }
     

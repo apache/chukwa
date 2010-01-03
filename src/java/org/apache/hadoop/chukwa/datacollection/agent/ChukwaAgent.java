@@ -522,6 +522,14 @@ public class ChukwaAgent implements AdaptorManager {
     }
     return adaptors;
   }
+  
+
+  public long stopAdaptor(String name, boolean gracefully) {
+    if (gracefully) 
+      return stopAdaptor(name, AdaptorShutdownPolicy.GRACEFULLY);
+    else
+      return stopAdaptor(name, AdaptorShutdownPolicy.HARD_STOP);
+  }
 
   /**
    * Stop the adaptor with given ID number. Takes a parameter to indicate
@@ -535,7 +543,7 @@ public class ChukwaAgent implements AdaptorManager {
    * @param gracefully if true, shutdown, if false, hardStop
    * @return the number of bytes synched at stop. -1 on error
    */
-  public long stopAdaptor(String name, boolean gracefully) {
+  public long stopAdaptor(String name, AdaptorShutdownPolicy shutdownMode) {
     Adaptor toStop;
     long offset = -1;
 
@@ -546,7 +554,7 @@ public class ChukwaAgent implements AdaptorManager {
       toStop = adaptorsByName.remove(name);
     }
     if (toStop == null) {
-      log.warn("trying to stop adaptor " + name + " that isn't running");
+      log.warn("trying to stop " + name + " that isn't running");
       return offset;
     } else {
       adaptorPositions.remove(toStop);
@@ -555,15 +563,9 @@ public class ChukwaAgent implements AdaptorManager {
     ChukwaAgent.agentMetrics.removedAdaptor.inc();
     
     try {
-      if (gracefully) {
-        offset = toStop.shutdown(AdaptorShutdownPolicy.GRACEFULLY);
-        log.info("shutdown on adaptor: " + name + ", "
-            + toStop.getCurrentStatus());
-      } else {
-        toStop.shutdown(AdaptorShutdownPolicy.HARD_STOP);
-        log.info("hardStop on adaptorId: " + name + ", "
-            + toStop.getCurrentStatus());
-      }
+      offset = toStop.shutdown(shutdownMode);
+      log.info("shutdown ["+ shutdownMode + "] on " + name + ", "
+          + toStop.getCurrentStatus());
     } catch (AdaptorException e) {
       log.error("adaptor failed to stop cleanly", e);
     } finally {

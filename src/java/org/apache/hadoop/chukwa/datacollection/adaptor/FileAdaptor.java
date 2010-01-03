@@ -172,7 +172,7 @@ public class FileAdaptor extends AbstractAdaptor {
          int bytesUsed = extractRecords(dest, 0, buf, fileTime);
          this.fileReadOffset = bytesUsed;
          finished = true;
-         deregisterAndStop(false);
+         deregisterAndStop();
          cleanUp();
        } catch(Exception e) {
          log.warn("Exception while trying to read: " + toWatch.getAbsolutePath(),e);
@@ -191,7 +191,7 @@ public class FileAdaptor extends AbstractAdaptor {
       if (now > timeOut) {
         finished = true;
         log.warn("Couldn't read this file: " + toWatch.getAbsolutePath());
-        deregisterAndStop(false);
+        deregisterAndStop();
         cleanUp() ;
       }
     }
