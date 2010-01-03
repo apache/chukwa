@@ -129,25 +129,6 @@ public class ExecAdaptor extends AbstractAdaptor {
   public String getCurrentStatus() {
     return type + " " + period + " " + cmd;
   }
-
-
-  @Override
-  @Deprecated
-  /**
-  * use shutdown(AdaptorShutdownPolicy shutdownPolicy)
-  */
-  public void hardStop() throws AdaptorException {
-     shutdown(AdaptorShutdownPolicy.HARD_STOP);
-  }
-  
- @Override
- @Deprecated
- /**
-* use shutdown(AdaptorShutdownPolicy shutdownPolicy)
-*/
-    public long shutdown() throws AdaptorException {
-     return shutdown(AdaptorShutdownPolicy.GRACEFULLY);
-   }
  
    @Override
    public long shutdown(AdaptorShutdownPolicy shutdownPolicy)

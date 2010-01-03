@@ -124,26 +124,9 @@ public class ConstRateAdaptor extends AbstractAdaptor implements Runnable {
     return "const rate " + type;
   }
 
-  @Deprecated
-  public void hardStop() throws AdaptorException {
-    shutdown(AdaptorShutdownPolicy.HARD_STOP);
-  }
-
-  @Deprecated
-  public long shutdown() throws AdaptorException {
-    return shutdown(AdaptorShutdownPolicy.GRACEFULLY);
-  }
-
   @Override
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy) {
-    
-    switch(shutdownPolicy) {
-      case HARD_STOP :
-      case GRACEFULLY : 
-      case WAIT_TILL_FINISHED :
-        stopping = true;
-      break;
-    }
+    stopping = true;
     return offset;
   }
   

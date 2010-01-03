@@ -37,10 +37,6 @@ public class AbstractWrapper implements NotifyOnCommitAdaptor,ChunkReceiver {
     return innerClassName + " " + inner.getCurrentStatus();
   }
 
-  @Override
-  public void hardStop() throws AdaptorException {
-    inner.hardStop();
-  }
 
   static Pattern p = Pattern.compile("([^ ]+) +([^ ].*)");
   
@@ -61,12 +57,7 @@ public class AbstractWrapper implements NotifyOnCommitAdaptor,ChunkReceiver {
     }
     else return null;
   }
-
-  @Override
-  public long shutdown() throws AdaptorException {
-    return inner.shutdown();
-  }
-
+  
   @Override
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy)
       throws AdaptorException {

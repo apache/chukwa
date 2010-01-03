@@ -78,16 +78,6 @@ public class UDPAdaptor extends AbstractAdaptor {
   }
 
   @Override
-  public void hardStop() throws AdaptorException {
-    shutdown(AdaptorShutdownPolicy.HARD_STOP);
-  }
-
-  @Override
-  public long shutdown() throws AdaptorException {
-    return shutdown(AdaptorShutdownPolicy.GRACEFULLY); 
-  }
-
-  @Override
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy)
       throws AdaptorException {
     try {

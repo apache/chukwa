@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.*;
 import org.apache.hadoop.chukwa.*;
+import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy;
 import org.apache.hadoop.chukwa.datacollection.adaptor.TestDirTailingAdaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.FileTailingAdaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.TestRawAdaptor;
@@ -216,7 +217,7 @@ public class TestDelayedAcks extends TestCase {
 
       //do the shutdown directly, here, so that acks are still processed.
       assertNotNull(agent.getAdaptor("adaptor_constSend"));
-      long bytesOutput = agent.getAdaptor("adaptor_constSend").shutdown();
+      long bytesOutput = agent.getAdaptor("adaptor_constSend").shutdown(AdaptorShutdownPolicy.GRACEFULLY);
       Thread.sleep(CLIENT_SCANPERIOD + SERVER_SCANPERIOD + ROTATEPERIOD + 3000);
       
       String[] stat = agent.getAdaptorList().get("adaptor_constSend").split(" ");

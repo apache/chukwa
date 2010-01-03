@@ -209,24 +209,6 @@ public class FileAdaptor extends AbstractAdaptor {
     } 
   }
   
-  
-  /**
-   * We want to keep trying
-   * 
-   * @see org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor#shutdown()
-   */
-  @Deprecated
-  public long shutdown() throws AdaptorException {
-    return shutdown(AdaptorShutdownPolicy.GRACEFULLY);
-  }
-
-  /**
-   * Stop tailing the file, effective immediately.
-   */
-  @Deprecated
-  public void hardStop() throws AdaptorException {
-    shutdown(AdaptorShutdownPolicy.HARD_STOP);
-  }
 
   @Override
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy) {

@@ -115,17 +115,6 @@ public class LWFTAdaptor extends AbstractAdaptor {
     }
     return toWatch.getAbsolutePath();
   }
-  
-
-  @Override
-  public void hardStop() throws AdaptorException {
-    shutdown(AdaptorShutdownPolicy.HARD_STOP);
-  }
-  
-  @Override
-  public long shutdown() throws AdaptorException {
-    return shutdown(AdaptorShutdownPolicy.GRACEFULLY);
-  }
 
   @Override
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy)

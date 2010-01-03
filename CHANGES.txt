@@ -22,6 +22,8 @@ Trunk (unreleased changes)
  
    IMPROVEMENTS
 
+    CHUKWA-420. Clean up adaptor stop methods. (asrabkin)
+
     CHUKWA-437. Clean up widget category labels. (Eric Yang)
 
     CHUKWA-421. Use modification time to detect rotation. (asrabkin)

@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import org.apache.hadoop.chukwa.datacollection.DataFactory;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
+import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy;
 import org.apache.hadoop.chukwa.datacollection.adaptor.NotifyOnCommitAdaptor;
 import org.apache.hadoop.chukwa.datacollection.agent.metrics.AgentMetrics;
 import org.apache.hadoop.chukwa.datacollection.connector.Connector;
@@ -555,11 +556,11 @@ public class ChukwaAgent implements AdaptorManager {
     
     try {
       if (gracefully) {
-        offset = toStop.shutdown();
+        offset = toStop.shutdown(AdaptorShutdownPolicy.GRACEFULLY);
         log.info("shutdown on adaptor: " + name + ", "
             + toStop.getCurrentStatus());
       } else {
-        toStop.hardStop();
+        toStop.shutdown(AdaptorShutdownPolicy.HARD_STOP);
         log.info("hardStop on adaptorId: " + name + ", "
             + toStop.getCurrentStatus());
       }
@@ -645,7 +646,7 @@ public class ChukwaAgent implements AdaptorManager {
       // shut down each adaptor
       for (Adaptor a : adaptorsByName.values()) {
         try {
-          a.hardStop();
+          a.shutdown(AdaptorShutdownPolicy.HARD_STOP);
         } catch (AdaptorException e) {
           log.warn("failed to cleanly stop " + a, e);
         }

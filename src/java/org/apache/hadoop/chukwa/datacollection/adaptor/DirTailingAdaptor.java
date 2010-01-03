@@ -117,16 +117,6 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
     return baseDir + " " + adaptorName; //both params mandatory
   }
 
-  @Deprecated
-  public long shutdown() throws AdaptorException {
-    return shutdown(AdaptorShutdownPolicy.GRACEFULLY);
-  }
-
-  @Deprecated
-  public void hardStop() throws AdaptorException {
-    shutdown(AdaptorShutdownPolicy.HARD_STOP);
-  }
-
   @Override
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy)
       throws AdaptorException {

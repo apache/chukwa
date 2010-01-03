@@ -58,25 +58,6 @@ public class FileTailingAdaptor extends LWFTAdaptor {
         + " with first byte at offset " + offsetOfFirstByte);
   }
  
-
-  /**
-   * Do one last tail, and then stop
-   * 
-   * @see org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor#shutdown()
-   */
-  @Deprecated
-  public long shutdown() throws AdaptorException {
-    return shutdown(AdaptorShutdownPolicy.GRACEFULLY);
-  }
-
-  /**
-   * Stop tailing the file, effective immediately.
-   */
-  @Deprecated
-  public void hardStop() throws AdaptorException {
-    shutdown(AdaptorShutdownPolicy.HARD_STOP);
-  }
-
   
   @Override
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy) {
@@ -84,17 +65,6 @@ public class FileTailingAdaptor extends LWFTAdaptor {
     log.info("Enter Shutdown:" + shutdownPolicy.name() + " - ObjectId:" + this);
     
     switch(shutdownPolicy) {
-      case HARD_STOP :
-        tailer.stopWatchingFile(this);
-        try {
-          if (reader != null) {
-            reader.close();
-          }
-          reader = null;
-        } catch(Throwable e) {
-         log.warn("Exception while closing reader:",e);
-        }
-        break;
       case GRACEFULLY : 
       case WAIT_TILL_FINISHED :{
         if (toWatch.exists()) {
@@ -128,6 +98,19 @@ public class FileTailingAdaptor extends LWFTAdaptor {
         }
       }
       break;
+      
+      case HARD_STOP :
+      default:
+        tailer.stopWatchingFile(this);
+        try {
+          if (reader != null) {
+            reader.close();
+          }
+          reader = null;
+        } catch(Throwable e) {
+         log.warn("Exception while closing reader:",e);
+        }
+        break;
     }
     log.info("Exit Shutdown:" + shutdownPolicy.name()+ " - ObjectId:" + this);
     return fileReadOffset + offsetOfFirstByte;

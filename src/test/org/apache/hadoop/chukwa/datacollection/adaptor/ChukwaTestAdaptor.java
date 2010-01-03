@@ -39,18 +39,6 @@ public class ChukwaTestAdaptor extends AbstractAdaptor {
   }
 
   @Override
-  public void hardStop() throws AdaptorException {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public long shutdown() throws AdaptorException {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  @Override
   public void start(long offset) throws AdaptorException {
     this.startOffset = offset;
     System.out.println("adaptorId [" + adaptorID + "]");
@@ -76,7 +64,6 @@ public class ChukwaTestAdaptor extends AbstractAdaptor {
   @Override
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy)
       throws AdaptorException {
-    // TODO Auto-generated method stub
     return 0;
   }
 

@@ -54,5 +54,16 @@ public abstract class AbstractAdaptor implements Adaptor {
     return parseArgs(s);
   }
   
+
+
+  @Deprecated
+  public void hardStop() throws AdaptorException {
+    shutdown(AdaptorShutdownPolicy.HARD_STOP);
+  }
+
+  @Deprecated
+  public long shutdown() throws AdaptorException {
+    return shutdown(AdaptorShutdownPolicy.GRACEFULLY);
+  }
   
 }

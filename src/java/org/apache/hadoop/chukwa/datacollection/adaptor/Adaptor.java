@@ -79,18 +79,7 @@ public interface Adaptor {
    */
   public String parseArgs(String datatype, String params, AdaptorManager c);
   
-  /**
-   * Signals this adaptor to come to an orderly stop. The adaptor ought to push
-   * out all the data it can before exiting.
-   * 
-   * This method is synchronous up to 60 seconds
-   * 
-   * @return the logical offset at which the adaptor stops
-   * @throws AdaptorException
-   */
-  @Deprecated
-  public long shutdown() throws AdaptorException;
-
+ 
   
   /**
    * Signals this adaptor to come to an orderly stop. The adaptor ought to push
@@ -101,6 +90,18 @@ public interface Adaptor {
    */
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy) throws AdaptorException;
   
+  /**
+   * Signals this adaptor to come to an orderly stop. The adaptor ought to push
+   * out all the data it can before exiting.
+   * 
+   * This method is synchronous up to 60 seconds
+   * 
+   * @return the logical offset at which the adaptor stops
+   * @throws AdaptorException
+   */
+//  @Deprecated
+//  public long shutdown() throws AdaptorException;
+
   
   /**
    * Signals this adaptor to come to an abrupt stop, as quickly as it can. The
@@ -116,7 +117,7 @@ public interface Adaptor {
    * 
    * @throws AdaptorException
    */
-  @Deprecated
-  public void hardStop() throws AdaptorException;
+//  @Deprecated
+//  public void hardStop() throws AdaptorException;
 
 }
