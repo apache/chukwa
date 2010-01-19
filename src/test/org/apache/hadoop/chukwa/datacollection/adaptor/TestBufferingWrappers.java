@@ -108,5 +108,4 @@ public class TestBufferingWrappers extends TestCase {
     Thread.sleep(500);//before re-binding
     agent.shutdown();
   }
-
 }
