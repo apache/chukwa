@@ -99,7 +99,7 @@ public class FileTailingAdaptor extends LWFTAdaptor {
       }
       break;
       
-      case HARD_STOP :
+      case HARD_STOP:
       default:
         tailer.stopWatchingFile(this);
         try {

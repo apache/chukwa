@@ -31,7 +31,7 @@ public class AbstractWrapper implements NotifyOnCommitAdaptor,ChunkReceiver {
   String innerType;
   ChunkReceiver dest;
   AdaptorManager manager;
-
+  String adaptorID;
   @Override
   public String getCurrentStatus() {
     return innerClassName + " " + inner.getCurrentStatus();
@@ -77,6 +77,7 @@ public class AbstractWrapper implements NotifyOnCommitAdaptor,ChunkReceiver {
       ChunkReceiver dest) throws AdaptorException {
     String dummyAdaptorID = adaptorID;
     this.dest = dest;
+    this.adaptorID = adaptorID;
     inner.start(dummyAdaptorID, type, offset, this);
   }
 

@@ -35,18 +35,21 @@ public class UDPAdaptor extends AbstractAdaptor {
   
   class ListenThread extends Thread {
     public void run() {
+      log.info("UDP adaptor " + adaptorID + " started on port " + portno + " offset =" + bytesReceived);
       byte[] buf = new byte[1024];
       DatagramPacket dp = new DatagramPacket(buf, buf.length);
       try {
         while(running) {
           ds.receive(dp);
+          log.info("got a UDP message");
           byte[] trimmedBuf =  Arrays.copyOf(buf, dp.getLength());
           bytesReceived += trimmedBuf.length;
           Chunk c = new ChunkImpl(type, source, bytesReceived, trimmedBuf, UDPAdaptor.this);
           dest.add(c);
         }
       } catch(Exception e) {
-        log.error("can't read UDP messages in " + adaptorID, e);
+        if(running)
+          log.error("can't read UDP messages in " + adaptorID, e);
       }
     }
   }
@@ -82,6 +85,7 @@ public class UDPAdaptor extends AbstractAdaptor {
       throws AdaptorException {
     try {
       running = false;
+      ds.close();
       if(shutdownPolicy == AdaptorShutdownPolicy.GRACEFULLY)
         lt.join();
     } catch(InterruptedException e) {}

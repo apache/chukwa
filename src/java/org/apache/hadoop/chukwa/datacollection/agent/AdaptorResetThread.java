@@ -21,6 +21,7 @@ import java.util.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.chukwa.datacollection.DataFactory;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
+import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy;
 import org.apache.hadoop.chukwa.datacollection.collector.servlet.CommitCheckServlet;
 import org.apache.hadoop.chukwa.datacollection.sender.AsyncAckSender;
 import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter;
@@ -93,7 +94,7 @@ public class AdaptorResetThread extends Thread {
       status.remove(a); //it'll get added again when adaptor resumes, if it does
       ChukwaAgent.Offset off = agent.offset(a);
       if(off != null) {
-        agent.stopAdaptor(off.id, false);
+        agent.stopAdaptor(off.id, AdaptorShutdownPolicy.RESTARTING);
         
         String a_status = a.getCurrentStatus();
         agent.processAddCommand("add " + off.id + "= " + a.getClass().getCanonicalName()

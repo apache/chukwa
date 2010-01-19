@@ -214,9 +214,6 @@ public class FileAdaptor extends AbstractAdaptor {
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy) {
     log.info("Enter Shutdown:" + shutdownPolicy.name()+ " - ObjectId:" + this);
     switch(shutdownPolicy) {
-      case HARD_STOP :
-        cleanUp();
-        break;
       case GRACEFULLY : {
         int retry = 0;
         while (!finished && retry < 60) {
@@ -245,6 +242,9 @@ public class FileAdaptor extends AbstractAdaptor {
       }
 
       break;
+      default :
+        cleanUp();
+        break;
     }
     log.info("Exist Shutdown:" + shutdownPolicy.name()+ " - ObjectId:" + this);
     return fileReadOffset + offsetOfFirstByte;
