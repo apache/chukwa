@@ -17,6 +17,7 @@
  */
 package org.apache.hadoop.chukwa.datacollection.adaptor;
 
+import static org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy.RESTARTING;
 import java.util.*;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
@@ -26,6 +27,9 @@ public class MemBuffered extends AbstractWrapper {
   
   static final String BUF_SIZE_OPT = "adaptor.memBufWrapper.size";
   static final int DEFAULT_BUF_SIZE = 1024*1024; //1 MB
+  
+  //true by default. If you were willing to discard data, you didn't need Mem Buffers
+  static boolean BLOCK_WHEN_FULL = true;
   
   static class MemBuf {
     long dataSizeBytes;
@@ -40,8 +44,11 @@ public class MemBuffered extends AbstractWrapper {
     
     synchronized void add(Chunk c) throws InterruptedException{
       int len = c.getData().length;
-      while(len + dataSizeBytes > maxDataSize)
-        wait();
+      if(BLOCK_WHEN_FULL)
+        while(len + dataSizeBytes > maxDataSize)
+          wait();
+      else
+        chunks.remove();
       dataSizeBytes += len;
       chunks.add(c);
     }
@@ -83,6 +90,7 @@ public class MemBuffered extends AbstractWrapper {
       ChunkReceiver dest) throws AdaptorException {
     try {
       String dummyAdaptorID = adaptorID;
+      this.adaptorID = adaptorID;
       this.dest = dest;
       
       long bufSize = manager.getConfiguration().getInt(BUF_SIZE_OPT, DEFAULT_BUF_SIZE);
@@ -95,10 +103,15 @@ public class MemBuffered extends AbstractWrapper {
       }
 
       //Drain buffer into output queue
-      for(Chunk c:myBuffer.chunks)
+      long offsetToStartAt = offset;
+      for(Chunk c:myBuffer.chunks) {
         dest.add(c);
+        long seq = c.getSeqID();
+        if(seq > offsetToStartAt)
+          offsetToStartAt = seq;
+      }
       
-      inner.start(dummyAdaptorID, innerType, offset, this);
+      inner.start(dummyAdaptorID, innerType, offsetToStartAt, this);
     } catch(InterruptedException e) {
      throw new AdaptorException(e);
     }
@@ -108,5 +121,13 @@ public class MemBuffered extends AbstractWrapper {
   public void committed(long l) {
     myBuffer.removeUpTo(l);
   }
+  
+  @Override
+  public long shutdown(AdaptorShutdownPolicy p) throws AdaptorException {
+    if(p != RESTARTING)
+      buffers.remove(adaptorID);    
+    return inner.shutdown(p);
+  }
+
 
 }
