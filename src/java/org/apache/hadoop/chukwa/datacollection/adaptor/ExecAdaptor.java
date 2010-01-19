@@ -135,10 +135,6 @@ public class ExecAdaptor extends AbstractAdaptor {
        throws AdaptorException {
      log.info("Enter Shutdown:" + shutdownPolicy.name()+ " - ObjectId:" + this);
      switch(shutdownPolicy) {
-     case HARD_STOP :
-       timer.cancel();
-       exec.stop();
-       break;
      case GRACEFULLY :
      case WAIT_TILL_FINISHED :
        try {
@@ -146,7 +142,11 @@ public class ExecAdaptor extends AbstractAdaptor {
          exec.waitFor();
        } catch (InterruptedException e) {
       }
-      break;
+      break;   
+      default:
+        timer.cancel();
+        exec.stop();
+        break;
     }
     log.info("Exist Shutdown:" + shutdownPolicy.name()+ " - ObjectId:" + this);
     return sendOffset;
