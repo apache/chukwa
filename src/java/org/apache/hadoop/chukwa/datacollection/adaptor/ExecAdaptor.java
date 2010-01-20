@@ -41,6 +41,8 @@ import java.util.*;
  */
 public class ExecAdaptor extends AbstractAdaptor {
   
+  public static final boolean FULL_PATHS = false;
+  
   static class EmbeddedExec extends ExecPlugin {
 
     String cmd;
@@ -154,10 +156,9 @@ public class ExecAdaptor extends AbstractAdaptor {
 
   @Override
   public void start(long offset) throws AdaptorException {
-
-
+    if(FULL_PATHS && !(new java.io.File(cmd)).exists())
+      throw new AdaptorException("Can't start ExecAdaptor. No command " + cmd);
     this.sendOffset = offset;
-
     this.exec = new EmbeddedExec(cmd);
     TimerTask execTimer = new RunToolTask();
     timer.schedule(execTimer, 0L, period);

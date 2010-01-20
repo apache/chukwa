@@ -307,6 +307,15 @@ public class ChukwaAgent implements AdaptorManager {
    * 
    */
   public String processAddCommand(String cmd) {
+    try {
+      return processAddCommandE(cmd);
+    } catch(AdaptorException e) {
+      return null;
+    }
+  }
+  
+
+  public String processAddCommandE(String cmd) throws AdaptorException {
     Matcher m = addCmdPattern.matcher(cmd);
     if (m.matches()) {
       long offset; // check for obvious errors first
@@ -314,10 +323,9 @@ public class ChukwaAgent implements AdaptorManager {
         offset = Long.parseLong(m.group(5));
       } catch (NumberFormatException e) {
         log.warn("malformed line " + cmd);
-        return null;
+        throw new AdaptorException("bad input syntax");
       }
 
-       
       String adaptorID = m.group(1);
       String adaptorClassName = m.group(2);
       String dataType = m.group(3);
@@ -328,12 +336,12 @@ public class ChukwaAgent implements AdaptorManager {
       Adaptor adaptor = AdaptorFactory.createAdaptor(adaptorClassName);
       if (adaptor == null) {
         log.warn("Error creating adaptor of class " + adaptorClassName);
-        return null;
+        throw new AdaptorException("Can't load class " + adaptorClassName);
       }
       String coreParams = adaptor.parseArgs(dataType,params,this);
       if(coreParams == null) {
-        log.warn("invalid params for adaptor: " + params);
-        return null;
+        log.warn("invalid params for adaptor: " + params);       
+        throw new AdaptorException("invalid params for adaptor: " + params);
       }
       
       if(adaptorID == null) { //user didn't specify, so synthesize
@@ -362,8 +370,11 @@ public class ChukwaAgent implements AdaptorManager {
           return adaptorID;
 
         } catch (Exception e) {
+          Adaptor failed = adaptorsByName.remove(adaptorID);
+          adaptorPositions.remove(failed);
           log.warn("failed to start adaptor", e);
-          // FIXME: don't we need to clean up the adaptor maps here?
+          if(e instanceof AdaptorException)
+            throw (AdaptorException)e;
         }
       }
     } else if (cmd.length() > 0)

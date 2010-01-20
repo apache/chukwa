@@ -49,7 +49,7 @@ public class AgentControlSocketListener extends Thread {
   protected int portno;
   protected ServerSocket s = null;
   volatile boolean closing = false;
-  static final String VERSION = "0.2.0-dev";
+  static final String VERSION = "0.4.0-dev";
   public boolean ALLOW_REMOTE = true;
   public static final String REMOTE_ACCESS_OPT = "chukwaAgent.control.remote";
 
@@ -121,11 +121,15 @@ public class AgentControlSocketListener extends Thread {
       } else if (words[0].equalsIgnoreCase("close")) {
         connection.close();
       } else if (words[0].equalsIgnoreCase("add")) {
-        String newID = agent.processAddCommand(cmd);
-        if (newID != null)
-          out.println("OK add completed; new ID is " + newID);
-        else
-          out.println("failed to start adaptor...check logs for details");
+        try {
+          String newID = agent.processAddCommandE(cmd);
+          if (newID != null)
+            out.println("OK add completed; new ID is " + newID);
+          else
+            out.println("failed to start adaptor...check logs for details");
+        } catch(AdaptorException e) {
+          out.println(e);
+        }
       } else if (words[0].equalsIgnoreCase("shutdown")) {
         if (words.length < 2) {
           out.println("need to specify an adaptor to shut down, by number");

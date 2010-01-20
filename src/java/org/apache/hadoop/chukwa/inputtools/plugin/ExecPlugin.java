@@ -36,14 +36,15 @@ public abstract class ExecPlugin implements IPlugin {
   public final int statusOK = 100;
   public final int statusKO = -100;
 
-  Process process;
+  Process process = null;
 
   public ExecPlugin() {
 
   }
 
   public void stop() {
-    process.destroy();
+    if(process != null)
+      process.destroy();
   }
 
   public int waitFor() throws InterruptedException {
