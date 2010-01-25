@@ -19,6 +19,7 @@
 package org.apache.hadoop.chukwa.extraction.demux;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,8 +35,12 @@ import org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MapProcessorFa
 import org.apache.hadoop.chukwa.extraction.demux.processor.reducer.ReduceProcessorFactory;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.filecache.DistributedCache;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
@@ -145,6 +150,21 @@ public class Demux extends Configured implements Tool {
     return -1;
   }
 
+  public static void addParsers(Configuration conf) {
+    String parserPath = conf.get("chukwa.data.dir")+File.separator+"demux";
+    try {
+      FileSystem fs = FileSystem.get(new Configuration());
+      FileStatus[] fstatus = fs.listStatus(new Path(parserPath));
+      if(fstatus!=null) {
+        for(FileStatus parser : fstatus) {
+          DistributedCache.addFileToClassPath(parser.getPath(), conf);
+        }
+      }
+    } catch (IOException e) {
+      log.error(ExceptionUtil.getStackTrace(e));
+    }
+  }
+  
   public int run(String[] args) throws Exception {
     JobConf conf = new JobConf(new ChukwaConfiguration(), Demux.class);
     
@@ -159,7 +179,8 @@ public class Demux extends Configured implements Tool {
     conf.setOutputValueClass(ChukwaRecord.class);
     conf.setOutputFormat(ChukwaRecordOutputFormat.class);
     conf.setJobPriority(JobPriority.VERY_HIGH);
-
+    addParsers(conf);
+    
     List<String> other_args = new ArrayList<String>();
     for (int i = 0; i < args.length; ++i) {
       try {

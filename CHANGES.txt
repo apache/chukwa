@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-440. Enable addon jar file for Demux from Distributed Cache. (Eric Yang)
+
     CHUKWA-448. Write-ahead buffering for arbitrary adaptors. (asrabkin)
 
     CHUKWA-441. Added real time Hadoop activity monitor. (Eric Yang)

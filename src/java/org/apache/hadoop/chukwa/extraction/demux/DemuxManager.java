@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.extraction.demux;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,8 +26,11 @@ import java.text.SimpleDateFormat;
 
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.chukwa.util.NagiosHelper;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -53,6 +57,7 @@ public class DemuxManager implements CHUKWA_CONSTANT {
   
   protected SimpleDateFormat dayTextFormat = new java.text.SimpleDateFormat("yyyyMMdd");
   protected volatile boolean isRunning = true;
+  private final static String demuxPath = System.getenv("CHUKWA_HOME")+File.separator+"lib"+File.separator+"demux";
 
   final private static PathFilter DATA_SINK_FILTER = new PathFilter() {
     public boolean accept(Path file) {
@@ -314,13 +319,14 @@ public class DemuxManager implements CHUKWA_CONSTANT {
     * @return true id Demux succeed
     */
    protected boolean runDemux(String demuxInputDir, String demuxOutputDir) {
-     String[] demuxParams = new String[4];
-     demuxParams[0] = "-r";
-     demuxParams[1] = "" + demuxReducerCount;
-
-     demuxParams[2] = demuxInputDir;
-     demuxParams[3] = demuxOutputDir;
-
+     String[] demuxParams;
+     int i=0;
+     Demux.addParsers(conf);
+     demuxParams = new String[4];
+     demuxParams[i++] = "-r";
+     demuxParams[i++] = "" + demuxReducerCount;
+     demuxParams[i++] = demuxInputDir;
+     demuxParams[i++] = demuxOutputDir;
      try {
        return ( 0 == ToolRunner.run(this.conf,new Demux(), demuxParams) );
      } catch (Throwable e) {

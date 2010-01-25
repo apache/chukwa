@@ -27,7 +27,7 @@ public class MapProcessorFactory {
 
   private static HashMap<String, MapProcessor> processors = new HashMap<String, MapProcessor>(); // registry
 
-  private MapProcessorFactory() {
+  public MapProcessorFactory() {
   }
 
   public static MapProcessor getProcessor(String parserClass)
