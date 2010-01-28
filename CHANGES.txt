@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-449. Utility to generate sequence file from log file. (Bill Graham via asrabkin)
+
     CHUKWA-440. Enable addon jar file for Demux from Distributed Cache. (Eric Yang)
 
     CHUKWA-448. Write-ahead buffering for arbitrary adaptors. (asrabkin)
