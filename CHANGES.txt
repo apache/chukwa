@@ -56,6 +56,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-451. Shouldn't use ssh to start processes locally. (Bill Graham via asrabkin)
+
     CHUKWA-452. Fix support for using pig on final archives. (Gerrit Jansen van Vuuren via asrabkin)
 
     CHUKWA-443. Updated HDFS metrics logging filename. (Eric Yang)

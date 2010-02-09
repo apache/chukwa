@@ -58,8 +58,12 @@ if [ "$HOSTLIST" = "" ]; then
 fi
 
 for slave in `cat "$HOSTLIST"`; do
- ssh $CHUKWA_SSH_OPTS $slave $"${@// /\\ }" \
-   2>&1 | sed "s/^/$slave: /" &
+ if [ "$slave" != "localhost" -a "$slave" != "127.0.0.1" ]; then
+   ssh $CHUKWA_SSH_OPTS $slave $"${@// /\\ }" \
+      2>&1 | sed "s/^/$slave: /" &
+ else
+   eval $"${@// /\\ }" 2>&1 | sed "s/^/$slave: /" &
+ fi
  if [ "$CHUKWA_SLAVE_SLEEP" != "" ]; then
    sleep $CHUKWA_SLAVE_SLEEP
  fi
