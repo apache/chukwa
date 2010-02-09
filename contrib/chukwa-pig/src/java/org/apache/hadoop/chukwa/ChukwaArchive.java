@@ -32,6 +32,7 @@ import org.apache.pig.builtin.Utf8StorageConverter;
 import org.apache.pig.data.DataType;
 import org.apache.pig.data.DefaultTupleFactory;
 import org.apache.pig.data.Tuple;
+import org.apache.pig.data.DataByteArray;
 import org.apache.pig.data.TupleFactory;
 import org.apache.pig.impl.io.BufferedPositionedInputStream;
 import org.apache.pig.impl.logicalLayer.schema.Schema;
@@ -99,7 +100,9 @@ public class ChukwaArchive extends Utf8StorageConverter implements LoadFunc {
     t.set(2, val.getStreamName());
     t.set(3, val.getSource());
     t.set(4, val.getTags());
-    t.set(5, val.getData());
+    byte[] data = val.getData();
+  
+    t.set(5, (data == null)? new DataByteArray() : new DataByteArray(data));
     
 //    System.out.println("returning " + t);
     return t;
