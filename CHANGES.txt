@@ -28,6 +28,8 @@ Trunk (unreleased changes)
  
    IMPROVEMENTS
 
+    CHUKWA-450. Ability to turn off sort in dumpchunks. (asrabkin)
+
     CHUKWA-359. Report detailed error on adaptor start failure. (asrabkin)
 
     CHUKWA-420. Clean up adaptor stop methods. (asrabkin)

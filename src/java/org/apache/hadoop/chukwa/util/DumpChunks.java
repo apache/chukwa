@@ -51,11 +51,7 @@ public class DumpChunks {
       System.exit(-1);
     }
     
-    for(int i=1; i < args.length; ++i)
-        System.err.println("FileGlob: " + args[i]);
-
     ChukwaConfiguration conf = new ChukwaConfiguration();
-
 
     dump(args, conf, System.out);
   }
@@ -79,9 +75,13 @@ public class DumpChunks {
     
     int filterArg = 0;
     boolean summarize = false;
+    boolean nosort = false;
     if(args[0].equals("-s")) {
       filterArg++;
       summarize = true;
+    } else if(args[0].equals("--nosort")) {
+      filterArg++;
+      nosort = true;
     }
     
     Filter patterns;
@@ -92,7 +92,6 @@ public class DumpChunks {
 
     System.err.println("Patterns:" + patterns);
     ArrayList<Path> filesToSearch = new ArrayList<Path>();
-
 
     FileSystem fs = getFS(conf, args[filterArg + 1]);
     for(int i=filterArg + 1; i < args.length; ++i){
@@ -107,7 +106,9 @@ public class DumpChunks {
     DumpChunks dc;
     if(summarize)
       dc = new DumpAndSummarize();
-    else 
+    else if(nosort)
+      dc = new DumpNoSort(out);
+    else
       dc= new DumpChunks();
     
     try {
@@ -168,7 +169,7 @@ public class DumpChunks {
     }
   }
  
-  protected void updateMatchCatalog(String streamName,  ChunkImpl chunk) {
+  protected void updateMatchCatalog(String streamName,  ChunkImpl chunk) throws IOException {
 
     SortedMap<Long, ChunkImpl> chunksInStream = matchCatalog.get(streamName);
     if(chunksInStream == null ) {
@@ -214,6 +215,23 @@ public class DumpChunks {
         matchCounts.put(streamName, new Integer(1));
         byteCounts.put(streamName, new Long(chunk.getLength()));
       }
+    }
+    
+  }
+  
+  static class DumpNoSort extends DumpChunks {
+    
+    PrintStream out; 
+    public DumpNoSort(PrintStream out) {
+      this.out = out;
+    }
+    //Do some display
+    protected void updateMatchCatalog(String streamName,  ChunkImpl chunk) throws IOException {
+      out.write(chunk.getData());
+    }
+    
+    protected void displayResults(PrintStream out) throws IOException{
+      ; //did this in updateMatchCatalog
     }
     
   }
