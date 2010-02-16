@@ -17,10 +17,14 @@
  */
 package org.apache.hadoop.chukwa.datacollection.adaptor;
 
-import java.util.regex.*;
 import java.io.File;
 import java.io.IOException;
+
 import org.apache.log4j.Logger;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 
 /**
  *  Explore a whole directory hierarchy, looking for files to tail. 
@@ -29,9 +33,10 @@ import org.apache.log4j.Logger;
  *   
  *  Offset param is used to track last finished scan.
  *  
- *  Mandatory first parameter is a directory.  Mandatory second parameter
- *  is the name of an adaptor to start.  
- *  
+ *  Mandatory first parameter is a directory with an optional unix style file
+ *  filter. Mandatory second parameter
+ *  is the name of an adaptor to start.
+ * 
  *  If the specified directory does not exist, the DirTailer will continue
  *  running, and will start tailing if the directory is later created.
  *
@@ -47,8 +52,8 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
   String baseDirName; 
   long scanInterval;
   String adaptorName; //name of adaptors to start
-  
-  static Pattern cmd = Pattern.compile("(.+)\\s+(\\S+)");
+  IOFileFilter fileFilter;
+
   @Override
   public void start(long offset) throws AdaptorException {
     scanInterval = control.getConfiguration().getInt("adaptor.dirscan.intervalMs", 10000);
@@ -86,19 +91,23 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
   private void scanDirHierarchy(File dir) throws IOException {
     if(!dir.exists())
       return;
-    if(!dir.isDirectory() ) {
-      //Don't start tailing if we would have gotten it on the last pass 
+    if(!dir.isDirectory()) {
+      //Don't start tailing if we would have gotten it on the last pass
       if(dir.lastModified() >= lastSweepStartTime) {
-        String newAdaptorID = control.processAddCommand(
-            "add " + adaptorName +" " + type + " " + dir.getCanonicalPath() + " 0");
-        log.info("DirTailingAdaptor " + adaptorID +  "  started new adaptor " + newAdaptorID);
-      } 
-    } else {
-      for(File f: dir.listFiles()) {
-        scanDirHierarchy(f);
+            String newAdaptorID = control.processAddCommand(
+                "add " + adaptorName +" " + type + " " + dir.getCanonicalPath() + " 0");
+            log.info("DirTailingAdaptor " + adaptorID +  "  started new adaptor " + newAdaptorID);
+       }
+      
+      } else {
+        log.info("Scanning directory: " + dir.getName());
+        
+        for(Object f: FileUtils.listFiles(dir, fileFilter, FileFilterUtils.trueFileFilter())) {
+         scanDirHierarchy((File)f);
+        }
       }
-    }
   }
+  
 
   @Override
   public String getCurrentStatus() {
@@ -107,14 +116,23 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
 
   @Override
   public String parseArgs(String status) {
-    Matcher m = cmd.matcher(status);
-    if(!m.matches() ) {
-      log.warn("bad syntax in DirTailingAdaptor args");
-      return null;
+    
+    String[] args = status.split(" ");
+     
+    if(args.length == 2){
+     baseDir = new File(args[0]);
+     fileFilter = FileFilterUtils.trueFileFilter();
+     adaptorName = args[1];
+    }else if(args.length == 3){
+     baseDir = new File(args[0]);
+     fileFilter = new WildcardFileFilter(args[1]);
+     adaptorName = args[2]; 
+    }else{
+     log.warn("bad syntax in DirTailingAdaptor args");
+     return null;
     }
-    baseDir = new File(m.group(1));
-    adaptorName = m.group(2);
-    return baseDir + " " + adaptorName; //both params mandatory
+    
+    return (args.length == 2)? baseDir + " " + adaptorName : baseDir + " " + fileFilter + " " + adaptorName;  //both params mandatory
   }
 
   @Override
@@ -125,3 +143,4 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
   }
 
 }
+

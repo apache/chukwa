@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-454. DirTailingAdaptor can filter files. (Gerrit Jansen van Vuuren via asrabkin)
+
     CHUKWA-449. Utility to generate sequence file from log file. (Bill Graham via asrabkin)
 
     CHUKWA-440. Enable addon jar file for Demux from Distributed Cache. (Eric Yang)
