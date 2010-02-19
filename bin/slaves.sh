@@ -57,7 +57,7 @@ if [ "$HOSTLIST" = "" ]; then
   fi
 fi
 
-for slave in `cat "$HOSTLIST"`; do
+for slave in `cat "$HOSTLIST" | sed -e 's/^http:\/\///;s/:[0-9]*.*//'`; do
  if [ "$slave" != "localhost" -a "$slave" != "127.0.0.1" ]; then
    ssh $CHUKWA_SSH_OPTS $slave $"${@// /\\ }" \
       2>&1 | sed "s/^/$slave: /" &
