@@ -46,7 +46,12 @@ public class TestCreateRecordFile extends TestCase {
     String outputDir = System.getProperty("test.build.data", "/tmp");
 
     //input configs
-    File inputFile = new File("test/samples/ClientTrace.log");
+    String datadir = System.getenv("CHUKWA_DATA_DIR");
+    if(datadir == null)
+      datadir = "test/samples";
+    else 
+      datadir = datadir + File.separator + "log";
+    File inputFile = new File( datadir+ File.separator + "ClientTrace.log");
     Path outputFile = new Path(outputDir + "/" + this.getClass().getName() + "/ClientTrace.evt");
     String clusterName = "testClusterName";
     String dataType = "testDataType";
