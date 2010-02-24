@@ -60,6 +60,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-456. Fixed failing unit test. (Eric Yang)
+
     CHUKWA-455. Updated slaves.sh to detect collectors list. (Guillermo Pérez)
 
     CHUKWA-453. Specify bash instead of sh in script headers. (Gerrit Jansen van Vuuren via asrabkin)
