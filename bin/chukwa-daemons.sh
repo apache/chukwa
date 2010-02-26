@@ -31,8 +31,4 @@ bin=`cd "$bin"; pwd`
 
 . $bin/chukwa-config.sh
 
-if [ -n ${WATCHDOG} ]; then
-  exec "$bin/slaves.sh" --config $CHUKWA_CONF_DIR cd "$CHUKWA_HOME" \; "$bin/chukwa-daemon.sh" --config $CHUKWA_CONF_DIR --watchdog "$@"
-else
-  exec "$bin/slaves.sh" --config $CHUKWA_CONF_DIR cd "$CHUKWA_HOME" \; "$bin/chukwa-daemon.sh" --config $CHUKWA_CONF_DIR "$@"
-fi
+exec "$bin/slaves.sh" --config $CHUKWA_CONF_DIR cd "$CHUKWA_HOME" \; "$bin/chukwa-daemon.sh" --config $CHUKWA_CONF_DIR "$@"

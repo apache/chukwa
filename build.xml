@@ -20,7 +20,7 @@
 <project name="chukwa" default="main" xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	<property name="name" value="chukwa" />
-	<property name="chukwaVersion" value="0.3.0" />
+	<property name="chukwaVersion" value="0.4.0" />
 	<property name="chukwaRelease" value="dev" />
 	<property name="final.name" value="${name}-${chukwaVersion}" />
 	<property name="contrib.dir" value="${basedir}/contrib"/>
@@ -510,7 +510,7 @@
                 </copy>
                 <copy file="${basedir}/conf/log4j.properties" tofile="${test.build.dir}/conf/log4j.properties"></copy>
                 <copy file="${build.dir}/hicc.war" tofile="${test.build.classes}/webapps/hicc.war"></copy>
-                <copy file="${basedir}/conf/auth.conf" tofile="${test.build.dir}/var/auth.conf"></copy>
+                <copy file="${basedir}/conf/auth.conf" tofile="${test.build.dir}/conf/auth.conf"></copy>
 		<junit showoutput="${test.output}" fork="yes" printsummary="${test.printsummary}" forkmode="${test.junit.fork.mode}" maxmemory="${test.junit.maxmemory}" dir="${test.build.dir}/classes/" timeout="${test.timeout}" errorProperty="tests.failed" failureProperty="tests.failed">
 			<classpath refid="testClasspath" />
 			<env key="CHUKWA_CONF_DIR" value="${test.build.dir}/conf" />

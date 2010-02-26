@@ -1,6 +1,0 @@
-#!/bin/sh
-CHUKWA_CONF_DIR=/usr/local/chukwa/conf
-CHUKWA_HOME_DIR=/usr/local/chukwa
-CHUKWA_USER=chukwa
-exec setuidgid ${CHUKWA_USER} ${CHUKWA_HOME_DIR}/bin/jettyCollector.sh --config $CHUKWA_CONF_DIR &>/dev/null
-

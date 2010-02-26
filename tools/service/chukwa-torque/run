@@ -1,6 +1,0 @@
-#!/bin/sh
-CHUKWA_CONF_DIR=/usr/local/chukwa/conf
-CHUKWA_HOME=/usr/local/chukwa
-CHUKWA_USER=chukwa
-exec setuidgid ${CHUKWA_USER} ${CHUKWA_HOME}/bin/exec-data-loader.sh --config $CHUKWA_CONF_DIR torque &>/dev/null
-

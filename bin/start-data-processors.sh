@@ -20,24 +20,8 @@ bin=`cd "$bin"; pwd`
 java=$JAVA_HOME/bin/java
 
 . "$bin"/chukwa-config.sh
-if [ ! -d ${CHUKWA_HOME}/opt/apache-tomcat-6.0.16 ]; then
-  if [ -f ${CHUKWA_HOME}/opt/apache-tomcat-6.0.16.tar.gz ]; then
-    tar fxz ${CHUKWA_HOME}/opt/apache-tomcat-6.0.16.tar.gz -C ${CHUKWA_HOME}/opt
-  fi
-fi
-
-if [ ! -f ${CHUKWA_HOME}/opt/apache-tomcat-6.0.16/webapps/hicc-${CHUKWA_VERSION}.war ]; then
-  if [ -f ${CHUKWA_HOME}/hicc-${CHUKWA_VERSION}.war ]; then
-    cp ${CHUKWA_HOME}/hicc-${CHUKWA_VERSION}.war ${CHUKWA_HOME}/opt/apache-tomcat-6.0.16/webapps
-  fi
-fi 
 
 # start data processors
-#"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR --watchdog start processSinkFiles.sh watchdog
-"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR --watchdog start archive.sh watchdog
-"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR --watchdog start demux.sh watchdog
-"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR --watchdog start postProcess.sh watchdog
-
-
-# start database admin script
-"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR start dbAdmin.sh
+"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR start chukwa archive
+"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR start chukwa demux
+"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR start chukwa dataloader

@@ -66,16 +66,6 @@ then
     fi
 fi
 
-#check to see if the conf dir is given as an optional argument
-if [ $# -gt 1 ]
-then
-    if [ "--watchdog" = "$1" ]
-          then
-              shift
-              WATCHDOG="true"
-    fi
-fi
-
 if [ -z ${CHUKWA_LOG_DIR} ]; then
     export CHUKWA_LOG_DIR="$CHUKWA_HOME/logs"
 fi

@@ -21,33 +21,6 @@ java=$JAVA_HOME/bin/java
 
 . "$bin"/chukwa-config.sh
 
-# stop processSinkFiles.sh
-pidFile=$CHUKWA_PID_DIR/ProcessSinkFiles.pid
-if [ -f $pidFile ]; then  
-   echo -n "Shutting down Data Processors.."
-   DP_PID=`head ${pidFile}`
-   kill -TERM ${DP_PID} > /dev/null 2>&1
-   for i in 1 2 5; do
-       test_pid=`ps ax | grep ${DP_PID} | grep -v grep | grep processSinkFiles.sh | wc -l`
-       if [ $test_pid -ge 1 ]; then
-           sleep $i
-           kill -TERM ${DP_PID} > /dev/null 2>&1
-       else
-           break
-       fi
-   done
-   test_pid=`ps ax | grep ${DP_PID} | grep -v grep | grep processSinkFiles.sh | wc -l`
-   if [ $test_pid -ge 1 ]; then
-       kill -9 ${DBADMIN_PID} > /dev/null 2>&1
-   fi
-   rm -f ${pidFile}
-   rm -f $CHUKWA_PID_DIR/chukwa-$CHUKWA_IDENT_STRING-processSinkFiles.sh.pid
-   echo "done"
-else
-  echo " no $pidFile"
-fi
-
-
 # stop demux.sh
 pidFile=$CHUKWA_PID_DIR/DemuxManager.pid
 if [ -f $pidFile ]; then

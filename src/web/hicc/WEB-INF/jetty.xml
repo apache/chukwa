@@ -86,7 +86,7 @@
     <Item>
     <New class="org.mortbay.jetty.security.HashUserRealm">
     <Set name="name">Auth</Set>
-    <Set name="config"><SystemProperty name="CHUKWA_DATA_DIR" default="."/>/auth.conf</Set>
+    <Set name="config"><SystemProperty name="CHUKWA_CONF_DIR" default="."/>/auth.conf</Set>
     <Set name="refreshInterval">0</Set>
     </New>
     </Item>

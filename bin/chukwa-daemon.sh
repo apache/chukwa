@@ -96,41 +96,6 @@ fi
 case $startStop in
 
   (start)
-    MAIL=`cat ${CHUKWA_CONF_DIR}/alert`
-
-    RANDOM=`date '+%s'`
-    PARTROL_HOUR=$[($RANDOM % 24)]
-    if [ ${PARTROL_HOUR} -gt 12 ]; then
-        PARTROL_HOUR2=$[${PARTROL_HOUR}-12]
-    else 
-        PARTROL_HOUR2=$[${PARTROL_HOUR}+12]
-    fi
-    if [ -n "${WATCHDOG}" ]; then
-        mkdir -p ${CHUKWA_HOME}/var/tmp >&/dev/null
-        crontab -l > ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE}
-        crontest=$?
-
-        if [ "X${crontest}" != "X0" ]; then
-          echo "MAILTO=${MAIL}" > ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE}
-        else
-          grep -v "${CHUKWA_HOME}/bin/watchdog.sh" ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE} | grep -v MAILTO | grep -v "cat ${CHUKWA_HOME}/var/run/watchdog.out" | grep -v ${CHUKWA_HOME}/tools/expire.sh > ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE}.2
-          echo "MAILTO=${MAIL}" > ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE}
-          cat ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE}.2 >> ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE}
-          rm -f ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE}.2
-        fi
-        cat >> ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE} << CRON
-*/5 * * * * ${CHUKWA_HOME}/bin/watchdog.sh --config ${CHUKWA_CONF_DIR}  > ${CHUKWA_HOME}/var/run/watchdog.out
-1 ${PARTROL_HOUR},${PARTROL_HOUR2} * * * /bin/bash -c "cat ${CHUKWA_HOME}/var/run/watchdog.out; cat /dev/null > ${CHUKWA_HOME}/var/run/watchdog.out"
-15 3 * * * ${CHUKWA_HOME}/tools/expire.sh 10 ${CHUKWA_LOG_DIR} nowait
-CRON
-
-        # save crontab
-        echo -n "Registering watchdog.."
-        mkdir -p ${CHUKWA_HOME}/var/tmp >&/dev/null
-        crontab ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE} > /dev/null 2>&1
-        rm -f ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE}
-        echo "done"
-    fi
 
     mkdir -p "$CHUKWA_PID_DIR"
 
@@ -149,22 +114,15 @@ CRON
     chukwa_rotate_log $log
     echo starting $command, logging to $log
     cd "$CHUKWA_HOME"
-    nohup nice -n $CHUKWA_NICENESS "$CHUKWA_HOME"/bin/chukwa -config $command "$@" > "$log" 2>&1 < /dev/null &
+    nohup nice -n $CHUKWA_NICENESS "$CHUKWA_HOME"/bin/chukwa --config $CHUKWA_CONF_DIR $command "$@" > "$log" 2>&1 < /dev/null &
     echo $! > $pid
     sleep 1; head "$log"
     ;;
           
   (stop)
 
-    if [ "${WATCHDOG}" != "" ]; then
-        # remove watchdog
-        crontab -l | grep -v ${CHUKWA_HOME}/bin/watchdog.sh | grep -v ${CHUKWA_HOME}/var/run/watchdog.out | grep -v ${CHUKWA_HOME}/tools/expire.sh > ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE}
-        crontab ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE}
-        rm -f ${CHUKWA_HOME}/var/tmp/cron.${CURRENT_DATE}
-    fi
-
     if [ -f $CHUKWA_HOME/bin/$command ]; then
-      $CHUKWA_HOME/bin/$command stop
+      $CHUKWA_HOME/bin/chukwa --config $CHUKWA_CONF_DIR $command stop
       rm -f $pid
     else
       if [ -f $pid ]; then

@@ -30,6 +30,8 @@ Trunk (unreleased changes)
  
    IMPROVEMENTS
 
+    CHUKWA-446. Refactor start/stop scripts. (Eric Yang)
+
     CHUKWA-450. Ability to turn off sort in dumpchunks. (asrabkin)
 
     CHUKWA-359. Report detailed error on adaptor start failure. (asrabkin)

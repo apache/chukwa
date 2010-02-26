@@ -14,10 +14,6 @@ agent.sh - start the chukwa agent on the current host
 
 start-probes.sh - runs, in this order, systemDataLoader.sh, torqueDataLoader.sh, nodeActivityDataLoader.sh
 
-systemDataLoader.sh - every 60 seconds run: sar, iostat, top, top, df, netstat. //TODO: figure out where these guys send their output
-torqueDataLoader.sh - //TODO: FILL THIS IN!
-nodeActivityDataLoader.sh - //TODO: FILL THIS IN!
-
 slaves.sh <command command_args ...> - run arbitrary commands on all hosts in conf/slaves
 
 jettycollector.sh - start a jetty based version of the Chukwa collector

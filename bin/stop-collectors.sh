@@ -23,4 +23,4 @@ bin=`cd "$bin"; pwd`
 
 . "$bin"/chukwa-config.sh
 
-"$bin"/chukwa-daemons.sh --config $CHUKWA_CONF_DIR --hosts collectors --watchdog stop jettyCollector.sh
+"$bin"/chukwa-daemons.sh --config $CHUKWA_CONF_DIR --hosts collectors stop "$bin"/chukwa stop collector

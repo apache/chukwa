@@ -29,8 +29,5 @@ bin=`cd "$bin"; pwd`
 # start agents
 "$bin"/start-agents.sh --config $CHUKWA_CONF_DIR
 
-# start probes
-"$bin"/start-probes.sh --config $CHUKWA_CONF_DIR
-
 # start data processors
 "$bin"/start-data-processors.sh --config $CHUKWA_CONF_DIR

@@ -28,4 +28,4 @@ bin=`cd "$bin"; pwd`
 . "$bin"/chukwa-config.sh
 
 # start chukwa agents
-"$bin"/chukwa-daemons.sh --config $CHUKWA_CONF_DIR --hosts agents start agent.sh
+"$bin"/chukwa-daemons.sh --config $CHUKWA_CONF_DIR --hosts agents start chukwa agent
