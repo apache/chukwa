@@ -21,10 +21,10 @@ java=$JAVA_HOME/bin/java
 
 . "$bin"/chukwa-config.sh
 
-# stop demux.sh
+# stop demux
 pidFile=$CHUKWA_PID_DIR/DemuxManager.pid
 if [ -f $pidFile ]; then
-   echo -n "Shutting down demux.sh.."
+   echo -n "Shutting down demux.."
    DEMUX_PID=`head ${pidFile}`
    kill -TERM ${DEMUX_PID} > /dev/null 2>&1
    for i in 1 2 5; do
@@ -48,10 +48,10 @@ else
 fi
 
 
-# stop postProcess.sh
+# stop postProcess
 pidFile=$CHUKWA_PID_DIR/PostProcessorManager.pid
 if [ -f $pidFile ]; then
-   echo -n "Shutting down postProcess.sh ..."
+   echo -n "Shutting down dp ..."
    POST_PROCESS_PID=`head ${pidFile}`
    kill -TERM ${POST_PROCESS_PID} > /dev/null 2>&1
    for i in 1 2 5; do
@@ -74,10 +74,10 @@ else
   echo " no $pidFile"
 fi
 
-# stop archive.sh
+# stop archive
 pidFile=$CHUKWA_PID_DIR/ArchiveManager.pid
 if [ -f $pidFile ]; then
-   echo -n "Shutting down archive.sh ..."
+   echo -n "Shutting down archive ..."
    POST_PROCESS_PID=`head ${pidFile}`
    kill -TERM ${POST_PROCESS_PID} > /dev/null 2>&1
    for i in 1 2 5; do
@@ -95,32 +95,6 @@ if [ -f $pidFile ]; then
    fi
    rm -f ${pidFile}
    rm -f $CHUKWA_PID_DIR/chukwa-$CHUKWA_IDENT_STRING-postProcess.sh.pid
-   echo "done"
-else
-  echo " no $pidFile"
-fi
-
-# stop dbAdmin.sh
-pidFile=$CHUKWA_PID_DIR/dbAdmin.pid
-if [ -f $pidFile ]; then  
-   echo -n "Shutting down Database Admin.."
-   DBADMIN_PID=`head ${pidFile}`
-   kill -TERM ${DBADMIN_PID} > /dev/null 2>&1
-   for i in 1 2 5; do
-       test_pid=`ps ax | grep ${DBADMIN_PID} | grep -v grep | grep dbAdmin.sh | wc -l`
-       if [ $test_pid -ge 1 ]; then
-           sleep $i
-           kill -TERM ${DBADMIN_PID} > /dev/null 2>&1
-       else
-           break
-       fi
-   done
-   test_pid=`ps ax | grep ${DBADMIN_PID} | grep -v grep | grep dbAdmin.sh | wc -l`
-   if [ $test_pid -ge 1 ]; then
-       kill -9 ${DBADMIN_PID} > /dev/null 2>&1
-   fi
-   rm -f ${pidFile}
-   rm -f $CHUKWA_PID_DIR/chukwa-$CHUKWA_IDENT_STRING-dbAdmin.sh.pid
    echo "done"
 else
   echo " no $pidFile"

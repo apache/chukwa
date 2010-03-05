@@ -121,22 +121,7 @@ case $startStop in
           
   (stop)
 
-    if [ -f $CHUKWA_HOME/bin/$command ]; then
-      $CHUKWA_HOME/bin/chukwa --config $CHUKWA_CONF_DIR $command stop
-      rm -f $pid
-    else
-      if [ -f $pid ]; then
-        if kill -0 `cat $pid` > /dev/null 2>&1; then
-          echo stopping $command
-          kill `cat $pid`
-          rm -f $pid
-        else
-          echo no $command to stop
-        fi
-      else
-        echo no $command to stop
-      fi
-    fi
+    $CHUKWA_HOME/bin/chukwa --config $CHUKWA_CONF_DIR $command stop
     ;;
 
   (*)

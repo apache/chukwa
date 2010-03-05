@@ -22,6 +22,6 @@ java=$JAVA_HOME/bin/java
 . "$bin"/chukwa-config.sh
 
 # start data processors
-"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR start chukwa archive
-"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR start chukwa demux
-"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR start chukwa dataloader
+"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR start archive
+"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR start demux
+"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR start dp

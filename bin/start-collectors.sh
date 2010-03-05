@@ -28,4 +28,4 @@ bin=`cd "$bin"; pwd`
 . "$bin"/chukwa-config.sh
 
 # start jetty collectors
-"$bin"/chukwa-daemons.sh --config $CHUKWA_CONF_DIR --hosts collectors start "$bin"/chukwa collector
+"$bin"/chukwa-daemons.sh --config $CHUKWA_CONF_DIR --hosts collectors start collector
