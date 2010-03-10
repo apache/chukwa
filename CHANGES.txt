@@ -62,6 +62,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-463. Fix pattern match for tags. (Guillermo Perez via asrabkin)
+    
     CHUKWA-464. Fix spelling of processClusterDirectory. (Guillermo Perez via asrabkin)
 
     CHUKWA-456. Fixed failing unit test. (Eric Yang)
