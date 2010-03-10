@@ -44,9 +44,9 @@ public class MoveToRepository {
   static SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyyMMdd");
   static Calendar calendar = Calendar.getInstance();
 
-  static void processClutserDirectory(Path srcDir, String destDir)
+  static void processClusterDirectory(Path srcDir, String destDir)
       throws Exception {
-    log.info("processClutserDirectory (" + srcDir.getName() + "," + destDir
+    log.info("processClusterDirectory (" + srcDir.getName() + "," + destDir
         + ")");
     FileStatus fstat = fs.getFileStatus(srcDir);
 
@@ -67,7 +67,7 @@ public class MoveToRepository {
         String dirName = datasourceDirectory.getPath().getName();
         Path destPath = new Path(destDir + "/" + dirName);
         log.info("dest directory path: " + destPath);
-        log.info("processClutserDirectory processing Datasource: (" + dirName
+        log.info("processClusterDirectory processing Datasource: (" + dirName
             + ")");
         processDatasourceDirectory(srcDir.getName(), datasourceDirectory
             .getPath(), destDir + "/" + dirName);
@@ -247,7 +247,7 @@ public class MoveToRepository {
         log
             .info("main procesing Cluster (" + cluster.getPath().getName()
                 + ")");
-        processClutserDirectory(cluster.getPath(), destDir + "/"
+        processClusterDirectory(cluster.getPath(), destDir + "/"
             + cluster.getPath().getName());
 
         // Delete the demux's cluster dir
