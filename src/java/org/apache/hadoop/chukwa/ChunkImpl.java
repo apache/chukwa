@@ -187,7 +187,7 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
     Pattern tagPattern = Pattern.compile("\\b"+tagName+"=\"(.*?)\"\\b");
     if (tags != null) {
       Matcher matcher = tagPattern.matcher(tags);
-      if (matcher.matches()) {
+      if (matcher.find()) {
         return matcher.group(1);
       }
     }
