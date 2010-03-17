@@ -17,9 +17,10 @@
  */
 package org.apache.hadoop.chukwa.rest.resource;
 
+import org.json.JSONObject;
+
 import org.apache.hadoop.chukwa.rest.bean.ReturnCodeBean;
 import org.apache.hadoop.chukwa.rest.bean.UserBean;
-import org.apache.hadoop.chukwa.rest.bean.ViewBean;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.json.JSONArray;
 

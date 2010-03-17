@@ -66,7 +66,7 @@ public class UserStore {
         JSONArray ja = new JSONArray();
         profile.setViews(ja);
         JSONObject json = new JSONObject();
-        profile.setProperties(json);
+        profile.setProperties(json.toString());
       }
     } catch (IOException ex) {
       log.error(ExceptionUtil.getStackTrace(ex));

@@ -31,7 +31,11 @@ public class UserBean {
     try {
       id = json.getString("id");
       views = json.getJSONArray("views");
-      properties = json.getJSONObject("properties");
+      if(json.has("properties")) {
+        properties = json.getJSONObject("properties");
+      } else {
+        properties = new JSONObject();
+      }
     } catch (Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
       throw new ParseException("Error parsing user object.",0);
@@ -71,10 +75,6 @@ public class UserBean {
 
   public void setViews(JSONArray ja) {
     this.views=ja;
-  }
-  
-  public void setProperties(JSONObject properties) {
-    this.properties = properties;
   }
 
   public void setProperty(String key, String value) throws ParseException {
