@@ -179,7 +179,7 @@ public class LWFTAdaptor extends AbstractAdaptor {
     // So log.warn, and drop current buffer so we can keep moving
     // instead of being stopped at that point for ever
     if (bytesUsed == 0 && bufferRead == MAX_READ_SIZE) {
-      log.warn("bufferRead == MAX_READ_SIZE AND bytesUsed == 0, droping current buffer: startOffset="
+      log.warn("bufferRead == MAX_READ_SIZE AND bytesUsed == 0, dropping current buffer: startOffset="
               + curOffset
               + ", MAX_READ_SIZE="
               + MAX_READ_SIZE
