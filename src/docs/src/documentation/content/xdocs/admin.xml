@@ -240,7 +240,7 @@ It <strong>must not</strong> be a shared directory; use a local, not NFS-mount, 
 
 <section>
 <title>Starting, stopping, and monitoring</title>
-<p>To run an agent process on a single node, use <code>bin/agent.sh</code>.
+<p>To run an agent process on a single node, use <code>bin/chukwa agent</code>.
 </p>
 
 <p>
@@ -303,7 +303,7 @@ and in the collector configuration file itself.
 
 <section>
 <title>Starting, stopping, and monitoring</title>
-<p>To run a collector process on a single node, use <code>bin/jettyCollector.sh</code>.
+<p>To run a collector process on a single node, use <code>bin/chukwa collector</code>.
 </p>
 
 <p>

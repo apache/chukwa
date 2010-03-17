@@ -47,7 +47,7 @@
   	the default port number.
   	</p>
   	 	<source>
-  	  bin/jettyCollector.sh writer=pretend portno=8081
+  	  bin/chukwa collector writer=pretend portno=8081
   	</source>
   	</section>
   	
@@ -109,7 +109,7 @@
 	  	<code>datatype</code> <code>stream name</code> <code>offset</code>, separated by spaces.
 	  	</p>
 	  	<p>
-	  	The filter will be inactivated when the socket is closed.
+	  	The filter will be de-activated when the socket is closed.
 	  	</p>
 
 	  	<source>

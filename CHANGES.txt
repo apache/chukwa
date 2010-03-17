@@ -30,6 +30,8 @@ Trunk (unreleased changes)
  
    IMPROVEMENTS
 
+    CHUKWA-458. Documentation fixes for 0.4 (asrabkin)
+
     CHUKWA-446. Refactor start/stop scripts. (Eric Yang)
 
     CHUKWA-450. Ability to turn off sort in dumpchunks. (asrabkin)

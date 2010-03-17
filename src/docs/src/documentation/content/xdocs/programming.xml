@@ -47,7 +47,7 @@ Chukwa gives you several ways of inspecting or processing collected data.
 <p>
 It very often happens that you want to retrieve one or more files that have been
 collected with Chukwa. If the total volume of data to be recovered is not too
-great, you can use <code>dump.sh</code>, a command-line tool that does the job.
+great, you can use <code>bin/chukwa dumpArchive</code>, a command-line tool that does the job.
 The <code>dump</code> tool does an in-memory sort of the data, so you'll be 
 constrained by the Java heap size (typically a few hundred MB).
 </p>
@@ -65,11 +65,11 @@ separated by a row of dashes.
 matches the glob pattern.  Note the use of single quotes to pass glob patterns
 through to the application, preventing the shell from expanding them.</p>
 <source>
-$CHUKWA_HOME/bin/dump.sh 'datatype=.*' 'hdfs://host:9000/chukwa/archive/*.arc'
+$CHUKWA_HOME/bin/chukwa dumpArchive 'datatype=.*' 'hdfs://host:9000/chukwa/archive/*.arc'
 </source>
 
 <p>
-The patterns used by <code>dump.sh</code> are based on normal regular 
+The patterns used by <code>dump</code> are based on normal regular 
 expressions. They are of the form <code>field1=regex&#38;field2=regex</code>.
 That is, they are a sequence of rules, separated by ampersand signs. Each rule
 is of the form <code>metadatafield=regex</code>, where 
@@ -107,7 +107,7 @@ You can invoke the tool by running <code>$CHUKWA_HOME/bin/dumpArchive.sh</code>.
 To specify summarize mode, pass <code>--summarize</code> as the first argument.
 </p>
 <source>
-bin/dumpArchive.sh --summarize 'hdfs://host:9000/chukwa/logs/*.done'
+bin/chukwa dumpArchive --summarize 'hdfs://host:9000/chukwa/logs/*.done'
 </source>
 </section>
 
