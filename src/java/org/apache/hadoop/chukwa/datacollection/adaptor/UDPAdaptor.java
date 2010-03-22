@@ -86,7 +86,7 @@ public class UDPAdaptor extends AbstractAdaptor {
     try {
       running = false;
       ds.close();
-      if(shutdownPolicy == AdaptorShutdownPolicy.GRACEFULLY)
+//      if(shutdownPolicy == AdaptorShutdownPolicy.GRACEFULLY)
         lt.join();
     } catch(InterruptedException e) {}
     return bytesReceived;

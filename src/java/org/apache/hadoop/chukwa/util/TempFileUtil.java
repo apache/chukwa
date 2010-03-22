@@ -50,21 +50,22 @@ public class TempFileUtil {
   static class RandSeqFileWriter {
     java.util.Random r = new java.util.Random();
     long lastSeqID = 0;
-     public ChunkImpl getARandomChunk() {
-       int ms = r.nextInt(1000);
-       String line = "2008-05-29 10:42:22," + ms
-           + " INFO org.apache.hadoop.dfs.DataNode: Some text goes here"
-           + r.nextInt() + "\n";
-   
-       ChunkImpl c = new ChunkImpl("HadoopLogProcessor", "test",
-           line.length()  + lastSeqID, line.getBytes(), null);
-       lastSeqID += line.length();
-       c.addTag("cluster=\"foocluster\"");
-       return c;
-     }
-
+    
+    public ChunkImpl getARandomChunk() {
+      int ms = r.nextInt(1000);
+      String line = "2008-05-29 10:42:22," + ms
+          + " INFO org.apache.hadoop.dfs.DataNode: Some text goes here"
+          + r.nextInt() + "\n";
+       
+      ChunkImpl c = new ChunkImpl("HadoopLogProcessor", "test",
+      line.length()  + lastSeqID, line.getBytes(), null);
+      lastSeqID += line.length();
+      c.addTag("cluster=\"foocluster\"");
+      return c;
+    }
   }
-   public static void writeASinkFile(Configuration conf, FileSystem fileSys, Path dest,
+  
+  public static void writeASinkFile(Configuration conf, FileSystem fileSys, Path dest,
        int chunks) throws IOException {
      FSDataOutputStream out = fileSys.create(dest);
 

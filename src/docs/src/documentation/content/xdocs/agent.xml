@@ -160,7 +160,7 @@ The same as the base FileTailingAdaptor, except that chunks are guaranteed to en
   it is possible to exceed your system's limit on open files.
   A file pattern can be specified as an optional second parameter.
 
-<source>add DirTailingAdaptor logs /var/log/ [pattern] filetailer.CharFileTailingAdaptorUTF8 0</source>
+<source>add DirTailingAdaptor logs /var/log/ *.log filetailer.CharFileTailingAdaptorUTF8 0</source>
 
 </li>
 <li><strong>ExecAdaptor</strong> Takes a frequency (in milliseconds) as optional 

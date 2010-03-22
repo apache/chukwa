@@ -88,6 +88,7 @@ public class TestBufferingWrappers extends TestCase {
       assertEquals(c.getSeqID(), STR.length());
       
       agent.stopAdaptor(name, AdaptorShutdownPolicy.RESTARTING);
+      Thread.sleep(500); //for socket to deregister
       name =agent.processAddCommand("add "+ADAPTORID + " = "+adaptor+" UDPAdaptor raw "+PORTNO + " 0");
       assertEquals(name, ADAPTORID);
     }

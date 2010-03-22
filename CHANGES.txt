@@ -64,6 +64,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-466. Fix failing tests. (asrabkin)
+
     CHUKWA-457. Fix TestUserResource. (Eric Yang via asrabkin)
 
     CHUKWA-463. Fix pattern match for tags. (Guillermo Perez via asrabkin)
