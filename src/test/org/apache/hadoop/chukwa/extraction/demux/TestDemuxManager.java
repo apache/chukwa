@@ -40,7 +40,7 @@ public class TestDemuxManager extends TestCase {
     String tempDirectory = System.getProperty("test.build.data", "/tmp");
     String chukwaRootDir = tempDirectory + "/demuxManagerTest_" + System.currentTimeMillis() +"/";
     
-    cc.set(CHUKWA_CONSTANT.WRITER_HDFS_FILESYSTEM_FIELD, "file:///");
+    cc.set(CHUKWA_CONSTANT.HDFS_DEFAULT_NAME_FIELD, "file:///");
     cc.set(CHUKWA_CONSTANT.CHUKWA_ROOT_DIR_FIELD, chukwaRootDir );
     cc.set(CHUKWA_CONSTANT.CHUKWA_ARCHIVE_DIR_FIELD, chukwaRootDir +"/archives/" );
     cc.set(CHUKWA_CONSTANT.CHUKWA_POST_PROCESS_DIR_FIELD, chukwaRootDir +"/postProcess" );
@@ -92,7 +92,7 @@ public class TestDemuxManager extends TestCase {
     String tempDirectory = System.getProperty("test.build.data", "/tmp");
     String chukwaRootDir = tempDirectory + "/demuxManagerTest_" + System.currentTimeMillis() +"/";
     
-    cc.set(CHUKWA_CONSTANT.WRITER_HDFS_FILESYSTEM_FIELD, "file:///");
+    cc.set(CHUKWA_CONSTANT.HDFS_DEFAULT_NAME_FIELD, "file:///");
     cc.set(CHUKWA_CONSTANT.CHUKWA_ROOT_DIR_FIELD, chukwaRootDir );
     cc.set(CHUKWA_CONSTANT.CHUKWA_ARCHIVE_DIR_FIELD, chukwaRootDir +"/archives/" );
     cc.set(CHUKWA_CONSTANT.CHUKWA_POST_PROCESS_DIR_FIELD, chukwaRootDir +"/postProcess" );
@@ -142,7 +142,7 @@ public class TestDemuxManager extends TestCase {
     String tempDirectory = System.getProperty("test.build.data", "/tmp");
     String chukwaRootDir = tempDirectory + "/demuxManagerTest_" + System.currentTimeMillis() +"/";
     
-    cc.set(CHUKWA_CONSTANT.WRITER_HDFS_FILESYSTEM_FIELD, "file:///");
+    cc.set(CHUKWA_CONSTANT.HDFS_DEFAULT_NAME_FIELD, "file:///");
     cc.set(CHUKWA_CONSTANT.CHUKWA_ROOT_DIR_FIELD, chukwaRootDir );
     cc.set(CHUKWA_CONSTANT.CHUKWA_ARCHIVE_DIR_FIELD, chukwaRootDir +"/archives/" );
     cc.set(CHUKWA_CONSTANT.CHUKWA_POST_PROCESS_DIR_FIELD, chukwaRootDir +"/postProcess" );
@@ -208,7 +208,7 @@ public class TestDemuxManager extends TestCase {
     String tempDirectory = System.getProperty("test.build.data", "/tmp");
     String chukwaRootDir = tempDirectory + "/demuxManagerTest_" + System.currentTimeMillis() +"/";
     
-    cc.set(CHUKWA_CONSTANT.WRITER_HDFS_FILESYSTEM_FIELD, "file:///");
+    cc.set(CHUKWA_CONSTANT.HDFS_DEFAULT_NAME_FIELD, "file:///");
     cc.set(CHUKWA_CONSTANT.CHUKWA_ROOT_DIR_FIELD, chukwaRootDir );
     cc.set(CHUKWA_CONSTANT.CHUKWA_ARCHIVE_DIR_FIELD, chukwaRootDir +"/archives/" );
     cc.set(CHUKWA_CONSTANT.CHUKWA_POST_PROCESS_DIR_FIELD, chukwaRootDir +"/postProcess" );
@@ -275,7 +275,7 @@ public class TestDemuxManager extends TestCase {
     String tempDirectory = System.getProperty("test.build.data", "/tmp");
     String chukwaRootDir = tempDirectory + "/demuxManagerTest_" + System.currentTimeMillis() +"/";
     
-    cc.set(CHUKWA_CONSTANT.WRITER_HDFS_FILESYSTEM_FIELD, "file:///");
+    cc.set(CHUKWA_CONSTANT.HDFS_DEFAULT_NAME_FIELD, "file:///");
     cc.set(CHUKWA_CONSTANT.CHUKWA_ROOT_DIR_FIELD, chukwaRootDir );
     cc.set(CHUKWA_CONSTANT.CHUKWA_ARCHIVE_DIR_FIELD, chukwaRootDir +"/archives/" );
     cc.set(CHUKWA_CONSTANT.CHUKWA_POST_PROCESS_DIR_FIELD, chukwaRootDir +"/postProcess" );
