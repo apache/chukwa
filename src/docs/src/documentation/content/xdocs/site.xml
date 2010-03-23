@@ -44,6 +44,7 @@ See http://forrest.apache.org/docs/linking.html for more info
     <index      label="Architecture"       href="design.html" />
     <admin      label="Admin Guide"    href="admin.html" />
     <agent      label="Agent Configuration Guide" href="agent.html" />
+    <programming      label="Guide to Chukwa Storage layout" href="dataflow.html" />
     <programming      label="Programming Guide" href="programming.html" />
     <api        label="API Docs"       href="ext:api/index"/>
     <wiki       label="Wiki"           href="ext:wiki" />

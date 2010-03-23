@@ -32,8 +32,8 @@ pipeline, see the <a href="design.html">Design Guide</a>.)
 </p>
 
 <p>
-In particular, this document discusses the Chukwa archive file formats, and 
-the layout of the Chukwa storage directories.</p>
+In particular, this document discusses the Chukwa archive file formats, the
+demux and archiving mapreduce jobs, and  the layout of the Chukwa storage directories.</p>
 
 
 
@@ -174,6 +174,87 @@ created with a disambiguating suffix.</p>
 
 <!-- The Simple Archiver is a Java class, stored in <code>chukwa-core-*.jar</code>
 -->
+
+</section>
+
+
+<section><title>Demux</title>
+
+<p>A key use for Chukwa is processing arriving data, in parallel, using MapReduce.
+The most common way to do this is using the Chukwa demux framework.
+As <a href="dataflow.html">data flows through Chukwa</a>, the demux job is often the
+first job that runs.
+</p>
+
+<p>By default, Chukwa will use the default TsProcessor. This parser will try to
+ extract the real log statement from the log entry using the ISO8601 date 
+ format. If it fails, it will use the time at which the chunk was written to
+ disk (collector timestamp).</p>
+
+<section>
+<title>Writing a custom demux Mapper</title>
+
+<p>If you want to extract some specific information and perform more processing you
+ need to write your own parser. Like any M/R program, your have to write at least
+ the Map side for your parser. The reduce side is Identity by default.</p>
+
+<p>On the Map side,you can write your own parser from scratch or extend the AbstractProcessor class
+ that hides all the low level action on the chunk. See
+ <code>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Df</code> for an example
+ of a Map class for use with Demux.
+ </p>
+ 
+<p>For Chukwa to invoke your Mapper code, you have
+ to specify which data types it should run on.
+ Edit <code>${CHUKWA_HOME}/conf/chukwa-demux-conf.xml</code> and add the following lines:
+ </p>
+<source>
+      &#60;property&#62;
+            &#60;name&#62;MyDataType&#60;/name&#62; 
+            &#60;value&#62;org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MyParser&#60;/value&#62;
+            &#60;description&#62;Parser class for MyDataType.&#60;/description&#62;
+      &#60;/property&#62;
+</source>
+<p>You can use the same parser for several different recordTypes.</p>
+</section>
+
+<section><title>Writing a custom reduce</title>
+
+<p>You only need to implement a reduce side if you need to group records together. 
+The interface that your need to implement is <code>ReduceProcessor</code>:
+</p>
+<source>
+public interface ReduceProcessor
+{
+           public String getDataType();
+           public void process(ChukwaRecordKey key,Iterator&#60;ChukwaRecord&#62; values,
+                      OutputCollector&#60;ChukwaRecordKey, 
+                      ChukwaRecord&#62; output, Reporter reporter);
+}
+</source>
+
+<p>The link between the Map side and the reduce is done by setting your reduce class
+ into the reduce type: <code>key.setReduceType("MyReduceClass");</code>.
+ Note that in the current version of Chukwa, your class needs to be in the package
+ <code>org.apache.hadoop.chukwa.extraction.demux.processor</code>
+See <code>org.apache.hadoop.chukwa.extraction.demux.processor.reducer.SystemMetrics</code>
+for an example of a Demux reducer.</p>
+</section>
+
+<section>
+<title>Output</title>
+<p> Your data is going to be sorted by RecordType then by the key field. The default
+ implementation use the following grouping for all records:</p>
+<ol>
+<li>Time partition (Time up to the hour)</li>
+<li>Machine name (physical input source)</li>
+<li>Record timestamp </li>
+</ol>
+
+<p>The demux process will use the recordType to save similar records together 
+(same recordType) to the same directory: 
+<code>&#62;cluster name&#62;/&#60;record type&#62;/</code>
+</p></section>
 
 </section>
 
