@@ -22,8 +22,7 @@ package org.apache.hadoop.chukwa.datacollection.collector;
 import org.mortbay.jetty.*;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.servlet.*;
-import org.apache.hadoop.chukwa.datacollection.collector.servlet.CommitCheckServlet;
-import org.apache.hadoop.chukwa.datacollection.collector.servlet.ServletCollector;
+import org.apache.hadoop.chukwa.datacollection.collector.servlet.*;
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
 import org.apache.hadoop.chukwa.datacollection.writer.*;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
@@ -107,6 +106,10 @@ public class CollectorStub {
       if(conf.getBoolean(HttpConnector.ASYNC_ACKS_OPT, false))
         root.addServlet(new ServletHolder(new CommitCheckServlet(conf)), "/"+CommitCheckServlet.DEFAULT_PATH);
 
+      if(conf.getBoolean(LogDisplayServlet.ENABLED_OPT, false))
+        root.addServlet(new ServletHolder(new LogDisplayServlet(conf)), "/"+LogDisplayServlet.DEFAULT_PATH);
+
+      
       root.setAllowNullPathInfo(false);
 
       // Add in any user-specified servlets
