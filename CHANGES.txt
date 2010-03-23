@@ -64,6 +64,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-460.  Removed dependency of writer.hdfs.filesystem for demux phase. (Eric Yang)
+
     CHUKWA-466. Fix failing tests. (asrabkin)
 
     CHUKWA-457. Fix TestUserResource. (Eric Yang via asrabkin)
