@@ -19,7 +19,7 @@
 package org.apache.hadoop.chukwa.extraction;
 
 public interface CHUKWA_CONSTANT {
-
+  public static final String HDFS_DEFAULT_NAME_FIELD = "fs.default.name";
   public static final String WRITER_HDFS_FILESYSTEM_FIELD = "writer.hdfs.filesystem";
   public static final String CHUKWA_ROOT_DIR_FIELD = "chukwaRootDir";
   public static final String CHUKWA_ROOT_REPOS_DIR_FIELD = "chukwaRootReposDir";
