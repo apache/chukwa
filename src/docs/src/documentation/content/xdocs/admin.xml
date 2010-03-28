@@ -196,46 +196,17 @@ Another important option is <code>chukwaAgent.checkpoint.dir</code>.
 This is the directory Chukwa will use for its periodic checkpoints of running adaptors.
 It <strong>must not</strong> be a shared directory; use a local, not NFS-mount, directory.
 </li>
+
+<li>
+Setting the option <code>chukwaAgent.control.remote</code> will disallow remote connections
+to the agent control socket.
+</li>
 </ul>
 
 
 </section>
 
 
-<!--
-<section>
-<title>Start the Chukwa Processes </title>
-
-<p>Start the Chukwa agent and system metrics processes on the monitored source nodes.</p>
-
-<p>The Chukwa startup scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
-
-<p>Run both of these commands on all monitored source nodes: </p>
-
-<ul>
-<li> Start the Chukwa agent script:
-</li></ul> 
-<source>CHUKWA&#95;HOME /tools/init.d/chukwa-agent start</source> <ul>
-<li> Start the Chukwa system metrics script:
-</li></ul> 
-<source>CHUKWA&#95;HOME /tools/init.d/chukwa-system-metrics start</source>
-</section>
-
-<section>
-<title>Validate the Chukwa Processes </title>
-
-<p>The Chukwa status scripts are located in the CHUKWA_HOME/tools/init.d directory.</p>
-
-<p>Verify that that agent and system metrics processes are running on all source nodes: </p>
-
-<ul>
-<li> To obtain the status for the Chukwa agent, run:
-</li></ul> 
-<source>CHUKWA&#95;HOME/tools/init.d/chukwa-agent status </source> <ul>
-<li> To obtain the status for the system metrics, run:
-</li></ul> 
-<source>CHUKWA&#95;HOME/tools/init.d/chukwa-system-metrics status </source>
-</section>-->
 
 
 <section>

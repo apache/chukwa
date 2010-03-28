@@ -15,25 +15,39 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<title>Chukwa 0.3.0 Release Notes</title>
+<title>Chukwa 0.4.0 Release Notes</title>
 <body>
-<h2>Release Notes - Hadoop Chukwa - Version 0.3</h2>
+<h2>Release Notes - Hadoop Chukwa - Version 0.4</h2>
 
 <h3>Overall status</h3>
 
-This is the first public release of Chukwa, a log analysis framework on top of Hadoop.  Chukwa has been tested at scale and used in some production settings, and is reasonably robust and well behaved.  For instructions on setting up Chukwa, see <a href="http://hadoop.apache.org/chukwa/docs/current/admin.html">the administration guide</a> and the rest of the Chukwa documentation.
+<p>This is the second public release of Chukwa, a log analysis framework on top of Hadoop.  Chukwa has been tested at scale and used in some production settings, and is reasonably robust and well behaved.  For instructions on setting up Chukwa, see <a href="http://hadoop.apache.org/chukwa/docs/current/admin.html">the administration guide</a> and the rest of the Chukwa documentation.</p>
 
-The collection components of Chukwa -- adaptors, agents, and collectors -- are approaching general-use quality. They've been fairly aggressively tested, and can be counted on to perform properly and recover from failures.
+<p>The collection components of Chukwa -- adaptors, agents, and collectors have been fairly aggressively tested, and can be counted on to perform properly and recover from failures.</p>
 
-HICC, the visualization component, is "beta" quality.  It's been used succesfully at multiple sites, but it's still brittle. Work is ongoing. Documentation is still sparse, and error reporting isn't always sufficiently clear. 
+<p>The demux pipeline has been cleaned up somewhat, and is now documented. See <a href="http://hadoop.apache.org/chukwa/docs/current/programming.html">the programming guide</a> for a discussion of how to customize demux for your purposes.</p>
 
-Chukwa has not been extensively audited for security vulnerabilities. Do not run it except in trusted environments. Never run Chukwa as root: By default, the ExecAdaptor allows arbitrary remote execution.
+<p>HICC, the visualization component, is still "beta" quality.  It's been used succesfully at multiple sites, but it's still brittle. Work is ongoing. Documentation is still sparse, and error reporting isn't always sufficiently clear. </p>
+
+<p>Chukwa has not been extensively audited for security vulnerabilities. Do not run it except in trusted environments. Never run Chukwa as root: By default, the ExecAdaptor allows arbitrary remote execution.</p>
+
+<h3>Important changes since last release</h3>
+
+<ul>
+<li>The collection of shell scripts in <code>/bin</code> has been significantly pared down. For instance, instead of <code>bin/agent</code>, you should now say <code>bin/chuka agent</code>.</li>
+<li>It is now possible to disable remote connections to the Chukwa agent. This makes Chukwa more suitable for use on a customer-facing deployment</li>.
+<li>Chukwa now includes an adaptor for reading data via a UDP port, the <code>UDPAdaptor</code>. This should facilitate integration with syslog and similar legacy tools.</li>
+
+<li>
+There have been a number of bug fixes and code cleanups since the last release; check the changelog and JIRA for details.</li>
+</ul>
 
 <h3>Requirements</h3>
-Chukwa relies on Java 1.6
-The back-end processing requires Hadoop 0.18+.
-Collecting Hadoop logs and metrics requires Hadoop 0.20+.
-
+<ul>
+<li>Chukwa relies on Java 1.6</li>
+<li>The back-end processing requires Hadoop 0.18+.</li>
+<li>Collecting Hadoop logs and metrics requires Hadoop 0.20+.</li>
+</ul>
 <h3>Known Limitations</h3>
 
 <ul> <li> HICC defaults to assuming data is UTC; if your machines run on local time, HICC graphs will not display properly until you change the HICC timezone. You can do this by clicking the small "gear" icon on the time selection tool.
