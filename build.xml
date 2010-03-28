@@ -464,6 +464,7 @@
 	  </target>
 	
 	<target name="test-chukwa" depends="compile,compile-test,compress" description="Run Chukwa unit tests">
+		<delete dir="/tmp/chukwa/hicc" />
 		<mkdir dir="${test.build.dir}/var" />
 		<mkdir dir="${test.build.dir}/var/log" />
 		<mkdir dir="${test.build.dir}/var/run" />
