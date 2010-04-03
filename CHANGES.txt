@@ -32,6 +32,8 @@ Trunk (unreleased changes)
  
    IMPROVEMENTS
 
+    CHUKWA-468. Use SIGHUP instead of SIGTERM for shutdown.  (Eric Yang)
+
     CHUKWA-470. License headers, etc. (asrabkin)
 
     CHUKWA-458. Documentation fixes for 0.4 (asrabkin)
@@ -67,6 +69,8 @@ Trunk (unreleased changes)
     CHUKWA-408. Add optional metadata to real-time feed. (asrabkin)
 
   BUG FIXES
+
+    CHUKWA-467. Disabled war file extraction to /tmp. (Eric Yang)
 
     CHUKWA-456. Remove /tmp/chukwa/hicc during test phase to prevent bad data building up and prevent test case to run properly. (Eric Yang)
 
