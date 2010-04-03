@@ -32,6 +32,8 @@ Trunk (unreleased changes)
  
    IMPROVEMENTS
 
+    CHUKWA-470. License headers. (asrabkin)
+
     CHUKWA-458. Documentation fixes for 0.4 (asrabkin)
 
     CHUKWA-446. Refactor start/stop scripts. (Eric Yang)
