@@ -26,12 +26,12 @@ pidFile=$CHUKWA_PID_DIR/DemuxManager.pid
 if [ -f $pidFile ]; then
    echo -n "Shutting down demux.."
    DEMUX_PID=`head ${pidFile}`
-   kill -TERM ${DEMUX_PID} > /dev/null 2>&1
+   kill -1 ${DEMUX_PID} > /dev/null 2>&1
    for i in 1 2 5; do
        test_pid=`ps ax | grep ${DEMUX_PID} | grep -v grep | grep DemuxManager | wc -l`
        if [ $test_pid -ge 1 ]; then
            sleep $i
-           kill -TERM ${DEMUX_PID} > /dev/null 2>&1
+           kill -1 ${DEMUX_PID} > /dev/null 2>&1
        else
            break
        fi
@@ -53,12 +53,12 @@ pidFile=$CHUKWA_PID_DIR/PostProcessorManager.pid
 if [ -f $pidFile ]; then
    echo -n "Shutting down dp ..."
    POST_PROCESS_PID=`head ${pidFile}`
-   kill -TERM ${POST_PROCESS_PID} > /dev/null 2>&1
+   kill -1 ${POST_PROCESS_PID} > /dev/null 2>&1
    for i in 1 2 5; do
        test_pid=`ps ax | grep ${POST_PROCESS_PID} | grep -v grep | grep PostProcessorManager | wc -l`
        if [ $test_pid -ge 1 ]; then
            sleep $i
-           kill -TERM ${POST_PROCESS_PID} > /dev/null 2>&1
+           kill -1 ${POST_PROCESS_PID} > /dev/null 2>&1
        else
            break
        fi
@@ -79,12 +79,12 @@ pidFile=$CHUKWA_PID_DIR/ArchiveManager.pid
 if [ -f $pidFile ]; then
    echo -n "Shutting down archive ..."
    POST_PROCESS_PID=`head ${pidFile}`
-   kill -TERM ${POST_PROCESS_PID} > /dev/null 2>&1
+   kill -1 ${POST_PROCESS_PID} > /dev/null 2>&1
    for i in 1 2 5; do
        test_pid=`ps ax | grep ${POST_PROCESS_PID} | grep -v grep | grep ChukwaArchiveManager | wc -l`
        if [ $test_pid -ge 1 ]; then
            sleep $i
-           kill -TERM ${POST_PROCESS_PID} > /dev/null 2>&1
+           kill -1 ${POST_PROCESS_PID} > /dev/null 2>&1
        else
            break
        fi
