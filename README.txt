@@ -1,6 +1,6 @@
-Chukwa 0.3 -- November 2009
+Chukwa 0.4 -- April 2010
 
-This is the first formal release of Chukwa, an Apache Hadoop subproject 
+This is the second formal release of Chukwa, an Apache Hadoop subproject 
 dedicated to scalable log collection and processing. If you have large 
 volumes of log data generated across a cluster, and you need to process 
 them with MapReduce, Chukwa may be the tool for you.
@@ -24,8 +24,8 @@ If you're impatient, the following is the 30-second explanation:
 
 The minimum you need to run Chukwa are agents on each machine you're 
 monitoring, and a collector to write the collected data to HDFS.  The
-basic command to start an agent is bin/agent.sh.  The base command to
-start a collector is bin/jettyCollector.sh.
+basic command to start an agent is bin/chukwa agent.  The base command to
+start a collector is bin/chukwa collector.
 
 If you want to start a bunch of agents, you can use the
 bin/start-agents.sh script. This just uses ssh to start agents on a

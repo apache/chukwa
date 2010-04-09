@@ -662,7 +662,7 @@
 			<manifest>
 				<section name="org/apache/hadoop/chukwa">
 					<attribute name="Implementation-Title" value="Chukwa" />
-					<attribute name="Implementation-Version" value="${version}" />
+					<attribute name="Implementation-Version" value="${chukwaVersion}" />
 					<attribute name="Implementation-Vendor" value="Apache" />
 				</section>
 			</manifest>
@@ -1047,7 +1047,7 @@
                 <mkdir dir="${build.dir}/conf" />
 		<copy todir="${build.dir}/conf">
 			<fileset dir="${basedir}/conf">
-				<exclude name="*.template" />
+<!--				<exclude name="*.template" /> -->
 			</fileset>
 		</copy>
 
