@@ -1,6 +1,6 @@
 Chukwa Change Log
 
-Trunk (unreleased changes)
+Chukwa 0.4
 
   NEW FEATURES
 
