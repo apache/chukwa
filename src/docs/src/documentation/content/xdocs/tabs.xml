@@ -32,6 +32,6 @@
   -->
   <tab label="Project" href="http://hadoop.apache.org/chukwa" type="visible" /> 
   <tab label="Wiki" href="http://wiki.apache.org/hadoop/Chukwa/" type="visible" /> 
-  <tab label="Chukwa 0.3 Documentation" dir="" type="visible" /> 
+  <tab label="Chukwa 0.4 Documentation" dir="" type="visible" /> 
 
 </tabs>
