@@ -153,6 +153,7 @@ public class SocketTeeWriter extends PipelineableWriter {
             out.write(data);
           }
         }
+        out.flush();
       } catch(IOException e) {
         log.info("lost tee: "+ e.toString());
         synchronized(tees) {
