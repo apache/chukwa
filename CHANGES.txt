@@ -70,6 +70,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-465. Setup default value for Post Demux Data Loader.  (Ahmed Fathalla via Eric Yang)
+
     CHUKWA-467. Disabled war file extraction to /tmp. (Eric Yang)
 
     CHUKWA-456. Remove /tmp/chukwa/hicc during test phase to prevent bad data building up and prevent test case to run properly. (Eric Yang)
