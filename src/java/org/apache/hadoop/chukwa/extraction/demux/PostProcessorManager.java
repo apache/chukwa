@@ -170,7 +170,7 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
   public boolean processDemuxPigOutput(String directory) throws IOException {
     long start = System.currentTimeMillis();
     try {
-      String[] classes = conf.get(POST_DEMUX_DATA_LOADER).split(",");
+      String[] classes = conf.get(POST_DEMUX_DATA_LOADER,"org.apache.hadoop.chukwa.dataloader.MetricDataLoaderPool,org.apache.hadoop.chukwa.dataloader.FSMDataLoader").split(",");
       for(String dataLoaderName : classes) {
         Class<? extends DataLoaderFactory> dl = (Class<? extends DataLoaderFactory>) Class.forName(dataLoaderName);
         java.lang.reflect.Constructor<? extends DataLoaderFactory> c =
