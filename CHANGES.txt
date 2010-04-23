@@ -4,8 +4,13 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-469. Add JMSAdaptor. (Bill Graham via asrabkin)
 
-  BUGS
+  IMPROVEMENTS
+
+    CHUKWA-471. Expose JobConf to Demux Processors. (Jerome Boulon via asrabkin)
+
+  BUG FIXES
 
 Chukwa 0.4 
 

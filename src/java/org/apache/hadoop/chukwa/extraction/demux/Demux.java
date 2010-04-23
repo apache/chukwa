@@ -60,6 +60,7 @@ import org.apache.log4j.Logger;
 public class Demux extends Configured implements Tool {
   static Logger log = Logger.getLogger(Demux.class);
   static SimpleDateFormat day = new java.text.SimpleDateFormat("yyyyMMdd_HH_mm");
+  public static JobConf jobConf = null;
 
   public static class MapClass extends MapReduceBase implements
       Mapper<ChukwaArchiveKey, ChunkImpl, ChukwaRecordKey, ChukwaRecord> {
@@ -69,6 +70,7 @@ public class Demux extends Configured implements Tool {
     public void configure(JobConf jobConf) {
       super.configure(jobConf);
       this.jobConf = jobConf;
+      Demux.jobConf= jobConf;
     }
 
     public void map(ChukwaArchiveKey key, ChunkImpl chunk,
@@ -117,6 +119,12 @@ public class Demux extends Configured implements Tool {
 
   public static class ReduceClass extends MapReduceBase implements
       Reducer<ChukwaRecordKey, ChukwaRecord, ChukwaRecordKey, ChukwaRecord> {
+    
+    public void configure(JobConf jobConf) {
+      super.configure(jobConf);
+      Demux.jobConf = jobConf;
+    }
+    
     public void reduce(ChukwaRecordKey key, Iterator<ChukwaRecord> values,
         OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter)
         throws IOException {
