@@ -4,6 +4,13 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+
+  BUGS
+
+Chukwa 0.4 
+
+  NEW FEATURES
+
     CHUKWA-445. Realtime display at collector. (asrabkin)
 
     CHUKWA-454. DirTailingAdaptor can filter files. (Gerrit Jansen van Vuuren via asrabkin)

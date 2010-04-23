@@ -61,6 +61,10 @@
       name="xerces"
       rev="${xerces.version}"
       conf="jdiff->default"/>
+    <dependency org="org.apache.activemq"
+       name="activemq-core"
+       rev="${activemq.version}"
+       conf="common->default"/>
    <dependency org="commons-fileupload"
       name="commons-fileupload"
       rev="${commons-fileupload.version}"
@@ -88,7 +92,7 @@
    <dependency org="commons-net"
       name="commons-net"
       rev="${commons-net.version}"
-      conf="common->master"/> 
+      conf="common->master"/>
     <dependency org="org.mortbay.jetty"
       name="jetty"
       rev="${jetty.version}"

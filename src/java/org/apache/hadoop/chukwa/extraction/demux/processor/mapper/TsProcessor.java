@@ -35,6 +35,15 @@ public class TsProcessor extends AbstractProcessor {
   public TsProcessor() {
     // TODO move that to config
     sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+
+//    StringBuilder format = new StringBuilder();
+//    format.append("TsProcessor.time.format");
+//    format.append(chunk.getDataType());
+//    if(conf.get(format.toString())!=null) {
+//     sdf = new SimpleDateFormat(conf.get(format.toString()));
+//    } else {
+//     sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+//    }
   }
 
   @Override
