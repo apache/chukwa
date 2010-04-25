@@ -23,6 +23,7 @@ import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.Chunk;
 import java.util.ArrayList;
 import org.apache.hadoop.chukwa.datacollection.collector.CaptureWriter;
+import org.apache.hadoop.io.IOUtils;
 import java.net.*;
 import java.io.*;
 
@@ -122,10 +123,10 @@ public class TestSocketTee  extends TestCase{
     assertEquals(6, CaptureWriter.outputs.size());
     len = dis.readInt();
     data = new byte[len];
-    read = dis.read(data);
+    IOUtils.readFully(dis, data, 0, len);
     String rcvd = new String(data);
     System.out.println("got " + read+"/" +len  +" bytes: " + rcvd);
-    assertTrue("hostNameFoo dataTypeFoo streamName 4\ntext".equals(rcvd));
+    assertEquals("hostNameFoo dataTypeFoo streamName 4\ntext", rcvd);
     s3.close();
     dis.close();
     
