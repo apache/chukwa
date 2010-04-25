@@ -6,6 +6,8 @@ Trunk (unreleased changes)
 
     CHUKWA-469. Add JMSAdaptor. (Bill Graham via asrabkin)
 
+    CHUKWA-477. Support post-demux trigger.  (Bill Graham via Eric Yang)
+
   IMPROVEMENTS
 
     CHUKWA-471. Expose JobConf to Demux Processors. (Jerome Boulon via asrabkin)
@@ -13,6 +15,8 @@ Trunk (unreleased changes)
     CHUKWA-472. Added ability to configure timestamp format for the default Time Series Processor.  (Bill Graham via Eric Yang)
 
   BUG FIXES
+
+    CHUKWA-478. Fixed TestSocketTee intermittent failure.  (Chris Douglas via Eric Yang)
 
 Chukwa 0.4 
 
