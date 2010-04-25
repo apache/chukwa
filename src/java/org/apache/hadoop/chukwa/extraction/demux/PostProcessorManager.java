@@ -25,12 +25,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Collection;
 
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.dataloader.DataLoaderFactory;
 import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
+import org.apache.hadoop.chukwa.datatrigger.TriggerAction;
+import org.apache.hadoop.chukwa.datatrigger.TriggerEvent;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -142,11 +145,14 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
           start = System.currentTimeMillis();
          
           try {
-            if ( processDemuxPigOutput(directoryToBeProcessed) == true) {
-              if (movetoMainRepository(directoryToBeProcessed,chukwaRootReposDir) == true) {
+            if ( processDataLoaders(directoryToBeProcessed) == true) {
+              Path[] destFiles = movetoMainRepository(
+                directoryToBeProcessed,chukwaRootReposDir);
+              if (destFiles != null && destFiles.length > 0) {
                 deleteDirectory(directoryToBeProcessed);
                 log.info("PostProcess Stop, directory:" + directoryToBeProcessed);
                 log.info("processDemuxOutput Duration:" + (System.currentTimeMillis() - start));
+                processPostMoveTriggers(destFiles);
                 continue;
               }
             }
@@ -167,7 +173,7 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
     }
   }
   
-  public boolean processDemuxPigOutput(String directory) throws IOException {
+  public boolean processDataLoaders(String directory) throws IOException {
     long start = System.currentTimeMillis();
     try {
       String[] classes = conf.get(POST_DEMUX_DATA_LOADER,"org.apache.hadoop.chukwa.dataloader.MetricDataLoaderPool,org.apache.hadoop.chukwa.dataloader.FSMDataLoader").split(",");
@@ -194,13 +200,43 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
     log.info("loadData Duration:" + (System.currentTimeMillis() - start));
     return true;
   }
-  
-  public boolean movetoMainRepository(String sourceDirectory,String repoRootDirectory) throws Exception {
-    String[] args = {sourceDirectory,repoRootDirectory};
+
+  public boolean processPostMoveTriggers(Path[] files) throws IOException {
     long start = System.currentTimeMillis();
-    MoveToRepository.main(args);
-    log.info("movetoMainRepository Duration:" + (System.currentTimeMillis() - start));
+    try {
+      String actions = conf.get(POST_DEMUX_SUCCESS_ACTION, null);
+      if (actions == null || actions.trim().length() == 0) {
+        return true;
+      }
+      log.info("PostProcess firing postMoveTriggers");
+
+      String[] classes = actions.trim().split(",");
+      for(String actionName : classes) {
+        Class<? extends TriggerAction> actionClass =
+            (Class<? extends TriggerAction>) Class.forName(actionName);
+        java.lang.reflect.Constructor<? extends TriggerAction> c =
+            actionClass.getConstructor();
+        TriggerAction action = c.newInstance();
+
+        log.info(actionName + " handling " + files.length + " events");
+
+        //send the files that were just added benieth the repos/ dir.
+        FileStatus[] events = fs.listStatus(files);
+        action.execute(conf, fs, events, TriggerEvent.POST_DEMUX_SUCCESS);
+      }
+    } catch(Exception e) {
+      log.error(ExceptionUtil.getStackTrace(e));
+      return false;
+    }
+    log.info("postMoveTriggers Duration:" + (System.currentTimeMillis() - start));
     return true;
+  }
+
+  public Path[] movetoMainRepository(String sourceDirectory,String repoRootDirectory) throws Exception {
+    long start = System.currentTimeMillis();
+    Path[] destFiles = MoveToRepository.doMove(new Path(sourceDirectory),repoRootDirectory);
+    log.info("movetoMainRepository Duration:" + (System.currentTimeMillis() - start));
+    return destFiles;
   }
   
   public boolean moveToInErrorDirectory(String sourceDirectory,String dirName,String inErrorDirectory) throws Exception {

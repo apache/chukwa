@@ -60,4 +60,5 @@ public interface CHUKWA_CONSTANT {
   public static final String ARCHIVES_IN_ERROR_DIR_NAME      = "inError/";
 
   public static final String POST_DEMUX_DATA_LOADER = "chukwa.post.demux.data.loader";  
+  public static final String POST_DEMUX_SUCCESS_ACTION = "chukwa.post.demux.success.action";  
 }

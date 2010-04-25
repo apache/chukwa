@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashSet;
+
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -44,11 +47,12 @@ public class MoveToRepository {
   static SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyyMMdd");
   static Calendar calendar = Calendar.getInstance();
 
-  static void processClusterDirectory(Path srcDir, String destDir)
+  static Collection<Path> processClusterDirectory(Path srcDir, String destDir)
       throws Exception {
     log.info("processClusterDirectory (" + srcDir.getName() + "," + destDir
         + ")");
     FileStatus fstat = fs.getFileStatus(srcDir);
+    Collection<Path> destFiles = new HashSet<Path>();
 
     if (!fstat.isDir()) {
       throw new IOException(srcDir + " is not a directory!");
@@ -69,14 +73,16 @@ public class MoveToRepository {
         log.info("dest directory path: " + destPath);
         log.info("processClusterDirectory processing Datasource: (" + dirName
             + ")");
-        processDatasourceDirectory(srcDir.getName(), datasourceDirectory
-            .getPath(), destDir + "/" + dirName);
+        destFiles.addAll(processDatasourceDirectory(srcDir.getName(),
+            datasourceDirectory.getPath(), destDir + "/" + dirName));
       }
     }
+    return destFiles;
   }
 
-  static void processDatasourceDirectory(String cluster, Path srcDir,
+  static Collection<Path> processDatasourceDirectory(String cluster, Path srcDir,
       String destDir) throws Exception {
+    Collection<Path> destFiles = new HashSet<Path>();
     String fileName = null;
     int fileDay = 0;
     int fileHour = 0;
@@ -100,8 +106,11 @@ public class MoveToRepository {
         // Hadoop_dfs_datanode_20080919.D.evt
 
         fileDay = Integer.parseInt(fileName.substring(l - 14, l - 6));
-        writeRecordFile(destDir + "/" + fileDay + "/", recordFile.getPath(),
-            dataSource + "_" + fileDay);
+        Path destFile = writeRecordFile(destDir + "/" + fileDay + "/",
+            recordFile.getPath(), dataSource + "_" + fileDay);
+        if (destFile != null) {
+          destFiles.add(destFile);
+        }
       } else if (fileName.endsWith(".H.evt")) {
         // Hadoop_dfs_datanode_20080925_1.H.evt
         // Hadoop_dfs_datanode_20080925_12.H.evt
@@ -122,8 +131,11 @@ public class MoveToRepository {
         fileDay = Integer.parseInt(day);
         fileHour = Integer.parseInt(hour);
         // rotate there so spill
-        writeRecordFile(destDir + "/" + fileDay + "/" + fileHour + "/",
+        Path destFile = writeRecordFile(destDir + "/" + fileDay + "/" + fileHour + "/",
             recordFile.getPath(), dataSource + "_" + fileDay + "_" + fileHour);
+        if (destFile != null) {
+          destFiles.add(destFile);
+        }
         // mark this directory for daily rotate
         addDirectory4Rolling(true, fileDay, fileHour, cluster, dataSource);
       } else if (fileName.endsWith(".R.evt")) {
@@ -140,15 +152,20 @@ public class MoveToRepository {
         log.info("fileDay: " + fileDay);
         log.info("fileHour: " + fileHour);
         log.info("fileMin: " + fileMin);
-        writeRecordFile(destDir + "/" + fileDay + "/" + fileHour + "/"
+        Path destFile = writeRecordFile(destDir + "/" + fileDay + "/" + fileHour + "/"
             + fileMin, recordFile.getPath(), dataSource + "_" + fileDay + "_"
             + fileHour + "_" + fileMin);
+        if (destFile != null) {
+          destFiles.add(destFile);
+        }
         // mark this directory for hourly rotate
         addDirectory4Rolling(false, fileDay, fileHour, cluster, dataSource);
       } else {
         throw new RuntimeException("Wrong fileName format! [" + fileName + "]");
       }
     }
+
+    return destFiles;
   }
 
   static void addDirectory4Rolling(boolean isDailyOnly, int day, int hour,
@@ -171,7 +188,7 @@ public class MoveToRepository {
     }
   }
 
-  static void writeRecordFile(String destDir, Path recordFile, String fileName)
+  static Path writeRecordFile(String destDir, Path recordFile, String fileName)
       throws IOException {
     boolean done = false;
     int count = 1;
@@ -191,6 +208,7 @@ public class MoveToRepository {
         boolean rename = fs.rename(recordFile,destFilePath);
         done = true;
         log.info(">>>>>>>>>>>> after Rename" + destFilePath + " , rename:"+rename);
+        return destFilePath;
       } 
       count++;
 
@@ -198,6 +216,8 @@ public class MoveToRepository {
         log.warn("too many files in this directory: " + destDir);
       }
     } while (!done);
+
+    return null;
   }
 
   static boolean checkRotate(String directoryAsString,
@@ -215,22 +235,15 @@ public class MoveToRepository {
     }
   }
 
-  /**
-   * @param args
-   * @throws Exception
-   */
-  public static void main(String[] args) throws Exception {
+  public static Path[] doMove(Path srcDir, String destDir) throws Exception {
     conf = new ChukwaConfiguration();
     String fsName = conf.get("writer.hdfs.filesystem");
     fs = FileSystem.get(new URI(fsName), conf);
-
-    Path srcDir = new Path(args[0]);
-    String destDir = args[1];
-
-    log.info("Start MoveToRepository main()");
+    log.info("Start MoveToRepository doMove()");
 
     FileStatus fstat = fs.getFileStatus(srcDir);
 
+    Collection<Path> destinationFiles = new HashSet<Path>();
     if (!fstat.isDir()) {
       throw new IOException(srcDir + " is not a directory!");
     } else {
@@ -247,16 +260,27 @@ public class MoveToRepository {
         log
             .info("main procesing Cluster (" + cluster.getPath().getName()
                 + ")");
-        processClusterDirectory(cluster.getPath(), destDir + "/"
-            + cluster.getPath().getName());
+        destinationFiles.addAll(processClusterDirectory(cluster.getPath(),
+            destDir + "/" + cluster.getPath().getName()));
 
         // Delete the demux's cluster dir
         FileUtil.fullyDelete(fs, cluster.getPath());
       }
     }
 
-    log.info("Done with MoveToRepository main()");
+    log.info("Done with MoveToRepository doMove()");
+    return destinationFiles.toArray(new Path[destinationFiles.size()]);
+  }
 
+  /**
+   * @param args
+   * @throws Exception
+   */
+  public static void main(String[] args) throws Exception {
+
+    Path srcDir = new Path(args[0]);
+    String destDir = args[1];
+    doMove(srcDir, destDir);
   }
 
 }

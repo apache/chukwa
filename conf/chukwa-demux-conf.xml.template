@@ -69,6 +69,14 @@
     <value>org.apache.hadoop.chukwa.dataloader.MetricDataLoaderPool,org.apache.hadoop.chukwa.dataloader.FSMDataLoader</value>
   </property>
 
+  <property>
+    <name>chukwa.post.demux.success.action</name>
+    <value></value>
+    <description>Comma-separated list of
+    org.apache.hadoop.chukwa.datatrigger.TriggerAction implementations
+    that will be triggered upon a successful Demux/PostProcessor job</description>
+  </property>
+
 <!-- -->
 
 <!-- ArchiveManager config -->
