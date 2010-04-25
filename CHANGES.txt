@@ -10,6 +10,8 @@ Trunk (unreleased changes)
 
     CHUKWA-471. Expose JobConf to Demux Processors. (Jerome Boulon via asrabkin)
 
+    CHUKWA-472. Added ability to configure timestamp format for the default Time Series Processor.  (Bill Graham via Eric Yang)
+
   BUG FIXES
 
 Chukwa 0.4 
