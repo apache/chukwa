@@ -41,7 +41,7 @@ public class ReduceProcessorFactory {
   private ReduceProcessorFactory() {
   }
 
-  public static ReduceProcessor getProcessor(String reduceType)
+  public static ReduceProcessor getProcessor(String reduceType, String defaultProcessor)
       throws UnknownReduceTypeException {
     String path = "org.apache.hadoop.chukwa.extraction.demux.processor.reducer."
         + reduceType;
@@ -54,8 +54,14 @@ public class ReduceProcessorFactory {
             .newInstance();
       } catch (ClassNotFoundException e) {
         // ******** WARNING ********
-        // If the ReduceProcessor is not there use Identity instead
-        processor = getProcessor("IdentityReducer");
+        // If the ReduceProcessor is not there see if there is a configured
+        // default processor. If not, fall back on the Identity instead
+        if(defaultProcessor != null) {
+          processor = getProcessor(defaultProcessor, null);
+        }
+        else {
+          processor = getProcessor("IdentityReducer", null);
+        }
         register(reduceType, processor);
         return processor;
       } catch (Exception e) {

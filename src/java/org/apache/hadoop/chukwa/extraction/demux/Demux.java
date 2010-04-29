@@ -33,6 +33,7 @@ import org.apache.hadoop.chukwa.extraction.demux.processor.ChukwaOutputCollector
 import org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MapProcessor;
 import org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MapProcessorFactory;
 import org.apache.hadoop.chukwa.extraction.demux.processor.reducer.ReduceProcessorFactory;
+import org.apache.hadoop.chukwa.extraction.demux.processor.reducer.ReduceProcessor;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
@@ -64,12 +65,10 @@ public class Demux extends Configured implements Tool {
 
   public static class MapClass extends MapReduceBase implements
       Mapper<ChukwaArchiveKey, ChunkImpl, ChukwaRecordKey, ChukwaRecord> {
-    JobConf jobConf = null;
 
     @Override
     public void configure(JobConf jobConf) {
       super.configure(jobConf);
-      this.jobConf = jobConf;
       Demux.jobConf= jobConf;
     }
 
@@ -85,9 +84,13 @@ public class Demux extends Configured implements Tool {
           log.debug("Entry: [" + chunk.getData() + "] EventType: ["
               + chunk.getDataType() + "]");
         }
-        String processorClass = jobConf
-            .get(chunk.getDataType(),
-                "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.DefaultProcessor");
+
+        String defaultProcessor = Demux.jobConf.get(
+            "chukwa.demux.mapper.default.processor",
+            "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.DefaultProcessor");
+
+        String processorClass = Demux.jobConf.get(chunk.getDataType(),
+                defaultProcessor);
 
         if (!processorClass.equalsIgnoreCase("Drop")) {
           reporter.incrCounter("DemuxMapInput", "total chunks", 1);
@@ -119,12 +122,12 @@ public class Demux extends Configured implements Tool {
 
   public static class ReduceClass extends MapReduceBase implements
       Reducer<ChukwaRecordKey, ChukwaRecord, ChukwaRecordKey, ChukwaRecord> {
-    
+
     public void configure(JobConf jobConf) {
       super.configure(jobConf);
       Demux.jobConf = jobConf;
     }
-    
+
     public void reduce(ChukwaRecordKey key, Iterator<ChukwaRecord> values,
         OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter)
         throws IOException {
@@ -136,8 +139,12 @@ public class Demux extends Configured implements Tool {
         reporter.incrCounter("DemuxReduceInput", key.getReduceType()
             + " total distinct keys", 1);
 
-        ReduceProcessorFactory.getProcessor(key.getReduceType()).process(key,
-            values, chukwaOutputCollector, reporter);
+        String defaultProcessor = Demux.jobConf.get(
+            "chukwa.demux.reducer.default.processor", null);
+        ReduceProcessor processor = ReduceProcessorFactory.getProcessor(
+            key.getReduceType(), defaultProcessor);
+
+        processor.process(key, values, chukwaOutputCollector, reporter);
 
         if (log.isDebugEnabled()) {
           duration = System.currentTimeMillis() - duration;
