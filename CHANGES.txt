@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-479.  Support HTTP trigger actions (Bill Graham via asrabkin)
+
     CHUKWA-469. Add JMSAdaptor. (Bill Graham via asrabkin)
 
     CHUKWA-477. Support post-demux trigger.  (Bill Graham via Eric Yang)
