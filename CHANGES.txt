@@ -12,6 +12,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+   CHUKWA-480.  Allow CreateRecordFile to read job confs. (Bill Graham via asrabkin)
+
     CHUKWA-471. Expose JobConf to Demux Processors. (Jerome Boulon via asrabkin)
 
     CHUKWA-472. Added ability to configure timestamp format for the default Time Series Processor.  (Bill Graham via Eric Yang)
