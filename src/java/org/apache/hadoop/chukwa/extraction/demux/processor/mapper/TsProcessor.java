@@ -70,15 +70,6 @@ public class TsProcessor extends AbstractProcessor {
   public TsProcessor() {
     datePatternMap = new HashMap<String, Pattern>();
     dateFormatMap = new HashMap<String, SimpleDateFormat>();
-
-//    StringBuilder format = new StringBuilder();
-//    format.append("TsProcessor.time.format");
-//    format.append(chunk.getDataType());
-//    if(conf.get(format.toString())!=null) {
-//     sdf = new SimpleDateFormat(conf.get(format.toString()));
-//    } else {
-//     sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
-//    }
   }
 
   @Override
@@ -102,7 +93,7 @@ public class TsProcessor extends AbstractProcessor {
         }
       }
       else {
-        dStr = recordEntry.substring(0, sdf.toPattern().length());
+        dStr = recordEntry;
       }
 
       Date d = sdf.parse(dStr);

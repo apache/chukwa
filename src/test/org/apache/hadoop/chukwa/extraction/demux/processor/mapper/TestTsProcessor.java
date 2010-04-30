@@ -68,6 +68,15 @@ public class TestTsProcessor extends TestCase {
     doTest(date, record);
   }
 
+  public void testCustomDefaultFormat2() {
+    // this date format produces a date that longer than the format, since z
+    // expands to something like PDT
+    jobConf.set("TsProcessor.default.time.format", "yyyy--MM--dd HH::mm::ss SSS,z");
+
+    String record = buildSampleSimpleRecord(date, "yyyy--MM--dd HH::mm::ss SSS,z");
+    doTest(date, record);
+  }
+
   public void testCustomDataTypeFormat() {
     jobConf.set("TsProcessor.time.format." + DATA_TYPE, "yyyy--MM--dd HH::mm::ss SSS");
 

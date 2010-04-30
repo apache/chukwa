@@ -22,6 +22,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-485. Fix TSProcessor handling of some dates. (Bill Graham via asrabkin)
+
     CHUKWA-478. Fixed TestSocketTee intermittent failure.  (Chris Douglas via Eric Yang)
 
 Chukwa 0.4 
