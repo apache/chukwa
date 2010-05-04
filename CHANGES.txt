@@ -22,6 +22,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-483. Use SIGTERM to stop chukwa, not signal 1. (Bill Graham via asrabkin)
+
     CHUKWA-4. Collectors don't finish writing .dones on close. (Ahmed Fathalla via asrabkin)
 
     CHUKWA-485. Fix TSProcessor handling of some dates. (Bill Graham via asrabkin)

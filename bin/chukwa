@@ -153,7 +153,7 @@ elif [ "$COMMAND" = "tail" ]; then
 fi
 
 if [ "$1" = "stop" ]; then
-  kill -1 `cat ${CHUKWA_PID_DIR}/$PID.pid`
+  kill -TERM `cat ${CHUKWA_PID_DIR}/$PID.pid`
 else 
   # run command
   if [ "$BACKGROUND" = "false" ]; then
