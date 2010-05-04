@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.concurrent.BlockingQueue;
 
+import org.apache.hadoop.chukwa.util.CopySequenceFile;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -138,20 +139,57 @@ public class LocalToRemoteHdfsMover extends Thread {
       String fileName = null;
       for (FileStatus file: files) {
         fileName = file.getPath().getName();
-        if (fileName.endsWith(".done")) {
-          moveFile(localOutputDir + fileName);
-        } else if (fileName.endsWith(".chukwa")) {
-          long lastPeriod = System.currentTimeMillis() - rotateInterval - (2*60*1000);
-          if (file.getModificationTime() < lastPeriod) {
-            log.info("Moving .chukwa file over, " + localOutputDir + fileName);
-            moveFile(localOutputDir + fileName);
-          }
+       
+        if (fileName.endsWith(".recover")) {
+          //.recover files indicate a previously failed copying attempt of .chukwa files
+        	
+          Path recoverPath= new Path(localOutputDir+fileName);
+          localFs.delete(recoverPath, false);
+          log.info("Deleted .recover file, " + localOutputDir + fileName);
+        } else if (fileName.endsWith(".recoverDone")) {
+            //.recoverDone files are valid sink files that have not been renamed to .done
+        	// First, check if there are still any .chukwa files with the same name
+         	
+            String chukwaFileName= fileName.replace(".recoverDone", ".chukwa");
+        	Boolean fileNotFound=true;
+        	int i=0;
+        	while (i<files.length && fileNotFound) {
+        	   String currentFileName = files[i].getPath().getName();
+        	   
+        	   if (currentFileName.equals(chukwaFileName)){
+        	      //Remove the .chukwa file found as it has already been recovered
+        	      
+        	     fileNotFound = false;
+        	     Path chukwaFilePath = new Path(localOutputDir+chukwaFileName);
+        	     localFs.delete(chukwaFilePath,false);	
+        	     log.info(".recoverDone file exists, deleted duplicate .chukwa file, "
+        	    		 + localOutputDir + fileName);
+        	   }
+        	   i++;
+        	}
+        	 //Finally, rename .recoverDone file to .done
+        	 
+        	String doneFileName= fileName.replace(".recoverDone", ".done");
+        	Path donePath= new Path(localOutputDir+doneFileName);
+        	Path recoverDonePath= new Path(localOutputDir+fileName);
+        	localFs.rename(recoverDonePath, donePath);
+        	log.info("Renamed .recoverDone file to .done, "+ localOutputDir + fileName);
+         }  else if (fileName.endsWith(".done")) {
+              moveFile(localOutputDir + fileName);
+            }  else if (fileName.endsWith(".chukwa")) {
+                 long lastPeriod = System.currentTimeMillis() - rotateInterval - (2*60*1000);
+                 if (file.getModificationTime() < lastPeriod) { 
+        	       //. chukwa file has not modified for some time, may indicate collector had previously crashed
+         
+                   log.info("Copying .chukwa file to valid sink file before moving, " + localOutputDir + fileName);
+                   CopySequenceFile.createValidSequenceFile(conf,localOutputDir,fileName,localFs);
+                  }
+               } 
         }
+    } catch (Exception e) {
+        log.warn("Cannot copy to the remote HDFS",e);
+        throw e;
       }
-    }catch (Exception e) {
-      log.warn("Cannot copy to the remote HDFS",e);
-      throw e;
-    }
   }
   
   @Override
