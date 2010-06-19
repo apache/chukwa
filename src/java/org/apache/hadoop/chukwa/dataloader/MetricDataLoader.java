@@ -163,6 +163,8 @@ public class MetricDataLoader implements Callable {
         sb.append( "\\\"" ); 
       } else if( ch == '\\' ) {
         sb.append( "\\\\" ); 
+      } else if( ch == '\'' ) {
+        sb.append( "\\'" );
       } else {
         sb.append( ch );
       }
