@@ -25,6 +25,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.File;
+import java.io.FilenameFilter;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -57,6 +59,27 @@ public class DatabaseConfig {
     Path fileResource = new Path(dataConfig);
     config = new Configuration();
     config.addResource(fileResource);
+    
+    if (System.getenv("CHUKWA_CONF_DIR") != null) {
+      // Allow site-specific MDL files to be included in the 
+      // configuration so as to keep the "main" mdl.xml pure.
+      File confDir = new File(System.getenv("CHUKWA_CONF_DIR"));
+      File[] confFiles = confDir.listFiles(new FilenameFilter() {
+
+        @Override
+        public boolean accept(File dir, String name) {
+          // Implements a naming convention of ending with "mdl.xml"
+          // but is careful not to pick up mdl.xml itself again.
+          return name.endsWith(MDL_XML) && !name.equals(MDL_XML);
+        }
+
+      });
+
+      if (confFiles != null) {
+        for (File confFile : confFiles) 
+          config.addResource(new Path(confFile.getAbsolutePath()));
+      }
+    }
   }
 
   public String get(String key) {
