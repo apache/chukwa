@@ -14,13 +14,17 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
-   CHUKWA-480.  Allow CreateRecordFile to read job confs. (Bill Graham via asrabkin)
+    CHUKWA-490. Enabling mdl.xml to be split into multiple files for ease of maintenance.  (Kirk True via Eric Yang)
+
+    CHUKWA-480.  Allow CreateRecordFile to read job confs. (Bill Graham via asrabkin)
 
     CHUKWA-471. Expose JobConf to Demux Processors. (Jerome Boulon via asrabkin)
 
     CHUKWA-472. Added ability to configure timestamp format for the default Time Series Processor.  (Bill Graham via Eric Yang)
 
   BUG FIXES
+
+    CHUKWA-489. Fixed malformed SQL in MetricDataLoader when values contain single quote character. (Kirk True via Eric Yang)
 
     CHUKWA-488. Filter user customized jar file path URL.  (Kirk True via Eric Yang)
 
