@@ -24,6 +24,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-492. Correction to database setup instruction. (Bernd Fondermann via Eric Yang)
+
     CHUKWA-489. Fixed malformed SQL in MetricDataLoader when values contain single quote character. (Kirk True via Eric Yang)
 
     CHUKWA-488. Filter user customized jar file path URL.  (Kirk True via Eric Yang)
