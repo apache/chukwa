@@ -350,7 +350,7 @@ Configure and then copy the my.cnf file to the CHUKWA_HOME/opt/mysql-* directory
 ./scripts/mysql_install_db
 ./bin/mysqld_safe&#38;
 ./bin/mysqladmin -u root create &#60;clustername&#62;
-./bin/mysql -u root &#60;clustername&#62; &#60; $CHUKWA&#95;HOME/conf/database_create_table
+./bin/mysql -u root &#60;clustername&#62; &#60; $CHUKWA&#95;HOME/conf/database_create_tables.sql
 </source>
 
 <p>Edit the CHUKWA_HOME/conf/jdbc.conf configuration file. </p>
@@ -393,17 +393,11 @@ Refresh to the Chukwa Cluster Configuration page for the Job Tracker URL. </sour
 </section> -->
 
 <section>
-<title>Set Up HICC </title>
-<p>The Hadoop Infrastructure Care Center (HICC) is the Chukwa web user interface. To set up HICC, do the following:</p>
-<ul>
-<li>Download apache-tomcat 6.0.18+ from <a href="http://tomcat.apache.org/download-60.cgi">Apache Tomcat</a> and decompress the tarball to CHUKWA_HOME/opt. </li> 
-<li>Copy CHUKWA_HOME/hicc.war to apache-tomcat-6.0.18/webapps. </li> 
-<li>Start up HICC by running: </li> 
-</ul>
-<source>$CHUKWA_HOME/bin/hicc.sh start</source>
-<ul>
-<li>Point your favorite browser to: http://&#60;server&#62;:8080/hicc  </li> 
-</ul>
+<title>Running HICC</title>
+<p>The Hadoop Infrastructure Care Center (HICC) is the Chukwa web user interface. HICC is started by invoking</p>
+<source>bin/chukwa hicc</source>
+<p>Once the webcontainer with HICC has been started, point your favorite browser to:</p>
+<source>http://&#60;server&#62;:8080/hicc</source>
 </section>
 
 </section>
