@@ -167,17 +167,17 @@ public class TimeHandler {
       session.setAttribute("start", "" + start);
       session.setAttribute("end", "" + end);
     } else if (request.getParameter("period") != null
-        && !request.getParameter("period").equals("")) {
+        && !"".equals(request.getParameter("period"))) {
       String period = xf.getParameter("period");
       parsePeriodValue(period);
     } else if (request.getParameter("start") != null
         && request.getParameter("end") != null) {
       start = Long.parseLong(request.getParameter("start"));
       end = Long.parseLong(request.getParameter("end"));
-    } else if (session.getAttribute("time_type").equals("range")) {
+    } else if ("range".equals(session.getAttribute("time_type"))) {
       start = Long.parseLong((String) session.getAttribute("start"));
       end = Long.parseLong((String) session.getAttribute("end"));
-    } else if (session.getAttribute("time_type").equals("last")
+    } else if ("last".equals(session.getAttribute("time_type"))
         && session.getAttribute("period") != null) {
       String period = (String) session.getAttribute("period");
       parsePeriodValue(period);
