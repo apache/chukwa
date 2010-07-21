@@ -24,7 +24,9 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
-    CHUKWA-498.  Agent logs incorrect number of chunks sent. (Bill Graham)
+    CHUKWA-499.  JMSAdaptor misses last argument in some cases when parsing. (Bill Graham via asrabkin)
+
+    CHUKWA-498.  Agent logs incorrect number of chunks sent. (Bill Graham via asrabkin)
 
     CHHUKWA-494.  NPE when no time range is specified. (Bernd Fondermann via asrabkin)
 

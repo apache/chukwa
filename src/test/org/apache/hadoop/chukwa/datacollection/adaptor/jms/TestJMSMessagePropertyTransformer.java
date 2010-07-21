@@ -64,7 +64,7 @@ public class TestJMSMessagePropertyTransformer extends TestCase implements Chunk
     JMSAdaptor adaptor = new JMSAdaptor();
     adaptor.parseArgs(DATA_TYPE, "vm://localhost -t test.topic " +
                     "-x org.apache.hadoop.chukwa.datacollection.adaptor.jms.JMSMessagePropertyTransformer " +
-                    "-p \"foo,bar,num\" 0",
+                    "-p \"foo,bar,num\"",
             AdaptorManager.NULL);
     adaptor.start("id", DATA_TYPE, 0, this);
 
@@ -88,7 +88,7 @@ public class TestJMSMessagePropertyTransformer extends TestCase implements Chunk
     JMSAdaptor adaptor = new JMSAdaptor();
     adaptor.parseArgs(DATA_TYPE, "vm://localhost -t test.topic " +
                     "-x org.apache.hadoop.chukwa.datacollection.adaptor.jms.JMSMessagePropertyTransformer " +
-                    "-p foo,bar,num 0",
+                    "-p foo,bar,num",
             AdaptorManager.NULL);
     adaptor.start("id", DATA_TYPE, 0, this);
 
@@ -112,7 +112,7 @@ public class TestJMSMessagePropertyTransformer extends TestCase implements Chunk
     JMSAdaptor adaptor = new JMSAdaptor();
     adaptor.parseArgs(DATA_TYPE, "vm://localhost -t test.topic " +
                     "-x org.apache.hadoop.chukwa.datacollection.adaptor.jms.JMSMessagePropertyTransformer " +
-                    "-p \"foo,bar,num -d ' '\" 0",
+                    "-p \"foo,bar,num -d ' '\"",
             AdaptorManager.NULL);
     adaptor.start("id", DATA_TYPE, 0, this);
 
@@ -135,7 +135,7 @@ public class TestJMSMessagePropertyTransformer extends TestCase implements Chunk
     JMSAdaptor adaptor = new JMSAdaptor();
     adaptor.parseArgs(DATA_TYPE, "vm://localhost -t test.topic " +
                     "-x org.apache.hadoop.chukwa.datacollection.adaptor.jms.JMSMessagePropertyTransformer " +
-                    "-p \"foo,bar,num -d ^^^\" 0",
+                    "-p \"foo,bar,num -d ^^^\"",
             AdaptorManager.NULL);
     adaptor.start("id", DATA_TYPE, 0, this);
 
@@ -158,7 +158,7 @@ public class TestJMSMessagePropertyTransformer extends TestCase implements Chunk
     JMSAdaptor adaptor = new JMSAdaptor();
     adaptor.parseArgs(DATA_TYPE, "vm://localhost -t test.topic " +
                     "-x org.apache.hadoop.chukwa.datacollection.adaptor.jms.JMSMessagePropertyTransformer " +
-                    "-p \"foo,bar,num -d '[ insert between values ]'\" 0",
+                    "-p \"foo,bar,num -d '[ insert between values ]'\"",
             AdaptorManager.NULL);
     adaptor.start("id", DATA_TYPE, 0, this);
 
@@ -183,7 +183,7 @@ public class TestJMSMessagePropertyTransformer extends TestCase implements Chunk
     JMSAdaptor adaptor = new JMSAdaptor();
     adaptor.parseArgs(DATA_TYPE, "vm://localhost -t test.topic " +
                     "-x org.apache.hadoop.chukwa.datacollection.adaptor.jms.JMSMessagePropertyTransformer " +
-                    "-p \"foo,bar,num\" 0",
+                    "-p \"foo,bar,num\"",
             AdaptorManager.NULL);
     adaptor.start("id", DATA_TYPE, 0, this);
 
@@ -204,7 +204,7 @@ public class TestJMSMessagePropertyTransformer extends TestCase implements Chunk
     JMSAdaptor adaptor = new JMSAdaptor();
     adaptor.parseArgs(DATA_TYPE, "vm://localhost -t test.topic " +
                     "-x org.apache.hadoop.chukwa.datacollection.adaptor.jms.JMSMessagePropertyTransformer " +
-                    "-p \"foo,bar,num -r foo\" 0",
+                    "-p \"foo,bar,num -r foo\"",
             AdaptorManager.NULL);
     adaptor.start("id", DATA_TYPE, 0, this);
 
@@ -225,7 +225,7 @@ public class TestJMSMessagePropertyTransformer extends TestCase implements Chunk
     JMSAdaptor adaptor = new JMSAdaptor();
     adaptor.parseArgs(DATA_TYPE, "vm://localhost -t test.topic " +
                     "-x org.apache.hadoop.chukwa.datacollection.adaptor.jms.JMSMessagePropertyTransformer " +
-                    "-p \"foo,bar,num -r foo\" 0",
+                    "-p \"foo,bar,num -r foo\"",
             AdaptorManager.NULL);
     adaptor.start("id", DATA_TYPE, 0, this);
 

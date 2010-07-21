@@ -61,7 +61,7 @@ public class TestJMSAdaptor extends TestCase implements ChunkReceiver {
   public void testJMSTextMessage() throws Exception {
 
     JMSAdaptor adaptor = new JMSAdaptor();
-    adaptor.parseArgs(DATA_TYPE, "vm://localhost -t test.topic 0",
+    adaptor.parseArgs(DATA_TYPE, "vm://localhost -t test.topic",
             AdaptorManager.NULL);
     adaptor.start("id", DATA_TYPE, 0, this);
 
@@ -77,7 +77,7 @@ public class TestJMSAdaptor extends TestCase implements ChunkReceiver {
   public void testJMSTextMessageWithTransformer() throws Exception {
 
     JMSAdaptor adaptor = new JMSAdaptor();
-    adaptor.parseArgs(DATA_TYPE, "vm://localhost -t test.topic -x org.apache.hadoop.chukwa.datacollection.adaptor.jms.JMSTextMessageTransformer 0",
+    adaptor.parseArgs(DATA_TYPE, "vm://localhost -t test.topic -x org.apache.hadoop.chukwa.datacollection.adaptor.jms.JMSTextMessageTransformer",
             AdaptorManager.NULL);
     adaptor.start("id", DATA_TYPE, 0, this);
 
@@ -94,7 +94,7 @@ public class TestJMSAdaptor extends TestCase implements ChunkReceiver {
 
     JMSAdaptor adaptor = new JMSAdaptor();
     adaptor.parseArgs(DATA_TYPE,
-            "vm://localhost -t test.topic -s \"foo='bar'\" 0",
+            "vm://localhost -t test.topic -s \"foo='bar'\"",
             AdaptorManager.NULL);
     adaptor.start("id", DATA_TYPE, 0, this);
 
@@ -116,7 +116,7 @@ public class TestJMSAdaptor extends TestCase implements ChunkReceiver {
 
     JMSAdaptor adaptor = new JMSAdaptor();
     adaptor.parseArgs(DATA_TYPE,
-            "vm://localhost -t test.topic -s \"foo='bar' and bar='foo'\" 0",
+            "vm://localhost -t test.topic -s \"foo='bar' and bar='foo'\"",
             AdaptorManager.NULL);    
     adaptor.start("id", DATA_TYPE, 0, this);
 

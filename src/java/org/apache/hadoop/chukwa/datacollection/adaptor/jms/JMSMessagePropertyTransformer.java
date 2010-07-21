@@ -58,6 +58,8 @@ public class JMSMessagePropertyTransformer implements JMSMessageTransformer {
       return null;
     }
 
+    log.info("Initializing JMSMessagePropertyTransformer: args=" + args);
+
     propertyNames = new ArrayList<String>();
     
     String[] tokens = args.split(" ");

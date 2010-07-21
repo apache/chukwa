@@ -143,12 +143,12 @@ public class JMSAdaptor extends AbstractAdaptor {
       if ("-t".equals(value)) {
         topic = tokens[++i];
       }
-      else if ("-s".equals(value) && i <= tokens.length - 2) {
+      else if ("-s".equals(value) && i <= tokens.length - 1) {
         selector = tokens[++i];
 
         // selector can have multiple words
         if (selector.startsWith("\"")) {
-          for(int j = i + 1; j < tokens.length - 1; j++) {
+          for(int j = i + 1; j < tokens.length; j++) {
             selector = selector + " " + tokens[++i];
             if(tokens[j].endsWith("\"")) {
               break;
@@ -165,7 +165,7 @@ public class JMSAdaptor extends AbstractAdaptor {
 
         // transformerConfs can have multiple words
         if (transformerConfs.startsWith("\"")) {
-          for(int j = i + 1; j < tokens.length - 1; j++) {
+          for(int j = i + 1; j < tokens.length; j++) {
             transformerConfs = transformerConfs + " " + tokens[++i];
             if(tokens[j].endsWith("\"")) {
               break;
