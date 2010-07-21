@@ -173,7 +173,8 @@ public class ChukwaHttpSender implements ChukwaSender {
     List<CommitListEntry> commitResults = new ArrayList<CommitListEntry>();
 
     int thisPost = postID++;
-    log.info("collected " + toSend.size() + " chunks for post_"+thisPost);
+    int toSendSize = toSend.size();
+    log.info("collected " + toSendSize + " chunks for post_"+thisPost);
 
     // Serialize each chunk in turn into it's own DataOutputBuffer and add that
     // buffer to serializedEvents
@@ -201,7 +202,7 @@ public class ChukwaHttpSender implements ChukwaSender {
     log.info(">>>>>> HTTP post_"+thisPost + " to " + currCollector + " length = " + postData.getContentLength());
 
     List<CommitListEntry> results =  postAndParseResponse(method, commitResults);
-    log.info("post_" + thisPost + " sent " + toSend.size() + " chunks, got back " + results.size() + " acks");
+    log.info("post_" + thisPost + " sent " + toSendSize + " chunks, got back " + results.size() + " acks");
     return results;
   }
   

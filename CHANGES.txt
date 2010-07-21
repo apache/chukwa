@@ -24,6 +24,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-498.  Agent logs incorrect number of chunks sent. (Bill Graham)
+
     CHHUKWA-494.  NPE when no time range is specified. (Bernd Fondermann via asrabkin)
 
     CHUKWA-492. Correction to database setup instruction. (Bernd Fondermann via Eric Yang)
