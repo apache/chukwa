@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.Chunk;
@@ -50,6 +51,7 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
 
   protected int STAT_INTERVAL_SECONDS = 30;
   private int rotateInterval = 1000 * 60 * 5;
+  static final int ACQ_WAIT_ON_TERM = 500; //ms to wait for lock on a SIGTERM before aborting
   
   public static final String STAT_PERIOD_OPT = "chukwaCollector.stats.period";
   public static final String ROTATE_INTERVAL_OPT = "chukwaCollector.rotateInterval";
@@ -311,22 +313,25 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
 
     // If we are here it's either because of an HDFS exception
     // or Collector has received a kill -TERM
-  
+    boolean gotLock = false;
     try {
-      lock.acquire();
-      if (this.currentOutputStr != null) {
-        this.currentOutputStr.close();
+      gotLock = lock.tryAcquire(ACQ_WAIT_ON_TERM, TimeUnit.MILLISECONDS);
+      if(gotLock) {
+        
+        if (this.currentOutputStr != null) {
+          this.currentOutputStr.close();
+        }
+        if(ENABLE_ROTATION_ON_CLOSE)
+          if(bytesThisRotate > 0)
+            fs.rename(currentPath, new Path(currentFileName + ".done"));
+          else
+            fs.delete(currentPath, false);
       }
-      if(ENABLE_ROTATION_ON_CLOSE)
-        if(bytesThisRotate > 0)
-          fs.rename(currentPath, new Path(currentFileName + ".done"));
-        else
-          fs.delete(currentPath, false);
-
     } catch (Throwable e) {
      log.warn("cannot rename dataSink file:" + currentPath,e);
     } finally {
-      lock.release();
+      if(gotLock)
+        lock.release();
     }
   }
 
