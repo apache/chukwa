@@ -14,6 +14,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-495.  Support for pig 0.7. (Bill Graham via asrabkin)
+
     CHUKWA-490. Enabling mdl.xml to be split into multiple files for ease of maintenance.  (Kirk True via Eric Yang)
 
     CHUKWA-480.  Allow CreateRecordFile to read job confs. (Bill Graham via asrabkin)

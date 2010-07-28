@@ -17,9 +17,9 @@
  */
 register $chukwaCore
 register $chukwaPig
-define chukwaLoader org.apache.hadoop.chukwa.ChukwaStorage();
+define chukwaLoader org.apache.hadoop.chukwa.pig.ChukwaLoader();
 define timePartition_Hadoop_dfs_namenode_$timePeriod org.apache.hadoop.chukwa.TimePartition('$timePeriod');
-define seqWriter_Hadoop_dfs_namenode_$timePeriod org.apache.hadoop.chukwa.ChukwaStorage('c_timestamp','c_recordtype', 'c_application', 'c_cluster','c_source' , 'createfileops', 'addblockops', 'safemodetime', 'syncs_avg_time', 'blockreport_avg_time', 'filesrenamed', 'getlistingops', 'deletefileops', 'transactions_num_ops', 'fsimageloadtime', 'blockscorrupted', 'getblocklocations', 'filescreated', 'blockreport_num_ops', 'syncs_num_ops', 'transactions_avg_time');
+define seqWriter_Hadoop_dfs_namenode_$timePeriod org.apache.hadoop.chukwa.pig.ChukwaStorer('c_timestamp','c_recordtype', 'c_application', 'c_cluster','c_source' , 'createfileops', 'addblockops', 'safemodetime', 'syncs_avg_time', 'blockreport_avg_time', 'filesrenamed', 'getlistingops', 'deletefileops', 'transactions_num_ops', 'fsimageloadtime', 'blockscorrupted', 'getblocklocations', 'filescreated', 'blockreport_num_ops', 'syncs_num_ops', 'transactions_avg_time');
 A_Hadoop_dfs_namenode_$timePeriod = load '$input' using  chukwaLoader as (ts: long,fields);
 B_Hadoop_dfs_namenode_$timePeriod = FOREACH A_Hadoop_dfs_namenode_$timePeriod GENERATE timePartition_Hadoop_dfs_namenode_$timePeriod(ts) as time ,fields#'csource' as g0 , fields#'createfileops' as f0, fields#'addblockops' as f1, fields#'safemodetime' as f2, fields#'syncs_avg_time' as f3, fields#'blockreport_avg_time' as f4, fields#'filesrenamed' as f5, fields#'getlistingops' as f6, fields#'deletefileops' as f7, fields#'transactions_num_ops' as f8, fields#'fsimageloadtime' as f9, fields#'blockscorrupted' as f10, fields#'getblocklocations' as f11, fields#'filescreated' as f12, fields#'blockreport_num_ops' as f13, fields#'syncs_num_ops' as f14, fields#'transactions_avg_time' as f15;
 C_Hadoop_dfs_namenode_$timePeriod = group B_Hadoop_dfs_namenode_$timePeriod by (time,g0 );

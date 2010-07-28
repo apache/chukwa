@@ -18,55 +18,34 @@
 package org.apache.hadoop.chukwa;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.io.SequenceFile;
-import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.pig.ExecType;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.InputFormat;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.SequenceFileRecordReader;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.pig.LoadFunc;
-import org.apache.pig.StoreFunc;
-import org.apache.pig.backend.datastorage.DataStorage;
-import org.apache.pig.builtin.Utf8StorageConverter;
+import org.apache.pig.LoadMetadata;
+import org.apache.pig.ResourceSchema;
+import org.apache.pig.ResourceStatistics;
+import org.apache.pig.Expression;
+import org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.PigSplit;
 import org.apache.pig.data.DataType;
 import org.apache.pig.data.DefaultTupleFactory;
 import org.apache.pig.data.Tuple;
 import org.apache.pig.data.DataByteArray;
 import org.apache.pig.data.TupleFactory;
-import org.apache.pig.impl.io.BufferedPositionedInputStream;
 import org.apache.pig.impl.logicalLayer.schema.Schema;
 import static org.apache.pig.impl.logicalLayer.schema.Schema.FieldSchema;
 
-public class ChukwaArchive extends Utf8StorageConverter implements LoadFunc {
+public class ChukwaArchive extends LoadFunc implements LoadMetadata {
 
-  private SequenceFile.Reader r = null;
-  private long end = -1;
+  SequenceFileRecordReader<ChukwaArchiveKey, ChunkImpl> reader;
 
   private TupleFactory tf = DefaultTupleFactory.getInstance();
   
-  @Override
-  public void bindTo(String name, BufferedPositionedInputStream arg1,
-      long offset, long end) throws IOException {
-    Configuration conf = new Configuration();
-    FileSystem fs = FileSystem.get(conf);
-    Path path = new Path(name);
-    r = new SequenceFile.Reader(fs, path, conf);
-    if(offset > 0)
-      r.sync(offset);
-    this.end = end;
-    
-//    System.out.println("bound to " + name + " at " + offset);
-  }
-  
-
-  @Override
-  public void fieldsToRead(Schema arg0) {
-    //we don't need this; no-op
-  }
-
-  
   static Schema chukwaArchiveSchema;
+  static ResourceSchema chukwaArchiveResourceSchema;
   static int schemaFieldCount;
   static {
     chukwaArchiveSchema = new Schema();
@@ -77,23 +56,22 @@ public class ChukwaArchive extends Utf8StorageConverter implements LoadFunc {
     chukwaArchiveSchema.add(new FieldSchema("tags", DataType.CHARARRAY));
     chukwaArchiveSchema.add(new FieldSchema("data", DataType.BYTEARRAY));
     schemaFieldCount = chukwaArchiveSchema.size();
+    chukwaArchiveResourceSchema = new ResourceSchema(chukwaArchiveSchema);
     //do we want to expose the record offsets?
-  }
-
-  @Override
-  public Schema determineSchema(String arg0, ExecType arg1, DataStorage arg2)
-      throws IOException {
-    return chukwaArchiveSchema;
   }
 
   @Override
   public Tuple getNext() throws IOException {
     
-    ChukwaArchiveKey key = new ChukwaArchiveKey();
-    ChunkImpl val = ChunkImpl.getBlankChunk();
-    if(r.getPosition() > end || !r.next(key, val)) {
-      return null;
+    try {
+      if (!reader.nextKeyValue()) {
+        return null;
+      }
+    } catch (InterruptedException e) {
+        throw new IOException(e);
     }
+
+    ChunkImpl val = ChunkImpl.getBlankChunk();
     Tuple t = tf.newTuple(schemaFieldCount);
     t.set(0, new Long(val.seqID));
     t.set(1, val.getDataType());
@@ -102,11 +80,45 @@ public class ChukwaArchive extends Utf8StorageConverter implements LoadFunc {
     t.set(4, val.getTags());
     byte[] data = val.getData();
   
-    t.set(5, (data == null)? new DataByteArray() : new DataByteArray(data));
+    t.set(5, (data == null) ? new DataByteArray() : new DataByteArray(data));
     
 //    System.out.println("returning " + t);
     return t;
   }
 
+  @Override
+  public ResourceSchema getSchema(String s, Job job) throws IOException {
+    return chukwaArchiveResourceSchema;
+  }
 
+  @Override
+  public ResourceStatistics getStatistics(String s, Job job) throws IOException {
+    return null;
+  }
+
+  @Override
+  public String[] getPartitionKeys(String s, Job job) throws IOException {
+    return null;
+  }
+
+  @Override
+  public void setPartitionFilter(Expression expression) throws IOException {
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public InputFormat getInputFormat() throws IOException {
+    return new SequenceFileInputFormat<ChukwaArchiveKey, ChunkImpl>();
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public void prepareToRead(RecordReader reader, PigSplit split) throws IOException {
+    this.reader = (SequenceFileRecordReader)reader;
+  }
+
+  @Override
+  public void setLocation(String location, Job job) throws IOException {
+    FileInputFormat.setInputPaths(job, location);
+  }
 }

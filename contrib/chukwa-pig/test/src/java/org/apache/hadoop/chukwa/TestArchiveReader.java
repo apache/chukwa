@@ -89,7 +89,7 @@ public class TestArchiveReader extends PigTest {
     //       +" as (ts: long,fields);");
             + ";");
      // pigServer.registerQuery("B = FOREACH A GENERATE ts,'myCluster',fields,fields#'csource','myRecord',fields#'csource','myApplication', fields#'A';");
-    //  pigServer.registerQuery("define seqWriter org.apache.hadoop.chukwa.ChukwaStorage('c_timestamp', 'c_cluster' ,'fields','c_pk','c_recordtype','c_source','c_application','myFieldA');");
+    //  pigServer.registerQuery("define seqWriter org.apache.hadoop.chukwa.pig.ChukwaStorer('c_timestamp', 'c_cluster' ,'fields','c_pk','c_recordtype','c_source','c_application','myFieldA');");
     //  pigServer.registerQuery("STORE B into '" + directory
    //       + "/chukwa-pig.evt' using seqWriter;");
 

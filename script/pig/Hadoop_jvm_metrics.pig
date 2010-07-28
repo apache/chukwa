@@ -17,9 +17,9 @@
  */
 register $chukwaCore
 register $chukwaPig
-define chukwaLoader org.apache.hadoop.chukwa.ChukwaStorage();
+define chukwaLoader org.apache.hadoop.chukwa.pig.ChukwaLoader();
 define timePartition_Hadoop_jvm_metrics_$timePeriod org.apache.hadoop.chukwa.TimePartition('$timePeriod');
-define seqWriter_Hadoop_jvm_metrics_$timePeriod org.apache.hadoop.chukwa.ChukwaStorage('c_timestamp','c_recordtype', 'c_application', 'c_cluster','c_source' ,'processName' , 'memHeapCommittedM', 'logFatal', 'threadsWaiting', 'gcCount', 'threadsBlocked', 'logError', 'logWarn', 'memNonHeapCommittedM', 'gcTimeMillis', 'memNonHeapUsedM', 'logInfo', 'memHeapUsedM', 'threadsNew', 'threadsTerminated', 'threadsTimedWaiting', 'threadsRunnable');
+define seqWriter_Hadoop_jvm_metrics_$timePeriod org.apache.hadoop.chukwa.pig.ChukwaStorer('c_timestamp','c_recordtype', 'c_application', 'c_cluster','c_source' ,'processName' , 'memHeapCommittedM', 'logFatal', 'threadsWaiting', 'gcCount', 'threadsBlocked', 'logError', 'logWarn', 'memNonHeapCommittedM', 'gcTimeMillis', 'memNonHeapUsedM', 'logInfo', 'memHeapUsedM', 'threadsNew', 'threadsTerminated', 'threadsTimedWaiting', 'threadsRunnable');
 A_Hadoop_jvm_metrics_$timePeriod = load '$input' using  chukwaLoader as (ts: long,fields);
 B_Hadoop_jvm_metrics_$timePeriod = FOREACH A_Hadoop_jvm_metrics_$timePeriod GENERATE timePartition_Hadoop_jvm_metrics_$timePeriod(ts) as time ,fields#'csource' as g0 ,fields#'processName' as g1 , fields#'memHeapCommittedM' as f0, fields#'logFatal' as f1, fields#'threadsWaiting' as f2, fields#'gcCount' as f3, fields#'threadsBlocked' as f4, fields#'logError' as f5, fields#'logWarn' as f6, fields#'memNonHeapCommittedM' as f7, fields#'gcTimeMillis' as f8, fields#'memNonHeapUsedM' as f9, fields#'logInfo' as f10, fields#'memHeapUsedM' as f11, fields#'threadsNew' as f12, fields#'threadsTerminated' as f13, fields#'threadsTimedWaiting' as f14, fields#'threadsRunnable' as f15;
 C_Hadoop_jvm_metrics_$timePeriod = group B_Hadoop_jvm_metrics_$timePeriod by (time,g0 ,g1 );

@@ -17,9 +17,9 @@
  */
 register $chukwaCore
 register $chukwaPig
-define chukwaLoader org.apache.hadoop.chukwa.ChukwaStorage();
+define chukwaLoader org.apache.hadoop.chukwa.pig.ChukwaLoader();
 define timePartition_Hadoop_mapred_jobtracker_$timePeriod org.apache.hadoop.chukwa.TimePartition('$timePeriod');
-define seqWriter_Hadoop_mapred_jobtracker_$timePeriod org.apache.hadoop.chukwa.ChukwaStorage('c_timestamp','c_recordtype', 'c_application', 'c_cluster','c_source' , 'reduces_completed', 'maps_launched', 'jobs_completed', 'reduces_launched', 'maps_completed', 'jobs_submitted');
+define seqWriter_Hadoop_mapred_jobtracker_$timePeriod org.apache.hadoop.chukwa.pig.ChukwaStorer('c_timestamp','c_recordtype', 'c_application', 'c_cluster','c_source' , 'reduces_completed', 'maps_launched', 'jobs_completed', 'reduces_launched', 'maps_completed', 'jobs_submitted');
 A_Hadoop_mapred_jobtracker_$timePeriod = load '$input' using  chukwaLoader as (ts: long,fields);
 B_Hadoop_mapred_jobtracker_$timePeriod = FOREACH A_Hadoop_mapred_jobtracker_$timePeriod GENERATE timePartition_Hadoop_mapred_jobtracker_$timePeriod(ts) as time ,fields#'csource' as g0 , fields#'reduces_completed' as f0, fields#'maps_launched' as f1, fields#'jobs_completed' as f2, fields#'reduces_launched' as f3, fields#'maps_completed' as f4, fields#'jobs_submitted' as f5;
 C_Hadoop_mapred_jobtracker_$timePeriod = group B_Hadoop_mapred_jobtracker_$timePeriod by (time,g0 );

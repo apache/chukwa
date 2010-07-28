@@ -18,11 +18,11 @@
 register $chukwaCore
 register $chukwaPig
 
-define seqWriter org.apache.hadoop.chukwa.ChukwaStorage('c_timestamp','userid', 'totalJobs', 'dataLocalMaps', 'rackLocalMaps', 'remoteMaps', 'mapInputBytes', 'reduceOutputRecords', 'mapSlotHours', 'reduceSlotHours', 'totalMaps', 'totalReduces','c_recordtype','c_source','c_application', 'c_cluster');
+define seqWriter org.apache.hadoop.chukwa.pig.ChukwaStorer('c_timestamp','userid', 'totalJobs', 'dataLocalMaps', 'rackLocalMaps', 'remoteMaps', 'mapInputBytes', 'reduceOutputRecords', 'mapSlotHours', 'reduceSlotHours', 'totalMaps', 'totalReduces','c_recordtype','c_source','c_application', 'c_cluster');
 
 /*****************************************************************/
 /*********************** Task data begin *************************/
-taskInputData = load '$taskfile' using  org.apache.hadoop.chukwa.ChukwaStorage() as (ts: long,fields);
+taskInputData = load '$taskfile' using  org.apache.hadoop.chukwa.pig.ChukwaLoader() as (ts: long,fields);
 
 -- convert map to row-column
 taskTable = FOREACH taskInputData GENERATE fields#'JOBID' as jobId, fields#'TASKID' as taskId, fields#'START_TIME' as startTime, fields#'FINISH_TIME' as finishTime, fields#'TASK_TYPE' as taskType;
@@ -47,7 +47,7 @@ reduceTaskTime = filter taskJobTime by taskType eq 'REDUCE';
 
 /*****************************************************************/
 /*********************** Job data begin *************************/
-jobInputData = load '$jobfile' using  org.apache.hadoop.chukwa.ChukwaStorage() as (ts: long,fields);
+jobInputData = load '$jobfile' using  org.apache.hadoop.chukwa.pig.ChukwaLoader() as (ts: long,fields);
 
 -- convert map to row-column
 jobTable = FOREACH jobInputData GENERATE fields#'USER' as user, fields#'JOBID' as jobId, fields#'SUBMIT_TIME' as submitTime, fields#'FINISH_TIME' as finishTime, fields#'JOB_STATUS' as jobStatus, fields#'Counter:org.apache.hadoop.mapreduce.JobCounter:DATA_LOCAL_MAPS' as dataLocalMaps, fields#'Counter:org.apache.hadoop.mapreduce.JobCounter:RACK_LOCAL_MAPS' as rackLocalMaps, fields#'Counter:org.apache.hadoop.mapreduce.JobCounter:REMOTE_MAPS' as remoteMaps, fields#'TOTAL_MAPS' as totalMaps, fields#'TOTAL_REDUCES' as totalReduces, fields#'Counter:org.apache.hadoop.mapred.Task\$Counter:MAP_INPUT_BYTES' as mapInputBytes, fields#'Counter:org.apache.hadoop.mapred.Task\$Counter:REDUCE_OUTPUT_RECORDS' as reduceOutputRecords;

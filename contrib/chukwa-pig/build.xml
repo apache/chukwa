@@ -225,13 +225,13 @@
 
 		<copy file="${build.dir}/chukwa-pig.jar" tofile="${basedir}/chukwa-pig.jar" />
 		</target>
-	
+
 	<path id="pig-classpath">
 		<pathelement location="${build.classes}" />
 		<pathelement location="${test.build.classes}" />
 		<pathelement location="${chukwa.root.build.classes}" />
 		<fileset dir="${basedir}/lib">
-			<include name="**/pig*.jar" />
+			<include name="**/pig-0.7.*.jar" />
 			<exclude name="**/excluded/" />
 		</fileset>
 		<fileset dir="../../build/">

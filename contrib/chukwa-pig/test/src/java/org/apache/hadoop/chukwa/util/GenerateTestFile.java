@@ -31,7 +31,7 @@ import org.apache.hadoop.io.SequenceFile.CompressionType;
 public class GenerateTestFile {
 
 /* Pig Test:
-  A = load './chukwaTestFile.evt' using  org.apache.hadoop.chukwa.ChukwaStorage() as (ts: long,fields);
+  A = load './chukwaTestFile.evt' using  org.apache.hadoop.chukwa.pig.ChukwaLoader() as (ts: long,fields);
   Dump A;
  
   (1242205800L,[A#7,B#3,csource#M0,C#9])
