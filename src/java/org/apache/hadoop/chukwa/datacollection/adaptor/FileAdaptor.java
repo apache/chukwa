@@ -27,6 +27,7 @@ import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 
@@ -130,6 +131,7 @@ public class FileAdaptor extends AbstractAdaptor {
   File toWatch;
   protected RandomAccessFile reader = null;
   protected long fileReadOffset;
+  protected boolean deleteFileOnClose = false;
   protected boolean shutdownCalled = false;
   
   /**
@@ -246,6 +248,22 @@ public class FileAdaptor extends AbstractAdaptor {
         cleanUp();
         break;
     }
+
+    if (deleteFileOnClose && toWatch != null) {
+      if (log.isDebugEnabled()) {
+        log.debug("About to delete " + toWatch.getAbsolutePath());
+      }
+      if (toWatch.delete()) {
+        if (log.isInfoEnabled()) {
+          log.debug("Successfully deleted " + toWatch.getAbsolutePath());
+        }
+      } else {
+        if (log.isEnabledFor(Level.WARN)) {
+          log.warn("Could not delete " + toWatch.getAbsolutePath() + " (for unknown reason)");
+        }
+      }
+    }
+    
     log.info("Exist Shutdown:" + shutdownPolicy.name()+ " - ObjectId:" + this);
     return fileReadOffset + offsetOfFirstByte;
   }
@@ -253,9 +271,18 @@ public class FileAdaptor extends AbstractAdaptor {
   public String parseArgs(String params) {
 
     String[] words = params.split(" ");
-    if (words.length > 1) {
+    if (words.length == 2) {
+      if (words[1].equals("delete")) {
+        deleteFileOnClose = true;
+        toWatch = new File(words[0]);
+      } else {
+        offsetOfFirstByte = Long.parseLong(words[0]);
+        toWatch = new File(words[1]);
+      }
+    } else if (words.length == 3) {
       offsetOfFirstByte = Long.parseLong(words[0]);
-      toWatch = new File(params.substring(words[0].length() + 1));
+      toWatch = new File(words[1]);
+      deleteFileOnClose = words[2].equals("delete");
     } else {
       toWatch = new File(params);
     }

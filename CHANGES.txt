@@ -14,6 +14,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-504.  Ability to delete file in FileAdaptor after successfully uploaded.  (Kirk True via asrabkin)
+
     CHUKWA-495.  Support for pig 0.7. (Bill Graham via asrabkin)
 
     CHUKWA-490. Enabling mdl.xml to be split into multiple files for ease of maintenance.  (Kirk True via Eric Yang)
