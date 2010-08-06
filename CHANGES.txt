@@ -30,6 +30,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-505. Don't include duplicate classes in chukwa-core.jar. (Bill Graham via asrabkin)
+
     CHUKWA-487.   Collector left in a bad state after temprorary NN outage. (Bill Graham via asrabkin)
 
     CHUKWA-499.  JMSAdaptor misses last argument in some cases when parsing. (Bill Graham via asrabkin)

@@ -658,7 +658,7 @@
 	</target>
 
 	<target name="chukwa_jar" depends="compile, collector" description="Create chukwa-core jar">
-		<jar jarfile="${build.dir}/chukwa-core-${chukwaVersion}.jar" basedir="${build.classes}" includes="org/apache/hadoop/chukwa/datacollection/**/*.class">
+		<jar jarfile="${build.dir}/chukwa-core-${chukwaVersion}.jar">
 			<manifest>
 				<section name="org/apache/hadoop/chukwa">
 					<attribute name="Implementation-Title" value="Chukwa" />
