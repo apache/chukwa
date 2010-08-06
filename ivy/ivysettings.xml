@@ -30,13 +30,24 @@
   <property name="repo.maven.org"
     value="http://repo1.maven.org/maven2/"
     override="false"/>
-  <property name="snapshot.apache.org"
-    value="http://people.apache.org/repo/m2-snapshot-repository/"
+  <property name="rawson"
+    value="http://people.apache.org/~rawson/repo/"
+    override="false"/>
+  <property name="facebook.com"
+    value="http://mirror.facebook.net/maven/repository/"
+    override="false"/>
+  <property name="apache.org"
+    value="https://repository.apache.org/content/groups/public/"
+    override="false"/>
+  <property name="ibiblio.org"
+    value="http://mirrors.ibiblio.org/pub/mirrors/maven2/"
     override="false"/>
   <property name="maven2.pattern"
     value="[organisation]/[module]/[revision]/[module]-[revision]"/>
   <property name="maven2.pattern.ext"
     value="${maven2.pattern}.[ext]"/>
+  <property name="snapshot.pattern"
+    value="[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"/>
   <!-- pull in the local repository -->
   <include url="${ivy.default.conf.dir}/ivyconf-local.xml"/>
   <settings defaultResolver="default"/>
@@ -46,24 +57,42 @@
       pattern="${maven2.pattern.ext}"
       m2compatible="true"
       />
-    <ibiblio name="apache-snapshot"
-      root="${snapshot.apache.org}"
+    <ibiblio name="apache"
+      root="${apache.org}"
+      pattern="${snapshot.pattern}"
+      m2compatible="true" checkmodified="true" changingPattern=".*SNAPSHOT"
+      />
+    <ibiblio name="rawson"
+      root="${rawson}"
       pattern="${maven2.pattern.ext}"
+      m2compatible="true"
+      />
+    <ibiblio name="facebook"
+      root="${facebook.com}"
+      m2compatible="true"
+      />
+    <ibiblio name="ibiblio"
+      root="${ibiblio.org}"
       m2compatible="true"
       />
     <chain name="default" dual="true">
       <resolver ref="local"/>
-      <resolver ref="maven2"/>
+      <resolver ref="apache"/>
+      <resolver ref="rawson"/>
+      <resolver ref="facebook"/>
+      <resolver ref="ibiblio"/>
     </chain>
     <chain name="internal">
       <resolver ref="local"/>
+      <resolver ref="apache"/>
     </chain>
     <chain name="external">
       <resolver ref="maven2"/>
+      <resolver ref="facebook"/>
     </chain>
     <chain name="external-and-snapshots">
       <resolver ref="maven2"/>
-      <resolver ref="apache-snapshot"/>
+      <resolver ref="rawson"/>
     </chain>
   </resolvers>
   <modules>
