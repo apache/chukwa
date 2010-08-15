@@ -131,8 +131,7 @@ public class JMSAdaptor extends AbstractAdaptor {
 
     brokerURL = tokens[0];
 
-    if (brokerURL.length() < 6 ||
-      (!brokerURL.startsWith("vm://") && !brokerURL.startsWith("tcp://"))) {
+    if (brokerURL.length() < 6 || brokerURL.indexOf("://") == -1) {
       throw new IllegalArgumentException("Invalid brokerURL: " + brokerURL);
     }
 
