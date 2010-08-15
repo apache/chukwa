@@ -126,6 +126,8 @@ Chukwa 0.4
 
   BUG FIXES
 
+    CHUKWA-508. Include contrib directory build files.  (Bill Graham via Eric Yang)
+
     CHUKWA-465. Setup default value for Post Demux Data Loader.  (Ahmed Fathalla via Eric Yang)
 
     CHUKWA-467. Disabled war file extraction to /tmp. (Eric Yang)

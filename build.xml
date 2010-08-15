@@ -1218,14 +1218,10 @@
 			<fileset dir="${opt.dir}" />
 		</copy>
 
-		<copy todir="${build.dir}/${final.name}/contrib/chukwa-pig" failonerror="false">
-			<fileset dir="${basedir}/contrib/chukwa-pig" />
+		<copy todir="${build.dir}/${final.name}/contrib" failonerror="false">
+			<fileset dir="${basedir}/contrib" />
 		</copy>
-		
-		<copy todir="${build.dir}/${final.name}/contrib/xtrace" failonerror="false">
-			<fileset dir="${basedir}/contrib/xtrace" />
-		</copy>
-		
+
 		<copy todir="${build.dir}/${final.name}/tools">
 			<fileset dir="${tools.dir}" />
 		</copy>
