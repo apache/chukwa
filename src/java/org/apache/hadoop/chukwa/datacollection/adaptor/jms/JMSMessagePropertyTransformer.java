@@ -132,7 +132,10 @@ public class JMSMessagePropertyTransformer implements JMSMessageTransformer {
         sb.append(delimiter);
       }
 
-      sb.append(value);
+      if (value != null) {
+        sb.append(value);
+      }
+
       valuesFound++;
     }
 

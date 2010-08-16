@@ -32,6 +32,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-510.  JMSMessagePropertyTransformer inserts "null" string for null JMS message property values  (Bill Graham via asrabkin)
+
     CHUKWA-505. Don't include duplicate classes in chukwa-core.jar. (Bill Graham via asrabkin)
 
     CHUKWA-487.   Collector left in a bad state after temprorary NN outage. (Bill Graham via asrabkin)

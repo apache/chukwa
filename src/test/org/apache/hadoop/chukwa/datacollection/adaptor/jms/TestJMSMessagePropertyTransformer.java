@@ -220,6 +220,28 @@ public class TestJMSMessagePropertyTransformer extends TestCase implements Chunk
     assertEquals("Message should not have been received", 0, chunkPayloads.size());
   }
 
+  public void testJMSPropMissingWithSomeRequired2() throws Exception {
+
+    JMSAdaptor adaptor = new JMSAdaptor();
+    adaptor.parseArgs(DATA_TYPE, "vm://localhost -t test.topic " +
+                    "-x org.apache.hadoop.chukwa.datacollection.adaptor.jms.JMSMessagePropertyTransformer " +
+                    "-p \"foo,bar,num -r foo\"",
+            AdaptorManager.NULL);
+    adaptor.start("id", DATA_TYPE, 0, this);
+
+    Message message = session.createTextMessage(MESSAGE_PAYLOAD);
+    message.setStringProperty("foo", "foo_value");
+    message.setStringProperty("bat", "bat_value");
+    message.setIntProperty("num", 1);
+    publisher.publish(message);
+
+    synchronized(this) {
+      wait(1000);
+    }
+    assertEquals("Message not received", 1, chunkPayloads.size());
+    assertEquals("Incorrect chunk payload found", "foo_value\t\t1", chunkPayloads.get(0));
+  }
+
   public void testJMSPropfoundWithSomeRequired() throws Exception {
 
     JMSAdaptor adaptor = new JMSAdaptor();
