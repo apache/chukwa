@@ -23,16 +23,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
 
+@Table(name="SystemMetrics",columnFamily="SystemMetrics")
 public class Iostat extends AbstractProcessor {
   static Logger log = Logger.getLogger(Iostat.class);
   public final String recordType = this.getClass().getName();
-
+  
   private static String regex = "([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3}) (.*?) (.*?): (.*?) \\((.*?)\\)";
   private static Pattern p = null;
 

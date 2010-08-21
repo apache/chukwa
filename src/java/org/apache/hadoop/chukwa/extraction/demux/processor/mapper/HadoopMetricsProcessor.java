@@ -25,6 +25,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Tables;
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
@@ -33,8 +36,36 @@ import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@Tables(annotations={
+@Table(name="Hadoop",columnFamily="Hadoop_jvm_metrics"),
+@Table(name="Hadoop",columnFamily="Hadoop_mapred_metrics"),
+@Table(name="Hadoop",columnFamily="Hadoop_dfs_metrics"),
+@Table(name="Hadoop",columnFamily="Hadoop_dfs_namenode"),
+@Table(name="Hadoop",columnFamily="Hadoop_dfs_FSDirectory"),
+@Table(name="Hadoop",columnFamily="Hadoop_dfs_FSNamesystem"),
+@Table(name="Hadoop",columnFamily="Hadoop_dfs_datanode"),
+@Table(name="Hadoop",columnFamily="Hadoop_mapred_jobtracker"),
+@Table(name="Hadoop",columnFamily="Hadoop_mapred_shuffleInput"),
+@Table(name="Hadoop",columnFamily="Hadoop_mapred_shuffleOutput"),
+@Table(name="Hadoop",columnFamily="Hadoop_mapred_tasktracker"),
+@Table(name="Hadoop",columnFamily="Hadoop_mapred_job"),
+@Table(name="Hadoop",columnFamily="Hadoop_rpc_metrics")
+})
+@Deprecated
 public class HadoopMetricsProcessor extends AbstractProcessor {
-
+  public static final String jvm = "Hadoop_jvm_metrics";
+  public static final String mapred = "Hadoop_mapred_metrics";
+  public static final String dfs = "Hadoop_dfs_metrics";
+  public static final String namenode = "Hadoop_dfs_namenode";
+  public static final String fsdir = "Hadoop_dfs_FSDirectory";
+  public static final String fsname = "Hadoop_dfs_FSNamesystem";
+  public static final String datanode = "Hadoop_dfs_datanode";
+  public static final String jobtracker = "Hadoop_mapred_jobtracker";
+  public static final String shuffleIn = "Hadoop_mapred_shuffleInput";
+  public static final String shuffleOut = "Hadoop_mapred_shuffleOutput";
+  public static final String tasktracker = "Hadoop_mapred_tasktracker";
+  public static final String mr = "Hadoop_mapred_job";
+  
   static Logger log = Logger.getLogger(HadoopMetricsProcessor.class);
   static final String chukwaTimestampField = "chukwa_timestamp";
   static final String contextNameField = "contextName";

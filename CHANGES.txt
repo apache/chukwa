@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-444. Added HBaseWriter for storing time series data in HBase for faster random read/write. (Eric Yang)
+
     CHUKWA-473.  Make default processor configurable. (Bill Graham via asrabkin)
 
     CHUKWA-479.  Support HTTP trigger actions (Bill Graham via asrabkin)

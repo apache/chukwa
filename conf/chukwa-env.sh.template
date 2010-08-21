@@ -53,6 +53,19 @@ export HADOOP_CONF_DIR="@TODO-HADOOP-CONF-DIR@"
 # errors due to protocol mismatch between hadoop versions.
 #export HADOOP_JAR=${HADOOP_HOME}/build/hadoop-*-core.jar
 
+# Optional (i.e. will try sensible defaults)
+# The location of HBase jars.  For writing data to HBase, you need to set
+# environment variable HBASE_HOME to HBase home directory.
+#export HBASE_HOME="@TODO-HBASE-HOME@"
+#export HBASE_JAR=`ls ${HBASE_HOME}/hbase*.jar`
+#export ZOO_KEEPER_JAR=`ls ${HBASE_HOME}/lib/zookeeper-*.jar`
+
+# Optional
+# The location of HBase Configuration directory.  For writing data to
+# HBase, you need to set environment variable HBASE_CONF to HBase conf
+# directory.
+export HBASE_CONF_DIR="@TODO-HBASE-CONF-DIR@"
+
 # The location of chukwa data repository (in either HDFS or your local
 # file system, whichever you are using)
 export chukwaRecordsRepository="/chukwa/repos/"
@@ -92,3 +105,4 @@ export JDBC_URL_PREFIX=@TODO_CHUKWA_JDBC_URL_PREFIX@
 export CHUKWA_HICC_MIN_MEM=
 export CHUKWA_HICC_MAX_MEM=
 
+#export CLASSPATH=${CLASSPATH}:${HBASE_JAR}:${HBASE_CONF_DIR}:${ZOO_KEEPER_JAR}

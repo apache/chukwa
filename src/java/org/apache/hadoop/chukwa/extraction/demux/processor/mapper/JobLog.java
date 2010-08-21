@@ -19,18 +19,24 @@
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Tables;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.JobHistory;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
+@Tables(annotations={
+@Table(name="Mapreduce",columnFamily="JobData"),
+@Table(name="Mapreduce",columnFamily="TaskData")
+})
 public class JobLog extends AbstractProcessor {
   private String savedLines = "";
   

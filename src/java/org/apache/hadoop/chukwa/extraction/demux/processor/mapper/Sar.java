@@ -23,14 +23,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
 
+@Table(name="SystemMetrics",columnFamily="SystemMetrics")
 public class Sar extends AbstractProcessor {
   static Logger log = Logger.getLogger(Sar.class);
+  public static final String reduceType = "SystemMetrics";
   public final String recordType = this.getClass().getName();
 
   private static String regex = "([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3}) (.*?) (.*?): (.*?) \\((.*?)\\)";
@@ -94,31 +98,31 @@ public class Sar extends AbstractProcessor {
 
             record = new ChukwaRecord();
             key = new ChukwaRecordKey();
-            this.buildGenericRecord(record, null, d.getTime(), "SystemMetrics");
+            this.buildGenericRecord(record, null, d.getTime(), reduceType);
           } else if (headers[1].equals("IFACE") && headers[2].equals("rxerr/s")) {
             log.debug("Matched Sar-Network");
 
             record = new ChukwaRecord();
             key = new ChukwaRecordKey();
-            this.buildGenericRecord(record, null, d.getTime(), "SystemMetrics");
+            this.buildGenericRecord(record, null, d.getTime(), reduceType);
           } else if (headers[1].equals("kbmemfree")) {
             log.debug("Matched Sar-Memory");
 
             record = new ChukwaRecord();
             key = new ChukwaRecordKey();
-            this.buildGenericRecord(record, null, d.getTime(), "SystemMetrics");
+            this.buildGenericRecord(record, null, d.getTime(), reduceType);
           } else if (headers[1].equals("totsck")) {
             log.debug("Matched Sar-NetworkSockets");
 
             record = new ChukwaRecord();
             key = new ChukwaRecordKey();
-            this.buildGenericRecord(record, null, d.getTime(), "SystemMetrics");
+            this.buildGenericRecord(record, null, d.getTime(), reduceType);
           } else if (headers[1].equals("runq-sz")) {
             log.debug("Matched Sar-LoadAverage");
 
             record = new ChukwaRecord();
             key = new ChukwaRecordKey();
-            this.buildGenericRecord(record, null, d.getTime(), "SystemMetrics");
+            this.buildGenericRecord(record, null, d.getTime(), reduceType);
           } else {
             log.debug("No match:" + headers[1] + " " + headers[2]);
           }

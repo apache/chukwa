@@ -27,21 +27,29 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Tables;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
-import org.mortbay.util.ajax.JSON;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+@Tables(annotations={
+@Table(name="Mapreduce",columnFamily="JobData"),
+@Table(name="Mapreduce",columnFamily="JobConfData")
+})
 public class JobConfProcessor extends AbstractProcessor {
     static Logger log = Logger.getLogger(JobConfProcessor.class);
+    private static final String jobData = "JobData";
+    private static final String jobConfData = "JobConfData";
+    
     static  Pattern timePattern = Pattern.compile("(.*)?time=\"(.*?)\"(.*)?");
     static  Pattern jobPattern = Pattern.compile("(.*?)job_(.*?)_conf\\.xml(.*?)");
     @Override
@@ -122,7 +130,7 @@ public class JobConfProcessor extends AbstractProcessor {
         record.add("JOBCONF-JSON", json.toString());
         record.add("mapred.job.queue.name", queue);
         record.add("JOBID", "job_" + jobID);
-        buildGenericRecord(record, null, time, "JobData");
+        buildGenericRecord(record, null, time, jobData);
         calendar.setTimeInMillis(time);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
@@ -131,7 +139,7 @@ public class JobConfProcessor extends AbstractProcessor {
         output.collect(key, record);
 
         jobConfRecord.add("JOBID", "job_" + jobID);
-        buildGenericRecord(jobConfRecord, null, time, "JobConfData");
+        buildGenericRecord(jobConfRecord, null, time, jobConfData);
         output.collect(key, jobConfRecord);
             
         tmp.delete();
@@ -142,6 +150,6 @@ public class JobConfProcessor extends AbstractProcessor {
   }
   
   public String getDataType() {
-    return Torque.class.getName();
+    return JobConfProcessor.class.getName();
   }
 }

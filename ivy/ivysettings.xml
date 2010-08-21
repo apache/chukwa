@@ -42,6 +42,9 @@
   <property name="ibiblio.org"
     value="http://mirrors.ibiblio.org/pub/mirrors/maven2/"
     override="false"/>
+  <property name="google.com"
+    value="http://google-maven-repository.googlecode.com/svn/repository/"
+    override="false"/>
   <property name="maven2.pattern"
     value="[organisation]/[module]/[revision]/[module]-[revision]"/>
   <property name="maven2.pattern.ext"
@@ -75,12 +78,17 @@
       root="${ibiblio.org}"
       m2compatible="true"
       />
+    <ibiblio name="google"
+      root="${google.com}"
+      m2compatible="true"
+      />
     <chain name="default" dual="true">
       <resolver ref="local"/>
       <resolver ref="apache"/>
       <resolver ref="rawson"/>
       <resolver ref="facebook"/>
       <resolver ref="ibiblio"/>
+      <resolver ref="google"/>
     </chain>
     <chain name="internal">
       <resolver ref="local"/>
@@ -89,6 +97,7 @@
     <chain name="external">
       <resolver ref="maven2"/>
       <resolver ref="facebook"/>
+      <resolver ref="google"/>
     </chain>
     <chain name="external-and-snapshots">
       <resolver ref="maven2"/>

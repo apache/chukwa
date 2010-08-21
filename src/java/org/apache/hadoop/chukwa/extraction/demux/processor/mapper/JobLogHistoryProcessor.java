@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.chukwa.extraction.engine.Record;
@@ -31,6 +33,7 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
 
+@Table(name="Mapreduce",columnFamily="JobLogHistory")
 public class JobLogHistoryProcessor extends AbstractProcessor {
   static Logger log = Logger.getLogger(JobLogHistoryProcessor.class);
 

@@ -23,12 +23,20 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Tables;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
 
+@Tables(annotations={
+@Table(name="HadoopLog",columnFamily="NameNode"),
+@Table(name="HadoopLog",columnFamily="DataNode"),
+@Table(name="HadoopLog",columnFamily="Audit")
+})
 public class HadoopLogProcessor extends AbstractProcessor {
   static Logger log = Logger.getLogger(HadoopLogProcessor.class);
 

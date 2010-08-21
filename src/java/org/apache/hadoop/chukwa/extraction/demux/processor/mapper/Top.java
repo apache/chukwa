@@ -25,14 +25,22 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Tables;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
 
+@Tables(annotations={
+@Table(name="SystemMetrics",columnFamily="SystemMetrics"),
+@Table(name="SystemMetrics",columnFamily="Top")
+})
 public class Top extends AbstractProcessor {
   static Logger log = Logger.getLogger(Top.class);
+  public final String reduceType = "SystemMetrics";
   public final String recordType = this.getClass().getName();
 
   private static String regex = "([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3}) (.*?) (.*?): ";
@@ -77,7 +85,7 @@ public class Top extends AbstractProcessor {
         record = new ChukwaRecord();
         key = new ChukwaRecordKey();
         parseSummary(record, summaryString);
-        this.buildGenericRecord(record, null, d.getTime(), "SystemMetrics");
+        this.buildGenericRecord(record, null, d.getTime(), reduceType);
         output.collect(key, record);
 
         StringBuffer buffer = new StringBuffer();
@@ -90,7 +98,7 @@ public class Top extends AbstractProcessor {
         }
         record = new ChukwaRecord();
         key = new ChukwaRecordKey();
-        this.buildGenericRecord(record, buffer.toString(), d.getTime(), "Top");
+        this.buildGenericRecord(record, buffer.toString(), d.getTime(), recordType);
         // Output Top info to database
         output.collect(key, record);
 

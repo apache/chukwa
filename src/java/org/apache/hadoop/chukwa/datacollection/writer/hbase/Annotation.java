@@ -16,24 +16,33 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.chukwa.datacollection.writer;
+package org.apache.hadoop.chukwa.datacollection.writer.hbase;
 
-import java.util.List;
-import org.apache.hadoop.chukwa.Chunk;
+import java.lang.annotation.*;
 
+public class Annotation {
 
-public abstract class PipelineableWriter implements ChukwaWriter {
-  protected ChukwaWriter next;
-  public void setNextStage(ChukwaWriter next) {
-    this.next = next;
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target({ElementType.TYPE})
+  public @interface Tables {
+    Table[] annotations();
   }
-  
-  public CommitStatus add(List<Chunk> chunks) throws WriterException {
-    if (next != null)
-      return next.add(chunks); //pass data through
-    else
-      return ChukwaWriter.COMMIT_OK;
+
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target({ElementType.TYPE})
+  public @interface Table {
+    String name();
+    String columnFamily();
   }
-  
-  
+
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target({ElementType.METHOD,ElementType.FIELD})
+  public @interface ColumnFamily {
+  }
+
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target({ElementType.LOCAL_VARIABLE})
+  public @interface RowKey {
+  }
+
 }

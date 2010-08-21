@@ -23,19 +23,18 @@ import java.net.InetAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
 import org.apache.hadoop.chukwa.extraction.engine.Record;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
-import org.apache.log4j.Logger;
 
+@Table(name="Hadoop",columnFamily="ClientTrace")
 public class ClientTraceProcessor extends AbstractProcessor {
-
   private static final String recordType = "ClientTrace";
   private final SimpleDateFormat sdf =
     new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");

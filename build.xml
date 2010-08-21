@@ -148,7 +148,7 @@
 		<property name="jdiff.stable.javadoc" value="http://hadoop.apache.org/core/docs/r${jdiff.stable}/api/" />
 
 		<!--this is the naming policy for artifacts we want pulled down-->
-		<property name="ivy.artifact.retrieve.pattern" value="${ant.project.name}/[conf]/[artifact]-[revision].[ext]" />
+		<property name="ivy.artifact.retrieve.pattern" value="${ant.project.name}/[conf]/[artifact]-[revision](-[classifier]).[ext]" />
 		<property name="jdiff.home" value="${build.ivy.lib.dir}/${ant.project.name}/jdiff" />
 		<property name="jdiff.jar" value="${jdiff.home}/jdiff-${jdiff.version}.jar" />
 		<property name="xerces.jar" value="${jdiff.home}/xerces-${xerces.version}.jar" />
@@ -509,6 +509,7 @@
 
 			</filterchain>
                 </copy>
+                <copy file="${test.src.dir}/hbase-site.xml" tofile="${test.build.dir}/classes/hbase-site.xml"></copy>
                 <copy file="${basedir}/conf/log4j.properties" tofile="${test.build.dir}/conf/log4j.properties"></copy>
                 <copy file="${build.dir}/hicc.war" tofile="${test.build.classes}/webapps/hicc.war"></copy>
                 <copy file="${basedir}/conf/auth.conf" tofile="${test.build.dir}/conf/auth.conf"></copy>

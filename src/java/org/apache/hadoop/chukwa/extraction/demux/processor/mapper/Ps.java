@@ -20,19 +20,21 @@ package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
 
+@Table(name="SystemMetrics",columnFamily="Ps")
 public class Ps extends AbstractProcessor {
   static Logger log = Logger.getLogger(Ps.class);
+  public static final String reduceType = "Ps";
 
   @Override
   protected void parse(String recordEntry,
@@ -43,7 +45,7 @@ public class Ps extends AbstractProcessor {
     for (HashMap<String, String> processInfo : ps.getProcessList()) {
       key = new ChukwaRecordKey();
       ChukwaRecord record = new ChukwaRecord();
-      this.buildGenericRecord(record, null, log.getDate().getTime(), "Ps");
+      this.buildGenericRecord(record, null, log.getDate().getTime(), reduceType);
       for (Entry<String, String> entry : processInfo.entrySet()) {
         record.add(entry.getKey(), entry.getValue());
       }

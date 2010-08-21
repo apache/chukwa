@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.chukwa.extraction.demux.Demux;
@@ -59,6 +60,7 @@ import org.apache.log4j.Logger;
  * </UL>
  *
  */
+@Table(name="TsProcessor",columnFamily="log")
 public class TsProcessor extends AbstractProcessor {
   static Logger log = Logger.getLogger(TsProcessor.class);
 

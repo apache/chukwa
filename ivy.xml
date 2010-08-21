@@ -16,7 +16,7 @@
    limitations under the License.
 -->
 
-<ivy-module version="1.0">
+<ivy-module version="1.0" xmlns:m="http://ant.apache.org/ivy/maven">
   <info organisation="org.apache.hadoop.chukwa" module="${ant.project.name}">
     <license name="Apache 2.0"/>
     <ivyauthor name="Apache Hadoop Chukwa Team" url="http://hadoop.apache.org/chukwa"/>
@@ -64,11 +64,18 @@
     <dependency org="org.apache.hbase"
       name="hbase"
       rev="${hbase.version}"
+      conf="common->master">
+      <artifact name="hbase" type="jar"/>
+      <artifact name="hbase" type="tests" ext="jar" m:classifier="tests"/>
+    </dependency>
+    <dependency org="com.google.guava"
+      name="guava"
+      rev="${guava.version}"
       conf="common->master"/>
-    <dependency org="org.apache.hadoop.zookeeper"
+    <!-- <dependency org="org.apache.hadoop.zookeeper"
       name="zookeeper"
       rev="${zookeeper.version}"
-      conf="common->master"/> 
+      conf="common->master"/> -->
     <dependency org="com.sun.jersey"
       name="jersey-core"
       rev="${jersey.version}"/>

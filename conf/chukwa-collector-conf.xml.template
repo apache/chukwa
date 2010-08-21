@@ -45,7 +45,31 @@
   </property>
 -->
 
+<!-- HBaseWriter parameters
+  <property>
+    <name>chukwaCollector.pipeline</name>
+    <value>org.apache.hadoop.chukwa.datacollection.writer.SocketTeeWriter,org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter</value>
+  </property>
 
+  <property>
+    <name>hbase.demux.package</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor</value>
+    <description>Demux parser class package, HBaseWriter uses this package name to validate HBase for annotated demux parser classes.</description>
+  </property>
+
+  <property>
+    <name>hbase.zookeeper.quorum</name>
+    <value>host1.mydomain.com,host2.mydomain.com,host3.mydomain.com</value>
+    <description>Comma separated list of servers in the ZooKeeper Quorum.
+    For example, "host1.mydomain.com,host2.mydomain.com,host3.mydomain.com".
+    By default this is set to localhost for local and pseudo-distributed modes
+    of operation. For a fully-distributed setup, this should be set to a full
+    list of ZooKeeper quorum servers. If HBASE_MANAGES_ZK is set in hbase-env.sh
+    this is the list of servers which we will start/stop ZooKeeper on.
+    </description>
+  </property>
+
+-->
 
   <property>
     <name>writer.hdfs.filesystem</name>

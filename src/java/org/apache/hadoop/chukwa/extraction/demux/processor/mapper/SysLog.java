@@ -24,15 +24,19 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
 
+@Table(name="SystemMetrics",columnFamily="SysLog")
 public class SysLog extends AbstractProcessor {
 
   static Logger log = Logger.getLogger(SysLog.class);
+  private static final String reduceType = "SysLog";  
   private SimpleDateFormat sdf = null;
 
   public SysLog() {
@@ -63,7 +67,7 @@ public class SysLog extends AbstractProcessor {
 
       ChukwaRecord record = new ChukwaRecord();
       buildGenericRecord(record, recordEntry, convertDate.getTime().getTime(),
-          "SysLog");
+          reduceType);
       output.collect(key, record);
     } catch (ParseException e) {
       e.printStackTrace();

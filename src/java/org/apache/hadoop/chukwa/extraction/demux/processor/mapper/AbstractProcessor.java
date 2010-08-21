@@ -125,5 +125,5 @@ public abstract class AbstractProcessor implements MapProcessor {
     startOffset = recordOffsets[currentPos] + 1;
     currentPos++;
     return RecordConstants.recoverRecordSeparators("\n", log);
-  }
+  }  
 }

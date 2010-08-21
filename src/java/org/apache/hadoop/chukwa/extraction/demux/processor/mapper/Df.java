@@ -23,14 +23,18 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
 
+@Table(name="SystemMetrics",columnFamily="Disk")
 public class Df extends AbstractProcessor {
   static Logger log = Logger.getLogger(Df.class);
+  
   private static final String[] headerSplitCols = { "Filesystem", "1K-blocks",
       "Used", "Available", "Use%", "Mounted", "on" };
   private static final String[] headerCols = { "Filesystem", "1K-blocks",
@@ -59,7 +63,7 @@ public class Df extends AbstractProcessor {
       Date d = sdf.parse(dStr);
       String[] lines = body.split("\n");
 
-      String[] outputCols = lines[0].split("[\\s]++");
+      String[] outputCols = lines[0].substring(lines[0].indexOf("Filesystem")).split("[\\s]++");
 
       if (outputCols.length != headerSplitCols.length
           || outputCols[0].intern() != headerSplitCols[0].intern()
