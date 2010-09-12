@@ -289,9 +289,11 @@ public class JMSAdaptor extends AbstractAdaptor {
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy)
       throws AdaptorException {
     try {
-      connection.stop();
+      connection.close();
 
-    } catch(Exception e) {}
+    } catch(Exception e) {
+      log.error("Exception closing JMS connection.", e);
+    }
 
     return bytesReceived;
   }
