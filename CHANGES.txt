@@ -16,6 +16,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-506. Added retry logic for MetricDataLoader (William Bajzek via Eric Yang)
+
     CHUKWA-507. Imrpoved url validation for JMSAdaptor. (Bill Graham via Eric Yang)
 
     CHUKWA-501. Newer version of Ivy, pull in newer deps. (Eric Yang via asrabkin)
@@ -33,6 +35,8 @@ Trunk (unreleased changes)
     CHUKWA-472. Added ability to configure timestamp format for the default Time Series Processor.  (Bill Graham via Eric Yang)
 
   BUG FIXES
+
+    CHUKWA-496. Fixed config file reference in design.html  (Bernd Fondermann via Eric Yang)
 
     CHUKWA-510.  JMSMessagePropertyTransformer inserts "null" string for null JMS message property values  (Bill Graham via asrabkin)
 
