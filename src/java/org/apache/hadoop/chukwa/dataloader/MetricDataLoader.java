@@ -172,7 +172,7 @@ public class MetricDataLoader implements Callable {
     return( sb.toString()); 
   }
   
-  public boolean run() {
+  public boolean run() throws IOException {
     boolean first=true;
     log.info("StreamName: " + source.getName());
     SequenceFile.Reader reader = null;
@@ -503,9 +503,13 @@ public class MetricDataLoader implements Callable {
       log.error("SQLException: " + ex.getMessage());
       log.error("SQLState: " + ex.getSQLState());
       log.error("VendorError: " + ex.getErrorCode());
+      // throw an exception up the chain to give the PostProcessorManager a chance to retry
+      throw new IOException (ex);
     } catch (Exception e) {
       isSuccessful = false;
       log.error(ExceptionUtil.getStackTrace(e));
+      // throw an exception up the chain to give the PostProcessorManager a chance to retry
+      throw new IOException (e);
     } finally {
       if (batchMode && conn!=null) {
         try {
@@ -569,7 +573,7 @@ public class MetricDataLoader implements Callable {
     return true;
   }
 
-  public Boolean call() {
+  public Boolean call() throws IOException {
     return run();  
   }
   

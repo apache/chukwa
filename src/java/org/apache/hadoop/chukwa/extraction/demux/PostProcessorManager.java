@@ -155,7 +155,16 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
                 processPostMoveTriggers(destFiles);
                 continue;
               }
+              } else {
+                  log.warn("Error in processDemuxOutput for :" + directoryToBeProcessed + ". Will try again.");
+                  if (errorCount > 3)
+                      moveToInErrorDirectory(directoryToBeProcessed,directory,chukwaPostProcessInErrorDir); 
+                  else 
+                      errorCount++;
+                  continue;                
+              
             }
+            
             // if we are here it's because something bad happen during processing
             log.warn("Error in processDemuxOutput for :" + directoryToBeProcessed);
             moveToInErrorDirectory(directoryToBeProcessed,directory,chukwaPostProcessInErrorDir); 
