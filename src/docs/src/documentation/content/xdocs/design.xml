@@ -86,7 +86,7 @@
 	<p>Chukwa Adaptors emit data in <em>Chunks</em>. A Chunk is a sequence of bytes,
 		 with some metadata. Several of these are set automatically by the Agent or 
 		 Adaptors. Two of them require user intervention: <code>cluster name</code> and 
-		 <code>datatype</code>.  Cluster name is specified in <code>conf/chukwa-env.sh</code>,
+		 <code>datatype</code>.  Cluster name is specified in <code>conf/chukwa-agent-conf.xml</code>,
 		  and is global to each Agent process.  Datatype describes the expected format 
 		  of the data collected by an Adaptor instance, and it is specified when that 
 		  instance is started. 
