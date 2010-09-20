@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,25 +41,45 @@ import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy;
 import org.apache.hadoop.chukwa.datacollection.adaptor.NotifyOnCommitAdaptor;
+import org.apache.hadoop.chukwa.datacollection.OffsetStatsManager;
 import org.apache.hadoop.chukwa.datacollection.agent.metrics.AgentMetrics;
 import org.apache.hadoop.chukwa.datacollection.connector.Connector;
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
-import org.apache.hadoop.chukwa.datacollection.sender.ChukwaHttpSender.CommitListEntry;
 import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
 import org.apache.hadoop.chukwa.util.AdaptorNamingUtils;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.ServletHolder;
+import org.mortbay.jetty.nio.SelectChannelConnector;
+import org.mortbay.thread.BoundedThreadPool;
+import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 /**
  * The local agent daemon that runs on each machine. This class is designed to
  * be embeddable, for use in testing.
+ * <P>
+ * The agent will start an HTTP REST interface listening on port. Configs for
+ * the agent are:
+ * <ul>
+ * <li><code>chukwaAgent.http.port</code> Port to listen on (default=9090).</li>
+ * <li><code>chukwaAgent.http.rest.controller.packages</code> Java packages to
+ * inspect for JAX-RS annotated classes to be added as servlets to the REST
+ * server.</li>
+ * </ul>
  * 
  */
 public class ChukwaAgent implements AdaptorManager {
   // boolean WRITE_CHECKPOINTS = true;
   static AgentMetrics agentMetrics = new AgentMetrics("ChukwaAgent", "chukwaAgent");
+
+  private static final int HTTP_SERVER_THREADS = 120;
+  private static Server jettyServer = null;
+  private OffsetStatsManager adaptorStatsManager = null;
+  private Timer statsCollector = null;
 
   static Logger log = Logger.getLogger(ChukwaAgent.class);
   static ChukwaAgent agent = null;
@@ -122,6 +141,10 @@ public class ChukwaAgent implements AdaptorManager {
 
   public int getControllerPort() {
     return controlSock.getPort();
+  }
+
+  public OffsetStatsManager getAdaptorStatsManager() {
+    return adaptorStatsManager;
   }
 
   /**
@@ -210,6 +233,10 @@ public class ChukwaAgent implements AdaptorManager {
         "chukwa_checkpoint_");
     final int CHECKPOINT_INTERVAL_MS = conf.getInt(
         "chukwaAgent.checkpoint.interval", 5000);
+    final int STATS_INTERVAL_MS = conf.getInt(
+        "chukwaAgent.stats.collection.interval", 10000);
+    final int STATS_DATA_TTL_MS = conf.getInt(
+        "chukwaAgent.stats.data.ttl", 1200000);
 
     if (conf.get("chukwaAgent.checkpoint.dir") != null)
       checkpointDir = new File(conf.get("chukwaAgent.checkpoint.dir", null));
@@ -227,6 +254,7 @@ public class ChukwaAgent implements AdaptorManager {
     log.info("Config - CHECKPOINT_INTERVAL_MS: [" + CHECKPOINT_INTERVAL_MS
         + "]");
     log.info("Config - DO_CHECKPOINT_RESTORE: [" + DO_CHECKPOINT_RESTORE + "]");
+    log.info("Config - STATS_INTERVAL_MS: [" + STATS_INTERVAL_MS + "]");
     log.info("Config - tags: [" + tags + "]");
 
     if (DO_CHECKPOINT_RESTORE) {
@@ -260,6 +288,20 @@ public class ChukwaAgent implements AdaptorManager {
       controlSock.start(); // this sets us up as a daemon
       log.info("control socket started on port " + controlSock.portno);
 
+      // start the HTTP server with stats collection
+      try {
+        this.adaptorStatsManager = new OffsetStatsManager(STATS_DATA_TTL_MS);
+        this.statsCollector = new Timer("ChukwaAgent Stats Collector");
+
+        startHttpServer(conf);
+
+        statsCollector.scheduleAtFixedRate(new StatsCollectorTask(),
+                STATS_INTERVAL_MS, STATS_INTERVAL_MS);
+      } catch (Exception e) {
+        log.error("Couldn't start HTTP server", e);
+        throw new RuntimeException(e);
+      }
+
       // shouldn't start checkpointing until we're finishing launching
       // adaptors on boot
       if (CHECKPOINT_INTERVAL_MS > 0 && checkpointDir != null) {
@@ -271,6 +313,69 @@ public class ChukwaAgent implements AdaptorManager {
       throw new AlreadyRunningException();
     }
 
+  }
+
+  private void startHttpServer(Configuration conf) throws Exception {
+    int portNum = conf.getInt("chukwaAgent.http.port", 9090);
+    String jaxRsAddlPackages = conf.get("chukwaAgent.http.rest.controller.packages");
+    StringBuilder jaxRsPackages = new StringBuilder(
+            "org.apache.hadoop.chukwa.datacollection.agent.rest");
+
+    // Allow the ability to add additional servlets to the server
+    if (jaxRsAddlPackages != null)
+      jaxRsPackages.append(';').append(jaxRsAddlPackages);
+
+    // Set up jetty connector
+    SelectChannelConnector jettyConnector = new SelectChannelConnector();
+    jettyConnector.setLowResourcesConnections(HTTP_SERVER_THREADS - 10);
+    jettyConnector.setLowResourceMaxIdleTime(1500);
+    jettyConnector.setPort(portNum);
+
+    // Set up jetty server, using connector
+    jettyServer = new Server(portNum);
+    jettyServer.setConnectors(new org.mortbay.jetty.Connector[] { jettyConnector });
+    BoundedThreadPool pool = new BoundedThreadPool();
+    pool.setMaxThreads(HTTP_SERVER_THREADS);
+    jettyServer.setThreadPool(pool);
+
+    // Create the controller servlets
+    ServletHolder servletHolder = new ServletHolder(ServletContainer.class);
+    servletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass",
+            "com.sun.jersey.api.core.PackagesResourceConfig");
+    servletHolder.setInitParameter("com.sun.jersey.config.property.packages",
+            jaxRsPackages.toString());
+
+    // Create the server context and add the servlet
+    Context root = new Context(jettyServer, "/rest/v1", Context.SESSIONS);
+    root.setAttribute("ChukwaAgent", this);
+    root.addServlet(servletHolder, "/*");
+    root.setAllowNullPathInfo(false);
+
+    // And finally, fire up the server
+    jettyServer.start();
+    jettyServer.setStopAtShutdown(true);
+
+    log.info("started Chukwa http agent interface on port " + portNum);
+  }
+
+  /**
+   * Take snapshots of offset data so we can report flow rate stats.
+   */
+  private class StatsCollectorTask extends TimerTask {
+
+    public void run() {
+      long now = System.currentTimeMillis();
+
+      for(String adaptorId : getAdaptorList().keySet()) {
+        Adaptor adaptor = getAdaptor(adaptorId);
+        if(adaptor == null) continue;
+
+        Offset offset = adaptorPositions.get(adaptor);
+        if(offset == null) continue;
+
+        adaptorStatsManager.addOffsetDataPoint(adaptor, offset.offset, now);
+      }
+    }
   }
 
   // words should contain (space delimited):
@@ -372,6 +477,7 @@ public class ChukwaAgent implements AdaptorManager {
         } catch (Exception e) {
           Adaptor failed = adaptorsByName.remove(adaptorID);
           adaptorPositions.remove(failed);
+          adaptorStatsManager.remove(failed);
           log.warn("failed to start adaptor", e);
           if(e instanceof AdaptorException)
             throw (AdaptorException)e;
@@ -550,8 +656,8 @@ public class ChukwaAgent implements AdaptorManager {
    * If the adaptor is written correctly, its offset won't change after
    * returning from shutdown.
    * 
-   * @param number the adaptor to stop
-   * @param gracefully if true, shutdown, if false, hardStop
+   * @param name the adaptor to stop
+   * @param shutdownMode if true, shutdown, if false, hardStop
    * @return the number of bytes synched at stop. -1 on error
    */
   public long stopAdaptor(String name, AdaptorShutdownPolicy shutdownMode) {
@@ -569,6 +675,7 @@ public class ChukwaAgent implements AdaptorManager {
       return offset;
     } else {
       adaptorPositions.remove(toStop);
+      adaptorStatsManager.remove(toStop);
     }
     ChukwaAgent.agentMetrics.adaptorCount.set(adaptorsByName.size());
     ChukwaAgent.agentMetrics.removedAdaptor.inc();
@@ -645,6 +752,17 @@ public class ChukwaAgent implements AdaptorManager {
    */
   public void shutdown(boolean exit) {
     controlSock.shutdown(); // make sure we don't get new requests
+
+    if (statsCollector != null) {
+      statsCollector.cancel();
+    }
+
+    try {
+      jettyServer.stop();
+    } catch (Exception e) {
+      log.error("Couldn't stop jetty server.", e);
+    }
+
     if (checkpointer != null) {
       checkpointer.cancel();
       try {
@@ -667,6 +785,7 @@ public class ChukwaAgent implements AdaptorManager {
     }
     adaptorsByName.clear();
     adaptorPositions.clear();
+    adaptorStatsManager.clear();
     if (exit)
       System.exit(0);
   }

@@ -188,6 +188,10 @@
       name="core"
       rev="${jetty.eclipse.jdt.core.version}"
       conf="jetty->master"/>
+    <dependency org="springframework"
+      name="spring-mock"
+      rev="${spring-mock.version}"
+      conf="common->default"/>
 <!--    <dependency org="jaxb"
       name="jaxb-api"
       rev="${jaxb.version}"
