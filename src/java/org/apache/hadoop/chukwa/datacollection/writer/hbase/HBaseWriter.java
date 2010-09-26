@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
@@ -36,14 +37,13 @@ import org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MapProcessorFa
 import org.apache.hadoop.chukwa.util.ClassUtils;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 
-import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.HTablePool;
 
 import org.apache.hadoop.chukwa.datacollection.writer.hbase.OutputCollector;
@@ -64,7 +64,7 @@ public class HBaseWriter extends PipelineableWriter {
       "chukwa.demux.mapper.default.processor",
       "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.DefaultProcessor");
   private HTablePool pool;
-  private Configuration hconf;
+  private HBaseConfiguration hconf;
   
   private class StatReportingTask extends TimerTask {
     private long lastTs = System.currentTimeMillis();
@@ -92,10 +92,14 @@ public class HBaseWriter extends PipelineableWriter {
   public HBaseWriter(boolean reportStats) {
     this.reportStats = reportStats;
     statTimer = new Timer();
-    hconf = HBaseConfiguration.create();
+    /* HBase Version 0.20.x */
+    hconf = new HBaseConfiguration();
+    
+    /* HBase Version 0.89.x */
+    //hconf = HBaseConfiguration.create();
   }
 
-  public HBaseWriter(ChukwaConfiguration conf, Configuration hconf) {
+  public HBaseWriter(ChukwaConfiguration conf, HBaseConfiguration hconf) {
     this(true);
     this.conf = conf;
     this.hconf = hconf;
@@ -189,7 +193,7 @@ public class HBaseWriter extends PipelineableWriter {
               }
             }
             if(table!=null) {
-              HTableInterface hbase = pool.getTable(table.name());  
+              HTable hbase = pool.getTable(table.name());  
               processor.process(new ChukwaArchiveKey(), chunk, output, reporter);
               hbase.put(output.getKeyValues());
               pool.putTable(hbase);

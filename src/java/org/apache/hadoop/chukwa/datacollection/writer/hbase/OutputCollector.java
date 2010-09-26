@@ -43,7 +43,7 @@ public class OutputCollector implements
   public void collect(ChukwaRecordKey key, ChukwaRecord value) throws IOException {
     StringBuffer s = new StringBuffer();
     String[] keyParts = key.getKey().split("/");
-    s.append(keyParts[0]);
+    s.append(keyParts[2]);
     s.append("-");
     s.append(keyParts[1]);
 

@@ -40,6 +40,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-516. Downgrade to HBase 0.20.6 until 0.90 arrives. (Eric Yang)
+
     CHUKWA-496. Fixed config file reference in design.html  (Bernd Fondermann via Eric Yang)
 
     CHUKWA-510.  JMSMessagePropertyTransformer inserts "null" string for null JMS message property values  (Bill Graham via asrabkin)
