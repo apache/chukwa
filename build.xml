@@ -1141,6 +1141,12 @@
 					<token key="TODO-HADOOP-CONF-DIR" value="${TODO-HADOOP-CONF-DIR}" />
 				</replacetokens>
 				<replacetokens>
+					<token key="TODO-HBASE-HOME" value="${TODO-HBASE-HOME}" />
+				</replacetokens>
+				<replacetokens>
+					<token key="TODO-HBASE-CONF-DIR" value="${TODO-HBASE-CONF-DIR}" />
+				</replacetokens>
+				<replacetokens>
 					<token key="TODO-CHUKWA_PID_DIR" value="${TODO-CHUKWA_PID_DIR}" />
 				</replacetokens>
 				<replacetokens>
