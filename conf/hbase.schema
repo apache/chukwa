@@ -25,7 +25,12 @@ create "SystemMetrics", {NAME => "Disk", VERSIONS => 65535},
 {NAME => "Df", VERSIONS => 65535},
 {NAME => "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Top", VERSIONS => 65535},
 {NAME => "TopInError", VERSIONS => 65535},
-{NAME => "DfInError", VERSIONS => 65535}
+{NAME => "DfInError", VERSIONS => 65535},
+{NAME => "cpu", VERSIONS => 65535},
+{NAME => "system", VERSION => 65535},
+{NAME => "disk", VERSION => 65535},
+{NAME => "memory", VERSION => 65535},
+{NAME => "network", VERSION => 65535}
 create "Mapreduce",{NAME => "JobData", VERSIONS => 65535},
 {NAME => "JobConfData", VERSIONS => 65535},
 {NAME => "JobLogHistory", VERSIONS => 65535},
