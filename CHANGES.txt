@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-419. Replaced system metrics collection with Sigar. (Eric Yang)
+
     CHUKWA-444. Added HBaseWriter for storing time series data in HBase for faster random read/write. (Eric Yang)
 
     CHUKWA-473.  Make default processor configurable. (Bill Graham via asrabkin)
@@ -15,6 +17,8 @@ Trunk (unreleased changes)
     CHUKWA-477. Support post-demux trigger.  (Bill Graham via Eric Yang)
 
   IMPROVEMENTS
+
+    CHUKWA-521. Changed default HICC port to 4080. (Eric Yang)
 
     CHUKWA-506. Added retry logic for MetricDataLoader (William Bajzek via Eric Yang)
 

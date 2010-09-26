@@ -224,5 +224,10 @@
     <description></description>
    </property>
    
+   <property>
+    <name>SystemMetrics</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.SystemMetrics</value>
+    <description></description>
+   </property>
 </configuration>
  
