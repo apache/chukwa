@@ -18,6 +18,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-524. Use TODO-HBASE-HOME and TODO-HBASE-CONF-DIR to control hbase location. (Eric Yang)
+
     CHUKWA-521. Changed default HICC port to 4080. (Eric Yang)
 
     CHUKWA-506. Added retry logic for MetricDataLoader (William Bajzek via Eric Yang)
