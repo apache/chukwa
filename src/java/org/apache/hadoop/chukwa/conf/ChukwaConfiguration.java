@@ -27,6 +27,16 @@ import org.apache.log4j.Logger;
 public class ChukwaConfiguration extends Configuration {
   static Logger log = Logger.getLogger(ChukwaConfiguration.class);
 
+  private String chukwaHome, chukwaConf;
+  
+  public String getChukwaHome() {
+    return chukwaHome;
+  }
+  
+  public String getChukwaConf() {
+    return chukwaConf;
+  }
+  
   public ChukwaConfiguration() {
     this(true);
   }
@@ -35,7 +45,7 @@ public class ChukwaConfiguration extends Configuration {
     super();
     if (loadDefaults) {
 
-      String chukwaHome = System.getenv("CHUKWA_HOME");
+      chukwaHome = System.getenv("CHUKWA_HOME");
       if (chukwaHome == null) {
         chukwaHome = ".";
       }
@@ -43,7 +53,7 @@ public class ChukwaConfiguration extends Configuration {
       if (!chukwaHome.endsWith("/")) {
         chukwaHome = chukwaHome + File.separator;
       }
-      String chukwaConf = System.getenv("CHUKWA_CONF_DIR");
+      chukwaConf = System.getenv("CHUKWA_CONF_DIR");
       if (chukwaConf == null) {
         chukwaConf = chukwaHome + "conf" + File.separator;
       }

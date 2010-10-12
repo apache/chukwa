@@ -1,0 +1,29 @@
+This directory holds a configuration spellcheck tool, being developed by Ari Rabkin at UC Bekeley. (Contact asrabkin@gmail.com for details)
+
+The checker has two basic tasks. First, to make sure that every option set in a configuration file is an option actually supported by the program in question. Second, to check that the values specified for the option make sense. (In case, e.g., a user confuses a numeric from boolean parameter).
+
+
+
+DICTIONARY FORMAT
+
+Each line of the dictionary files consists of a regular expression, followed by an option type, followed by an optional annotation. These sections are separated by a single tab character.
+
+Each regular expression may match one or more valid options. (This is to cover cases like Hadoop's fs.x.impl, where x can be any string).
+
+The list of valid option types is as follows:
+	Address
+	Boolean
+	ClassName
+	File
+	Fraction
+	Integral
+	NetworkInterface
+	Portno
+	Special
+	URI
+	URL	
+
+Most of these are self-explanatory. Special means that the option must be one of a small number of string options. The list of valid options goes in the annotation field. It should be comma-separated and wrapped in {}.
+
+If a dictionary includes a type not on that list, the checker will assume that all values are acceptable for that option.
+

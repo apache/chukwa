@@ -1,0 +1,35 @@
+$CHUKWA_CONF_DIR	
+$CHUKWA_HOME	File
+$CHUKWA_PID_DIR	File
+CONF-adaptor.dirscan.intervalMs	Integral
+CONF-adaptor.memBufWrapper.size	Integral
+CONF-chukwaAgent.adaptor.context.switch.time	Time
+CONF-chukwaAgent.adaptor.fileadaptor.timeoutperiod	Time
+CONF-chukwaAgent.checkpoint.dir	File
+CONF-chukwaAgent.checkpoint.enabled	Boolean
+CONF-chukwaAgent.checkpoint.interval	Time
+CONF-chukwaAgent.checkpoint.name	
+CONF-chukwaAgent.connector.retryRate	Time
+CONF-chukwaAgent.control.port	Portno
+CONF-chukwaAgent.control.remote	Boolean
+CONF-chukwaAgent.fileTailingAdaptor.maxReadSize	Integral
+CONF-chukwaAgent.initial_adaptors	File
+CONF-chukwaAgent.sender.collectorTimeout	Integral
+CONF-chukwaAgent.sender.fastRetries	Integral
+CONF-chukwaAgent.sender.retries	Integral
+CONF-chukwaAgent.sender.retryInterval	Integral
+CONF-chukwaAgent.tags	
+CONF-chukwaCollector.asyncAcks.scanperiod	Time
+CONF-chukwaCollector.http.port	Portno
+CONF-chukwaCollector.rotateInterval	Time
+CONF-connector.commitpoll.hostfile	
+CONF-connector.commitpoll.period	Time
+CONF-connector.commitpoll.timeout	Time
+CONF-constAdaptor.minSleep	Integral
+CONF-constAdaptor.sleepVariance	Integral
+CONF-httpConnector.asyncAcks	Boolean
+CONF-httpConnector.maxPostSize	Integral
+CONF-httpConnector.minPostInterval	Time
+PROP-CHUKWA_CONF_DIR	File
+PROP-CHUKWA_HOME	
+PROP-user.name	

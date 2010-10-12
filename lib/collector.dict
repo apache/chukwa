@@ -1,0 +1,28 @@
+$CHUKWA_CONF_DIR	
+$CHUKWA_DATA_DIR	
+$CHUKWA_HOME	
+$CHUKWA_PID_DIR	File
+CONF-chukwaCollector.asyncAcks.purgedelay	Time
+CONF-chukwaCollector.asyncAcks.scanpaths	
+CONF-chukwaCollector.asyncAcks.scanperiod	Time
+CONF-chukwaCollector.chunkSuppressBufferSize	Integral
+CONF-chukwaCollector.http.port	Integral
+CONF-chukwaCollector.http.threads	Integral
+CONF-chukwaCollector.localOutputDir	File
+CONF-chukwaCollector.minPercentFreeDisk	Integral
+CONF-chukwaCollector.outputDir	
+CONF-chukwaCollector.pipeline	ClassName list
+CONF-chukwaCollector.rotateInterval	Time
+CONF-chukwaCollector.showLogs.enabled	Boolean
+CONF-chukwaCollector.stats.period	Time
+CONF-chukwaCollector.tee.keepalive	Boolean
+CONF-chukwaCollector.tee.port	Integral
+CONF-chukwaCollector.writeChunkRetries	Integral
+CONF-chukwaCollector.writerClass	ClassName
+CONF-chukwaRootDir	
+CONF-fs.default.name	URI
+CONF-httpConnector.asyncAcks	Boolean
+CONF-localToRemoteHdfsMover.exitIfHDFSNotavailable	Boolean
+CONF-nullWriter.dataRate	Time
+CONF-writer.hdfs.filesystem	URI
+PROP-CHUKWA_HOME	

@@ -51,12 +51,14 @@ import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
+
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.thread.BoundedThreadPool;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
+import edu.berkeley.confspell.*;
 
 /**
  * The local agent daemon that runs on each machine. This class is designed to
@@ -161,7 +163,9 @@ public class ChukwaAgent implements AdaptorManager {
             + "[default collector URL]");
         System.exit(0);
       }
+
       Configuration conf = readConfig();
+      
       ChukwaAgent localAgent = new ChukwaAgent(conf);
 
       if (agent.anotherAgentIsRunning()) {
@@ -220,7 +224,7 @@ public class ChukwaAgent implements AdaptorManager {
   public ChukwaAgent(Configuration conf) throws AlreadyRunningException {
     ChukwaAgent.agent = this;
     this.conf = conf;
-
+    
     // almost always just reading this; so use a ConcurrentHM.
     // since we wrapped the offset, it's not a structural mod.
     adaptorPositions = new ConcurrentHashMap<Adaptor, Offset>();
@@ -739,6 +743,15 @@ public class ChukwaAgent implements AdaptorManager {
           .getAbsolutePath());
     conf.set("chukwaAgent.initial_adaptors", new File(chukwaConf,
         "initial_adaptors").getAbsolutePath());
+    
+    
+    try { 
+      Configuration chukwaAgentConf = new Configuration(false);
+      chukwaAgentConf.addResource(new Path(agentConf.getAbsolutePath()));
+      Checker.checkConf(new OptDictionary(new File(new File(chukwaHome, "lib"), "agent.dict")),
+          HSlurper.fromHConf(chukwaAgentConf));
+    } catch(Exception e) {e.printStackTrace();}
+    
     return conf;
   }
 

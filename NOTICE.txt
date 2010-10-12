@@ -29,3 +29,5 @@ Copyright is held by its developers.
 JChronic is under an MIT license, copyright is held by the developers.
 * Available from https://jchronic.dev.java.net/
 
+The configuration spellchecker was written by Ari Rabkin [a Chukwa committer], and is available under a 2-clause BSD-style license. 
+* Available from http://code.google.com/p/jchord/source/browse/#svn/trunk/conf_spellchecker
