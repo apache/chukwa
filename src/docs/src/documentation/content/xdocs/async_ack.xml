@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+<document>
+  <header>
+    <title>Asynchronous Acknowledgement</title>
+  </header>
+
+<body>
+
+<section>
+<title>Overview</title>
+<p>
+Chukwa supports two different reliability strategies.
+The first, default strategy, is as follows: collectors write data to HDFS, and
+as soon as the HDFS write call returns success, report success to the agent, which
+advances its checkpoint state.
+</p><p>
+This is potentially a problem if HDFS (or some other storage tier) has non-durable or
+asynchronous writes. As a result, Chukwa offers a mechanism, asynchronous acknowledgement,
+for coping with this case. 
+This mechanism can be enabled by setting option <code>httpConnector.asyncAcks</code>.
+</p>
+</section>
+
+<section>
+<title>Theory</title>
+<p>
+In this approach, rather than try to build a fault tolerant collector, Chukwa agents look 
+<strong>through</strong> the collectors to the underlying state of the filesystem. This 
+filesystem state is what is used to detect and recover from failure. Recovery is 
+handled entirely by the agent, without requiring anything at all from the failed collector.
+</p>
+
+<p>
+When an agent sends data to a collector, the collector responds with the name of 
+the HDFS file in which the data will be stored and the future location of the 
+data within the file. This is very easy to compute -- since each file is only 
+written by a single collector, the only requirement is to enqueue the data and 
+add up lengths. </p>
+
+<p>Every few minutes, each agent process polls a collector to find the length of 
+each file to which data is being written. The length of the file is then compared 
+with the offset at which each chunk was to be written. If the file length exceeds 
+this value, then the data has been committed and the agent process advances its 
+checkpoint accordingly. (Note that the length returned by the filesystem is the 
+amount of data that has been successfully replicated.) There is nothing essential 
+about the role of collectors in monitoring the written files. Collectors store 
+no per-agent state. The reason to poll collectors, rather than the filesystem 
+directly, is to reduce the load on the filesystem master and to shield agents 
+from the details of the storage system. </p>
+
+<p>
+The collector component that handles these requests is 
+<code>datacollection.collector.servlet.CommitCheckServlet</code>.
+This will be started if <code>httpConnector.asyncAcks</code> is true in the
+collector configuration.
+</p>
+
+<p>On error, agents resume from their last checkpoint and pick a new collector. 
+In the event of a failure, the total volume of data retransmitted is bounded by 
+the period between collector file rotations. </p>
+
+<!--
+This means that the fraction of duplicate data is the ratio of collector rotation 
+interval to the mean time between collector failures. Using the default five minute rotation interval, and assuming one crash per week on average, this means the fraction of duplicate data from this mechanism is 0.05\%, an acceptably low overhead. 
+-->
+
+<p>The solution is end-to-end. Authoritative copies of data can only exist in two places:
+ the nodes where data was originally produced, and the HDFS file system where it will 
+ ultimately be stored. Collectors only hold soft state;  the only ``hard'' state 
+ stored by Chukwa is the agent checkpoints. Below is a diagram of the 
+ flow of messages in this protocol.</p>
+
+</section>
+
+<section>
+<title>Configuration</title>
+<p>
+In addition to <code>httpConnector.asyncAcks</code> (which enables asynchronous acknowledgement)
+a number of options affect this mode of operation.</p>
+<p>
+Option <code>chukwaCollector.asyncAcks.scanperiod</code> affects how often collectors will check
+the filesystem for commits. It defaults to twice the rotation interval.</p>
+
+<p>
+Option <code>chukwaCollector.asyncAcks.scanpaths</code> determines where in HDFS
+collectors will look. It defaults to the data sink dir plus the archive dir.
+</p>
+
+<p>
+In the future, Zookeeper could be used instead to track rotations.
+</p>
+</section>
+
+</body>
+</document>
