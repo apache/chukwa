@@ -17,6 +17,7 @@
  */
 package org.apache.hadoop.chukwa.datacollection.adaptor;
 
+import java.io.IOException;
 import java.net.*;
 import java.util.Arrays;
 import org.apache.hadoop.chukwa.*;
@@ -36,16 +37,12 @@ public class UDPAdaptor extends AbstractAdaptor {
   class ListenThread extends Thread {
     public void run() {
       log.info("UDP adaptor " + adaptorID + " started on port " + portno + " offset =" + bytesReceived);
-      byte[] buf = new byte[1024];
+      byte[] buf = new byte[65535];
       DatagramPacket dp = new DatagramPacket(buf, buf.length);
       try {
         while(running) {
           ds.receive(dp);
-          log.info("got a UDP message");
-          byte[] trimmedBuf =  Arrays.copyOf(buf, dp.getLength());
-          bytesReceived += trimmedBuf.length;
-          Chunk c = new ChunkImpl(type, source, bytesReceived, trimmedBuf, UDPAdaptor.this);
-          dest.add(c);
+          send(buf, dp);
         }
       } catch(Exception e) {
         if(running)
@@ -54,6 +51,13 @@ public class UDPAdaptor extends AbstractAdaptor {
     }
   }
   ListenThread lt;
+
+  public void send(byte[] buf, DatagramPacket dp) throws InterruptedException, IOException {
+    byte[] trimmedBuf =  Arrays.copyOf(buf, dp.getLength());
+    bytesReceived += trimmedBuf.length;
+    Chunk c = new ChunkImpl(type, source, bytesReceived, trimmedBuf, UDPAdaptor.this);
+    dest.add(c);
+  }
   
   @Override
   public String parseArgs(String s) {

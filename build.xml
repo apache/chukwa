@@ -494,6 +494,13 @@
 				</replacetokens>
 			</filterchain>
                 </copy>
+                <copy file="${conf.dir}/chukwa-agent-conf.xml.template" tofile="${test.build.dir}/conf/chukwa-agent-conf.xml">
+			<filterchain>
+				<replacetokens>
+					<token key="TODO-CLUSTER-NAME" value="${TODO-CLUSTER-NAME}" />
+				</replacetokens>
+			</filterchain>
+                </copy>
                 <copy file="${basedir}/conf/chukwa-demux-conf.xml.template" tofile="${test.build.dir}/conf/chukwa-demux-conf.xml">
 			<filterchain>
 		

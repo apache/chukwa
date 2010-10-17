@@ -75,4 +75,9 @@
     <value>20000</value>
     <description>the number of milliseconds to wait between searches for a collector</description>
   </property>
+
+  <property>
+    <name>syslog.adaptor.port.9095.facility.LOCAL1</name>
+    <value>HADOOP</value>
+  </property>
 </configuration>

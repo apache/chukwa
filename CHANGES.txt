@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-530. Implemented Syslog Adaptor for mappig Syslog facility name to Chukwa data type.  (Eric Yang)
+
     CHUKWA-419. Replaced system metrics collection with Sigar. (Eric Yang)
 
     CHUKWA-444. Added HBaseWriter for storing time series data in HBase for faster random read/write. (Eric Yang)
