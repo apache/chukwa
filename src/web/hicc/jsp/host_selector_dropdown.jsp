@@ -29,9 +29,15 @@
 <%@ page import = "org.apache.hadoop.chukwa.hicc.TimeHandler" %>
 <%@ page import = "org.apache.hadoop.chukwa.database.DatabaseConfig" %>
 <%@ page import = "org.apache.hadoop.chukwa.util.XssFilter"  %>
-<% XssFilter xf = new XssFilter(request);
-   String boxId = xf.getParameter("boxId");
-   response.setHeader("boxId", xf.getParameter("boxId"));
+<%@ page import = "org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore"  %>
+<%@ page import = "org.apache.commons.logging.Log" %>
+<%@ page import = "org.apache.commons.logging.LogFactory" %>
+<%@ page import = "org.apache.hadoop.chukwa.util.ExceptionUtil" %>
+<%
+  Log log = LogFactory.getLog(this.getClass());
+  XssFilter xf = new XssFilter(request);
+  String boxId = xf.getParameter("boxId");
+  response.setHeader("boxId", xf.getParameter("boxId"));
 %>
 <div class="panel">
 <h2>Hosts</h2>
@@ -41,123 +47,42 @@
 <%
     JSONArray machineNames = null;
     if(session.getAttribute("cache.machine_names")!=null) {
-        machineNames = new JSONArray(session.getAttribute("cache.machine_names").toString());
+      machineNames = new JSONArray(session.getAttribute("cache.machine_names").toString());
     }
     String cluster=xf.getParameter("cluster");
     if(cluster!=null && !cluster.equals("null")) {
-        session.setAttribute("cluster",cluster);
+      session.setAttribute("cluster",cluster);
     } else {
-        cluster = (String) session.getAttribute("cluster");
-        if(cluster==null || cluster.equals("null")) {
-            cluster="demo";
-            session.setAttribute("cluster",cluster);
-        }
+      cluster = (String) session.getAttribute("cluster");
+      if(cluster==null || cluster.equals("null")) {
+          cluster="demo";
+          session.setAttribute("cluster",cluster);
+      }
     }
     ClusterConfig cc = new ClusterConfig();
-    String jdbc = cc.getURL(cluster);
     TimeHandler time = new TimeHandler(request,(String)session.getAttribute("time_zone"));
     String startS = time.getStartTimeText();
     String endS = time.getEndTimeText();
-    String timefield = "timestamp";
-    String dateclause = timefield+" >= '"+startS+"' and "+timefield+" <= '"+endS+"'";
-    Connection conn = null;
-    Statement stmt = null;
-    ResultSet rs = null;
-    String query = "";
     try {
-        HashMap<String, String> hosts = new HashMap<String, String>();
-        try {
-            String[] selected_hosts = ((String)session.getAttribute("hosts")).split(",");
-            for(String name: selected_hosts) {
-                hosts.put(name,name);
-            }
-        } catch (NullPointerException e) {
+      HashMap<String, String> hosts = new HashMap<String, String>();      
+      try {
+        String[] selected_hosts = ((String)session.getAttribute("hosts")).split(",");
+        for(String name: selected_hosts) {
+          hosts.put(name,name);
+        }
+      } catch (NullPointerException e) {
+      }
+      Set<String> machines = ChukwaHBaseStore.getHostnames(cluster, time.getStartTime(), time.getEndTime());
+      for(String machine : machines) {
+        if(hosts.containsKey(machine)) {
+          out.println("<option selected>"+machine+"</option>");
+        } else {
+          out.println("<option>"+machine+"</option>");
+        }
+      }
+    } catch (Exception e) {
+      log.error(ExceptionUtil.getStackTrace(e));
     }
-           conn = org.apache.hadoop.chukwa.util.DriverManagerUtil.getConnection(jdbc);
-           stmt = conn.createStatement();
-           String jobId = (String)session.getAttribute("JobID");
-           if(jobId!=null && !jobId.equals("null") && !jobId.equals("")) {
-               query = "select DISTINCT Machine from HodMachine where HodID='"+jobId+"' order by Machine;";
-           } else if(machineNames==null) {
-               long start = time.getStartTime();
-               long end = time.getEndTime(); 
-               String table = "system_metrics";
-               DatabaseConfig dbc = new DatabaseConfig();
-               String[] tables = dbc.findTableNameForCharts(table, start, end);
-               table=tables[0];
-               query="select DISTINCT host from "+table+" order by host";
-           }
-           // or alternatively, if you don't know ahead of time that
-           // the query will be a SELECT...
-           if(!query.equals("")) {
-               if (stmt.execute(query)) {
-                   int i=0;
-                   rs = stmt.getResultSet();
-                   rs.last();
-                   int size = rs.getRow();
-                   machineNames = new JSONArray();
-                   rs.beforeFirst();
-                   while (rs.next()) {
-                       String machine = rs.getString(1);
-                       machineNames.put(machine);
-                       if(hosts.containsKey(machine)) {
-                           out.println("<option selected>"+machine+"</option>");
-                       } else {
-                           out.println("<option>"+machine+"</option>");
-                       }
-                       i++;
-                   }
-                   if(jobId==null || jobId.equals("null") || jobId.equals("")) {
-                       session.setAttribute("cache.machine_names",machineNames.toString());
-                   }
-               }
-           } else {
-                   for(int j=0;j<machineNames.length();j++) {
-                       String machine = machineNames.get(j).toString();
-                       if(hosts.containsKey(machine)) {
-                           out.println("<option selected>"+machine+"</option>");
-                       } else {
-                           out.println("<option>"+machine+"</option>");
-                       }
-                   }
-           }
-           // Now do something with the ResultSet ....
-       } catch (SQLException ex) {
-           // handle any errors
-           // FIXME: should we use Log4j here?
-           System.out.println("SQLException on query " + query +" " + ex.getMessage());
-           System.out.println("SQLState: " + ex.getSQLState());
-           System.out.println("VendorError: " + ex.getErrorCode());
-       } finally {
-           // it is a good idea to release
-           // resources in a finally{} block
-           // in reverse-order of their creation
-           // if they are no-longer needed
-           if (rs != null) {
-               try {
-                   rs.close();
-               } catch (SQLException sqlEx) {
-                   // ignore
-               }
-               rs = null;
-           }
-           if (stmt != null) {
-               try {
-                   stmt.close();
-               } catch (SQLException sqlEx) {
-                   // ignore
-               }
-               stmt = null;
-           }
-           if (conn != null) {
-               try {
-                   conn.close();
-               } catch (SQLException sqlEx) {
-                   // ignore
-               }
-               conn = null;
-           }
-       }
 %>
 </select></div>
 <div class="row">

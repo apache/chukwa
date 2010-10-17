@@ -63,7 +63,10 @@
      */
     String[] seriesName = xf.getParameterValues("series_name");
     String[] data = xf.getParameterValues("data");
-
+    if(xf.getParameterValues("data").length==1 && xf.getParameterValues("data")[0].indexOf(",")!=-1) {
+      data = xf.getParameterValues("data")[0].split(",");
+    }
+    
     /*
      * Set series render format.
      */

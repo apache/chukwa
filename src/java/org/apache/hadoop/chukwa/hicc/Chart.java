@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.hadoop.chukwa.hicc.ColorPicker;
 import org.apache.hadoop.chukwa.util.XssFilter;
+import org.json.JSONArray;
 
 @SuppressWarnings("unused")
 public class Chart {
@@ -454,31 +455,26 @@ public class Chart {
     }
     output.append(" ];\n");
     if(this.restData!=null) {
-        output.append("var _rest = [");
-        boolean first=true;
-        for(String url : restData) {
-            if(!first) {
-                output.append(",");
-            }
-            output.append("\"");
-            output.append(url);
-            output.append("\"");
-            first=false;
-        }
-        output.append("];");
+      JSONArray arr = new JSONArray();
+      for(String url : restData) {
+        arr.put(url);
+      }
+      output.append("var _rest = ");
+      output.append(arr.toString());
+      output.append(";");
     }
     if (request != null && xf.getParameter("format") == null) {
-	output.append("$(document).ready(function() { \n");
-        if(this.restData!=null) {
-            output.append("   loadData();\n");
-        } else {
-	    output.append("   wholePeriod();\n");
-        }
-	output.append("   $(window).resize(function() { wholePeriod(); });\n");
-	output.append("});\n");
-	output.append("</script>\n");
-        output.append("<input type=\"button\" value=\"Export\" onclick=\"javascript:saveReport();\">\n");
-	output.append("</body></html>\n");
+      output.append("$(document).ready(function() { \n");
+      if(this.restData!=null) {
+        output.append("   loadData();\n");
+      } else {
+        output.append("   wholePeriod();\n");
+      }
+      output.append("   $(window).resize(function() { wholePeriod(); });\n");
+      output.append("});\n");
+      output.append("</script>\n");
+      output.append("<input type=\"button\" value=\"Export\" onclick=\"javascript:saveReport();\">\n");
+      output.append("</body></html>\n");
     } else {
       output.append("chartTitle=\"<center>" + this.title + "</center>\";");
       output.append("height=" + this.height + ";");

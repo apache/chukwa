@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-520. Implemented graphing rest api and graph explorer for plotting HBase data to graph.  (Eric Yang)
+
     CHUKWA-530. Implemented Syslog Adaptor for mappig Syslog facility name to Chukwa data type.  (Eric Yang)
 
     CHUKWA-419. Replaced system metrics collection with Sigar. (Eric Yang)
