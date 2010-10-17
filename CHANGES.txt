@@ -22,6 +22,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-531. Bundle HBase 0.20.6 in library path, and comment out test case for HBaseWriter for now. (Eric Yang)
+
     CHUKWA-524. Use TODO-HBASE-HOME and TODO-HBASE-CONF-DIR to control hbase location. (Eric Yang)
 
     CHUKWA-521. Changed default HICC port to 4080. (Eric Yang)
