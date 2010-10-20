@@ -77,6 +77,14 @@
     that will be triggered upon a successful Demux/PostProcessor job</description>
   </property>
 
+  <property>
+    <name>post.process.max.error.count.before.shutdown</name>
+    <value>4</value>
+    <description>The number of consecutive errors to be encountered by the
+    PostProcessorManager before the process will be shut down. Set to -1 to continue
+    running despite error count.</description>
+  </property>
+
 <!-- -->
 
 <!-- ArchiveManager config -->
@@ -87,8 +95,27 @@
     <description>Reduce count </description>
   </property>
 
+  <property>
+    <name>archive.max.error.count.before.shutdown</name>
+    <value>4</value>
+    <description>The number of consecutive errors to be encountered by the
+    ArchiveManager before the process will be shut down. Set to -1 to continue
+    running despite error count.</description>
+  </property>
+
 <!-- -->
 
+<!-- Demux configs -->
+
+  <property>
+    <name>demux.max.error.count.before.shutdown</name>
+    <value>5</value>
+    <description>The number of consecutive errors to be encountered by the
+    DemuxManager before the process will be shut down. Set to -1 to continue
+    running despite error count.</description>
+  </property>
+
+<!-- -->  
 
 <!-- Demux aliases -->
 

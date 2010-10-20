@@ -39,7 +39,9 @@ public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
   static final  int ONE_HOUR = 60 * 60 * 1000;
   static final int ONE_DAY = 24*ONE_HOUR;
   static final int MAX_FILES = 500;
-  
+
+  private static final int DEFAULT_MAX_ERROR_COUNT = 4;
+
   protected ChukwaConfiguration conf = null;
   protected FileSystem fs = null;
   protected boolean isRunning = true;
@@ -92,7 +94,8 @@ public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
     String archivesMROutputDir = archivesRootProcessingDir+ ARCHIVES_MR_OUTPUT_DIR_NAME;
     String finalArchiveOutput = chukwaRootDir + DEFAULT_FINAL_ARCHIVES;
 
-
+    int maxPermittedErrorCount = conf.getInt(CHUKWA_ARCHIVE_MAX_ERROR_COUNT_FIELD,
+                                             DEFAULT_MAX_ERROR_COUNT);
     
     Path pDailyRawArchivesInput = new Path(archiveRootDir);
     Path pArchivesMRInputDir = new Path(archivesMRInputDir);
@@ -114,9 +117,9 @@ public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
     while (isRunning) {
       try {
         
-        if (errorCount >= 4 ) {
-          // it's better to exit, Watchdog will re-start it
-          log.warn("Too many error - bail out!");
+        if (maxPermittedErrorCount != -1 && errorCount >= maxPermittedErrorCount) {
+          log.warn("==================\nToo many errors (" + errorCount +
+                   "), Bail out!\n==================");
           DaemonWatcher.bailout(-1);
         }
         // /chukwa/archives/<YYYYMMDD>/dataSinkDirXXX
@@ -129,7 +132,8 @@ public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
             log.info("reprocessing current Archive input" +  days[0].getPath());
             
             runArchive(archivesMRInputDir + days[0].getPath().getName() + "/",archivesMROutputDir,finalArchiveOutput);  
-            continue; 
+            errorCount = 0;
+            continue;
           }
         }
         

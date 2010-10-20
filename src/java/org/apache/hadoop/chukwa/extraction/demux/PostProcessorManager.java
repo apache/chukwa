@@ -50,6 +50,8 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
   protected ChukwaConfiguration conf = null;
   protected FileSystem fs = null;
   protected volatile boolean isRunning = true;
+
+  private static final int DEFAULT_MAX_ERROR_COUNT = 4;
   
   final private static PathFilter POST_PROCESS_DEMUX_DIR_FILTER = new PathFilter() {
     public boolean accept(Path file) {
@@ -109,18 +111,21 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
     if ( ! chukwaPostProcessInErrorDir.endsWith("/") ) {
       chukwaPostProcessInErrorDir += "/";
     }
- 
+
+    int maxPermittedErrorCount = conf.getInt(CHUKWA_POSTPROCESS_MAX_ERROR_COUNT_FIELD,
+                                             DEFAULT_MAX_ERROR_COUNT);
+
     
     dataSources = new HashMap<String, String>();
     Path postProcessDirectory = new Path(postProcessDir);
     while (isRunning) {
       
-      if (errorCount >= 4 ) {
-        // it's better to exit, Watchdog will re-strat it
-        log.warn("Too many error - bail out!");
+      if (maxPermittedErrorCount != -1 && errorCount >= maxPermittedErrorCount) {
+        log.warn("==================\nToo many errors (" + errorCount +
+                 "), Bail out!\n==================");
         DaemonWatcher.bailout(-1);
       }
-      
+
       try {
         FileStatus[] demuxOutputDirs = fs.listStatus(postProcessDirectory,POST_PROCESS_DEMUX_DIR_FILTER);
         List<String> directories = new ArrayList<String>();

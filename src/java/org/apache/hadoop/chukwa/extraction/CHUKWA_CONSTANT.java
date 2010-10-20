@@ -30,14 +30,18 @@ public interface CHUKWA_CONSTANT {
   public static final String CHUKWA_POST_PROCESS_DIR_FIELD = "chukwaPostProcessDir";
   public static final String CHUKWA_POSTPROCESS_IN_ERROR_DIR_FIELD = "chukwaPostProcessInErrorDir";
   public static final String CHUKWA_DATA_SINK_DIR_FIELD = "chukwaDataSinkDir";
-  
+
   public static final String CHUKWA_NAGIOS_HOST_FIELD = "demux.nagiosHost";
   public static final String CHUKWA_NAGIOS_PORT_FIELD = "demux.nagiosPort";
   public static final String CHUKWA_REPORTING_HOST_FIELD = "demux.reportingHost4Nagios";
   
   
+  public static final String CHUKWA_POSTPROCESS_MAX_ERROR_COUNT_FIELD = "post.process.max.error.count.before.shutdown";
+  public static final String CHUKWA_ARCHIVE_MAX_ERROR_COUNT_FIELD     = "archive.max.error.count.before.shutdown";
+  public static final String CHUKWA_DEMUX_MAX_ERROR_COUNT_FIELD       = "demux.max.error.count.before.shutdown";
+
   public static final String CHUKWA_DEMUX_REDUCER_COUNT_FIELD     = "demux.reducerCount";
-  
+
   public static final String DEFAULT_CHUKWA_ROOT_DIR_NAME          = "/chukwa/";
   public static final String DEFAULT_REPOS_DIR_NAME               = "repos/";
   public static final String DEFAULT_CHUKWA_POSTPROCESS_DIR_NAME  = "postProcess/";

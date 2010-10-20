@@ -23,14 +23,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
-import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.chukwa.util.NagiosHelper;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -42,14 +40,17 @@ public class DemuxManager implements CHUKWA_CONSTANT {
   static Logger log = Logger.getLogger(DemuxManager.class);
 
   static int globalErrorcounter = 0;
-  
+  static Date firstErrorTime = null;
+
   protected int ERROR_SLEEP_TIME = 60;
   protected int NO_DATASINK_SLEEP_TIME = 20;
 
+  protected int DEFAULT_MAX_ERROR_COUNT = 6;
   protected int DEFAULT_MAX_FILES_PER_DEMUX = 500;
   protected int DEFAULT_REDUCER_COUNT = 8;
   
-  protected int demuxReducerCount = 0; 
+  protected int maxPermittedErrorCount = DEFAULT_MAX_ERROR_COUNT;
+  protected int demuxReducerCount = 0;
   protected ChukwaConfiguration conf = null;
   protected FileSystem fs = null;
   protected int reprocess = 0;
@@ -133,6 +134,8 @@ public class DemuxManager implements CHUKWA_CONSTANT {
      }
      log.info("archiveRootDir:" + archiveRootDir);
      
+     maxPermittedErrorCount = conf.getInt(CHUKWA_DEMUX_MAX_ERROR_COUNT_FIELD,
+                                          DEFAULT_MAX_ERROR_COUNT);
      demuxReducerCount = conf.getInt(CHUKWA_DEMUX_REDUCER_COUNT_FIELD, DEFAULT_REDUCER_COUNT);
      log.info("demuxReducerCount:" + demuxReducerCount);
      
@@ -156,8 +159,9 @@ public class DemuxManager implements CHUKWA_CONSTANT {
        try {
          demuxReady = false;
 
-         if (globalErrorcounter > 5) {
-           log.warn("==================\nToo many errors, Bail out!\n==================");
+         if (maxPermittedErrorCount != -1 && globalErrorcounter >= maxPermittedErrorCount) {
+           log.warn("==================\nToo many errors (" + globalErrorcounter +
+                    "), Bail out!\n==================");
            DaemonWatcher.bailout(-1);
          }
          
@@ -200,14 +204,22 @@ public class DemuxManager implements CHUKWA_CONSTANT {
           boolean demuxStatus = processData(dataSinkDir, demuxInputDir, demuxOutputDir,
                postProcessDir, archiveRootDir);
           sendDemuxStatusToNagios(nagiosHost,nagiosPort,reportingHost,demuxErrorDir,demuxStatus,null);
-          
+
+          // if demux suceeds, then we reset these.
+          if (demuxStatus) {
+           globalErrorcounter = 0;
+           firstErrorTime = null;
+          }
          } else {
            log.info("Demux not ready so going to sleep ...");
            Thread.sleep(NO_DATASINK_SLEEP_TIME * 1000);
          }
        }catch(Throwable e) {
-         log.warn(e);
          globalErrorcounter ++;
+         if (firstErrorTime == null) firstErrorTime = new Date();
+
+         log.warn("Consecutive error number " + globalErrorcounter +
+                  " encountered since " + firstErrorTime, e);
          sendDemuxStatusToNagios(nagiosHost,nagiosPort,reportingHost,demuxErrorDir,false, e.getMessage());
          try { Thread.sleep(ERROR_SLEEP_TIME * 1000); } 
          catch (InterruptedException e1) {/*do nothing*/ }
@@ -331,8 +343,10 @@ public class DemuxManager implements CHUKWA_CONSTANT {
        return ( 0 == ToolRunner.run(this.conf,new Demux(), demuxParams) );
      } catch (Throwable e) {
        e.printStackTrace();
-       log.error("failed to run demux", e);
        globalErrorcounter ++;
+       if (firstErrorTime == null) firstErrorTime = new Date();
+       log.error("Failed to run demux. Consecutive error number " +
+               globalErrorcounter + " encountered since " + firstErrorTime, e);
      }
      return false;
    }
