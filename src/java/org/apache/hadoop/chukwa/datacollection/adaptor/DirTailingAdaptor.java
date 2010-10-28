@@ -51,7 +51,9 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
   File baseDir;
   String baseDirName; 
   long scanInterval;
-  String adaptorName; //name of adaptors to start
+
+	protected String adaptorName; // name of adaptors to start
+
   IOFileFilter fileFilter;
 
   @Override
@@ -94,8 +96,8 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
     if(!dir.isDirectory()) {
       //Don't start tailing if we would have gotten it on the last pass
       if(dir.lastModified() >= lastSweepStartTime) {
-            String newAdaptorID = control.processAddCommand(
-                "add " + adaptorName +" " + type + " " + dir.getCanonicalPath() + " 0");
+				String newAdaptorID = control.processAddCommand(getAdaptorAddCommand(dir));
+
             log.info("DirTailingAdaptor " + adaptorID +  "  started new adaptor " + newAdaptorID);
        }
       
@@ -108,6 +110,9 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
       }
   }
   
+	protected String getAdaptorAddCommand(File dir) throws IOException {
+		return "add " + adaptorName + " " + type + " " + dir.getCanonicalPath() + " 0";
+	}
 
   @Override
   public String getCurrentStatus() {
@@ -143,4 +148,3 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
   }
 
 }
-
