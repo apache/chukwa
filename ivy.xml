@@ -61,13 +61,13 @@
       name="hadoop-test"
       rev="${hadoop.version}"
       conf="common->master"/>
-    <dependency org="org.apache.hbase"
+<!--    <dependency org="org.apache.hbase"
       name="hbase"
       rev="${hbase.version}"
       conf="common->master">
       <artifact name="hbase" type="jar"/>
       <artifact name="hbase" type="tests" ext="jar" m:classifier="tests"/>
-    </dependency>
+    </dependency> -->
     <dependency org="com.google.guava"
       name="guava"
       rev="${guava.version}"
@@ -188,6 +188,12 @@
       name="core"
       rev="${jetty.eclipse.jdt.core.version}"
       conf="jetty->master"/>
+<!-- Comment out sigar until Sigar 1.6.5 is on maven repository -->
+<!--
+    <dependency org="org.hyperic"
+      name="sigar"
+      rev="${sigar.version}"
+      conf="common->default"/> -->
     <dependency org="springframework"
       name="spring-mock"
       rev="${spring-mock.version}"
