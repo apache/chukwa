@@ -24,6 +24,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-493. Change release artifact naming. (Eric Yang via asrabkin)
+
     CHUKWA-525. Extensible DirTailingAdaptor. (Jaydeep Ayachit via asrabkin).
 
     CHUKWA-531. Bundle HBase 0.20.6 in library path, and comment out test case for HBaseWriter for now. (Eric Yang)
