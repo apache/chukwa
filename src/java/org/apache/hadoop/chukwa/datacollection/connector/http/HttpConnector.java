@@ -72,7 +72,6 @@ public class HttpConnector implements Connector, Runnable {
   String argDestination = null;
 
   private volatile boolean stopMe = false;
-  private boolean reloadConfiguration = false;
   private Iterator<String> collectors = null;
   protected ChukwaSender connectorClient = null;
 
@@ -176,12 +175,6 @@ public class HttpConnector implements Connector, Runnable {
           chunkCount++;
         }
 
-        if (reloadConfiguration) {
-          connectorClient.setCollectors(collectors);
-          log.info("Resetting colectors");
-          reloadConfiguration = false;
-        }
-
         long now = System.currentTimeMillis();
         if (now - lastPost < MIN_POST_INTERVAL)
           Thread.sleep(now - lastPost); // wait for stuff to accumulate
@@ -203,7 +196,6 @@ public class HttpConnector implements Connector, Runnable {
 
   @Override
   public void reloadConfiguration() {
-    reloadConfiguration = true;
     Iterator<String> destinations = null;
 
     // build a list of our destinations from collectors
@@ -214,6 +206,8 @@ public class HttpConnector implements Connector, Runnable {
     }
     if (destinations != null && destinations.hasNext()) {
       collectors = destinations;
+      connectorClient.setCollectors(collectors);
+      log.info("Resetting collectors");
     }
   }
   

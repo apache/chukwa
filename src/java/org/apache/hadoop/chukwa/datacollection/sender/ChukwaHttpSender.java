@@ -259,7 +259,7 @@ public class ChukwaHttpSender implements ChukwaSender {
           if (retries > 0) {
             log.warn("No more collectors to try rolling over to; waiting "
                 + WAIT_FOR_COLLECTOR_REBOOT + " ms (" + retries
-                + "retries left)");
+                + " retries left)");
             Thread.sleep(WAIT_FOR_COLLECTOR_REBOOT);
             retries--;
           } else {
