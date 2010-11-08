@@ -126,6 +126,13 @@ while(true) {
 	  	</source>
 	  	</section>
 	  	
+	  	<section>
+	  	<title>
+	  	Acknowledgement mode</title>
+	  	<p>
+	  	See  <a href="async_ack.html">The asynchronous acknowledgement</a> documentation
+	  	to learn how to enable and control that feature
+	  	</p></section>
 
   	</section>
   </body>

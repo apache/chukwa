@@ -34,8 +34,15 @@ advances its checkpoint state.
 </p><p>
 This is potentially a problem if HDFS (or some other storage tier) has non-durable or
 asynchronous writes. As a result, Chukwa offers a mechanism, asynchronous acknowledgement,
-for coping with this case. 
+for coping with this case. </p>
+<p>
 This mechanism can be enabled by setting option <code>httpConnector.asyncAcks</code>.
+This option applies to both agents and collectors. On the collector side, it tells
+the collector to return asynchronous acknowledgements. On the agent side, it tells
+agents to look for and process them correctly. Agents with the option set to false
+should work OK with collectors where it's set to true. The reverse is not
+generally true: agents will expect a collector to be able to answer questions
+about the state of the filesystem.
 </p>
 </section>
 

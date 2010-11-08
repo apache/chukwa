@@ -403,6 +403,27 @@ Refresh to the Chukwa Cluster Configuration page for the Job Tracker URL. </sour
 </section>
 
 
+<section>
+<title>HICC on HBase</title>
+<p>
+Chukwa is moving towards a model of using HBase to store metrics data to allow real-time
+charting. This section describes how to configure HBase and HICC to work together.
+</p>
+<ul>
+<li>
+Presently, we only support HBase 0.20.6. If you have HBase 0.89 jars anywhere, they 
+will cause linkage errors.  Check for and remove them.
+</li>
+<li>
+Setting up tables:<source>/work/hbase-0.20.6/bin/hbase shell < conf/hbase.schema</source></li>
+<li>
+Pointing Chukwa at HBase: Copy your <source>hbase-site.xml</source> to the Chukwa config directory.
+</li>
+<li>
+Configuring the collector: set HBaseWriter as your writer, or add it to the pipeline if you 
+are using <source>PipelineStageWriter</source></li>
+</ul>
+</section>
 
 <section>
 <title>Troubleshooting Tips</title>
