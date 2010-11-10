@@ -24,6 +24,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-546. SocketAdaptor. (Eric Yang via asrabkin)
+
     CHUKWA-493. Change release artifact naming. (Eric Yang via asrabkin)
 
     CHUKWA-525. Extensible DirTailingAdaptor. (Jaydeep Ayachit via asrabkin).

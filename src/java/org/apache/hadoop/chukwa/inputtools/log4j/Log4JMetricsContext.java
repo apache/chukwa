@@ -17,7 +17,14 @@
  */
 package org.apache.hadoop.chukwa.inputtools.log4j;
 
-
+/**
+ * Log4JMetricsContext is a plugin for reporting Hadoop Metrics through
+ * syslog protocol.  Usage:
+ * 
+ * Copy hadoop-metrics.properties file from CHUKWA_HOME/conf to HADOOP_HOME/conf.
+ * Copy chukwa-hadoop-*-client.jar and json.jar to HADOOP_HOME/lib
+ * 
+ */
 import java.io.File;
 import java.io.IOException;
 
@@ -36,18 +43,15 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
   static final Object lock = new Object();
 
   /* Configuration attribute names */
-  protected static final String  OUTPUT_DIR_PROPERTY = "directory";
   protected static final String PERIOD_PROPERTY = "period";
-  protected static final String ADD_UUID_PROPERTY = "uuid";
-  
+  protected static final String HOST_PROPERTY = "host";
+  protected static final String PORT_PROPERTY = "port";  
 
-  protected static final String user = System.getProperty("user.name");
-  
-  protected String outputDir = null;
   protected int period = 0;
-  protected boolean needUUID = false;
+  protected String host = "localhost";
+  protected int port = 9095;
   
-  /** Creates a new instance of FileContext */
+  /** Creates a new instance of MetricsContext */
   public Log4JMetricsContext() {
   }
 
@@ -68,22 +72,13 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
       this.period = period;
       log.info("Log4JMetricsContext." + contextName + ".period=" + period);
     }
-    
-    outputDir = getAttribute(OUTPUT_DIR_PROPERTY);
-    if (outputDir == null) {
-      log.warn("Log4JMetricsContext." + contextName + "."+ OUTPUT_DIR_PROPERTY + " is null");
-      throw new MetricsException("Invalid output directory: " + outputDir);
+    String host = getAttribute(HOST_PROPERTY);
+    if (host != null) {
+      this.host = host;
     }
-    File fOutputDir = new File(outputDir);
-    if (!fOutputDir.exists()) {
-      fOutputDir.mkdirs();
-    }
-    log.info("Log4JMetricsContext." + contextName + "." + OUTPUT_DIR_PROPERTY +"=" + outputDir);
-    
-    String uuid = getAttribute(ADD_UUID_PROPERTY);
-    if (uuid != null && uuid.equalsIgnoreCase("true")) {
-      needUUID = true;
-      log.info("Log4JMetricsContext." + contextName + "." + ADD_UUID_PROPERTY +" has been activated."); 
+    String port = getAttribute(PORT_PROPERTY);
+    if (port != null) {
+      this.port = Integer.parseInt(port);
     }
   }
 
@@ -95,22 +90,10 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
         if (out == null) {
           PatternLayout layout = new PatternLayout("%d{ISO8601} %p %c: %m%n");
           
-          org.apache.hadoop.chukwa.inputtools.log4j.ChukwaDailyRollingFileAppender appender = new org.apache.hadoop.chukwa.inputtools.log4j.ChukwaDailyRollingFileAppender();
+          org.apache.log4j.net.SocketAppender appender = new org.apache.log4j.net.SocketAppender(host, port);
+          
           appender.setName("chukwa.metrics." + contextName);
           appender.setLayout(layout);
-          appender.setAppend(true);
-          if (needUUID) {
-            appender.setFile(outputDir + File.separator + "chukwa-" + user
-                + "-" + contextName + "-" + System.currentTimeMillis()
-                + ".log");
-          } else {
-            appender.setFile(outputDir + File.separator + "chukwa-" + user
-                + "-" + contextName 
-                + ".log");
-          }
-
-          appender.setRecordType( contextName);
-          appender.setDatePattern(".yyyy-MM-dd");
           
           Logger logger = Logger.getLogger("chukwa.metrics." + contextName);
           logger.setAdditivity(false);

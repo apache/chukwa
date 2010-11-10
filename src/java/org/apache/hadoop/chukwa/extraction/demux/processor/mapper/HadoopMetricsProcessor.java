@@ -51,7 +51,6 @@ import org.json.JSONObject;
 @Table(name="Hadoop",columnFamily="Hadoop_mapred_job"),
 @Table(name="Hadoop",columnFamily="Hadoop_rpc_metrics")
 })
-@Deprecated
 public class HadoopMetricsProcessor extends AbstractProcessor {
   public static final String jvm = "Hadoop_jvm_metrics";
   public static final String mapred = "Hadoop_mapred_metrics";
@@ -84,9 +83,11 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
       OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter)
       throws Throwable {
     try {
-      String dStr = recordEntry.substring(0, 23);
-      int start = 24;
-      int idx = recordEntry.indexOf(' ', start);
+      // Look for syslog PRI, if PRI is not found, start from offset of 0.
+      int idx = recordEntry.indexOf('>', 0);  
+      String dStr = recordEntry.substring(idx+1, idx+23);
+      int start = idx + 25;
+      idx = recordEntry.indexOf(' ', start);
       // String level = recordEntry.substring(start, idx);
       start = idx + 1;
       idx = recordEntry.indexOf(' ', start);
