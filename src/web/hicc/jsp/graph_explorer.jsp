@@ -139,7 +139,9 @@
         url[i] = "/hicc/v1/metrics/series/" + $('#table').val() + "/" + data[i] + "/rowkey/" + $('#row').val();
       } 
       var title = $('#title').val();
-      $('#graph').attr('src', "/hicc/jsp/chart.jsp?title="+title+"&data="+url.join("&data="));
+      var ymin = $('#ymin').val();
+      var ymax = $('#ymax').val();
+      $('#graph').attr('src', "/hicc/jsp/chart.jsp?title="+title+"&ymin="+ymin+"&ymax="+ymax+"&data="+url.join("&data="));
       $('#graph').load(function() {
         doIframe();
       });
@@ -176,6 +178,10 @@
             Row<br>
             <select id="row" size="10">
             </select>
+          </td>
+          <td>
+            Y-axis Min: <input type="text" id="ymin" /><br />
+            Y-axis Max: <input type="text" id="ymax" /><br />
           </td>
         </tr>
         <tr>

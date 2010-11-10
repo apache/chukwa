@@ -97,6 +97,17 @@
       c.setXAxisLabel("Time");
     }
 
+    // set ymin and ymax
+    // TODO: check that these are numbers
+    if (request.getParameter("ymin") != null && 
+        request.getParameter("ymin").length() != 0) {
+      c.setYMin(new Double(xf.getParameter("ymin")));
+    }
+    if (request.getParameter("ymax") != null &&
+        request.getParameter("ymax").length() != 0) {
+      c.setYMax(new Double(xf.getParameter("ymax")));
+    }
+
     /*
      * Setup y axis display.
      */

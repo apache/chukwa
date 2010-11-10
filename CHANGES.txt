@@ -24,6 +24,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-547. Adjustable Axes on HICC graphs. (Michael Chang via asrabkin)
+
     CHUKWA-548. Gray out options with no data. (Michael Chang via asrabkin)
 
     CHUKWA-546. SocketAdaptor. (Eric Yang via asrabkin)
