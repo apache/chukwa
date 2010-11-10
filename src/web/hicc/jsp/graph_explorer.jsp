@@ -33,11 +33,30 @@
   <script src="/hicc/js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="/hicc/js/autoHeight.js" type="text/javascript" charset="utf-8"></script>
   <script>
+    var checkDataLength = function(curOption) {
+      return function(data) {
+        if (data.length == 0) {
+          curOption.attr('disabled', 'disabled');
+        }
+      }
+    };
+
     $.ajax({ url: "/hicc/v1/metrics/schema", dataType: "json", success: function(data){
       for(var i in data) {
         $('#table').append("<option>"+data[i]+"</option>");
       }
+      // Look through each table option and see if it has anything in its family?
+      $('#table').children().each(
+        function() {
+          var table = $(this).text();
+          $.ajax({ url: "/hicc/v1/metrics/schema/"+table, 
+                   dataType: "json", 
+                   success: checkDataLength($(this))
+          });
+        }
+      );
     }});
+
 
     function getFamilies() {
       var size = $('#family option').size();
@@ -47,6 +66,17 @@
         for(var i in data) {
           $('#family').append("<option>"+data[i]+"</option>");
         }
+        // Look through each family option and see if it has any columns
+        var table = $('#table').val();
+        $('#family').children().each(
+          function() {
+            var family = $(this).text();
+            $.ajax({ url: "/hicc/v1/metrics/schema/"+table+"/"+family, 
+                     dataType: "json", 
+                     success: checkDataLength($(this))
+            });
+          }
+        );
       }});
     }
 
@@ -62,6 +92,18 @@
           for(var i in data) {
             $('#column').append("<option>"+data[i]+"</option>");
           }
+          // Look through each column option and see if it has any rows
+          var table = $('#table').val();
+          var family = $('#family').val();
+          $('#column').children().each(
+            function() {
+              var column = $(this).text();
+              $.ajax({ url: "/hicc/v1/metrics/schema/"+table+"/"+family+"/"+column, 
+                       dataType: "json", 
+                       success: checkDataLength($(this))
+              });
+            }
+          );
         }});
       });
     }
