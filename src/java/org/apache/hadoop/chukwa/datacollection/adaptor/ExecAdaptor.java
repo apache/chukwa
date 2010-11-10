@@ -120,7 +120,7 @@ public class ExecAdaptor extends AbstractAdaptor {
 
   String cmd;
   final java.util.Timer timer;
-  long period = 5 * 1000;
+  long period = 5;
   volatile long sendOffset = 0;
 
   public ExecAdaptor() {
@@ -161,7 +161,7 @@ public class ExecAdaptor extends AbstractAdaptor {
     this.sendOffset = offset;
     this.exec = new EmbeddedExec(cmd);
     TimerTask execTimer = new RunToolTask();
-    timer.schedule(execTimer, 0L, period);
+    timer.schedule(execTimer, 0L, period*1000L);
   }
 
 

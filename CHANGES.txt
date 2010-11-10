@@ -54,6 +54,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-447. Correct time units in ExecAdaptor. (Eric Yang via asrabkin)
+
     CHUKWA-542.  Disable hbase jar download from maven, and include hicc rest api in HICC web.xml (Eric Yang)
 
     CHUKWA-516. Downgrade to HBase 0.20.6 until 0.90 arrives. (Eric Yang)
