@@ -272,12 +272,21 @@ function refresh(url, parameters) {
  * Initialize data from REST API.
  */
 function loadData() {
+  _chartSeriesSize=0;
   for(var i=0;i<_series.length;i++) {
     $.getJSON(_rest[i], function(json) {
-      var name=json.name;
-      _series[_chartSeriesSize].label=name
-      _series[_chartSeriesSize].data=json.data;
-      _chartSeriesSize++;
+      if(json.constructor.toString().indexOf("Array") != -1) {
+        for(var index=0;index<json.length;index++) {
+          _series[_chartSeriesSize].label=json[index].name;
+          _series[_chartSeriesSize].data=json[index].data;
+          _chartSeriesSize++;
+        }
+      } else {
+        var name=json.name;
+        _series[_chartSeriesSize].label=name;
+        _series[_chartSeriesSize].data=json.data;
+        _chartSeriesSize++;
+      }
       wholePeriod();
     }); 
   }
