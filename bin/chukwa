@@ -75,6 +75,14 @@ if [ "$HADOOP_CONF_DIR" != "" ]; then
   CLASSPATH=${HADOOP_CONF_DIR}:${CLASSPATH}
 fi
 
+if [ "$CHUKWA_HICC_PORT" != "" ]; then
+  CHUKWA_HICC_PORT=$CHUKWA_HICC_PORT
+fi
+
+if [ "$CHUKWA_HICC_PORT" = "" ]; then
+  CHUKWA_HICC_PORT=4080
+fi
+
 BACKGROUND="true"
 
 # configure command parameters
@@ -105,7 +113,7 @@ elif [ "$COMMAND" = "hicc" ]; then
   CLASSPATH=${CLASSPATH}:${WEB_SERVICE_COMMON}:${HICC_JAR}
   PID="hicc"
   HOST=`hostname`
-  JAVA_OPT="${JAVA_OPT} -Djetty.host=${HOST} -Djava.net.preferIPv4Stack=true"
+  JAVA_OPT="${JAVA_OPT} -Djetty.host=${HOST} -Djetty.port=${CHUKWA_HICC_PORT} -Djava.net.preferIPv4Stack=true"
 elif [ "$COMMAND" = "hroll" ]; then
   APP='hroll'
   CLASS='org.apache.hadoop.chukwa.extraction.demux.HourlyChukwaRecordRolling'
