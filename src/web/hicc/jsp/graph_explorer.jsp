@@ -49,7 +49,7 @@
       $('#table').children().each(
         function() {
           var table = $(this).text();
-          $.ajax({ url: "/hicc/v1/metrics/schema/"+table, 
+          $.ajax({ url: encodeURI("/hicc/v1/metrics/schema/"+table), 
                    dataType: "json", 
                    success: checkDataLength($(this))
           });
@@ -62,7 +62,7 @@
       var size = $('#family option').size();
       $('#family').find('option').remove();
       var table = $('#table').val();
-      $.ajax({ url: "/hicc/v1/metrics/schema/"+table, dataType: "json", success: function(data){
+      $.ajax({ url: encodeURI("/hicc/v1/metrics/schema/"+table), dataType: "json", success: function(data){
         for(var i in data) {
           $('#family').append("<option>"+data[i]+"</option>");
         }
@@ -71,7 +71,7 @@
         $('#family').children().each(
           function() {
             var family = $(this).text();
-            $.ajax({ url: "/hicc/v1/metrics/schema/"+table+"/"+family, 
+            $.ajax({ url: encodeURI("/hicc/v1/metrics/schema/"+table+"/"+family), 
                      dataType: "json", 
                      success: checkDataLength($(this))
             });
@@ -87,7 +87,7 @@
       var family = $('#family').val();
       $('#family :selected').each(function(i, selected) {
         var family = $(selected).val();
-        var url = "/hicc/v1/metrics/schema/"+table+"/"+family;
+        var url = encodeURI("/hicc/v1/metrics/schema/"+table+"/"+family);
         $.ajax({ url: url, dataType: "json", success: function(data){
           for(var i in data) {
             $('#column').append("<option>"+data[i]+"</option>");
@@ -98,7 +98,7 @@
           $('#column').children().each(
             function() {
               var column = $(this).text();
-              $.ajax({ url: "/hicc/v1/metrics/schema/"+table+"/"+family+"/"+column, 
+              $.ajax({ url: encodeURI("/hicc/v1/metrics/schema/"+table+"/"+family+"/"+column), 
                        dataType: "json", 
                        success: checkDataLength($(this))
               });
@@ -112,11 +112,10 @@
       var size = $('#row option').size();
       $('#row').find('option').remove();
       var table = $('#table').val();
-      var family = $('#family').val();
       var column = $('#column').val();
       $('#column :selected').each(function(i, selected) {
         var column = $(selected).val();
-        var url = "/hicc/v1/metrics/rowkey/"+table+"/"+column;
+        var url = encodeURI("/hicc/v1/metrics/rowkey/"+table+"/"+column);
         $.ajax({ url: url, dataType: "json", success: function(data){
           for(var i in data) {
             $('#row').not(":contains('"+data[i]+"')").append("<option>"+data[i]+"</option>");
@@ -136,12 +135,13 @@
       });
       var url = [];
       for(var i in data) {
-        url[i] = "/hicc/v1/metrics/series/" + $('#table').val() + "/" + data[i] + "/rowkey/" + $('#row').val();
+        url[i] = encodeURI("/hicc/v1/metrics/series/" + $('#table').val() + "/" + data[i] + "/rowkey/" + $('#row').val());
       } 
       var title = $('#title').val();
       var ymin = $('#ymin').val();
       var ymax = $('#ymax').val();
-      $('#graph').attr('src', "/hicc/jsp/chart.jsp?title="+title+"&ymin="+ymin+"&ymax="+ymax+"&data="+url.join("&data="));
+      var chart_path = "/hicc/jsp/chart.jsp?title=" + title + "&ymin=" + ymin + "&ymax=" + ymax + "&data=" + url.join("&data=")
+      $('#graph').attr('src', encodeURI(chart_path));
       $('#graph').load(function() {
         doIframe();
       });

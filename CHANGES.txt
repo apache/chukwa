@@ -60,6 +60,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-552.  Handle % signs in series names. (Michael Chang via asrabkin)
+
     CHUKWA-544. HICC graph should handle single series or multiple series more gracefully. (Eric Yang via asrabkin)
 
     CHUKWA-447. Correct time units in ExecAdaptor. (Eric Yang via asrabkin)
