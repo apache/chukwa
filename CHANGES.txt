@@ -24,6 +24,10 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-555.  Update descriptor files to use HBase REST API. (Eric Yang)
+
+    CHUKWA-557.  Improve metrics differentation between recordName and contextName and clean up chukwa metrics.  (Eric Yang)
+
     CHUKWA-547. Adjustable Axes on HICC graphs. (Michael Chang via asrabkin)
 
     CHUKWA-548. Gray out options with no data. (Michael Chang via asrabkin)
