@@ -1,0 +1,54 @@
+{
+"id":"jvm_metrics",
+"title":"Java Virtual Machine Metrics",
+"version":"0.1",
+"categories":"Hadoop,Java Virtual Machine Metrics",
+"url":"iframe/jsp/chart.jsp",
+"description":"Display jvm metrics from Hadoop",
+"screendump":"\/images\/server_load.gif",
+"refresh":"15",
+"parameters":[
+{"name":"title","type":"string","value":"","edit":"1","label":"Title"},
+{"name":"table","type":"string","value":"Hadoop","edit":"0"},
+{"name":"group","type":"string","value":"host","edit":"0"},
+{"name":"group_items","type":"string","value":"hosts","edit":"0"},
+{"name":"period","type":"custom","control":"period_control","value":"","label":"Period"},
+{"name":"data","type":"select_multiple","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:logError/session/hosts","label":"Metric","options":[
+{"label":"gcCount","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:gcCount/session/hosts"}, 
+{"label":"gcTimeMillis","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:gcTimeMillis/session/hosts"}, 
+{"label":"logError","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:logError/session/hosts"}, 
+{"label":"logFatal","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:logFatal/session/hosts"}, 
+{"label":"logInfo","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:logInfo/session/hosts"}, 
+{"label":"logWarn","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:logWarn/session/hosts"}, 
+{"label":"memHeapCommittedM","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:memHeapCommittedM/session/hosts"}, 
+{"label":"memHeapUsedM","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:memHeapUsedM/session/hosts"}, 
+{"label":"memNonHeapCommittedM","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:memNonHeapCommittedM/session/hosts"}, 
+{"label":"memNonHeapUsedM","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:memNonHeapUsedM/session/hosts"}, 
+{"label":"threadsBlocked","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:threadsBlocked/session/hosts"}, 
+{"label":"threadsNew","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:threadsNew/session/hosts"}, 
+{"label":"threadsRunnable","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:threadsRunnable/session/hosts"}, 
+{"label":"threadsTerminated","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:threadsTerminated/session/hosts"}, 
+{"label":"threadsTimedWaiting","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:threadsTimedWaiting/session/hosts"}, 
+{"label":"threadsWaiting","value":"/hicc/v1/metrics/series/Hadoop/jvm_metrics:threadsWaiting/session/hosts"}
+]},
+{"name":"width","type":"select","value":"300","label":"Width","options":[
+{"label":"300","value":"300"},
+{"label":"400","value":"400"},
+{"label":"500","value":"500"},
+{"label":"600","value":"600"},
+{"label":"800","value":"800"},
+{"label":"1000","value":"1000"},
+{"label":"1200","value":"1200"}
+]},
+{"name":"height","type":"select","value":"200","label":"Height","options":[
+{"label":"200","value":"200"},
+{"label":"400","value":"400"},
+{"label":"600","value":"600"},
+{"label":"800","value":"800"},
+{"label":"1000","value":"1000"}
+]},
+{"name":"legend","type":"radio","value":"on","label":"Show Legends","options":[
+{"label":"On","value":"on"},
+{"label":"Off","value":"off"}]}
+]
+}
