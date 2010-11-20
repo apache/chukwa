@@ -27,7 +27,7 @@ import org.apache.hadoop.metrics.util.MetricsRegistry;
 import org.apache.hadoop.metrics.util.MetricsTimeVaryingInt;
 
 public class AgentMetrics implements Updater {
-  public static final AgentMetrics agentMetrics = new AgentMetrics("ChukwaAgent", "chukwaAgent");;
+  public static final AgentMetrics agentMetrics = new AgentMetrics("chukwaAgent", "metrics");
   
   public MetricsRegistry registry = new MetricsRegistry();
   private MetricsRecord metricsRecord;
@@ -44,7 +44,7 @@ public class AgentMetrics implements Updater {
   
   /** Creates a new instance of AgentMetrics */
   public AgentMetrics(String processName, String recordName) {
-      MetricsContext context = MetricsUtil.getContext(recordName);
+      MetricsContext context = MetricsUtil.getContext(processName);
       metricsRecord = MetricsUtil.createRecord(context, recordName);
       metricsRecord.setTag("process", processName);
       agentActivityMBean = new AgentActivityMBean(registry, recordName);

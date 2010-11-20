@@ -73,7 +73,7 @@ public class ChukwaHttpSender implements ChukwaSender {
   public static final String COLLECTOR_TIMEOUT_OPT = "chukwaAgent.sender.collectorTimeout";
   // FIXME: this should really correspond to the timer in RetryListOfCollectors
 
-  static final HttpSenderMetrics metrics = new HttpSenderMetrics("ChukwaAgent", "chukwaHttpSender");
+  static final HttpSenderMetrics metrics = new HttpSenderMetrics("chukwaAgent", "httpSender");
   
   static Logger log = Logger.getLogger(ChukwaHttpSender.class);
   static HttpClient client = null;

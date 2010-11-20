@@ -37,33 +37,33 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @Tables(annotations={
-@Table(name="Hadoop",columnFamily="Hadoop_jvm_metrics"),
-@Table(name="Hadoop",columnFamily="Hadoop_mapred_metrics"),
-@Table(name="Hadoop",columnFamily="Hadoop_dfs_metrics"),
-@Table(name="Hadoop",columnFamily="Hadoop_dfs_namenode"),
-@Table(name="Hadoop",columnFamily="Hadoop_dfs_FSDirectory"),
-@Table(name="Hadoop",columnFamily="Hadoop_dfs_FSNamesystem"),
-@Table(name="Hadoop",columnFamily="Hadoop_dfs_datanode"),
-@Table(name="Hadoop",columnFamily="Hadoop_mapred_jobtracker"),
-@Table(name="Hadoop",columnFamily="Hadoop_mapred_shuffleInput"),
-@Table(name="Hadoop",columnFamily="Hadoop_mapred_shuffleOutput"),
-@Table(name="Hadoop",columnFamily="Hadoop_mapred_tasktracker"),
-@Table(name="Hadoop",columnFamily="Hadoop_mapred_job"),
-@Table(name="Hadoop",columnFamily="Hadoop_rpc_metrics")
+@Table(name="Hadoop",columnFamily="jvm_metrics"),
+@Table(name="Hadoop",columnFamily="mapred_metrics"),
+@Table(name="Hadoop",columnFamily="dfs_metrics"),
+@Table(name="Hadoop",columnFamily="dfs_namenode"),
+@Table(name="Hadoop",columnFamily="dfs_FSDirectory"),
+@Table(name="Hadoop",columnFamily="dfs_FSNamesystem"),
+@Table(name="Hadoop",columnFamily="dfs_datanode"),
+@Table(name="Hadoop",columnFamily="mapred_jobtracker"),
+@Table(name="Hadoop",columnFamily="mapred_shuffleInput"),
+@Table(name="Hadoop",columnFamily="mapred_shuffleOutput"),
+@Table(name="Hadoop",columnFamily="mapred_tasktracker"),
+@Table(name="Hadoop",columnFamily="mapred_job"),
+@Table(name="Hadoop",columnFamily="rpc_metrics")
 })
 public class HadoopMetricsProcessor extends AbstractProcessor {
-  public static final String jvm = "Hadoop_jvm_metrics";
-  public static final String mapred = "Hadoop_mapred_metrics";
-  public static final String dfs = "Hadoop_dfs_metrics";
-  public static final String namenode = "Hadoop_dfs_namenode";
-  public static final String fsdir = "Hadoop_dfs_FSDirectory";
-  public static final String fsname = "Hadoop_dfs_FSNamesystem";
-  public static final String datanode = "Hadoop_dfs_datanode";
-  public static final String jobtracker = "Hadoop_mapred_jobtracker";
-  public static final String shuffleIn = "Hadoop_mapred_shuffleInput";
-  public static final String shuffleOut = "Hadoop_mapred_shuffleOutput";
-  public static final String tasktracker = "Hadoop_mapred_tasktracker";
-  public static final String mr = "Hadoop_mapred_job";
+//  public static final String jvm = "jvm_metrics";
+//  public static final String mapred = "mapred_metrics";
+//  public static final String dfs = "dfs_metrics";
+//  public static final String namenode = "dfs_namenode";
+//  public static final String fsdir = "dfs_FSDirectory";
+//  public static final String fsname = "dfs_FSNamesystem";
+//  public static final String datanode = "dfs_datanode";
+//  public static final String jobtracker = "mapred_jobtracker";
+//  public static final String shuffleIn = "mapred_shuffleInput";
+//  public static final String shuffleOut = "mapred_shuffleOutput";
+//  public static final String tasktracker = "mapred_tasktracker";
+//  public static final String mr = "mapred_job";
   
   static Logger log = Logger.getLogger(HadoopMetricsProcessor.class);
   static final String chukwaTimestampField = "chukwa_timestamp";
@@ -100,7 +100,8 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
       JSONObject json = new JSONObject(body);
 
       ChukwaRecord record = new ChukwaRecord();
-      String datasource = null;
+      StringBuilder datasource = new StringBuilder();
+      String contextName = null;
       String recordName = null;
 
       Iterator<String> ki = json.keys();
@@ -114,7 +115,7 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
           cal.set(Calendar.MILLISECOND, 0);
           d.setTime(cal.getTimeInMillis());
         } else if (contextNameField.intern() == keyName.intern()) {
-          datasource = "Hadoop_" + json.getString(keyName);
+          contextName = json.getString(keyName);
         } else if (recordNameField.intern() == keyName.intern()) {
           recordName = json.getString(keyName);
           record.add(keyName, json.getString(keyName));
@@ -122,9 +123,12 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
           record.add(keyName, json.getString(keyName));
         }
       }
-
-      datasource = datasource + "_" + recordName;
-      buildGenericRecord(record, null, d.getTime(), datasource);
+      if(contextName!=null) {
+        datasource.append(contextName);
+        datasource.append("_");
+      }
+      datasource.append(recordName);
+      buildGenericRecord(record, null, d.getTime(), datasource.toString());
       output.collect(key, record);
     } catch (ParseException e) {
       e.printStackTrace();

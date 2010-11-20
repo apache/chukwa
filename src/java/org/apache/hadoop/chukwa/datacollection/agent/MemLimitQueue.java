@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
  */
 public class MemLimitQueue implements ChunkQueue {
   static Logger log = Logger.getLogger(WaitingQueue.class);
-  static final ChunkQueueMetrics metrics = new ChunkQueueMetrics("ChukwaAgent", "chunkQueue");;
+  static final ChunkQueueMetrics metrics = new ChunkQueueMetrics("chukwaAgent", "chunkQueue");;
   private Queue<Chunk> queue = new LinkedList<Chunk>();
   private long dataSize = 0;
   private final long MAX_MEM_USAGE;

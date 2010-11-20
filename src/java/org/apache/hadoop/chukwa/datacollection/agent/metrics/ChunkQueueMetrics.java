@@ -52,7 +52,7 @@ public class ChunkQueueMetrics implements Updater {
   
   /** Creates a new instance of QueueMetrics */
   public ChunkQueueMetrics(String processName, String recordName) {
-      MetricsContext context = MetricsUtil.getContext(recordName);
+      MetricsContext context = MetricsUtil.getContext(processName);
       metricsRecord = MetricsUtil.createRecord(context, recordName);
       mbean = new ChunkQueueActivityMBean(registry, recordName);
       context.registerUpdater(this);

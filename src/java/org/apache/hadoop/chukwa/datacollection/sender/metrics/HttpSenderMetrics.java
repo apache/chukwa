@@ -49,7 +49,7 @@ public class HttpSenderMetrics implements Updater {
   
   /** Creates a new instance of HttpSenderMetrics */
   public HttpSenderMetrics(String processName, String recordName) {
-      MetricsContext context = MetricsUtil.getContext(recordName);
+      MetricsContext context = MetricsUtil.getContext(processName);
       metricsRecord = MetricsUtil.createRecord(context, recordName);
       metricsRecord.setTag("process", processName);
       mbean = new HttpSenderActivityMBean(registry, recordName);

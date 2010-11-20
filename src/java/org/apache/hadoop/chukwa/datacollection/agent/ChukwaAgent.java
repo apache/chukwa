@@ -76,7 +76,7 @@ import edu.berkeley.confspell.*;
  */
 public class ChukwaAgent implements AdaptorManager {
   // boolean WRITE_CHECKPOINTS = true;
-  static AgentMetrics agentMetrics = new AgentMetrics("ChukwaAgent", "chukwaAgent");
+  static AgentMetrics agentMetrics = new AgentMetrics("ChukwaAgent", "metrics");
 
   private static final int HTTP_SERVER_THREADS = 120;
   private static Server jettyServer = null;
