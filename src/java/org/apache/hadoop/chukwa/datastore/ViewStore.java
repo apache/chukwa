@@ -208,6 +208,9 @@ public class ViewStore {
         FileStatus[] fstatus = fs.listStatus(viewFile);
         if(fstatus!=null) {
           for(int i=0;i<fstatus.length;i++) {
+            if(!fstatus[i].getPath().getName().endsWith(".view")) {
+              continue;
+            }
             long size = fstatus[i].getLen();
             FSDataInputStream viewStream = fs.open(fstatus[i].getPath());
             byte[] buffer = new byte[(int)size];
