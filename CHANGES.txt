@@ -64,6 +64,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-543.  Parse only .view files for processing user view files.  (Eric Yang)
+
     CHUKWA-552.  Handle % signs in series names. (Michael Chang via asrabkin)
 
     CHUKWA-544. HICC graph should handle single series or multiple series more gracefully. (Eric Yang via asrabkin)
