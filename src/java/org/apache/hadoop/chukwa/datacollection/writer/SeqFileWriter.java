@@ -175,7 +175,7 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
     
     calendar.setTimeInMillis(System.currentTimeMillis());
 
-    String newName = new java.text.SimpleDateFormat("yyyyddHHmmssSSS")
+    String newName = new java.text.SimpleDateFormat("yyyyMMddHHmmssSSS")
         .format(calendar.getTime());
     newName += localHostAddr + new java.rmi.server.UID().toString();
     newName = newName.replace("-", "");
