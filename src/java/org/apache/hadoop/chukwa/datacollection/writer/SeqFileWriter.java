@@ -28,6 +28,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.io.IOException;
 
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.Chunk;
@@ -80,7 +81,7 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
   protected volatile long dataSize = 0;
   protected volatile long bytesThisRotate = 0;
   protected volatile boolean isRunning = false;
-  
+
   static {
     try {
       localHostAddr = "_" + InetAddress.getLocalHost().getHostName() + "_";
@@ -126,7 +127,7 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
       if (fs == null) {
         log.error("can't connect to HDFS at " + fs.getUri() + " bail out!");
         DaemonWatcher.bailout(-1);
-      } 
+      }
     } catch (Throwable e) {
       log.error(
           "can't connect to HDFS, trying default file system instead (likely to be local)",
@@ -183,9 +184,7 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
     newName = newName.replace(".", "");
     newName = outputDir + "/" + newName.trim();
 
-    boolean bailOut = false;
-
-     try {
+    try {
       lock.acquire();
 
       FSDataOutputStream previousOutputStr = currentOutputStr;
@@ -193,43 +192,52 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
       String previousFileName = currentFileName;
 
       if (previousOutputStr != null) {
-        previousOutputStr.close();
+        boolean closed = false;
+        try {
+          log.info("closing sink file" + previousFileName);
+          previousOutputStr.close();
+          closed = true;
+        }catch (Throwable e) {
+          log.error("couldn't close file" + previousFileName, e);
+          //we probably have an orphaned 0 byte file at this point due to an
+          //intermitant HDFS outage. Once HDFS comes up again we'll be able to
+          //close it, although it will be empty.
+        }
+
         if (bytesThisRotate > 0) {
-          log.info("rotating sink file " + previousPath);
-          fs.rename(previousPath, new Path(previousFileName + ".done"));
+          if (closed) {
+            log.info("rotating sink file " + previousPath);
+            fs.rename(previousPath, new Path(previousFileName + ".done"));
+          }
+          else {
+            log.warn(bytesThisRotate + " bytes potentially lost, since " +
+                    previousPath + " could not be closed.");
+          }
         } else {
           log.info("no chunks written to " + previousPath + ", deleting");
           fs.delete(previousPath, false);
         }
       }
+
       Path newOutputPath = new Path(newName + ".chukwa");
       FSDataOutputStream newOutputStr = fs.create(newOutputPath);
-      currentOutputStr = newOutputStr;
-      currentPath = newOutputPath;
-      currentFileName = newName;
-      bytesThisRotate = 0;
       // Uncompressed for now
       seqFileWriter = SequenceFile.createWriter(conf, newOutputStr,
           ChukwaArchiveKey.class, ChunkImpl.class,
           SequenceFile.CompressionType.NONE, null);
+
+      // reset these once we know that seqFileWriter was created
+      currentOutputStr = newOutputStr;
+      currentPath = newOutputPath;
+      currentFileName = newName;
+      bytesThisRotate = 0;
     } catch (Throwable e) {
-      log.warn("Got an exception in rotate",e);
-      bailOut = true;
-      isRunning = false;
+      log.warn("Got an exception trying to rotate. Will try again in " +
+              rotateInterval/1000 + " seconds." ,e);
     } finally {
       lock.release();
     }
     
-    if (bailOut) {
-      log.fatal("IO Exception in rotate. Exiting!");
-      // As discussed for now:
-      // Everytime this happen in the past it was because HDFS was down,
-      // so there's nothing we can do
-      // Shutting down the collector for now
-      // Watchdog will re-start it automatically
-      DaemonWatcher.bailout(-1);
-    }   
-
     // Schedule the next timer
     rotateTimer = new Timer();
     rotateTimer.schedule(new TimerTask() {
@@ -237,7 +245,7 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
         rotate();
       }
     }, rotateInterval);
-    
+
   }
 
   
@@ -277,17 +285,26 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
           archiveKey.setSeqId(chunk.getSeqID());
 
           if (chunk != null) {
-            // compute size for stats
+            seqFileWriter.append(archiveKey, chunk);
+
+            // compute size for stats only if append succeeded. Note though that
+            // seqFileWriter.append can continue taking data for quite some time
+            // after HDFS goes down while the client is trying to reconnect. Hence
+            // these stats might not reflect reality during an HDFS outage.
             dataSize += chunk.getData().length;
             bytesThisRotate += chunk.getData().length;
-            seqFileWriter.append(archiveKey, chunk);
 
             String futureName = currentPath.getName().replace(".chukwa", ".done");
             result.addPend(futureName, currentOutputStr.getPos());
           }
 
         }
-      } catch (Throwable e) {
+      }
+      catch (IOException e) {
+        log.error("IOException when trying to write a chunk, Collector will return error and keep running.", e);
+        return COMMIT_FAIL;
+      }
+      catch (Throwable e) {
         // We don't want to loose anything
         log.fatal("IOException when trying to write a chunk, Collector is going to exit!", e);
         DaemonWatcher.bailout(-1);

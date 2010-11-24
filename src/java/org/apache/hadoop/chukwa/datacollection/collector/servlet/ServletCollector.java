@@ -147,14 +147,19 @@ public class ServletCollector extends HttpServlet {
         }
       }
 
+      int responseStatus = HttpServletResponse.SC_OK;
+
       // write new data to data sync file
       if (writer != null) {
         ChukwaWriter.CommitStatus result = writer.add(events);
-        numberchunks += events.size();
-        lifetimechunks += events.size();
+
         // this is where we ACK this connection
 
         if(result == ChukwaWriter.COMMIT_OK) {
+          // only count the chunks if result is commit or commit pending
+          numberchunks += events.size();
+          lifetimechunks += events.size();
+
           for(Chunk receivedChunk: events) {
             sb.append(ACK_PREFIX);
             sb.append(receivedChunk.getData().length);
@@ -162,10 +167,18 @@ public class ServletCollector extends HttpServlet {
             sb.append(receivedChunk.getSeqID() - 1).append("\n");
           }
         } else if(result instanceof ChukwaWriter.COMMIT_PENDING) {
+
+          // only count the chunks if result is commit or commit pending
+          numberchunks += events.size();
+          lifetimechunks += events.size();
+
           for(String s: ((ChukwaWriter.COMMIT_PENDING) result).pendingEntries)
             sb.append(s);
+        } else if(result == ChukwaWriter.COMMIT_FAIL) {
+          sb.append("Commit failed");
+          responseStatus = HttpServletResponse.SC_SERVICE_UNAVAILABLE;
         }
-        
+
         l_out.print(sb.toString());
       } else {
         l_out.println("can't write: no writer");
@@ -175,7 +188,7 @@ public class ServletCollector extends HttpServlet {
         diagnosticPage.doneWithPost();
       }
 
-      resp.setStatus(200);
+      resp.setStatus(responseStatus);
 
     } catch (Throwable e) {
       log.warn("Exception talking to " + req.getRemoteHost() + " at t="
