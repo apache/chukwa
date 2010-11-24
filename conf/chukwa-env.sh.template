@@ -57,8 +57,8 @@ export HADOOP_CONF_DIR="@TODO-HADOOP-CONF-DIR@"
 # The location of HBase jars.  For writing data to HBase, you need to set
 # environment variable HBASE_HOME to HBase home directory.
 #export HBASE_HOME="@TODO-HBASE-HOME@"
-#export HBASE_JAR=`ls ${HBASE_HOME}/hbase*.jar`
-#export ZOO_KEEPER_JAR=`ls ${HBASE_HOME}/lib/zookeeper-*.jar`
+#export HBASE_JAR="${HBASE_HOME}/hbase-0.20.6.jar"
+#export ZOO_KEEPER_JAR="${HBASE_HOME}/lib/zookeeper-3.2.2.jar"
 
 # Optional
 # The location of HBase Configuration directory.  For writing data to
