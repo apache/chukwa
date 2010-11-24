@@ -15,33 +15,26 @@
 
 chukwaAgent.class=org.apache.hadoop.chukwa.inputtools.log4j.Log4JMetricsContext
 chukwaAgent.period=60
-chukwaAgent.directory=@TODO-CHUKWA_LOG_DIR@/metrics/
+chukwaAgent.host=localhost
+chukwaAgent.port=9096
  
-chukwaHttpSender.class=org.apache.hadoop.chukwa.inputtools.log4j.Log4JMetricsContext
-chukwaHttpSender.period=60
-chukwaHttpSender.directory=@TODO-CHUKWA_LOG_DIR@/metrics/
-
-chunkQueue.class=org.apache.hadoop.chukwa.inputtools.log4j.Log4JMetricsContext
-chunkQueue.period=60
-chunkQueue.directory=@TODO-CHUKWA_LOG_DIR@/metrics/
-
 dfs.class=org.apache.hadoop.chukwa.inputtools.log4j.Log4JMetricsContext
 dfs.period=60
-dfs.directory=@TODO-CHUKWA_LOG_DIR@/metrics/
-dfs.uuid=true
+dfs.host=localhost
+dfs.port=9095
 
 jvm.class=org.apache.hadoop.chukwa.inputtools.log4j.Log4JMetricsContext
 jvm.period=60
-jvm.directory=@TODO-CHUKWA_LOG_DIR@/metrics/
-jvm.uuid=true
+jvm.host=localhost
+jvm.port=9095
 
 mapred.class=org.apache.hadoop.chukwa.inputtools.log4j.Log4JMetricsContext
 mapred.period=60
-mapred.directory=@TODO-CHUKWA_LOG_DIR@/metrics/
-mapred.uuid=true
+mapred.host=localhost
+mapred.port=9095
 
 rpc.class=org.apache.hadoop.chukwa.inputtools.log4j.Log4JMetricsContext
 rpc.period=60
-rpc.directory=@TODO-CHUKWA_LOG_DIR@/metrics/
-rpc.uuid=true
+rpc.host=localhost
+rpc.port=9095
 

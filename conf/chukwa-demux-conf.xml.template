@@ -120,35 +120,11 @@
 <!-- Demux aliases -->
 
   <property>
-    <name>HadoopMetricsProcessor</name>
+    <name>HadoopMetrics</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopMetricsProcessor</value>
     <description>Parser class for Hadoop Metrics </description>
   </property>
 
-  <property>
-    <name>jvm</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopMetricsProcessor</value>
-    <description>Parser class for </description>
-  </property>
-
-  <property>
-    <name>mapred</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopMetricsProcessor</value>
-    <description>Parser class for </description>
-  </property>
-
-  <property>
-    <name>rpc</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopMetricsProcessor</value>
-    <description>Parser class for </description>
-  </property>
-
-  <property>
-    <name>dfs</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopMetricsProcessor</value>
-    <description>Parser class for </description>
-  </property>
-  
   <property>
     <name>SysLog</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.SysLog</value>
@@ -234,23 +210,11 @@
    </property>
 
    <property>
-    <name>chukwaAgent</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Log4JMetricsContextProcessor</value>
+    <name>chukwa</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.ChukwaMetricsProcessor</value>
     <description></description>
    </property>
 
-   <property>
-    <name>chunkQueue</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Log4JMetricsContextProcessor</value>
-    <description></description>
-   </property>
-
-   <property>
-    <name>chukwaHttpSender</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Log4JMetricsContextProcessor</value>
-    <description></description>
-   </property>
-   
    <property>
     <name>SystemMetrics</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.SystemMetrics</value>
