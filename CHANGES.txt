@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-558. Update default Chukwa configuration files to use SocketAdaptor for Hadoop metrics streaming. (Eric Yang)
+
     CHUKWA-527  Configuration spellcheck. (Ari Rabkin)
 
     CHUKWA-520. Implemented graphing rest api and graph explorer for plotting HBase data to graph.  (Eric Yang)
