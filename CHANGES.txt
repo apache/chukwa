@@ -66,6 +66,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-559. Switched unit test HICC port to 4080. (Eric Yang)
+
     CHUKWA-543.  Parse only .view files for processing user view files.  (Eric Yang)
 
     CHUKWA-552.  Handle % signs in series names. (Michael Chang via asrabkin)
