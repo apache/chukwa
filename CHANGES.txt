@@ -26,6 +26,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-560. Improve HBaseWriter performance.  (Jerome Boulon via Eric Yang)
+
     CHUKWA-555.  Update descriptor files to use HBase REST API. (Eric Yang)
 
     CHUKWA-557.  Improve metrics differentation between recordName and contextName and clean up chukwa metrics.  (Eric Yang)
