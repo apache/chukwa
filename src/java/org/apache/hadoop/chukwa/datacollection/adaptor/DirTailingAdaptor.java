@@ -55,6 +55,7 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
 	protected String adaptorName; // name of adaptors to start
 
   IOFileFilter fileFilter;
+  String wildCharacter;
 
   @Override
   public void start(long offset) throws AdaptorException {
@@ -116,7 +117,8 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
 
   @Override
   public String getCurrentStatus() {
-    return type + " " + baseDirName + " " + adaptorName;
+    return this.wildCharacter == null ? (type + " " + baseDirName + " " + adaptorName)
+    		:(type + " " + baseDirName + " " + this.wildCharacter + " " + adaptorName);
   }
 
   @Override
@@ -130,14 +132,15 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
      adaptorName = args[1];
     }else if(args.length == 3){
      baseDir = new File(args[0]);
-     fileFilter = new WildcardFileFilter(args[1]);
+     this.wildCharacter = args[ 1 ];
+     fileFilter = new WildcardFileFilter( this.wildCharacter );
      adaptorName = args[2]; 
     }else{
      log.warn("bad syntax in DirTailingAdaptor args");
      return null;
     }
     
-    return (args.length == 2)? baseDir + " " + adaptorName : baseDir + " " + fileFilter + " " + adaptorName;  //both params mandatory
+    return (args.length == 2)? baseDir + " " + adaptorName : baseDir + " " + this.wildCharacter + " " + adaptorName;  //both params mandatory
   }
 
   @Override
