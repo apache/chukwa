@@ -34,6 +34,10 @@ public class OutputCollector implements
     org.apache.hadoop.mapred.OutputCollector<ChukwaRecordKey, ChukwaRecord> {
   
   private List<Put> buffers;
+  private StringBuffer s = new StringBuffer();
+  private byte[] rowKey = null;
+  private byte[] cf = null;
+  private long now = 0L;
 
   public OutputCollector() {
     buffers = new ArrayList<Put>();
@@ -41,17 +45,22 @@ public class OutputCollector implements
   
   @Override
   public void collect(ChukwaRecordKey key, ChukwaRecord value) throws IOException {
-    StringBuffer s = new StringBuffer();
     String[] keyParts = key.getKey().split("/");
+    s.setLength(0);
     s.append(keyParts[2]);
     s.append("-");
     s.append(keyParts[1]);
+    
+    rowKey = s.toString().getBytes();
 
+    cf = key.getReduceType().getBytes();
+    now = value.getTime();
+
+    Put kv = new Put(rowKey);
     for(String field : value.getFields()) {
-        Put kv = new Put(s.toString().getBytes());
-        kv.add(key.getReduceType().getBytes(), field.getBytes(), value.getTime(), value.getValue(field).getBytes());
-        buffers.add(kv);
-    }    
+        kv.add(cf, field.getBytes(), now , value.getValue(field).getBytes());
+    }  
+    buffers.add(kv);  
   }
 
   public List<Put> getKeyValues() {
@@ -59,6 +68,9 @@ public class OutputCollector implements
   }
 
   public void clear() {
+    s.setLength(0);
+    rowKey = null;
+    cf = null;
     buffers.clear();
   }
   
