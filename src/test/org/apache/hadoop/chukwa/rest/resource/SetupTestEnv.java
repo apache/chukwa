@@ -44,7 +44,7 @@ public class SetupTestEnv extends TestCase {
   public WebResource resource;
   public URI baseURL;
   public Client client;
-  public static int restPort = 8080;
+  public static int restPort = 4080;
   public static Configuration conf = null;
   public static HiccWebServer hicc = null;
   public static String user = "admin";
