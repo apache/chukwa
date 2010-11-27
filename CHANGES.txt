@@ -66,6 +66,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-553. Retain file filter argument for DirTailingAdaptor. (Deepak Deshpande via Eric Yang)
+
     CHUKWA-559. Switched unit test HICC port to 4080. (Eric Yang)
 
     CHUKWA-543.  Parse only .view files for processing user view files.  (Eric Yang)
