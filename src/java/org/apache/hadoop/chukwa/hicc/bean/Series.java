@@ -13,9 +13,8 @@ import javax.xml.bind.annotation.XmlValue;
 import org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -28,20 +27,20 @@ public class Series {
     series = new JSONObject();
     try {
       series.put("name", name);
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
     }
   }
   
   public void add(long x, double y) {
     try {
-    if(!series.has("data")) {
+    if(!series.containsKey("data")) {
       series.put("data", new JSONArray());
     }
     JSONArray xy = new JSONArray();
-    xy.put(x);
-    xy.put(y);
-    series.getJSONArray("data").put(xy);
+    xy.add(x);
+    xy.add(y);
+    ((JSONArray)series.get("data")).add(xy);
     } catch(Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
     }
