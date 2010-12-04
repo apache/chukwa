@@ -26,9 +26,9 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
@@ -47,10 +47,10 @@ public class UserBean {
   
   public UserBean(JSONObject json) throws ParseException {
     try {
-      id = json.getString("id");
-      views = json.getJSONArray("views");
-      if(json.has("properties")) {
-        properties = json.getJSONObject("properties");
+      id = (String) json.get("id");
+      views = (JSONArray) json.get("views");
+      if(json.containsKey("properties")) {
+        properties = (JSONObject) json.get("properties");
       } else {
         properties = new JSONObject();
       }
@@ -77,14 +77,14 @@ public class UserBean {
 
   public void setProperties(String buffer) {
     try {
-      this.properties = new JSONObject(buffer);
+      this.properties = (JSONObject) JSONValue.parse(buffer);
     } catch (Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
     }
   }
   
-  public String getPropertyValue(String key) throws JSONException {
-    return this.properties.getString(key);
+  public String getPropertyValue(String key) {
+    return (String) this.properties.get(key);
   }
   
   public void setId(String id) {

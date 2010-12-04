@@ -26,9 +26,9 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
@@ -46,23 +46,26 @@ public class ViewBean {
   public ViewBean() {  
   }
   
-  public ViewBean(JSONObject json) throws ParseException {
+  public ViewBean(byte[] buffer) throws ParseException {
+    JSONParser parser = new JSONParser();
     try {
-      if(json.has("description")) {
-        this.description = json.getString("description");
+      JSONObject json = (JSONObject) parser.parse(new String(buffer));
+      if(json.containsKey("description")) {
+        this.description = (String) json.get("description");
       } else {
         this.description = "";
       }
-      this.owner=json.getString("owner");
-      this.name=json.getString("name");
-      this.permissionType=json.getString("permissionType");
-      int size = json.getJSONArray("pages").length();
+      this.owner= (String) json.get("owner");
+      this.name= (String) json.get("name");
+      this.permissionType= (String) json.get("permissionType");
+      int size = ((JSONArray) json.get("pages")).size();
       PagesBean[] pages = new PagesBean[size];
+      JSONArray pagesArray = (JSONArray) json.get("pages");
       for(int i=0;i<size;i++) {
-        pages[i] = new PagesBean(json.getJSONArray("pages").getJSONObject(i));
+        pages[i] = new PagesBean((JSONObject) pagesArray.get(i));
       }
       this.pages=pages;
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
       throw new ParseException(ExceptionUtil.getStackTrace(e), 0);
     }
@@ -126,22 +129,23 @@ public class ViewBean {
     }
   }
   
-  public String deserialize() {
+  @SuppressWarnings("unchecked")
+  public JSONObject deserialize() {
     update();
-    JSONObject json = new JSONObject();
+    JSONObject view = new JSONObject();
     try {
-      json.put("name", this.name);
-      json.put("owner", this.owner);
-      json.put("permissionType", this.permissionType);
-      json.put("description", this.description);
+      view.put("name", this.name);
+      view.put("owner", this.owner);
+      view.put("permissionType", this.permissionType);
+      view.put("description", this.description);
       JSONArray ja = new JSONArray();
       for(int i=0;i<this.pages.length;i++) {
-        ja.put(this.pages[i].deserialize());
+        ja.add(this.pages[i].deserialize());
       }
-      json.put("pages", (JSONArray) ja);
+      view.put("pages", (JSONArray) ja);
     } catch (Exception e){
       log.error(ExceptionUtil.getStackTrace(e));
     }
-    return json.toString();
+    return view;
   }
 }

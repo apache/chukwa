@@ -26,9 +26,8 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
@@ -42,11 +41,11 @@ public class ColumnBean {
   
   public ColumnBean(JSONArray json) throws ParseException {
     try {
-      widgets = new WidgetBean[json.length()];
-      for(int i=0;i<json.length();i++) {
-        widgets[i]=new WidgetBean(json.getJSONObject(i));
+      widgets = new WidgetBean[json.size()];
+      for(int i=0;i<json.size();i++) {
+        widgets[i]=new WidgetBean((JSONObject) json.get(i));
       }
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
       throw new ParseException(ExceptionUtil.getStackTrace(e), 0);
     }
@@ -70,7 +69,7 @@ public class ColumnBean {
   public JSONArray deserialize() {
     JSONArray ja = new JSONArray();
     for(int i=0;i<widgets.length;i++) {
-      ja.put(widgets[i].deserialize());
+      ja.add(widgets[i].deserialize());
     }
     return ja;
   }

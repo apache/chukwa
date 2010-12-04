@@ -61,6 +61,10 @@
       name="hadoop-test"
       rev="${hadoop.version}"
       conf="common->master"/>
+    <dependency org="com.googlecode.json-simple"
+      name="json-simple"
+      rev="${json-simple.version}"
+      conf="common->master"/>
 <!--    <dependency org="org.apache.hbase"
       name="hbase"
       rev="${hbase.version}"

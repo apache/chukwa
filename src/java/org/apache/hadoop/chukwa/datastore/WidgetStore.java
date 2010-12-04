@@ -24,7 +24,8 @@ import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.hicc.HiccWebServer;
@@ -93,7 +94,8 @@ public class WidgetStore {
           widgetStream.readFully(buffer);
           widgetStream.close();
           try {
-            WidgetBean widget = new WidgetBean(new JSONObject(new String(buffer)));
+            JSONObject widgetBuffer = (JSONObject) JSONValue.parse(new String(buffer));
+            WidgetBean widget = new WidgetBean(widgetBuffer);
             catalog.addCatalog(widget);
             list.put(widget.getId(),widget);
           } catch (Exception e) {

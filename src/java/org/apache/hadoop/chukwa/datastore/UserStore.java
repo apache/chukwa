@@ -23,8 +23,9 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.hicc.HiccWebServer;
@@ -72,7 +73,7 @@ public class UserStore {
         viewStream.readFully(buffer);
         viewStream.close();
         try {
-          JSONObject json = new JSONObject(new String(buffer));
+          JSONObject json = (JSONObject) JSONValue.parse(new String(buffer));
           profile = new UserBean(json);
         } catch (Exception e) {
           log.error(ExceptionUtil.getStackTrace(e));
@@ -137,8 +138,8 @@ public class UserStore {
           profileStream.readFully(buffer);
           profileStream.close();
           try {
-            UserBean user = new UserBean(new JSONObject(new String(buffer)));
-            list.put(user.getId());
+            UserBean user = new UserBean((JSONObject) JSONValue.parse(new String(buffer)));
+            list.add(user.getId());
           } catch (Exception e) {
             log.error(ExceptionUtil.getStackTrace(e));
           }

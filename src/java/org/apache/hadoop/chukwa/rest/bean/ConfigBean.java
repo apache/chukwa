@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
@@ -42,8 +42,8 @@ public class ConfigBean {
   
   public ConfigBean(JSONObject json) throws ParseException {
     try {
-      key = json.getString("key");
-      value = json.getString("value");
+      key = (String) json.get("key");
+      value = (String) json.get("value");
     } catch (Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
       throw new ParseException("Error parsing user object.",0);

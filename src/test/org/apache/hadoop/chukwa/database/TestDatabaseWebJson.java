@@ -29,6 +29,9 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.mortbay.jetty.Server;
 import org.mortbay.xml.XmlConfiguration;
 import org.apache.hadoop.chukwa.util.*;
@@ -202,9 +205,9 @@ public class TestDatabaseWebJson extends TestCase {
 	    String cluster = "demo";
 	    DatabaseWriter db = new DatabaseWriter(cluster);
 
-	    JSONArray json_array=new JSONArray(json_str);
-	    for (int i=0; i < json_array.length(); i++) {
-		JSONObject row_obj=json_array.getJSONObject(i);
+	    JSONArray json_array=(JSONArray)JSONValue.parse(json_str);
+	    for (int i=0; i < json_array.size(); i++) {
+		JSONObject row_obj=(JSONObject) json_array.get(i);
 
 		// get the database row
 
@@ -214,7 +217,7 @@ public class TestDatabaseWebJson extends TestCase {
 		// move to the first record
 		rs.next();
 		ResultSetMetaData md=rs.getMetaData();
-		Iterator names=row_obj.keys();
+		Iterator names=row_obj.keySet().iterator();
 		while (names.hasNext()) {
 		    String name=(String)names.next();
 		    String jsonValue=(String)row_obj.get(name);

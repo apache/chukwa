@@ -21,7 +21,7 @@ import org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore;
 import org.apache.hadoop.chukwa.hicc.TimeHandler;
 import org.apache.hadoop.chukwa.hicc.bean.Series;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
 
 @Path("/metrics")
 public class MetricsController {
@@ -89,7 +89,7 @@ public class MetricsController {
           JSONArray seriesList = new JSONArray();
           for(String rowKey : rkeys) {
             Series output = ChukwaHBaseStore.getSeries(table, rowKey, column, startTime, endTime, true);
-            seriesList.put(output.toJSONObject());
+            seriesList.add(output.toJSONObject());
           }
           buffer = seriesList.toString();
       } else {
@@ -110,7 +110,7 @@ public class MetricsController {
     Set<String> tableNames = ChukwaHBaseStore.getTableNames();
     JSONArray tables = new JSONArray();
     for(String table : tableNames) {
-      tables.put(table);
+      tables.add(table);
     }
     return tables.toString();
   }
@@ -122,7 +122,7 @@ public class MetricsController {
     Set<String> familyNames = ChukwaHBaseStore.getFamilyNames(tableName);
     JSONArray families = new JSONArray();
     for(String family : familyNames) {
-      families.put(family);
+      families.add(family);
     }
     return families.toString();
   }
@@ -155,7 +155,7 @@ public class MetricsController {
     Set<String> columnNames = ChukwaHBaseStore.getColumnNames(tableName, family, startTime, endTime);
     JSONArray columns = new JSONArray();
     for(String column : columnNames) {
-      columns.put(column);
+      columns.add(column);
     }
     return columns.toString();
   }
@@ -188,7 +188,7 @@ public class MetricsController {
     Set<String> columnNames = ChukwaHBaseStore.getRowNames(tableName, column, startTime, endTime);
     JSONArray rows = new JSONArray();
     for(String row : columnNames) {
-      rows.put(row);
+      rows.add(row);
     }
     return rows.toString();
   }

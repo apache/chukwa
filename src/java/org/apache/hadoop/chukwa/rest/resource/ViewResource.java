@@ -88,6 +88,7 @@ public class ViewResource {
       if(owner.intern()==request.getRemoteUser().intern()) {
         ViewStore vs = new ViewStore(owner, vid);
         ViewBean view = vs.get();
+        vs.delete();
         view.setPermissionType(permission);
         vs.set(view);
       } else {
@@ -132,7 +133,6 @@ public class ViewResource {
   public ReturnCodeBean deleteView(@Context HttpServletRequest request, @PathParam("owner") String owner, @PathParam("vid") String vid) {
     try {
       if(owner.intern()==request.getRemoteUser().intern()) {
-        log.info("owner: "+owner+" vid: "+vid);
         ViewStore vs = new ViewStore(owner, vid);
         vs.delete();
       } else {
@@ -156,7 +156,7 @@ public class ViewResource {
       if(uid==null) {
         uid = request.getRemoteUser();
       }
-      result = ViewStore.list(uid).toString();
+      result = ViewStore.list(uid).toJSONString();
     } catch (Exception e) {
       throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
           .entity("View does not exist.").build());

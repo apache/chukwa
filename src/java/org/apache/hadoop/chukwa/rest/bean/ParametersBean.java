@@ -25,8 +25,8 @@ import java.util.HashSet;
 import javax.xml.bind.annotation.XmlElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
@@ -46,43 +46,47 @@ public class ParametersBean {
   
   public ParametersBean(JSONObject json) throws ParseException {
     try {
-      name=json.getString("name");
-      type=json.getString("type");
-      if(json.has("value")) {
+      name=(String) json.get("name");
+      type=(String) json.get("type");
+      if(json.containsKey("value")) {
         if(json.get("value").getClass()==JSONArray.class) {
-          JSONArray ja = json.getJSONArray("value");
+          JSONArray ja = (JSONArray) json.get("value");
           Collection<String> c = new HashSet<String>();
-          for(int i = 0; i < ja.length(); i++) {
-            c.add(ja.getString(i));
+          for(int i = 0; i < ja.size(); i++) {
+            c.add((String) ja.get(i));
           }
           this.value = c;
         } else {
           Collection<String> c = new HashSet<String>();
-          c.add(json.getString("value"));
+          c.add((String)json.get("value"));
           this.value = c;
         }        
       }
-      if(json.has("label")) {
-        label=json.getString("label");
+      if(json.containsKey("label")) {
+        label=(String) json.get("label");
       } else {
-        label=json.getString("name");
+        label=(String) json.get("name");
       }
       if(json.get("type").toString().intern()=="custom".intern()) {
-        control=json.getString("control");
+        control=(String) json.get("control");
       }
-      if(json.has("callback")) {
-        callback=json.getString("callback");
+      if(json.containsKey("callback")) {
+        callback=(String) json.get("callback");
       }
-      if(json.has("options")) {
-        JSONArray aj = json.getJSONArray("options");
-        options = new OptionBean[aj.length()];
-        for(int i=0;i<aj.length();i++) {
-          OptionBean o = new OptionBean(aj.getJSONObject(i));
+      if(json.containsKey("options")) {
+        JSONArray aj = (JSONArray) json.get("options");
+        options = new OptionBean[aj.size()];
+        for(int i=0;i<aj.size();i++) {
+          OptionBean o = new OptionBean((JSONObject) aj.get(i));
           options[i]=o;
         }
       }
-      if(json.has("edit")) {
-        edit=json.getInt("edit");
+      if(json.containsKey("edit")) {
+        if(json.get("edit").getClass().equals(String.class)) {
+          edit=(new Integer((String)json.get("edit"))).intValue();          
+        } else if(json.get("edit").getClass().equals(Long.class)) {
+          edit=((Long)json.get("edit")).intValue();          
+        }
       }
     } catch (Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
@@ -170,7 +174,7 @@ public class ParametersBean {
       if(this.value!=null) {
         JSONArray ja = new JSONArray();
         for(String s : this.value) {
-          ja.put(s);
+          ja.add(s);
         }
         json.put("value", ja);
       }
@@ -185,7 +189,7 @@ public class ParametersBean {
       if(options!=null) {
         JSONArray ja = new JSONArray();
         for(int i=0;i<options.length;i++) {
-          ja.put(this.options[i].deserialize());          
+          ja.add(this.options[i].deserialize());          
         }
         json.put("options", ja);
       }

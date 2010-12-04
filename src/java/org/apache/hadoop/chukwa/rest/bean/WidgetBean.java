@@ -27,9 +27,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import org.apache.hadoop.chukwa.datastore.WidgetStore;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
@@ -53,24 +52,30 @@ public class WidgetBean {
   
   public WidgetBean(JSONObject json) throws ParseException {
     try {
-      this.id=json.getString("id");
-      this.title=json.getString("title");
-      this.version=json.getString("version");
-      this.categories=json.getString("categories");
-      this.url=json.getString("url");
-      this.description=json.getString("description");
-      this.refresh=json.getInt("refresh");
+      this.id=(String) json.get("id");
+      this.title=(String) json.get("title");
+      this.version=(String) json.get("version");
+      this.categories=(String) json.get("categories");
+      this.url=(String) json.get("url");
+      this.description=(String) json.get("description");
+      if(json.get("refresh").getClass().equals("String")) {
+        int refresh = Integer.parseInt((String) json.get("refresh"));
+        this.refresh = refresh;
+      } else if(json.get("refresh").getClass().equals("Long")) {
+        this.refresh = ((Long) json.get("refresh")).intValue();
+      }
       try {
-        int size = json.getJSONArray("parameters").length();
+        int size = ((JSONArray) json.get("parameters")).size();
         ParametersBean[] list = new ParametersBean[size];
         for(int i=0;i<size;i++) {
-          list[i] = new ParametersBean(json.getJSONArray("parameters").getJSONObject(i));
+          JSONArray jsonArray = (JSONArray) json.get("parameters");
+          list[i] = new ParametersBean((JSONObject) jsonArray.get(i));
         }
         this.parameters=list;
-      } catch (JSONException e) {
+      } catch (Exception e) {
         this.parameters=null;
       }
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
       throw new ParseException(ExceptionUtil.getStackTrace(e), 0);
     }
@@ -186,12 +191,12 @@ public class WidgetBean {
       json.put("description", this.description);
       json.put("version", this.version);
       json.put("categories", this.categories);
-      json.put("refresh",this.refresh);
+      json.put("refresh", this.refresh);
       json.put("url", this.url);
       JSONArray ja = new JSONArray();
       if(this.parameters!=null) {
         for(int i=0;i<this.parameters.length;i++) {
-          ja.put(this.parameters[i].deserialize());
+          ja.add(this.parameters[i].deserialize());
         }
       }
       json.put("parameters", (JSONArray) ja);

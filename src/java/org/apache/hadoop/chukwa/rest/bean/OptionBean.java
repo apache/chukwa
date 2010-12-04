@@ -24,8 +24,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
@@ -39,9 +38,9 @@ public class OptionBean {
   
   public OptionBean(JSONObject json) throws ParseException {
     try {
-      label = json.getString("label");
-      value = json.getString("value");
-    } catch (JSONException e) {
+      label = (String) json.get("label");
+      value = (String) json.get("value");
+    } catch (Exception e) {
       throw new ParseException(ExceptionUtil.getStackTrace(e), 0);
     }
   }

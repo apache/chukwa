@@ -20,11 +20,12 @@ package org.apache.hadoop.chukwa.datastore;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
 
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.hicc.HiccWebServer;
@@ -36,6 +37,10 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.JSONParser;
 
 public class ViewStore {
   private String vid = null;
@@ -87,7 +92,7 @@ public class ViewStore {
         viewStream.readFully(buffer);
         viewStream.close();
         try {
-          view = new ViewBean(new JSONObject(new String(buffer)));
+          view = new ViewBean(buffer);
           view.update();
         } catch (Exception e) {
           log.error(ExceptionUtil.getStackTrace(e));
@@ -217,8 +222,8 @@ public class ViewStore {
             viewStream.readFully(buffer);
             viewStream.close();
             try {
-              ViewBean view = new ViewBean(new JSONObject(new String(buffer)));
-              JSONObject json = new JSONObject();
+              ViewBean view = new ViewBean(buffer);
+              Map<String, String> json=new LinkedHashMap<String, String>();
               json.put("name", view.getName());
               json.put("type", view.getPermissionType());
               json.put("owner", view.getOwner());
@@ -227,7 +232,7 @@ public class ViewStore {
               } else {
                 json.put("editable","false");
               }
-              list.put(json);
+              list.add(json);
             } catch (Exception e) {
               log.error(ExceptionUtil.getStackTrace(e));
             }

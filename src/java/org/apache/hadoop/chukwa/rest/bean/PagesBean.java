@@ -27,9 +27,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
@@ -46,22 +45,22 @@ public class PagesBean {
   
   public PagesBean(JSONObject json) throws ParseException {
     try {
-      title = json.getString("title");
-      columns = json.getInt("columns");
-      JSONArray layout = json.getJSONArray("layout");
-      this.layout = new ColumnBean[layout.length()];
-      for(int i=0;i<layout.length();i++) {
-        ColumnBean c = new ColumnBean(layout.getJSONArray(i));
+      title = (String) json.get("title");
+      columns = ((Long) json.get("columns")).intValue();
+      JSONArray layout = (JSONArray) json.get("layout");
+      this.layout = new ColumnBean[layout.size()];
+      for(int i=0;i<layout.size();i++) {
+        ColumnBean c = new ColumnBean((JSONArray) layout.get(i));
         this.layout[i]=c;
       }
-      if(json.has("colSize")) {
-        JSONArray ja = json.getJSONArray("colSize");
-        columnSizes = new int[ja.length()];
-        for(int i=0; i< ja.length(); i++) {
-          columnSizes[i] = ja.getInt(i);
+      if(json.containsKey("colSize")) {
+        JSONArray ja = (JSONArray) json.get("colSize");
+        columnSizes = new int[ja.size()];
+        for(int i=0; i< ja.size(); i++) {
+          columnSizes[i] = ((Long) ja.get(i)).intValue();
         }
       }
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
       throw new ParseException(ExceptionUtil.getStackTrace(e), 0);
     }
@@ -121,13 +120,13 @@ public class PagesBean {
     try {
       json.put("title", this.title);
       for(int i=0;i<layout.length;i++) {
-        ja.put(layout[i].deserialize());
+        ja.add(layout[i].deserialize());
       }
       json.put("layout", (JSONArray) ja);
       json.put("columns", layout.length);
       if(columnSizes!=null) {
         for(int colSize : columnSizes) {
-          sizes.put(colSize);
+          sizes.add(colSize);
         }
       }
       json.put("colSize", (JSONArray) sizes);

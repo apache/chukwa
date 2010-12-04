@@ -34,8 +34,7 @@ import org.apache.hadoop.metrics.spi.AbstractMetricsContext;
 import org.apache.hadoop.metrics.spi.OutputRecord;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 public class Log4JMetricsContext extends AbstractMetricsContext {
   Logger log = Logger.getLogger(Log4JMetricsContext.class);
@@ -116,7 +115,7 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
       for (String metricName : outRec.getMetricNames()) {
         json.put(metricName, outRec.getMetric(metricName));
       }
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.warn("exception in Log4jMetricsContext:" , e);
     }
     out.info(json.toString());
