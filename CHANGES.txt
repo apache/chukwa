@@ -26,6 +26,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-474. Replaced JSON library with JSON-Simple. (Eric Yang)
+
     CHUKWA-560. Improve HBaseWriter performance.  (Jerome Boulon via Eric Yang)
 
     CHUKWA-555.  Update descriptor files to use HBase REST API. (Eric Yang)
@@ -67,6 +69,8 @@ Trunk (unreleased changes)
     CHUKWA-472. Added ability to configure timestamp format for the default Time Series Processor.  (Bill Graham via Eric Yang)
 
   BUG FIXES
+
+    CHUKWA-7. Handle pid in /tmp in case CHUKWA_HOME is not defined. (Ari Rabkin via Eric Yang)
 
     CHUKWA-553. Retain file filter argument for DirTailingAdaptor. (Deepak Deshpande via Eric Yang)
 
