@@ -113,7 +113,9 @@ public class HBaseWriter extends PipelineableWriter {
     statTimer.schedule(new StatReportingTask(), 1000, 10 * 1000);
     output = new OutputCollector();
     reporter = new Reporter();
-    verifyHbaseSchema();
+    if(conf.getBoolean("hbase.writer.verify.schema", false)) {
+      verifyHbaseSchema();      
+    }
     pool = new HTablePool(hconf, 60);
   }
 
@@ -141,7 +143,7 @@ public class HBaseWriter extends PipelineableWriter {
   
   private void verifyHbaseSchema() {
     log.debug("Verify Demux parser with HBase schema");
-    boolean schemaVerified = false;
+    boolean schemaVerified = true;
     try {
       HBaseAdmin admin = new HBaseAdmin(hconf);
       List<Class> demuxParsers = ClassUtils.getClassesForPackage(conf.get("hbase.demux.package"));
@@ -150,23 +152,25 @@ public class HBaseWriter extends PipelineableWriter {
           Tables list = x.getAnnotation(Tables.class);
           for(Table table : list.annotations()) {
             if(!verifyHbaseTable(admin, table)) {
-              throw new Exception("Validation failed - table: "+table.name()+" column family: "+table.columnFamily()+" does not exist.");              
+              schemaVerified = false;
+              log.warn("Validation failed - table: "+table.name()+" column family: "+table.columnFamily()+" does not exist.");              
             }
           }
         } else if(x.isAnnotationPresent(Table.class)) {
           Table table = x.getAnnotation(Table.class);
           if(!verifyHbaseTable(admin, table)) {
-            throw new Exception("Validation failed - table: "+table.name()+" column family: "+table.columnFamily()+" does not exist.");
+            schemaVerified = false;
+            log.warn("Validation failed - table: "+table.name()+" column family: "+table.columnFamily()+" does not exist.");
           }
         }
       }
-      schemaVerified = true;
     } catch (Exception e) {
+      schemaVerified = false;
       log.error(ExceptionUtil.getStackTrace(e));
     }
     if(!schemaVerified) {
       log.error("Hbase schema mismatch with demux parser.");
-      if(conf.getBoolean("halt.on.schema.mismatch", true)) {
+      if(conf.getBoolean("hbase.writer.halt.on.schema.mismatch", true)) {
         log.error("Exiting...");
         DaemonWatcher.bailout(-1);
       }
