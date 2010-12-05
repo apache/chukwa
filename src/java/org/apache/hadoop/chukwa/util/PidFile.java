@@ -31,6 +31,22 @@ public class PidFile extends Thread {
   private static Log log = LogFactory.getLog(PidFile.class);
   private static FileLock lock = null;
   private static FileOutputStream pidFileOutput = null;
+  private static final String DEFAULT_CHUKWA_HOME;
+  
+  static {
+      //use /tmp as a default, only if we can't create tmp files via Java.
+    File chukwaHome = new File(System.getProperty("java.io.tmpdir"), "chukwa");
+    try {
+      File tmpFile = File.createTempFile("chukwa", "discovertmp");
+      File tmpDir = tmpFile.getParentFile();
+      tmpFile.delete();
+      chukwaHome = new File(tmpDir, "chukwa");
+      chukwaHome.mkdir();
+    } catch(IOException e) {
+    } finally {    
+      DEFAULT_CHUKWA_HOME = chukwaHome.getAbsolutePath();
+    }
+  };
 
   public PidFile(String name) {
     this.name = name;
@@ -47,6 +63,9 @@ public class PidFile extends Thread {
     String[] items = pidLong.split("@");
     String pid = items[0];
     String chukwaPath = System.getProperty("CHUKWA_HOME");
+    if(chukwaPath == null) {
+      chukwaPath = DEFAULT_CHUKWA_HOME;
+    }
     StringBuffer pidFilesb = new StringBuffer();
     String pidDir = System.getenv("CHUKWA_PID_DIR");
     if (pidDir == null) {
@@ -86,6 +105,9 @@ public class PidFile extends Thread {
 
   public void clean() {
     String chukwaPath = System.getenv("CHUKWA_HOME");
+    if(chukwaPath == null) {
+      chukwaPath = DEFAULT_CHUKWA_HOME;
+    }
     StringBuffer pidFilesb = new StringBuffer();
     String pidDir = System.getenv("CHUKWA_PID_DIR");
     if (pidDir == null) {
