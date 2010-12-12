@@ -28,6 +28,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-562. Added RegExDirTailingAdaptor. (Deepak Deshpande via Eric Yang)
+
     CHUKWA-474. Replaced JSON library with JSON-Simple. (Eric Yang)
 
     CHUKWA-560. Improve HBaseWriter performance.  (Jerome Boulon via Eric Yang)
