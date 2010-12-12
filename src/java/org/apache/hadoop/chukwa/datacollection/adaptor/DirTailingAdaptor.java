@@ -133,7 +133,7 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
     }else if(args.length == 3){
      baseDir = new File(args[0]);
      this.wildCharacter = args[ 1 ];
-     fileFilter = new WildcardFileFilter( this.wildCharacter );
+     fileFilter = getFileFilter();
      adaptorName = args[2]; 
     }else{
      log.warn("bad syntax in DirTailingAdaptor args");
@@ -150,4 +150,14 @@ public class DirTailingAdaptor extends AbstractAdaptor implements Runnable {
     return lastSweepStartTime;
   }
 
+  /**
+   * Returns {@link IOFileFilter} constructed using the wild character. Subclasses can override this method 
+   * return their own version of {@link IOFileFilter} instance.
+   *  
+   * @return {@link IOFileFilter} constructed using the wild character. Subclasses can override this method 
+   * return their own version of {@link IOFileFilter} instance.
+   */
+  protected IOFileFilter getFileFilter() {
+  	return new WildcardFileFilter( this.wildCharacter );
+  }
 }
