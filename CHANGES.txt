@@ -74,6 +74,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-231. Update default view to show graph explorer and remove deprecated widgets. (Eric Yang)
+
     CHUKWA-7. Handle pid in /tmp in case CHUKWA_HOME is not defined. (Ari Rabkin via Eric Yang)
 
     CHUKWA-553. Retain file filter argument for DirTailingAdaptor. (Deepak Deshpande via Eric Yang)

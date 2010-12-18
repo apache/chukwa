@@ -1,0 +1,28 @@
+{
+"id":"graph_explorer",
+"title":"Graph Explorer",
+"version":"0.1",
+"categories":"Developer,Utilities",
+"url":"iframe/jsp/graph_explorer.jsp",
+"description":"Graph explorer for visualize data on Hbase.",
+"refresh":"0",
+"parameters":[
+{"name":"width","type":"select","value":"300","label":"Width","options":[
+{"label":"300","value":"300"},
+{"label":"400","value":"400"},
+{"label":"500","value":"500"},
+{"label":"600","value":"600"},
+{"label":"800","value":"800"},
+{"label":"1000","value":"1000"},
+{"label":"1200","value":"1200"}
+]},
+{"name":"height","type":"select","value":"1000","label":"Height","options":[
+{"label":"300","value":"300"},
+{"label":"450","value":"400"},
+{"label":"600","value":"500"},
+{"label":"800","value":"800"},
+{"label":"1000","value":"1000"},
+{"label":"1200","value":"1200"}
+]}
+]
+}
