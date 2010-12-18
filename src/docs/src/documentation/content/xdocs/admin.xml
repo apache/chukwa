@@ -329,56 +329,6 @@ source /path/to/chukwa/conf/database_upgrade.sql
 <source>CHUKWA&#95;HOME/bin/downSampling.sh --config &#60;path to chukwa conf&#62; -n add </source>
 </section>
 
-
-<section>
-<title>Set Up the Database </title>
-<p>Set up and configure the MySQL database.</p>
-
-<section>
-<title>Install MySQL</title>
-
-<p>Download MySQL 5.1 from the <a href="http://dev.mysql.com/downloads/mysql/5.1.html#downloads">MySQL site</a>. </p>
-<source>
-tar fxvz mysql-&#42;.tar.gz -C $CHUKWA&#95;HOME/opt
-cd $CHUKWA&#95;HOME/opt/mysql-&#42;
-</source>
-
-<p>
-Configure and then copy the my.cnf file to the CHUKWA_HOME/opt/mysql-* directory:
-</p>
-<source>
-./scripts/mysql_install_db
-./bin/mysqld_safe&#38;
-./bin/mysqladmin -u root create &#60;clustername&#62;
-./bin/mysql -u root &#60;clustername&#62; &#60; $CHUKWA&#95;HOME/conf/database_create_tables.sql
-</source>
-
-<p>Edit the CHUKWA_HOME/conf/jdbc.conf configuration file. </p>
-<p>Set the clustername to the MYSQL root URL:</p>
-<source>
-&#60;clustername&#62;&#61;jdbc:mysql://localhost:3306/&#60;clustername&#62;?user&#61;root
-</source>
-
-<p>Download the MySQL Connector/J 5.1 from the  <a href="http://dev.mysql.com/downloads/connector/j/5.1.html">MySQL site</a>, 
-and place the jar file in $CHUKWA_HOME/lib.</p>
-</section>
-
-<section>
-<title>Set Up MySQL for Replication</title>
-<p>Start the MySQL shell:</p>
-<source>
-mysql -u root -p
-Enter password:
-</source>
-<p>From the MySQL shell, enter these commands (replace &#60;username&#62; and &#60;password&#62; with actual values):</p>
-<source>
-GRANT REPLICATION SLAVE ON &#42;.&#42; TO &#39;&#60;username&#62;&#39;&#64;&#39;&#37;&#39; IDENTIFIED BY &#39;&#60;password&#62;&#39;;
-FLUSH PRIVILEGES; 
-</source>
-</section>
-
-</section>
-
 <!-- 
 <section>
 <title>Validate the Chukwa Processes </title>

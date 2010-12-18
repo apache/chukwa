@@ -37,7 +37,6 @@ Filter: <input type="text" id="<%= XssFilter.filter(request.getParameter("boxId"
 <%
         String cluster = (String) session.getAttribute("cluster");
         ClusterConfig cc = new ClusterConfig();
-        String jdbc = cc.getURL(cluster);
         String boxId=XssFilter.filter(request.getParameter("boxId"));
         TimeHandler time = new TimeHandler(request);
         String startdate = time.getStartTimeText();

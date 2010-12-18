@@ -28,6 +28,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-554. Remove jdbc.conf dependency from Chukwa. (Eric Yang)
+
     CHUKWA-562. Added RegExDirTailingAdaptor. (Deepak Deshpande via Eric Yang)
 
     CHUKWA-474. Replaced JSON library with JSON-Simple. (Eric Yang)

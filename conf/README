@@ -29,11 +29,6 @@ chukwa-collector-conf.xml.template
 > The name node address, used by collectors to write data to HDFS 
 > eg: write.hdf.filesystem = hdfs://localhost:9000/
 --------------------------------------------
-jdbc.conf.template
-> Modify? yes     			
-> URL for the MySQL database 
-> eg: jdbc:mysql://localhost:3306?user-root
----------------------------------------------
 nagios.properties.template
 > Modify? yes, optional   	
 > Nagio server that receives NSCA alert 

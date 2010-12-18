@@ -38,7 +38,6 @@ Cluster
            }
        }
        ClusterConfig cc = new ClusterConfig();
-       String jdbc = cc.getURL(cluster);
        Iterator i = cc.getClusters();
        while(i.hasNext()) { 
            String label = i.next().toString();

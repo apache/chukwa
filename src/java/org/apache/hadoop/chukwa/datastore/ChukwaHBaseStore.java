@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter;
 import org.apache.hadoop.chukwa.hicc.bean.Series;
@@ -160,5 +162,33 @@ public class ChukwaHBaseStore {
   
   public static Set<String> getHostnames(String cluster, long startTime, long endTime) {
     return getRowNames("SystemMetrics","system:csource", startTime, endTime);
+  }
+  
+  public static Set<String> getClusterNames(long startTime, long endTime) {
+    String tableName = "SystemMetrics";
+    String column = "system:ctags";
+    Set<String> clusters = new HashSet<String>();
+    HTable table = pool.getTable(tableName);
+    Pattern p = Pattern.compile("\\s*cluster=\"(.*?)\"");
+    try {
+      Scan scan = new Scan();
+      scan.addColumn(column.getBytes());
+      scan.setTimeRange(startTime, endTime);
+      ResultScanner results = table.getScanner(scan);
+      Iterator<Result> it = results.iterator();
+      while(it.hasNext()) {
+        Result result = it.next();
+        String buffer = new String(result.getValue(column.getBytes()));
+        Matcher m = p.matcher(buffer);
+        if(m.matches()) {
+          clusters.add(m.group(1));
+        }
+      }
+      results.close();
+      table.close();
+    } catch(Exception e) {
+      log.error(ExceptionUtil.getStackTrace(e));
+    }
+    return clusters;
   }
 }

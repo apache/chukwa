@@ -22,8 +22,10 @@ package org.apache.hadoop.chukwa.hicc;
 import java.io.*;
 import java.util.*;
 
+import org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore;
+
 public class ClusterConfig {
-  public static HashMap<String, String> clusterMap = new HashMap<String, String>();
+  public static Set<String> clusterMap = null;
   private String path = System.getenv("CHUKWA_CONF_DIR") + File.separator;
 
   static public String getContents(File aFile) {
@@ -56,23 +58,15 @@ public class ClusterConfig {
   }
 
   public ClusterConfig() {
-    File cc = new File(path + "jdbc.conf");
-    String buffer = getContents(cc);
-    String[] lines = buffer.split("\n");
-    for (String line : lines) {
-      String[] data = line.split("=", 2);
-      clusterMap.put(data[0], data[1]);
+    long end = System.currentTimeMillis();
+    long start = end - 3600000L;
+    if(clusterMap==null) {
+      clusterMap = ChukwaHBaseStore.getClusterNames(start, end);
     }
   }
 
-  public String getURL(String cluster) {
-    String url = clusterMap.get(cluster);
-    return url;
-  }
-
   public Iterator<String> getClusters() {
-    Set<String> keys = clusterMap.keySet();
-    Iterator<String> i = keys.iterator();
+    Iterator<String> i = clusterMap.iterator();
     return i;
   }
 }
