@@ -32,8 +32,9 @@ import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 @Tables(annotations={
     @Table(name="SystemMetrics",columnFamily="cpu"),
@@ -48,69 +49,74 @@ public class SystemMetrics extends AbstractProcessor {
   protected void parse(String recordEntry,
       OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter)
       throws Throwable {
-    JSONObject json = new JSONObject(recordEntry);
-    long timestamp = Long.parseLong(json.getString("timestamp"));
+    JSONObject json = (JSONObject) JSONValue.parse(recordEntry);
+    long timestamp = ((Long)json.get("timestamp")).longValue();
     ChukwaRecord record = new ChukwaRecord();
     Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     cal.setTimeInMillis(timestamp);
     cal.set(Calendar.SECOND, 0);
     cal.set(Calendar.MILLISECOND, 0);
-    JSONArray cpuList = json.getJSONArray("cpu");
-    for(int i = 0; i< cpuList.length(); i++) {
-      JSONObject cpu = cpuList.getJSONObject(i);
-      Iterator<String> keys = cpu.keys();
+    JSONArray cpuList = (JSONArray) json.get("cpu");
+    for(int i = 0; i< cpuList.size(); i++) {
+      JSONObject cpu = (JSONObject) cpuList.get(i);
+      Iterator<String> keys = cpu.keySet().iterator();
       while(keys.hasNext()) {
         String key = keys.next();
-        record.add(key + "." + i, cpu.getString(key));
+        record.add(key + "." + i, cpu.get(key).toString());
       }
     }
     buildGenericRecord(record, null, cal.getTimeInMillis(), "cpu");
     output.collect(key, record);    
 
     record = new ChukwaRecord();
-    record.add("Uptime", json.getString("uptime"));
-    JSONArray loadavg = json.getJSONArray("loadavg");
-    record.add("LoadAverage.1", loadavg.getString(0));
-    record.add("LoadAverage.5", loadavg.getString(1));
-    record.add("LoadAverage.15", loadavg.getString(2));
+    record.add("Uptime", json.get("uptime").toString());
+    JSONArray loadavg = (JSONArray) json.get("loadavg");
+    record.add("LoadAverage.1", loadavg.get(0).toString());
+    record.add("LoadAverage.5", loadavg.get(1).toString());
+    record.add("LoadAverage.15", loadavg.get(2).toString());
     buildGenericRecord(record, null, cal.getTimeInMillis(), "system");
     output.collect(key, record);    
 
     record = new ChukwaRecord();
-    JSONObject memory = json.getJSONObject("memory");
-    Iterator<String> memKeys = memory.keys();
+    JSONObject memory = (JSONObject) json.get("memory");
+    Iterator<String> memKeys = memory.keySet().iterator();
     while(memKeys.hasNext()) {
       String key = memKeys.next();
-      record.add(key, memory.getString(key));
+      record.add(key, memory.get(key).toString());
     }
     buildGenericRecord(record, null, cal.getTimeInMillis(), "memory");
     output.collect(key, record);    
     
     record = new ChukwaRecord();
-    JSONArray netList = json.getJSONArray("network");
-    for(int i = 0;i < netList.length(); i++) {
-      JSONObject netIf = netList.getJSONObject(i);
-      Iterator<String> keys = netIf.keys();
+    JSONArray netList = (JSONArray) json.get("network");
+    for(int i = 0;i < netList.size(); i++) {
+      JSONObject netIf = (JSONObject) netList.get(i);
+      Iterator<String> keys = netIf.keySet().iterator();
       while(keys.hasNext()) {
         String key = keys.next();
-        record.add(key + "." + i, netIf.getString(key));
+        record.add(key + "." + i, netIf.get(key).toString());
       }
     }
     buildGenericRecord(record, null, cal.getTimeInMillis(), "network");
     output.collect(key, record);    
     
     record = new ChukwaRecord();
-    JSONArray diskList = json.getJSONArray("disk");
-    for(int i = 0;i < netList.length(); i++) {
-      JSONObject disk = netList.getJSONObject(i);
-      Iterator<String> keys = disk.keys();
+    JSONArray diskList = (JSONArray) json.get("disk");
+    for(int i = 0;i < netList.size(); i++) {
+      JSONObject disk = (JSONObject) netList.get(i);
+      Iterator<String> keys = disk.keySet().iterator();
       while(keys.hasNext()) {
         String key = keys.next();
-        record.add(key + "." + i, disk.getString(key));
+        record.add(key + "." + i, disk.get(key).toString());
       }
-    }    
+    }
     buildGenericRecord(record, null, cal.getTimeInMillis(), "disk");
-    output.collect(key, record);    
+    output.collect(key, record);
+    
+    record = new ChukwaRecord();
+    record.add("cluster", chunk.getTag("cluster"));
+    buildGenericRecord(record, null, cal.getTimeInMillis(), "tags");
+    output.collect(key, record);
   }
 
 }
