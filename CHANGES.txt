@@ -76,6 +76,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-568.  Moved from json.jar library to JSON Simple library for SystemMetrics demux parser and add tags column family. (Eric Yang)
+
     CHUKWA-231. Update default view to show graph explorer and remove deprecated widgets. (Eric Yang)
 
     CHUKWA-7. Handle pid in /tmp in case CHUKWA_HOME is not defined. (Ari Rabkin via Eric Yang)
