@@ -84,41 +84,37 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
   @Override
   protected void emitRecord(String contextName, String recordName,
       OutputRecord outRec) throws IOException {
-    if (out == null) {
-      synchronized (lock) {
-        if (out == null) {
-          PatternLayout layout = new PatternLayout("%d{ISO8601} %p %c: %m%n");
+    synchronized (lock) {
+      if (out == null) {
+        PatternLayout layout = new PatternLayout("%d{ISO8601} %p %c: %m%n");
           
-          org.apache.log4j.net.SocketAppender appender = new org.apache.log4j.net.SocketAppender(host, port);
+        org.apache.log4j.net.SocketAppender appender = new org.apache.log4j.net.SocketAppender(host, port);
           
-          appender.setName("chukwa.metrics." + contextName);
-          appender.setLayout(layout);
+        appender.setName("chukwa.metrics." + contextName);
+        appender.setLayout(layout);
           
-          Logger logger = Logger.getLogger("chukwa.metrics." + contextName);
-          logger.setAdditivity(false);
-          logger.addAppender(appender);
-          appender.activateOptions();
-          out = logger;
+        Logger logger = Logger.getLogger("chukwa.metrics." + contextName);
+        logger.setAdditivity(false);
+        logger.addAppender(appender);
+        appender.activateOptions();
+        out = logger;
+      }
+      JSONObject json = new JSONObject();
+      try {
+        json.put("contextName", contextName);
+        json.put("recordName", recordName);
+        json.put("chukwa_timestamp", System.currentTimeMillis());
+        json.put("period", period);
+        for (String tagName : outRec.getTagNames()) {
+          json.put(tagName, outRec.getTag(tagName));
         }
+        for (String metricName : outRec.getMetricNames()) {
+          json.put(metricName, outRec.getMetric(metricName));
+        }
+      } catch (Exception e) {
+        log.warn("exception in Log4jMetricsContext:" , e);
       }
+      out.info(json.toString());
     }
-
-    JSONObject json = new JSONObject();
-    try {
-      json.put("contextName", contextName);
-      json.put("recordName", recordName);
-      json.put("chukwa_timestamp", System.currentTimeMillis());
-      json.put("period", period);
-      for (String tagName : outRec.getTagNames()) {
-        json.put(tagName, outRec.getTag(tagName));
-      }
-      for (String metricName : outRec.getMetricNames()) {
-        json.put(metricName, outRec.getMetric(metricName));
-      }
-    } catch (Exception e) {
-      log.warn("exception in Log4jMetricsContext:" , e);
-    }
-    out.info(json.toString());
   }
-
 }
