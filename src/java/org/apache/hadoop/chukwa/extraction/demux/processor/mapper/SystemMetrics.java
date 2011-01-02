@@ -23,6 +23,7 @@
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TimeZone;
 
@@ -57,14 +58,30 @@ public class SystemMetrics extends AbstractProcessor {
     cal.set(Calendar.SECOND, 0);
     cal.set(Calendar.MILLISECOND, 0);
     JSONArray cpuList = (JSONArray) json.get("cpu");
+    double combined = 0.0;
+    double user = 0.0;
+    double sys = 0.0;
+    double idle = 0.0;
     for(int i = 0; i< cpuList.size(); i++) {
       JSONObject cpu = (JSONObject) cpuList.get(i);
       Iterator<String> keys = cpu.keySet().iterator();
+      combined = combined + Double.parseDouble(cpu.get("combined").toString());
+      user = user + Double.parseDouble(cpu.get("user").toString());
+      sys = sys + Double.parseDouble(cpu.get("sys").toString());
+      idle = idle + Double.parseDouble(cpu.get("idle").toString());
       while(keys.hasNext()) {
         String key = keys.next();
         record.add(key + "." + i, cpu.get(key).toString());
       }
     }
+    combined = combined / cpuList.size();
+    user = user / cpuList.size();
+    sys = sys / cpuList.size();
+    idle = idle / cpuList.size();
+    record.add("combined", Double.toString(combined));
+    record.add("user", Double.toString(user));
+    record.add("idle", Double.toString(idle));    
+    record.add("sys", Double.toString(sys));
     buildGenericRecord(record, null, cal.getTimeInMillis(), "cpu");
     output.collect(key, record);    
 
@@ -87,6 +104,14 @@ public class SystemMetrics extends AbstractProcessor {
     buildGenericRecord(record, null, cal.getTimeInMillis(), "memory");
     output.collect(key, record);    
     
+    double rxBytes = 0;
+    double rxDropped = 0;
+    double rxErrors = 0;
+    double rxPackets = 0;
+    double txBytes = 0;
+    double txCollisions = 0;
+    double txErrors = 0;
+    double txPackets = 0;
     record = new ChukwaRecord();
     JSONArray netList = (JSONArray) json.get("network");
     for(int i = 0;i < netList.size(); i++) {
@@ -95,21 +120,65 @@ public class SystemMetrics extends AbstractProcessor {
       while(keys.hasNext()) {
         String key = keys.next();
         record.add(key + "." + i, netIf.get(key).toString());
+        if(i!=0) {
+          if(key.equals("RxBytes")) {
+            rxBytes = rxBytes + (Long) netIf.get(key);
+          } else if(key.equals("RxDropped")) {
+            rxDropped = rxDropped + (Long) netIf.get(key);
+          } else if(key.equals("RxErrors")) {          
+            rxErrors = rxErrors + (Long) netIf.get(key);
+          } else if(key.equals("RxPackets")) {
+            rxPackets = rxPackets + (Long) netIf.get(key);
+          } else if(key.equals("TxBytes")) {
+            txBytes = txBytes + (Long) netIf.get(key);
+          } else if(key.equals("TxCollisions")) {
+            txCollisions = txCollisions + (Long) netIf.get(key);
+          } else if(key.equals("TxErrors")) {
+            txErrors = txErrors + (Long) netIf.get(key);
+          } else if(key.equals("TxPackets")) {
+            txPackets = txPackets + (Long) netIf.get(key);
+          }
+        }
       }
     }
     buildGenericRecord(record, null, cal.getTimeInMillis(), "network");
+    record.add("RxBytes", Double.toString(rxBytes));
+    record.add("RxDropped", Double.toString(rxDropped));
+    record.add("RxErrors", Double.toString(rxErrors));
+    record.add("RxPackets", Double.toString(rxPackets));
+    record.add("TxBytes", Double.toString(txBytes));
+    record.add("TxCollisions", Double.toString(txCollisions));
+    record.add("TxErrors", Double.toString(txErrors));
+    record.add("TxPackets", Double.toString(txPackets));
     output.collect(key, record);    
     
+    double readBytes = 0;
+    double reads = 0;
+    double writeBytes = 0;
+    double writes = 0;
     record = new ChukwaRecord();
     JSONArray diskList = (JSONArray) json.get("disk");
-    for(int i = 0;i < netList.size(); i++) {
-      JSONObject disk = (JSONObject) netList.get(i);
+    for(int i = 0;i < diskList.size(); i++) {
+      JSONObject disk = (JSONObject) diskList.get(i);
       Iterator<String> keys = disk.keySet().iterator();
       while(keys.hasNext()) {
         String key = keys.next();
         record.add(key + "." + i, disk.get(key).toString());
+        if(key.equals("ReadBytes")) {
+          readBytes = readBytes + (Long) disk.get("ReadBytes");
+        } else if(key.equals("Reads")) {
+          reads = reads + (Long) disk.get("Reads");
+        } else if(key.equals("WriteBytes")) {
+          writeBytes = writeBytes + (Long) disk.get("WriteBytes");
+        } else if(key.equals("Writes")) {
+          writes = writes + (Long) disk.get("Writes");
+        }
       }
     }
+    record.add("ReadBytes", Double.toString(readBytes));
+    record.add("Reads", Double.toString(reads));
+    record.add("WriteBytes", Double.toString(writeBytes));
+    record.add("Writes", Double.toString(writes));    
     buildGenericRecord(record, null, cal.getTimeInMillis(), "disk");
     output.collect(key, record);
     

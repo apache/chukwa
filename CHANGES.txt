@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-571. Add digested system metrics to SystemMetrics demux parser. (Eric Yang)
+
     CHUKWA-563. Added configuration to skip HBase schema validation for HBaseWriter. (Eric Yang)
 
     CHUKWA-558. Update default Chukwa configuration files to use SocketAdaptor for Hadoop metrics streaming. (Eric Yang)
