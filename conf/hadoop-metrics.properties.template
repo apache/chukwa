@@ -16,7 +16,7 @@
 chukwaAgent.class=org.apache.hadoop.chukwa.inputtools.log4j.Log4JMetricsContext
 chukwaAgent.period=60
 chukwaAgent.host=localhost
-chukwaAgent.port=9096
+chukwaAgent.port=9097
  
 dfs.class=org.apache.hadoop.chukwa.inputtools.log4j.Log4JMetricsContext
 dfs.period=60

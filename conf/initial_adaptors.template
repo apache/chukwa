@@ -1,3 +1,4 @@
 add sigar.SystemMetrics SystemMetrics 60 0
 add SocketAdaptor HadoopMetrics 9095 0
 add SocketAdaptor Hadoop 9096 0
+add SocketAdaptor ChukwaMetrics 9097 0

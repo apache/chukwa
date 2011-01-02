@@ -210,7 +210,7 @@
    </property>
 
    <property>
-    <name>chukwa</name>
+    <name>ChukwaMetrics</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.ChukwaMetricsProcessor</value>
     <description></description>
    </property>
