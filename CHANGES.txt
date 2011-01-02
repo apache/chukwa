@@ -30,6 +30,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-572. Changed disk and network stats to gauge instead of counter. (Eric Yang)
+
     CHUKWA-554. Remove jdbc.conf dependency from Chukwa. (Eric Yang)
 
     CHUKWA-562. Added RegExDirTailingAdaptor. (Deepak Deshpande via Eric Yang)
