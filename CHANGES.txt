@@ -82,6 +82,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-577. Convert HadoopMetricsProcessor to use Simple JSON library. (Eric Yang)
+
     CHUKWA-574. Added locking for recording metrics through log4j. (Eric Yang)
 
     CHUKWA-568.  Moved from json.jar library to JSON Simple library for SystemMetrics demux parser and add tags column family. (Eric Yang)

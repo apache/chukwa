@@ -33,8 +33,8 @@ import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 @Tables(annotations={
 @Table(name="Hadoop",columnFamily="jvm_metrics"),
@@ -97,30 +97,31 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
       // log.info("record [" + recordEntry + "] body [" + body +"]");
       Date d = sdf.parse(dStr);
 
-      JSONObject json = new JSONObject(body);
+      start = body.indexOf('{');
+      JSONObject json = (JSONObject) JSONValue.parse(body.substring(start));
 
       ChukwaRecord record = new ChukwaRecord();
       StringBuilder datasource = new StringBuilder();
       String contextName = null;
       String recordName = null;
 
-      Iterator<String> ki = json.keys();
+      Iterator<String> ki = json.keySet().iterator();
       while (ki.hasNext()) {
         String keyName = ki.next();
         if (chukwaTimestampField.intern() == keyName.intern()) {
-          d = new Date(json.getLong(keyName));
+          d = new Date((Long) json.get(keyName));
           Calendar cal = Calendar.getInstance();
           cal.setTimeInMillis(d.getTime());
           cal.set(Calendar.SECOND, 0);
           cal.set(Calendar.MILLISECOND, 0);
           d.setTime(cal.getTimeInMillis());
         } else if (contextNameField.intern() == keyName.intern()) {
-          contextName = json.getString(keyName);
+          contextName = (String) json.get(keyName);
         } else if (recordNameField.intern() == keyName.intern()) {
-          recordName = json.getString(keyName);
-          record.add(keyName, json.getString(keyName));
+          recordName = (String) json.get(keyName);
+          record.add(keyName, json.get(keyName).toString());
         } else {
-          record.add(keyName, json.getString(keyName));
+          record.add(keyName, json.get(keyName).toString());
         }
       }
       if(contextName!=null) {
@@ -128,20 +129,18 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
         datasource.append("_");
       }
       datasource.append(recordName);
+      record.add("cluster", chunk.getTag("cluster"));
       buildGenericRecord(record, null, d.getTime(), datasource.toString());
       output.collect(key, record);
     } catch (ParseException e) {
-      e.printStackTrace();
       log.warn("Wrong format in HadoopMetricsProcessor [" + recordEntry + "]",
           e);
       throw e;
     } catch (IOException e) {
-      e.printStackTrace();
       log.warn("Unable to collect output in HadoopMetricsProcessor ["
           + recordEntry + "]", e);
       throw e;
-    } catch (JSONException e) {
-      e.printStackTrace();
+    } catch (Exception e) {
       log.warn("Wrong format in HadoopMetricsProcessor [" + recordEntry + "]",
           e);
       throw e;
