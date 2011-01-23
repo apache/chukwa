@@ -1,42 +1,30 @@
 create "Hadoop",{NAME => "ClientTrace", VERSIONS => 65535},
-{NAME => "jvm_metrics", VERSIONS => 65535},
-{NAME => "mapred_metrics", VERSIONS => 65535},
-{NAME => "dfs_metrics", VERSIONS => 65535},
 {NAME => "dfs_namenode", VERSIONS => 65535},
 {NAME => "dfs_FSDirectory", VERSIONS => 65535},
 {NAME => "dfs_FSNamesystem", VERSIONS => 65535},
 {NAME => "dfs_datanode", VERSIONS => 65535},
 {NAME => "mapred_jobtracker", VERSIONS => 65535},
-{NAME => "mapred_shuffleInput", VERSIONS => 65535},
 {NAME => "mapred_shuffleOutput", VERSIONS => 65535},
 {NAME => "mapred_tasktracker", VERSIONS => 65535},
 {NAME => "mapred_job", VERSIONS => 65535},
+{NAME => "jvm_metrics", VERSIONS => 65535},
 {NAME => "rpc_metrics", VERSIONS => 65535}
 create "HadoopLog", {NAME => "NameNode", VERSIONS => 65535},
 {NAME => "DataNode", VERSIONS => 65535},
 {NAME => "Audit", VERSIONS => 65535},
-{NAME => "HadoopLog", VERSIONS => 65535},
-{NAME => "HadoopLogInError", VERSIONS => 65535}
-create "SystemMetrics", {NAME => "Disk", VERSIONS => 65535},
-{NAME => "SystemMetrics", VERSIONS => 65535},
-{NAME => "Ps", VERSIONS => 65535},
-{NAME => "SysLog", VERSIONS => 65535},
-{NAME => "Top", VERSIONS => 65535},
-{NAME => "Df", VERSIONS => 65535},
-{NAME => "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Top", VERSIONS => 65535},
-{NAME => "TopInError", VERSIONS => 65535},
-{NAME => "DfInError", VERSIONS => 65535},
+{NAME => "HadoopLog", VERSIONS => 65535}
+create "SystemMetrics", 
 {NAME => "cpu", VERSIONS => 65535},
 {NAME => "system", VERSION => 65535},
 {NAME => "disk", VERSION => 65535},
 {NAME => "memory", VERSION => 65535},
-{NAME => "network", VERSION => 65535}
-create "Mapreduce",{NAME => "JobData", VERSIONS => 65535},
-{NAME => "JobConfData", VERSIONS => 65535},
-{NAME => "JobLogHistory", VERSIONS => 65535},
-{NAME => "TaskData", VERSIONS => 65535},
-{NAME => "TaskLogInError", VERSIONS => 65535}
-create "TsProcessor",{NAME => "log", VERSIONS => 65535}
-create "chukwa", {NAME => "chukwaAgent_chunkQueue", VERSIONS => 65535},
-{NAME => "chukwaAgent_metrics", VERSIONS => 65535},
-{NAME => "chukwaAgent_httpSender", VERSIONS => 65535}
+{NAME => "network", VERSION => 65535},
+{NAME => "tags", VERSION => 65535}
+create "ClusterSummary", {NAME=> "cpu", VERSIONS => 65535},
+{NAME => "system", VERSION => 65535},
+{NAME => "disk", VERSION => 65535},
+{NAME => "memory", VERSION => 65535},
+{NAME => "network", VERSION => 65535},
+{NAME => "hdfs", VERSION => 65535},
+{NAME => "mapreduce", VERSION => 65535}
+
