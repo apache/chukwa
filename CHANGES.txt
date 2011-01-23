@@ -32,6 +32,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-569. Added temperory fix for load meta data faster for graph_explorer.jsp. (Eric Yang)
+
     CHUKWA-573. Setup ChukwaMetrics to send to port 9097 and use ChukwaMetricsProcessor for parsing. (Eric Yang)
 
     CHUKWA-572. Changed disk and network stats to gauge instead of counter. (Eric Yang)

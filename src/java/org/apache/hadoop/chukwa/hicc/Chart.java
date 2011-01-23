@@ -281,7 +281,8 @@ public class Chart {
     output.append("	           clickable: true,\n");
     output.append("	           hoverable: true,\n");
     output.append("	           tickColor: \"#C0C0C0\",\n");
-    output.append("	           backgroundColor:\"#FFFFFF\"\n");
+    output.append("            borderWidth: 0,\n");
+    output.append("	           backgroundColor:\"#F9F9F9\"\n");
     output.append("	  },\n");
     output.append("	  legend: { show: " + this.legend
         + ", noColumns: 3, container: $(\"#placeholderLegend\") },\n");
@@ -370,15 +371,15 @@ public class Chart {
         if ((counter != 0) || (i != 0)) {
           output.append(",");
         }
-        String param = "fill: false";
+        String param = "fill: false, lineWidth: 1";
         String type = "lines";
         if (this.chartType.get(i).intern() == "stack-area".intern()
             || this.chartType.get(i).intern() == "area".intern()) {
-          param = "fill: true";
+          param = "fill: true, lineWidth: 0";
         }
         if (this.chartType.get(i).intern() == "bar".intern()) {
           type = "bars";
-          param = "stepByStep: true";
+          param = "stepByStep: true, lineWidth: 0";
         }
         if (this.chartType.get(i).intern() == "point".intern()) {
           type = "points";

@@ -72,7 +72,7 @@
         }
       } catch (NullPointerException e) {
       }
-      Set<String> machines = ChukwaHBaseStore.getHostnames(cluster, time.getStartTime(), time.getEndTime());
+      Set<String> machines = ChukwaHBaseStore.getHostnames(cluster, time.getStartTime(), time.getEndTime(), false);
       for(String machine : machines) {
         if(hosts.containsKey(machine)) {
           out.println("<option selected>"+machine+"</option>");

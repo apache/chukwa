@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -130,7 +131,7 @@ public class MetricsController {
   @GET
   @Path("schema/{table}/{family}")
   @Produces("application/json")
-  public String getColumnNames(@Context HttpServletRequest request, @PathParam("table") String tableName, @PathParam("family") String family, @QueryParam("start") String start, @QueryParam("end") String end) {
+  public String getColumnNames(@Context HttpServletRequest request, @PathParam("table") String tableName, @PathParam("family") String family, @QueryParam("start") String start, @QueryParam("end") String end, @DefaultValue("false") @QueryParam("fullScan") boolean fullScan) {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     String buffer = "";
     Series series;
@@ -152,7 +153,7 @@ public class MetricsController {
       throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
           .entity("Start/End date parse error.  Format: yyyyMMddHHmmss.").build());      
     }
-    Set<String> columnNames = ChukwaHBaseStore.getColumnNames(tableName, family, startTime, endTime);
+    Set<String> columnNames = ChukwaHBaseStore.getColumnNames(tableName, family, startTime, endTime, fullScan);
     JSONArray columns = new JSONArray();
     for(String column : columnNames) {
       columns.add(column);
@@ -163,7 +164,7 @@ public class MetricsController {
   @GET
   @Path("rowkey/{table}/{column}")
   @Produces("application/json")
-  public String getRowNames(@Context HttpServletRequest request, @PathParam("table") String tableName, @PathParam("family") String family, @PathParam("column") String column, @QueryParam("start") String start, @QueryParam("end") String end) {
+  public String getRowNames(@Context HttpServletRequest request, @PathParam("table") String tableName, @PathParam("family") String family, @PathParam("column") String column, @QueryParam("start") String start, @QueryParam("end") String end, @QueryParam("fullScan") @DefaultValue("false") boolean fullScan) {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     String buffer = "";
     Series series;
@@ -185,7 +186,7 @@ public class MetricsController {
       throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
           .entity("Start/End date parse error.  Format: yyyyMMddHHmmss.").build());      
     }
-    Set<String> columnNames = ChukwaHBaseStore.getRowNames(tableName, column, startTime, endTime);
+    Set<String> columnNames = ChukwaHBaseStore.getRowNames(tableName, column, startTime, endTime, fullScan);
     JSONArray rows = new JSONArray();
     for(String row : columnNames) {
       rows.add(row);

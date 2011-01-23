@@ -70,7 +70,12 @@ public class ChukwaHBaseStore {
         Result result = it.next();
         String temp = new String(result.getCellValue().getValue());
         double value = Double.parseDouble(temp);
-        series.add(result.getCellValue().getTimestamp(), value);
+        // TODO: Pig Store function does not honor HBase timestamp, hence need to parse rowKey for timestamp.
+        String buf = new String(result.getRow());
+        Long timestamp = Long.parseLong(buf.split("-")[0]);
+        // If Pig Store function can honor HBase timestamp, use the following line is better.
+        // series.add(result.getCellValue().getTimestamp(), value);
+        series.add(timestamp, value);
       }
       results.close();
       table.close();
@@ -110,22 +115,45 @@ public class ChukwaHBaseStore {
     }
     return tableNames;
   }
+
+  public static void getColumnNamesHelper(Set<String>columnNames, Iterator<Result> it) {
+    Result result = it.next();
+    List<KeyValue> kvList = result.list();
+    for(KeyValue kv : kvList) {
+      columnNames.add(new String(kv.getColumn()));
+    }
+  }
   
-  public static Set<String> getColumnNames(String tableName, String family, long startTime, long endTime) {
+  public static Set<String> getColumnNames(String tableName, String family, long startTime, long endTime, boolean fullScan) {
     Set<String> columnNames = new CopyOnWriteArraySet<String>();
     try {
       HTable table = pool.getTable(tableName);
       Scan scan = new Scan();
-      scan.setTimeRange(startTime, endTime);
+      if(!fullScan) {
+        // Take sample columns of the starting time.
+        StringBuilder temp = new StringBuilder();
+        temp.append(startTime);
+        scan.setStartRow(temp.toString().getBytes());
+        temp.setLength(0);
+        temp.append(startTime+60000L);
+        scan.setStopRow(temp.toString().getBytes());
+      } else {
+        StringBuilder temp = new StringBuilder();
+        temp.append(startTime);
+        scan.setStartRow(temp.toString().getBytes());
+        temp.setLength(0);
+        temp.append(endTime);
+        scan.setStopRow(temp.toString().getBytes());
+      }
       scan.addFamily(family.getBytes());
       ResultScanner results = table.getScanner(scan);
       Iterator<Result> it = results.iterator();
-      while(it.hasNext()) {
-        Result result = it.next();
-        List<KeyValue> kvList = result.list();
-        for(KeyValue kv : kvList) {
-          columnNames.add(new String(kv.getColumn()));
-        }
+      if(fullScan) {
+        while(it.hasNext()) {
+          getColumnNamesHelper(columnNames, it);
+        }        
+      } else {
+        getColumnNamesHelper(columnNames, it);        
       }
       results.close();
       table.close();
@@ -135,13 +163,27 @@ public class ChukwaHBaseStore {
     return columnNames;
   }
   
-  public static Set<String> getRowNames(String tableName, String column, long startTime, long endTime) {
+  public static Set<String> getRowNames(String tableName, String column, long startTime, long endTime, boolean fullScan) {
     Set<String> rows = new HashSet<String>();
     HTable table = pool.getTable(tableName);
     try {
       Scan scan = new Scan();
       scan.addColumn(column.getBytes());
-      scan.setTimeRange(startTime, endTime);
+      if(!fullScan) {
+        StringBuilder temp = new StringBuilder();
+        temp.append(startTime);
+        scan.setStartRow(temp.toString().getBytes());
+        temp.setLength(0);
+        temp.append(startTime+60000L);
+        scan.setStopRow(temp.toString().getBytes());
+      } else {
+        StringBuilder temp = new StringBuilder();
+        temp.append(startTime);
+        scan.setStartRow(temp.toString().getBytes());
+        temp.setLength(0);
+        temp.append(endTime);
+        scan.setStopRow(temp.toString().getBytes());
+      }
       ResultScanner results = table.getScanner(scan);
       Iterator<Result> it = results.iterator();
       while(it.hasNext()) {
@@ -150,7 +192,7 @@ public class ChukwaHBaseStore {
         String[] parts = buffer.split("-", 2);
         if(!rows.contains(parts[1])) {
           rows.add(parts[1]);
-        }
+        }    
       }
       results.close();
       table.close();
@@ -160,8 +202,8 @@ public class ChukwaHBaseStore {
     return rows;    
   }
   
-  public static Set<String> getHostnames(String cluster, long startTime, long endTime) {
-    return getRowNames("SystemMetrics","system:csource", startTime, endTime);
+  public static Set<String> getHostnames(String cluster, long startTime, long endTime, boolean fullScan) {
+    return getRowNames("SystemMetrics","system:csource", startTime, endTime, fullScan);
   }
   
   public static Set<String> getClusterNames(long startTime, long endTime) {
