@@ -1101,6 +1101,8 @@
 			</filterchain>
 		</copy>
 
+                <copy file="${basedir}/conf/initial_adaptors.template" tofile="${build.dir}/conf/initial_adaptors" />
+
 		<copy file="${basedir}/conf/chukwa-collector-conf.xml.template" tofile="${build.dir}/conf/chukwa-collector-conf.xml">
 			<filterchain>
 		

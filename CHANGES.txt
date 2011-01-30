@@ -86,6 +86,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-579. Package initial_adaptors config file for tarball. (Eric Yang)
+
     CHUKWA-577. Convert HadoopMetricsProcessor to use Simple JSON library. (Eric Yang)
 
     CHUKWA-574. Added locking for recording metrics through log4j. (Eric Yang)
