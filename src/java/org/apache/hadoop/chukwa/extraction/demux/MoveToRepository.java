@@ -42,8 +42,6 @@ public class MoveToRepository {
 
   static ChukwaConfiguration conf = null;
   static FileSystem fs = null;
-  static final String HadoopLogDir = "_logs";
-  static final String hadoopTempDir = "_temporary";
   static SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyyMMdd");
   static Calendar calendar = Calendar.getInstance();
 
@@ -253,13 +251,10 @@ public class MoveToRepository {
       for (FileStatus cluster : clusters) {
         name = cluster.getPath().getName();
         // Skip hadoop M/R outputDir
-        if ((name.intern() == HadoopLogDir.intern())
-            || (name.intern() == hadoopTempDir.intern())) {
+        if (name.startsWith("_")) {
           continue;
         }
-        log
-            .info("main procesing Cluster (" + cluster.getPath().getName()
-                + ")");
+        log.info("main procesing Cluster (" + cluster.getPath().getName() + ")");
         destinationFiles.addAll(processClusterDirectory(cluster.getPath(),
             destDir + "/" + cluster.getPath().getName()));
 
