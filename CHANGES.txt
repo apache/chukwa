@@ -85,7 +85,9 @@ Trunk (unreleased changes)
     CHUKWA-472. Added ability to configure timestamp format for the default Time Series Processor.  (Bill Graham via Eric Yang)
 
   BUG FIXES
-  
+ 
+    CHUKWA-585. Enable HICC server to bind to all IP addresses. (Eric Yang)
+ 
     CHUKWA-582.  Change MoveToRepository to ignore anything starting with _. (Ari Rabkin)
 
     CHUKWA-579. Package initial_adaptors config file for tarball. (Eric Yang)
