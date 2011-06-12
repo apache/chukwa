@@ -38,12 +38,16 @@
             session.setAttribute(realName,request.getParameter(name));
         }
     }
-    if(session.getAttribute("cluster")==null) {
+    String cluster = "none";
+    try{
+      if(session.getAttribute("cluster")==null) {
         ClusterConfig cc = new ClusterConfig();
         Iterator ci = cc.getClusters();
-        String cluster = (String) ci.next();
-        session.setAttribute("cluster", cluster);
+        cluster = (String) ci.next();
+      }
+    } catch(Exception e) {
     }
+    session.setAttribute("cluster", cluster);
     if(session.getAttribute("period")==null || session.getAttribute("start")==null || session.getAttribute("end")==null ||
        session.getAttribute("time_type")==null) {
         session.setAttribute("time_type","last");

@@ -90,6 +90,8 @@ Trunk (unreleased changes)
  
     CHUKWA-582.  Change MoveToRepository to ignore anything starting with _. (Ari Rabkin)
 
+    CHUKWA-587. Improved default cluster selection code. (Eric Yang)
+
     CHUKWA-579. Package initial_adaptors config file for tarball. (Eric Yang)
 
     CHUKWA-577. Convert HadoopMetricsProcessor to use Simple JSON library. (Eric Yang)
