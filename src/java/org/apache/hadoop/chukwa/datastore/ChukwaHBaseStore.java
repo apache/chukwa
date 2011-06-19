@@ -15,12 +15,13 @@ import org.apache.hadoop.chukwa.hicc.bean.Series;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
@@ -32,19 +33,22 @@ import org.apache.log4j.Logger;
 import org.mortbay.log.Log;
 
 public class ChukwaHBaseStore {
-  private static HBaseConfiguration hconf = hconf = new HBaseConfiguration();
+  private static Configuration hconf = HBaseConfiguration.create();
   private static HTablePool pool = new HTablePool(hconf, 60);
   static Logger log = Logger.getLogger(ChukwaHBaseStore.class);
   
-  public static Series getSeries(String tableName, String rkey, String column,
+  public static Series getSeries(String tableName, String rkey, String family, String column,
       long startTime, long endTime, boolean filterByRowKey) {
     StringBuilder seriesName = new StringBuilder();
     seriesName.append(rkey);
     seriesName.append(":");
+    seriesName.append(family);
+    seriesName.append(":");
     seriesName.append(column);
+
     Series series = new Series(seriesName.toString());
     try {
-      HTable table = pool.getTable(tableName);
+      HTableInterface table = pool.getTable(tableName);
       Calendar c = Calendar.getInstance();
       c.setTimeInMillis(startTime);
       c.set(Calendar.MINUTE, 0);
@@ -52,7 +56,7 @@ public class ChukwaHBaseStore {
       c.set(Calendar.MILLISECOND, 0);
       String startRow = c.getTimeInMillis()+rkey;
       Scan scan = new Scan();
-      scan.addColumn(column.getBytes());
+      scan.addColumn(family.getBytes(), column.getBytes());
       scan.setStartRow(startRow.getBytes());
       scan.setTimeRange(startTime, endTime);
       scan.setMaxVersions();
@@ -68,7 +72,7 @@ public class ChukwaHBaseStore {
       // size to 1000 data points for graphing optimization. (i.e jwave)
       while(it.hasNext()) {
         Result result = it.next();
-        String temp = new String(result.getCellValue().getValue());
+        String temp = new String(result.getValue(family.getBytes(), column.getBytes()));
         double value = Double.parseDouble(temp);
         // TODO: Pig Store function does not honor HBase timestamp, hence need to parse rowKey for timestamp.
         String buf = new String(result.getRow());
@@ -88,7 +92,7 @@ public class ChukwaHBaseStore {
   public static Set<String> getFamilyNames(String tableName) {
     Set<String> familyNames = new CopyOnWriteArraySet<String>();
     try {
-      HTable table = pool.getTable(tableName);
+      HTableInterface table = pool.getTable(tableName);
       Calendar c = Calendar.getInstance();
       Set<byte[]> families = table.getTableDescriptor().getFamiliesKeys();
       for(byte[] name : families) {
@@ -120,14 +124,14 @@ public class ChukwaHBaseStore {
     Result result = it.next();
     List<KeyValue> kvList = result.list();
     for(KeyValue kv : kvList) {
-      columnNames.add(new String(kv.getColumn()));
+      columnNames.add(new String(kv.getQualifier()));
     }
   }
   
   public static Set<String> getColumnNames(String tableName, String family, long startTime, long endTime, boolean fullScan) {
     Set<String> columnNames = new CopyOnWriteArraySet<String>();
     try {
-      HTable table = pool.getTable(tableName);
+      HTableInterface table = pool.getTable(tableName);
       Scan scan = new Scan();
       if(!fullScan) {
         // Take sample columns of the starting time.
@@ -163,12 +167,12 @@ public class ChukwaHBaseStore {
     return columnNames;
   }
   
-  public static Set<String> getRowNames(String tableName, String column, long startTime, long endTime, boolean fullScan) {
+  public static Set<String> getRowNames(String tableName, String family, String qualifier, long startTime, long endTime, boolean fullScan) {
     Set<String> rows = new HashSet<String>();
-    HTable table = pool.getTable(tableName);
+    HTableInterface table = pool.getTable(tableName);
     try {
       Scan scan = new Scan();
-      scan.addColumn(column.getBytes());
+      scan.addColumn(family.getBytes(), qualifier.getBytes());
       if(!fullScan) {
         StringBuilder temp = new StringBuilder();
         temp.append(startTime);
@@ -203,24 +207,25 @@ public class ChukwaHBaseStore {
   }
   
   public static Set<String> getHostnames(String cluster, long startTime, long endTime, boolean fullScan) {
-    return getRowNames("SystemMetrics","system:csource", startTime, endTime, fullScan);
+    return getRowNames("SystemMetrics","system", "csource", startTime, endTime, fullScan);
   }
   
   public static Set<String> getClusterNames(long startTime, long endTime) {
     String tableName = "SystemMetrics";
-    String column = "system:ctags";
+    String family = "system";
+    String column = "ctags";
     Set<String> clusters = new HashSet<String>();
-    HTable table = pool.getTable(tableName);
+    HTableInterface table = pool.getTable(tableName);
     Pattern p = Pattern.compile("\\s*cluster=\"(.*?)\"");
     try {
       Scan scan = new Scan();
-      scan.addColumn(column.getBytes());
+      scan.addColumn(family.getBytes(), column.getBytes());
       scan.setTimeRange(startTime, endTime);
       ResultScanner results = table.getScanner(scan);
       Iterator<Result> it = results.iterator();
       while(it.hasNext()) {
         Result result = it.next();
-        String buffer = new String(result.getValue(column.getBytes()));
+        String buffer = new String(result.getValue(family.getBytes(), column.getBytes()));
         Matcher m = p.matcher(buffer);
         if(m.matches()) {
           clusters.add(m.group(1));

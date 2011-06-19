@@ -44,6 +44,7 @@ import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 
 import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 
 import org.apache.hadoop.chukwa.datacollection.writer.hbase.OutputCollector;
@@ -64,7 +65,7 @@ public class HBaseWriter extends PipelineableWriter {
       "chukwa.demux.mapper.default.processor",
       "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.DefaultProcessor");
   private HTablePool pool;
-  private HBaseConfiguration hconf;
+  private Configuration hconf;
   
   private class StatReportingTask extends TimerTask {
     private long lastTs = System.currentTimeMillis();
@@ -93,10 +94,10 @@ public class HBaseWriter extends PipelineableWriter {
     this.reportStats = reportStats;
     statTimer = new Timer();
     /* HBase Version 0.20.x */
-    hconf = new HBaseConfiguration();
+    //hconf = new HBaseConfiguration();
     
     /* HBase Version 0.89.x */
-    //hconf = HBaseConfiguration.create();
+    hconf = HBaseConfiguration.create();
   }
 
   public HBaseWriter(ChukwaConfiguration conf, HBaseConfiguration hconf) {
@@ -197,7 +198,7 @@ public class HBaseWriter extends PipelineableWriter {
               }
             }
             if(table!=null) {
-              HTable hbase = pool.getTable(table.name());  
+              HTableInterface hbase = pool.getTable(table.name().getBytes());  
               processor.process(new ChukwaArchiveKey(), chunk, output, reporter);
               hbase.put(output.getKeyValues());
               pool.putTable(hbase);

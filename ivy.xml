@@ -53,25 +53,25 @@
     <artifact conf="master"/>
   </publications>
   <dependencies>
-    <dependency org="org.apache.hadoop"
+<!--    <dependency org="org.apache.hadoop"
       name="hadoop-core"
       rev="${hadoop.version}"
       conf="common->master"/>
     <dependency org="org.apache.hadoop"
       name="hadoop-test"
       rev="${hadoop.version}"
-      conf="common->master"/>
+      conf="common->master"/> -->
     <dependency org="com.googlecode.json-simple"
       name="json-simple"
       rev="${json-simple.version}"
       conf="common->master"/>
-<!--    <dependency org="org.apache.hbase"
+    <dependency org="org.apache.hbase"
       name="hbase"
       rev="${hbase.version}"
       conf="common->master">
       <artifact name="hbase" type="jar"/>
       <artifact name="hbase" type="tests" ext="jar" m:classifier="tests"/>
-    </dependency> -->
+    </dependency>
     <dependency org="com.google.guava"
       name="guava"
       rev="${guava.version}"

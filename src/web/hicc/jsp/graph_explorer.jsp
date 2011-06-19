@@ -112,10 +112,11 @@
       var size = $('#row option').size();
       $('#row').find('option').remove();
       var table = $('#table').val();
+      var family = $('#family').val();
       var column = $('#column').val();
       $('#column :selected').each(function(i, selected) {
         var column = $(selected).val();
-        var url = encodeURI("/hicc/v1/metrics/rowkey/"+table+"/"+column);
+        var url = encodeURI("/hicc/v1/metrics/rowkey/"+table+"/"+family+"/"+column);
         $.ajax({ url: url, dataType: "json", success: function(data){
           for(var i in data) {
             $('#row').not(":contains('"+data[i]+"')").append("<option>"+data[i]+"</option>");
@@ -129,13 +130,14 @@
       if(test == null) {
         $('#row option:eq(0)').attr('selected',true);
       }
+      var family = $("#family").val();
       var data = [];
       $('#column :selected').each(function(i, selected) {
         data[i] = $(selected).val();
       });
       var url = [];
       for(var i in data) {
-        url[i] = encodeURI("/hicc/v1/metrics/series/" + $('#table').val() + "/" + data[i] + "/rowkey/" + $('#row').val());
+        url[i] = encodeURI("/hicc/v1/metrics/series/" + $('#table').val() + "/" + family + "/" + data[i] + "/rowkey/" + $('#row').val());
       } 
       var title = $('#title').val();
       var ymin = $('#ymin').val();
