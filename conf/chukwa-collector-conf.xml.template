@@ -97,6 +97,27 @@ your hbase.zookeeper.quorum setting to the conf/ dir. -->
   </property>
 
   <property>
+    <name>chukwaCollector.isFixedTimeRotatorScheme</name>
+    <value>@TODO-COLLECTORS-ISFIXEDTIMEROTATORSCHEME</value>
+    <description>A flag to indicate that the collector should close at a fixed
+    offset after every rotateInterval. The default value is false which uses
+    the default scheme where collectors close after regular rotateIntervals.
+    If set to true then specify chukwaCollector.fixedTimeIntervalOffset value.
+    e.g., if isFixedTimeRotatorScheme is true and fixedTimeIntervalOffset is
+    set to 10000 and rotateInterval is set to 300000, then the collector will
+    close its files at 10 seconds past the 5 minute mark, if
+    isFixedTimeRotatorScheme is false, collectors will rotate approximately
+    once every 5 minutes
+    </description>
+  </property>
+
+  <property>
+    <name>chukwaCollector.fixedTimeIntervalOffset</name>
+    <value>@TODO-COLLECTORS-FIXEDTIMEINTERVALOFFSET@</value>
+    <description>Chukwa fixed time interval offset value (ms)</description>
+  </property>
+
+  <property>
     <name>chukwaCollector.http.port</name>
     <value>@TODO-COLLECTORS-PORT@</value>
     <description>The HTTP port number the collector will listen on</description>

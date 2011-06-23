@@ -52,10 +52,14 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
 
   protected int STAT_INTERVAL_SECONDS = 30;
   private int rotateInterval = 1000 * 60 * 5;
+  private int offsetInterval = 1000 * 30;
+  private boolean if_fixed_interval = false;
   static final int ACQ_WAIT_ON_TERM = 500; //ms to wait for lock on a SIGTERM before aborting
   
   public static final String STAT_PERIOD_OPT = "chukwaCollector.stats.period";
   public static final String ROTATE_INTERVAL_OPT = "chukwaCollector.rotateInterval";
+  public static final String IF_FIXED_INTERVAL_OPT = "chukwaCollector.isFixedTimeRotatorScheme";
+  public static final String FIXED_INTERVAL_OFFSET_OPT = "chukwaCollector.fixedTimeIntervalOffset";
   public static final String OUTPUT_DIR_OPT= "chukwaCollector.outputDir";
   protected static String localHostAddr = null;
   
@@ -102,6 +106,8 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
     this.conf = conf;
 
     rotateInterval = conf.getInt(ROTATE_INTERVAL_OPT,rotateInterval);
+    if_fixed_interval = conf.getBoolean(IF_FIXED_INTERVAL_OPT,if_fixed_interval);
+    offsetInterval = conf.getInt(FIXED_INTERVAL_OFFSET_OPT,offsetInterval);
     
     STAT_INTERVAL_SECONDS = conf.getInt(STAT_PERIOD_OPT, STAT_INTERVAL_SECONDS);
 
@@ -113,6 +119,11 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
     }
 
     log.info("rotateInterval is " + rotateInterval);
+    if(if_fixed_interval)
+      log.info("using fixed time interval scheme, " +
+              "offsetInterval is " + offsetInterval);
+    else
+      log.info("not using fixed time interval scheme");
     log.info("outputDir is " + outputDir);
     log.info("fsname is " + fsname);
     log.info("filesystem type from core-default.xml is "
@@ -239,16 +250,63 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
     }
     
     // Schedule the next timer
+    scheduleNextRotation();
+
+  }
+
+  /**
+   * Schedules the rotate task using either a fixed time interval scheme or a
+   * relative time interval scheme as specified by the
+   * chukwaCollector.isFixedTimeRotatorScheme configuration parameter. If the
+   * value of this parameter is true then next rotation will be scheduled at a
+   * fixed offset from the current rotateInterval. This fixed offset is
+   * provided by chukwaCollector.fixedTimeIntervalOffset configuration
+   * parameter.
+   */
+  void scheduleNextRotation(){
+    long delay = rotateInterval;
+    if (if_fixed_interval) {
+      long currentTime = System.currentTimeMillis();
+      delay = getDelayForFixedInterval(currentTime, rotateInterval, offsetInterval);
+    }
     rotateTimer = new Timer();
     rotateTimer.schedule(new TimerTask() {
       public void run() {
         rotate();
       }
-    }, rotateInterval);
-
+    }, delay);
   }
 
-  
+  /**
+   * Calculates delay for scheduling the next rotation in case of
+   * FixedTimeRotatorScheme. This delay is the time difference between the
+   * currentTimestamp (t1) and the next time the collector should rotate the
+   * sequence files (t2). t2 is the time when the current rotateInterval ends
+   * plus an offset (as set by chukwaCollector.FixedTimeIntervalOffset).
+   * So, delay = t2 - t1
+   *
+   * @param currentTime - the current timestamp
+   * @param rotateInterval - chukwaCollector.rotateInterval
+   * @param offsetInterval - chukwaCollector.fixedTimeIntervalOffset
+   * @return delay for scheduling next rotation
+   */
+  long getDelayForFixedInterval(long currentTime, long rotateInterval, long offsetInterval){
+    // time since last rounded interval
+    long remainder = (currentTime % rotateInterval);
+    long prevRoundedInterval = currentTime - remainder;
+    long nextRoundedInterval = prevRoundedInterval + rotateInterval;
+    long delay = nextRoundedInterval - currentTime + offsetInterval;
+
+    if (log.isInfoEnabled()) {
+     log.info("currentTime="+currentTime+" prevRoundedInterval="+
+             prevRoundedInterval+" nextRoundedInterval" +
+            "="+nextRoundedInterval+" delay="+delay);
+    }
+
+    return delay;
+  }
+
+
   protected void computeTimePeriod() {
     synchronized (calendar) {
       calendar.setTimeInMillis(System.currentTimeMillis());

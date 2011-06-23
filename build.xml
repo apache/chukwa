@@ -1118,6 +1118,12 @@
 				<replacetokens>
 					<token key="TODO-COLLECTORS-PORT" value="${TODO-COLLECTORS-PORT}" />
 				</replacetokens>
+        <replacetokens>
+					<token key="TODO-COLLECTORS-ISFIXEDTIMEROTATORSCHEME" value="${TODO-COLLECTORS-ISFIXEDTIMEROTATORSCHEME}" />
+				</replacetokens>
+        <replacetokens>
+					<token key="TODO-COLLECTORS-FIXEDTIMEINTERVALOFFSET" value="${TODO-COLLECTORS-FIXEDTIMEINTERVALOFFSET}" />
+				</replacetokens>
 
 			</filterchain>
 		</copy>
