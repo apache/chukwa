@@ -88,6 +88,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-592.  Enable test case for HBaseWriter. (Eric Yang)
+
     CHUKWA-591. Check for empty result from HBase Scanner. (Eric Yang)
  
     CHUKWA-585. Enable HICC server to bind to all IP addresses. (Eric Yang)
