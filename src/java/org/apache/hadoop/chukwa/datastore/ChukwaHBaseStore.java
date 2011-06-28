@@ -122,9 +122,11 @@ public class ChukwaHBaseStore {
 
   public static void getColumnNamesHelper(Set<String>columnNames, Iterator<Result> it) {
     Result result = it.next();
-    List<KeyValue> kvList = result.list();
-    for(KeyValue kv : kvList) {
-      columnNames.add(new String(kv.getQualifier()));
+    if(result!=null) {
+      List<KeyValue> kvList = result.list();
+      for(KeyValue kv : kvList) {
+        columnNames.add(new String(kv.getQualifier()));
+      }
     }
   }
   

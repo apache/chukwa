@@ -87,6 +87,8 @@ Trunk (unreleased changes)
     CHUKWA-472. Added ability to configure timestamp format for the default Time Series Processor.  (Bill Graham via Eric Yang)
 
   BUG FIXES
+
+    CHUKWA-591. Check for empty result from HBase Scanner. (Eric Yang)
  
     CHUKWA-585. Enable HICC server to bind to all IP addresses. (Eric Yang)
  
