@@ -32,15 +32,17 @@
   </property>
   <property>
     <name>hbase.client.pause</name>
-    <value>5000</value>
+    <value>1000</value>
     <description>General client pause value.  Used mostly as value to wait
     before running a retry of a failed get, region lookup, etc.</description>
   </property>
   <property>
-    <name>hbase.master.meta.thread.rescanfrequency</name>
-    <value>10000</value>
-    <description>How long the HMaster sleeps (in milliseconds) between scans of
-    the root and meta tables.
+    <name>hbase.client.retries.number</name>
+    <value>10</value>
+    <description>Maximum retries.  Used as maximum for all retryable
+    operations such as fetching of the root region from root region
+    server, getting a cell's value, starting a row update, etc.
+    Default: 10.
     </description>
   </property>
   <property>
@@ -51,20 +53,17 @@
     </description>
   </property>
   <property>
+    <name>hbase.master.event.waiting.time</name>
+    <value>50</value>
+    <description>Time to sleep between checks to see if a table event took place.
+    </description>
+  </property>
+  <property>
     <name>hbase.regionserver.handler.count</name>
     <value>5</value>
     <description>Count of RPC Server instances spun up on RegionServers
     Same property is used by the HMaster for count of master handlers.
     Default is 10.
-    </description>
-  </property>
-  <property>
-    <name>hbase.master.lease.period</name>
-    <value>6000</value>
-    <description>Length of time the master will wait before timing out a region
-    server lease. Since region servers report in every second (see above), this
-    value has been reduced so that the master will notice a dead region server
-    sooner. The default is 30 seconds.
     </description>
   </property>
   <property>
@@ -99,7 +98,7 @@
   </property>
   <property>
     <name>hbase.regionserver.optionalcacheflushinterval</name>
-    <value>10000</value>
+    <value>1000</value>
     <description>
     Amount of time to wait since the last time a region was flushed before
     invoking an optional cache flush. Default 60,000.
@@ -129,9 +128,22 @@
   </property>
   <property>
     <name>hbase.zookeeper.property.clientPort</name>
-    <value>21810</value>
+    <value>21818</value>
     <description>Property from ZooKeeper's config zoo.cfg.
     The port at which the clients will connect.
+    </description>
+  </property>
+  <property>
+    <name>hbase.defaults.for.version.skip</name>
+    <value>true</value>
+    <description>
+    Set to true to skip the 'hbase.defaults.for.version'.
+    Setting this to true can be useful in contexts other than
+    the other side of a maven generation; i.e. running in an
+    ide.  You'll want to set this boolean to true to avoid
+    seeing the RuntimException complaint: "hbase-default.xml file
+    seems to be for and old version of HBase (@@@VERSION@@@), this
+    version is X.X.X-SNAPSHOT"
     </description>
   </property>
 </configuration>

@@ -27,4 +27,6 @@ create "ClusterSummary", {NAME=> "cpu", VERSIONS => 65535},
 {NAME => "network", VERSION => 65535},
 {NAME => "hdfs", VERSION => 65535},
 {NAME => "mapreduce", VERSION => 65535}
-
+create "chukwa", {NAME=>"chukwaAgent_chunkQueue", VERSIONS => 65535},
+{NAME => "chukwaAgent_metrics", VERSION => 65535},
+{NAME => "chukwaAgent_httpSender", VERSION => 65535}

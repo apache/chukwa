@@ -100,7 +100,7 @@ public class HBaseWriter extends PipelineableWriter {
     hconf = HBaseConfiguration.create();
   }
 
-  public HBaseWriter(ChukwaConfiguration conf, HBaseConfiguration hconf) {
+  public HBaseWriter(ChukwaConfiguration conf, Configuration hconf) {
     this(true);
     this.conf = conf;
     this.hconf = hconf;

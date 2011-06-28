@@ -76,10 +76,10 @@
       name="guava"
       rev="${guava.version}"
       conf="common->master"/>
-    <!-- <dependency org="org.apache.hadoop.zookeeper"
+    <dependency org="org.apache.zookeeper"
       name="zookeeper"
       rev="${zookeeper.version}"
-      conf="common->master"/> -->
+      conf="common->master"/>
     <dependency org="com.sun.jersey"
       name="jersey-core"
       rev="${jersey.version}"/>
