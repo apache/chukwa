@@ -88,6 +88,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-594.  Fix row key matching in HICC web interface. (Preetam Patil via Eric Yang)
+
     CHUKWA-592.  Enable test case for HBaseWriter. (Eric Yang)
 
     CHUKWA-591. Check for empty result from HBase Scanner. (Eric Yang)

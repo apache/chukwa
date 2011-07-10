@@ -27,7 +27,7 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.RowFilter;
-import org.apache.hadoop.hbase.filter.SubstringComparator;
+import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
 import org.apache.log4j.Logger;
 import org.mortbay.log.Log;
@@ -62,7 +62,7 @@ public class ChukwaHBaseStore {
       scan.setMaxVersions();
       if(filterByRowKey) {
         RowFilter rf = new RowFilter(CompareOp.EQUAL, new 
-            SubstringComparator(rkey)); 
+            RegexStringComparator("[0-9]+-"+rkey+"$")); 
         scan.setFilter(rf);
       }
       ResultScanner results = table.getScanner(scan);

@@ -119,7 +119,10 @@
         var url = encodeURI("/hicc/v1/metrics/rowkey/"+table+"/"+family+"/"+column);
         $.ajax({ url: url, dataType: "json", success: function(data){
           for(var i in data) {
-            $('#row').not(":contains('"+data[i]+"')").append("<option>"+data[i]+"</option>");
+            var test = $('#row').find('option[value="'+data[i]+'"]').val();
+            if(typeof(test) == "undefined") {
+              $('#row').append('<option value="'+data[i]+'">'+data[i]+'</option>');
+            }
           }
         }});
       });
