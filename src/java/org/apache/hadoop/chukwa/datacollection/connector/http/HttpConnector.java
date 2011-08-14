@@ -176,8 +176,10 @@ public class HttpConnector implements Connector, Runnable {
         }
 
         long now = System.currentTimeMillis();
-        if (now - lastPost < MIN_POST_INTERVAL)
-          Thread.sleep(now - lastPost); // wait for stuff to accumulate
+        long delta = MIN_POST_INTERVAL - now + lastPost;
+        if(delta > 0) {
+          Thread.sleep(delta); // wait for stuff to accumulate
+        }
         lastPost = now;
       } // end of try forever loop
       log.info("received stop() command so exiting run() loop to shutdown connector");
