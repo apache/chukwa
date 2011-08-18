@@ -104,6 +104,10 @@
        name="activemq-core"
        rev="${activemq.version}"
        conf="common->default"/>
+   <dependency org="commons-configuration"
+      name="commons-configuration"
+      rev="${commons-configuration.version}"
+      conf="common->default"/>
    <dependency org="commons-fileupload"
       name="commons-fileupload"
       rev="${commons-fileupload.version}"

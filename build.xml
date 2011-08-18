@@ -52,12 +52,6 @@
 		<!--SET UP HADOOP JARS-->
 		<property name="hadoop.home.dir" value="${env.HADOOP_HOME}" />
 		<echo message="HADOOP_HOME set to: ${hadoop.home.dir}" />
-		<property name="hadoop.default.jars.dir" value="${basedir}/hadoopjars" />
-
-		<condition property="hadoop.home.jars.dir" value="${hadoop.home.dir}/build" else="${basedir}/hadoopjars">
-			<available file="${hadoop.home.dir}/build" />
-		</condition>
-		<echo message="hadoop.home.jars.dir set to ${hadoop.home.jars.dir}" />
 
 		<property name="build.dir" value="${basedir}/build" />
 		<property name="build.classes" value="${basedir}/build/classes" />
@@ -74,15 +68,6 @@
 				<include name="**/*.jar" />
 				<exclude name="**/excluded/" />
 			</fileset>
-			<fileset dir="${hadoop.default.jars.dir}">
-				<!-- ASR -->
-				<include name="**/*.jar" />
-				<exclude name="**/*core*.jar" />
-			</fileset>
-			<fileset dir="${hadoop.home.jars.dir}">
-				<!-- ASR -->
-				<include name="**/hadoop-0.2*-core.jar" />
-			</fileset>
 			<fileset dir="${common.ivy.lib.dir}">
 				<include name="**/*.jar" />
 			</fileset>
@@ -98,29 +83,11 @@
 				<include name="**/*.jar" />
 				<exclude name="**/excluded/" />
 			</fileset>
-			<fileset dir="${hadoop.default.jars.dir}">
-				<!-- ASR -->
-				<include name="**/*.jar" />
-				<exclude name="**/*core*.jar" />
-			</fileset>
-			<fileset dir="${hadoop.home.jars.dir}">
-				<!-- ASR -->
-				<include name="**/hadoop-0.20*.jar" />
-			</fileset>
 			<path refid="contrib-classpath" />
 		</path>
 		<path id="testDemuxClasspath">
 			<pathelement location="${build.classes}" />
 			<pathelement location="${test.build.classes}" />
-			<fileset dir="${hadoop.default.jars.dir}">
-				<!-- ASR -->
-				<include name="**/*.jar" />
-				<exclude name="**/hadoop-0.2*-core.jar" />
-			</fileset>
-			<fileset dir="${hadoop.home.jars.dir}">
-				<!-- ASR -->
-				<include name="**/*core*.jar" />
-			</fileset>
 			<fileset dir="${lib.dir}">
 				<include name="**/*.jar" />
 				<exclude name="**/excluded/" />
@@ -702,7 +669,7 @@
 		</jar>
 	</target>
 
-	<target name="hicc" depends="compile, chukwa_jar, package-hadoop, package-standalone" description="Prepare hicc.war">
+	<target name="hicc" depends="compile, chukwa_jar" description="Prepare hicc.war">
 		<mkdir dir="${build.dir}/hicc" />
 		<mkdir dir="${build.dir}/hicc/WEB-INF" />
 		<mkdir dir="${build.dir}/hicc/WEB-INF/classes" />
@@ -760,17 +727,10 @@
 			<fileset dir="${build.dir}">
 				<include name="${name}-core-${chukwaVersion}.jar" />
 			</fileset>
-			<fileset dir="${build.dir}/${final.name}/hadoopjars">
-				<include name="*.jar" />
-				<exclude name="hadoop-0.2*-core.jar" />
-				<exclude name="jasper-*.jar" />
-				<exclude name="jetty-*.jar" />
-				<exclude name="jsp-api*.jar" />
-			</fileset>
 		</copy>
 	</target>
 
-	<target name="chukwa" depends="compile, chukwa_jar, package-hadoop, package-standalone" description="Prepare chukwa.war">
+	<target name="chukwa" depends="compile, chukwa_jar" description="Prepare chukwa.war">
 		<mkdir dir="${build.dir}/chukwa" />
 		<mkdir dir="${build.dir}/chukwa/WEB-INF" />
 		<mkdir dir="${build.dir}/chukwa/WEB-INF/classes" />
@@ -822,13 +782,6 @@
 			</fileset>
 			<fileset dir="${build.dir}">
 				<include name="${name}-core-${chukwaVersion}.jar" />
-			</fileset>
-			<fileset dir="${build.dir}/${final.name}/hadoopjars">
-				<include name="*.jar" />
-				<exclude name="hadoop-0.2*-core.jar" />
-				<exclude name="jasper-*.jar" />
-				<exclude name="jetty-*.jar" />
-				<exclude name="jsp-api*.jar" />
 			</fileset>
 		</copy>
 	</target>
@@ -1017,40 +970,6 @@
 	<!--                                                                    -->
 	<!-- ================================================================== -->
 
-	<target name="package-hadoop" description="package hadoop from hadoop source" if="hadoopMode">
-		<mkdir dir="${build.dir}/${final.name}/hadoopjars" />
-		<copy toDir="${build.dir}/${final.name}/hadoopjars">
-			<fileset dir="${hadoop.root}/build">
-				<include name="hadoop-*-core.jar" />
-			</fileset>
-			<fileset dir="${build.ivy.lib.dir}\Hadoop\common">
-
-				<include name="jetty-*.jar" />
-				<include name="commons-httpclient-*.jar" />
-				<include name="commons-logging-*.jar" />
-				<include name="commons-net-*.jar" />
-				<include name="jasper-*.jar" />
-				<include name="commons-el.jar" />
-				<include name="commons-codec-*.jar" />
-			</fileset>
-			<fileset dir="lib">
-				<include name="jsp-api.jar" />
-			</fileset>
-			<fileset dir="${hadoop.root}/lib">
-				<include name="commons-cli-*.jar" />
-			</fileset>
-		</copy>
-	</target>
-
-	<target name="package-standalone" description="package hadoop from hadoop source" if="standaloneMode">
-		<mkdir dir="${build.dir}/${final.name}/hadoopjars" />
-		<copy todir="${build.dir}/${final.name}/hadoopjars" includeEmptyDirs="false">
-			<fileset dir="${basedir}/hadoopjars">
-				<include name="**/*.jar" />
-			</fileset>
-		</copy>
-	</target>
-
 	<target name="chukwa-config" description="create real files based on templates" depends="init">
                 <mkdir dir="${build.dir}/conf" />
 		<copy todir="${build.dir}/conf">
@@ -1182,7 +1101,7 @@
 
 	</target>
 
-	<target name="package" depends="compress,docs,chukwa-config,package-hadoop,package-standalone" description="Build distribution">
+	<target name="package" depends="compress,docs,chukwa-config" description="Build distribution">
 		<mkdir dir="${build.dir}/${final.name}" />
 		<mkdir dir="${build.dir}/${final.name}/lib" />
 		<mkdir dir="${build.dir}/${final.name}/bin" />
