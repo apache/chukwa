@@ -32,6 +32,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-596. Updated schema retrieve REST API to use end time for scanning columns. (Eric Yang)
+
     CHUKWA-586. Updated HBase dependency to HBase 0.90.3. (Eric Yang)
 
     CHUKWA-569. Added temperory fix for load meta data faster for graph_explorer.jsp. (Eric Yang)
@@ -88,7 +90,9 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
-    CHUKWA_595.  Fixed buffering time calculation for Agent to send data to Collector.  (Eric Yang)
+    CHUKWA-38.  Download Hadoop jar files from ivy.  (Eric Yang)
+
+    CHUKWA-595.  Fixed buffering time calculation for Agent to send data to Collector.  (Eric Yang)
 
     CHUKWA-594.  Fix row key matching in HICC web interface. (Preetam Patil via Eric Yang)
 

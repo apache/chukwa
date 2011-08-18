@@ -136,12 +136,12 @@ public class ChukwaHBaseStore {
       HTableInterface table = pool.getTable(tableName);
       Scan scan = new Scan();
       if(!fullScan) {
-        // Take sample columns of the starting time.
+        // Take sample columns of the recent time.
         StringBuilder temp = new StringBuilder();
-        temp.append(startTime);
+        temp.append(endTime-300000L);
         scan.setStartRow(temp.toString().getBytes());
         temp.setLength(0);
-        temp.append(startTime+60000L);
+        temp.append(endTime);
         scan.setStopRow(temp.toString().getBytes());
       } else {
         StringBuilder temp = new StringBuilder();
@@ -176,11 +176,12 @@ public class ChukwaHBaseStore {
       Scan scan = new Scan();
       scan.addColumn(family.getBytes(), qualifier.getBytes());
       if(!fullScan) {
+        // Take sample columns of the recent time.
         StringBuilder temp = new StringBuilder();
-        temp.append(startTime);
+        temp.append(endTime-300000L);
         scan.setStartRow(temp.toString().getBytes());
         temp.setLength(0);
-        temp.append(startTime+60000L);
+        temp.append(endTime);
         scan.setStopRow(temp.toString().getBytes());
       } else {
         StringBuilder temp = new StringBuilder();
