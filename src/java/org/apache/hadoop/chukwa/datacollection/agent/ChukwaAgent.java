@@ -190,7 +190,8 @@ public class ChukwaAgent implements AdaptorManager {
       agent.connector.start();
 
       log.info("local agent started on port " + agent.getControlSock().portno);
-
+      System.out.close();
+      System.err.close();
     } catch (AlreadyRunningException e) {
       log.error("agent started already on this machine with same portno;"
           + " bailing out");

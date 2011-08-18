@@ -137,7 +137,8 @@ public class CollectorStub {
       jettyServer.setStopAtShutdown(true);
 
       System.out.println("started Chukwa http collector on port " + portNum);
-
+      System.out.close();
+      System.err.close();
     } catch (Exception e) {
       e.printStackTrace();
       DaemonWatcher.bailout(-1);

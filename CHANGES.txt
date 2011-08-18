@@ -90,6 +90,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-597. Close stderr and stdout after parent process detached.  (Eric Yang)
+
     CHUKWA-38.  Download Hadoop jar files from ivy.  (Eric Yang)
 
     CHUKWA-595.  Fixed buffering time calculation for Agent to send data to Collector.  (Eric Yang)

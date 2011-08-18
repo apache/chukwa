@@ -238,6 +238,8 @@ public class HiccWebServer {
   public static void main(String[] args) {
     HiccWebServer hicc = HiccWebServer.getInstance();
     hicc.start();
+    System.out.close();
+    System.err.close();
   }
 
 }
