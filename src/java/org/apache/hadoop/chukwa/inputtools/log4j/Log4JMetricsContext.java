@@ -35,6 +35,10 @@ import org.apache.hadoop.metrics.spi.OutputRecord;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.json.simple.JSONObject;
+import java.util.TreeMap;
+import java.util.Map;
+import java.util.Collection;
+import java.util.List;
 
 public class Log4JMetricsContext extends AbstractMetricsContext {
   Logger log = Logger.getLogger(Log4JMetricsContext.class);
@@ -116,5 +120,23 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
       }
       out.info(json.toString());
     }
+  }
+
+  @Override
+  public synchronized Map<String, Collection<OutputRecord>> getAllRecords() {
+    Map<String, Collection<OutputRecord>> out = new TreeMap<String, Collection<OutputRecord>>();
+/*    for (String recordName : bufferedData.keySet()) {
+      RecordMap recordMap = bufferedData.get(recordName);
+      synchronized (recordMap) {
+        List<OutputRecord> records = new ArrayList<OutputRecord>();
+        Set<Entry<TagMap, MetricMap>> entrySet = recordMap.entrySet();
+        for (Entry<TagMap, MetricMap> entry : entrySet) {
+          OutputRecord outRec = new OutputRecord(entry.getKey(), entry.getValue());
+          records.add(outRec);
+        }
+        out.put(recordName, records);
+      }
+    }*/
+    return out;
   }
 }

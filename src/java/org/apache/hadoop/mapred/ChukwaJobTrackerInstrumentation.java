@@ -31,7 +31,7 @@ import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.fs.Path;
 
 public class ChukwaJobTrackerInstrumentation extends
-    org.apache.hadoop.mapred.JobTrackerMetricsInst {
+    org.apache.hadoop.mapred.JobTrackerInstrumentation {
 
   protected final JobTracker tracker;
   private static ChukwaAgentController chukwaClient = null;

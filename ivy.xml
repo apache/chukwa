@@ -53,14 +53,14 @@
     <artifact conf="master"/>
   </publications>
   <dependencies>
-<!--    <dependency org="org.apache.hadoop"
+    <dependency org="org.apache.hadoop"
       name="hadoop-core"
       rev="${hadoop.version}"
       conf="common->master"/>
     <dependency org="org.apache.hadoop"
       name="hadoop-test"
       rev="${hadoop.version}"
-      conf="common->master"/> -->
+      conf="common->master"/>
     <dependency org="com.googlecode.json-simple"
       name="json-simple"
       rev="${json-simple.version}"
