@@ -1,0 +1,20 @@
+# Stream metrics to Chukwa SocketAdaptor
+*.sink.socket.class=org.apache.hadoop.metrics2.sink.SocketSink
+namenode.sink.socket.host=localhost
+namenode.sink.socket.port=9095
+datanode.sink.socket.host=localhost
+datanode.sink.socket.port=9095
+jobtracker.sink.socket.host=localhost
+jobtracker.sink.socket.port=9095
+tasktracker.sink.socket.host=localhost
+tasktracker.sink.socket.port=9095
+# Stream metrics to Chukwa SocketAdaptor
+*.sink.socket.class=org.apache.hadoop.metrics2.sink.SocketSink
+namenode.sink.socket.host=localhost
+namenode.sink.socket.port=9095
+datanode.sink.socket.host=localhost
+datanode.sink.socket.port=9095
+jobtracker.sink.socket.host=localhost
+jobtracker.sink.socket.port=9095
+tasktracker.sink.socket.host=localhost
+tasktracker.sink.socket.port=9095

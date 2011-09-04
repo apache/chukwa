@@ -8,11 +8,25 @@ create "Hadoop",{NAME => "ClientTrace", VERSIONS => 65535},
 {NAME => "mapred_tasktracker", VERSIONS => 65535},
 {NAME => "mapred_job", VERSIONS => 65535},
 {NAME => "jvm_metrics", VERSIONS => 65535},
-{NAME => "rpc_metrics", VERSIONS => 65535}
+{NAME => "dfs", VERSIONS => 65535},
+{NAME => "jvm", VERSIONS => 65535},
+{NAME => "mapred_Queue", VERSIONS => 65535},
+{NAME => "metricssystem_MetricsSystem", VERSIONS => 65535},
+{NAME => "rpc_rpc", VERSIONS => 65535},
+{NAME => "rpcdetailed_rpcdetailed", VERSIONS => 65535},
+{NAME => "ugi_ugi", VERSIONS => 65535}
 create "HadoopLog", {NAME => "NameNode", VERSIONS => 65535},
 {NAME => "DataNode", VERSIONS => 65535},
 {NAME => "Audit", VERSIONS => 65535},
 {NAME => "HadoopLog", VERSIONS => 65535}
+create "HDFS", {NAME => "FileSystem"},
+{NAME => "namenode"},
+{NAME => "datanode"},
+{NAME => "clienttrace"}
+create "Mapreduce", {NAME => "jobs"},
+{NAME => "jobtracker"},
+{NAME => "tasktracker"},
+{NAME => "clienttrace"}
 create "SystemMetrics", 
 {NAME => "cpu", VERSIONS => 65535},
 {NAME => "system", VERSION => 65535},

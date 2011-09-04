@@ -662,6 +662,7 @@
 			</fileset>
 			<fileset dir="${build.classes}">
 				<include name="org/apache/hadoop/mapred/**/*.class" />
+				<include name="org/apache/hadoop/chukwa/inputtools/log4j/**/*.class" />
 				<include name="org/apache/hadoop/chukwa/datacollection/client/**/*.class" />
 				<include name="org/apache/hadoop/chukwa/util/**/*.class" />
 				<include name="org/apache/hadoop/chukwa/datacollection/controller/*.class" />
@@ -1004,6 +1005,7 @@
 				</replacetokens>
 			</filterchain>
 		</copy>
+		<copy file="${basedir}/conf/hadoop-metrics2.properties.template" tofile="${build.dir}/conf/hadoop-metrics2.properties"/>
 		<copy file="${basedir}/conf/chukwa-agent-conf.xml.template" tofile="${build.dir}/conf/chukwa-agent-conf.xml">
 			<filterchain>
 				<replacetokens>

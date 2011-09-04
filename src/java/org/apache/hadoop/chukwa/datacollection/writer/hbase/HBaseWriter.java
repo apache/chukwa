@@ -204,6 +204,7 @@ public class HBaseWriter extends PipelineableWriter {
               pool.putTable(hbase);
             }
           } catch (Exception e) {
+            log.warn(output.getKeyValues());
             log.warn(ExceptionUtil.getStackTrace(e));
           }
           dataSize += chunk.getData().length;
