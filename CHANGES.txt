@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-599. Added Metrics 2 support for Hadoop 0.20.203+. (Eric Yang)
+
     CHUKWA-575. Added cluster summary pig script. (Eric Yang)
 
     CHUKWA-571. Add digested system metrics to SystemMetrics demux parser. (Eric Yang)
