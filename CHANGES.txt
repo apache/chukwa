@@ -34,6 +34,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-601. Removed legacy mysql upgrade script. (Eric Yang)
+
     CHUKWA-596. Updated schema retrieve REST API to use end time for scanning columns. (Eric Yang)
 
     CHUKWA-586. Updated HBase dependency to HBase 0.90.3. (Eric Yang)
