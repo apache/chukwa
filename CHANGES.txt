@@ -96,6 +96,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-602. Set svn ignore properties to ignore eclipse and maven files. (Eric Yang)
+
     CHUKWA-597. Close stderr and stdout after parent process detached.  (Eric Yang)
 
     CHUKWA-38.  Download Hadoop jar files from ivy.  (Eric Yang)
