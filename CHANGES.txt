@@ -96,6 +96,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-593. Fixed infinite loop archiving at midnight. (Sourygna Luangsay via Eric Yang)
+
     CHUKWA-602. Set svn ignore properties to ignore eclipse and maven files. (Eric Yang)
 
     CHUKWA-597. Close stderr and stdout after parent process detached.  (Eric Yang)

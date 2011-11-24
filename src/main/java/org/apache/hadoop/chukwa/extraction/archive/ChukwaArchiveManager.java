@@ -195,7 +195,7 @@ public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
     int fileCount = 0;
     for (FileStatus fsDataSinkDir : dataSinkDirsInRawArchiveDir) {
       long modificationDate = fsDataSinkDir.getModificationTime();
-      if (modificationDate < oneHourAgo) {
+      if (modificationDate < oneHourAgo || workingDay < currentDay) {
         log.info("processDay,modificationDate:" + modificationDate +", adding: " + fsDataSinkDir.getPath() );
         fileCount += fs.listStatus(fsDataSinkDir.getPath()).length;
         moveDataSinkFilesToArchiveMrInput(fsDataSinkDir,archivesMRInputDir);
