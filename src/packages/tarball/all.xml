@@ -13,34 +13,75 @@
       <includes>
         <include>${basedir}/*.txt</include>
       </includes>
+      <outputDirectory>share/doc/${artifactId}</outputDirectory>
     </fileSet>
     <fileSet>
-      <includes>
-        <include>pom.xml</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>src</directory>
-    </fileSet>
-    <fileSet>
-      <directory>conf</directory>
+      <directory>target/conf</directory>
+      <outputDirectory>etc/chukwa</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>bin</directory>
+      <includes>
+        <include>chukwa</include>
+        <include>dailyRolling.sh</include>
+        <include>hourlyRolling.sh</include>
+      </includes>
       <outputDirectory>bin</outputDirectory>
       <fileMode>755</fileMode>
     </fileSet>
     <fileSet>
+      <directory>bin</directory>
+      <includes>
+        <include>chukwa-config.sh</include>
+      </includes>
+      <outputDirectory>libexec</outputDirectory>
+      <fileMode>755</fileMode>
+    </fileSet>
+    <fileSet>
+      <directory>bin</directory>
+      <includes>
+        <include>chukwa-daemon.sh</include>
+        <include>chukwa-daemons.sh</include>
+        <include>slaves.sh</include>
+        <include>start-*.sh</include>
+        <include>stop-*.sh</include>
+      </includes>
+      <outputDirectory>sbin</outputDirectory>
+      <fileMode>755</fileMode>
+    </fileSet>
+    <fileSet>
+      <directory>lib</directory>
+      <outputDirectory>share/${artifactId}/lib</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <includes>
+          <include>VERSION</include>
+      </includes>
+      <directory>${project.build.directory}</directory>
+      <outputDirectory>share/${artifactId}</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>target</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory>share/chukwa</outputDirectory>
       <includes>
           <include>${artifactId}-${project.version}.jar</include>
           <include>${artifactId}-${project.version}-tests.jar</include>
       </includes>
     </fileSet>
     <fileSet>
+      <directory>target</directory>
+      <outputDirectory>share/chukwa/webapps</outputDirectory>
+      <includes>
+          <include>hicc.war</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>target/site</directory>
       <outputDirectory>docs</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>script</directory>
+      <outputDirectory>share/${artifactId}/script</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>src/packages</directory>
@@ -54,7 +95,7 @@
   <dependencySets>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
-      <outputDirectory>/lib</outputDirectory>
+      <outputDirectory>share/${artifactId}/lib</outputDirectory>
       <unpack>false</unpack>
       <scope>runtime</scope>
     </dependencySet>

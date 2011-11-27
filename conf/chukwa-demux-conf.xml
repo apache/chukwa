@@ -24,7 +24,7 @@
 <!-- Chukwa Job parameters -->
 	<property>
 	  <name>io.sort.mb</name>
-	  <value>@TODO-DEMUX-IO-SORT-MB@</value>
+	  <value>${TODO_DEMUX_IO_SORT_MB}</value>
 	  <description>The total amount of buffer memory to use while sorting
 	  files, in megabytes.  By default, gives each merge stream 1MB, which
 	  should minimize seeks.</description>
@@ -32,13 +32,13 @@
 
 	<property>
 	  <name>fs.inmemory.size.mb</name>
-	  <value>@TODO-DEMUX-FS-INMEMORY-SIZE_MB@</value>
+	  <value>${TODO_DEMUX_FS_INMEMORY_SIZE_MB}</value>
 	  <description>The size of the in-memory filsystem instance in MB</description>
 	</property>
 
 	<property>
 	  <name>io.sort.factor</name>
-	  <value>@TODO-DEMUX-IO-SORT-FACTOR@</value>
+	  <value>${TODO_DEMUX_IO_SORT_FACTOR}</value>
 	  <description>The number of streams to merge at once while sorting
 	  files.  This determines the number of open file handles.</description>
 	</property>

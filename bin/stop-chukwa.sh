@@ -21,7 +21,7 @@
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-. "$bin"/chukwa-config.sh
+. "$bin"/../libexec/chukwa-config.sh
 
 "$bin"/stop-data-processors.sh --config $CHUKWA_CONF_DIR
 "$bin"/stop-agents.sh --config $CHUKWA_CONF_DIR

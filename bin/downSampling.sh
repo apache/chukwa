@@ -38,7 +38,7 @@ pid=$$
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-. "$bin"/chukwa-config.sh
+. "$bin"/../libexec/chukwa-config.sh
 
 while getopts ":c:d:m:n:t:" OPTION
 do

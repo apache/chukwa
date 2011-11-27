@@ -29,6 +29,6 @@ fi
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-. $bin/chukwa-config.sh
+. $bin/../libexec/chukwa-config.sh
 
 exec "$bin/slaves.sh" --config $CHUKWA_CONF_DIR cd "$CHUKWA_HOME" \; "$bin/chukwa-daemon.sh" --config $CHUKWA_CONF_DIR "$@"

@@ -25,7 +25,7 @@ usage="Usage: start-agent.sh"
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-. "$bin"/chukwa-config.sh
+. "$bin"/../libexec/chukwa-config.sh
 
 # start chukwa agents
 "$bin"/chukwa-daemons.sh --config $CHUKWA_CONF_DIR --hosts agents start agent

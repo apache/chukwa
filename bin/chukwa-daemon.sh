@@ -39,7 +39,7 @@ fi
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-. "$bin"/chukwa-config.sh
+. "$bin"/../libexec/chukwa-config.sh
 
 # get arguments
 startStop=$1

@@ -60,7 +60,7 @@ public class CollectorStub {
         Configuration collectorConf = new Configuration(false);
         collectorConf.addResource(new Path(conf.getChukwaConf() + "/chukwa-common.xml"));
         collectorConf.addResource(new Path(conf.getChukwaConf() + "/chukwa-collector-conf.xml"));
-        Checker.checkConf(new OptDictionary(new File(new File(conf.getChukwaHome(), "lib"), "collector.dict")),
+        Checker.checkConf(new OptDictionary(new File(new File(conf.getChukwaHome(), "share/chukwa/lib"), "collector.dict")),
             HSlurper.fromHConf(collectorConf));
       } catch(Exception e) {e.printStackTrace();}
       

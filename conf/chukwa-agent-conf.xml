@@ -24,7 +24,7 @@
   
   <property>
     <name>chukwaAgent.tags</name>
-    <value>cluster="@TODO-CLUSTER-NAME@"</value>
+    <value>cluster="${TODO_CLUSTER_NAME}"</value>
     <description>The cluster's name for this agent</description>
   </property>
   

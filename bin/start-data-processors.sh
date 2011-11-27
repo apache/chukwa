@@ -19,7 +19,7 @@ bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 java=$JAVA_HOME/bin/java
 
-. "$bin"/chukwa-config.sh
+. "$bin"/../libexec/chukwa-config.sh
 
 # start data processors
 "$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR start archive

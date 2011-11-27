@@ -34,7 +34,7 @@
 <!-- LocalWriter parameters
   <property>
     <name>chukwaCollector.localOutputDir</name>
-    <value>@TODO-COLLECTORS-LOCAL-OUTPUT-DIR@</value>
+    <value>${TODO_COLLECTORS_LOCAL_OUTPUT_DIR}</value>
     <description>Chukwa local data sink directory, see LocalWriter.java</description>
   </property>
 
@@ -80,7 +80,7 @@ your hbase.zookeeper.quorum setting to the conf/ dir. -->
 
   <property>
     <name>writer.hdfs.filesystem</name>
-    <value>@TODO-COLLECTORS-NAMENODE@</value>
+    <value>${TODO_COLLECTORS_NAMENODE}</value>
     <description>HDFS to dump to</description>
   </property>
   
@@ -92,13 +92,13 @@ your hbase.zookeeper.quorum setting to the conf/ dir. -->
 
   <property>
     <name>chukwaCollector.rotateInterval</name>
-    <value>@TODO-COLLECTORS-ROTATEINTERVAL@</value>
+    <value>${TODO_COLLECTORS_ROTATEINTERVAL}</value>
     <description>Chukwa rotate interval (ms)</description>
   </property>
 
   <property>
     <name>chukwaCollector.isFixedTimeRotatorScheme</name>
-    <value>@TODO-COLLECTORS-ISFIXEDTIMEROTATORSCHEME</value>
+    <value>${TODO_COLLECTORS_ISFIXEDTIMEROTATORSCHEME}</value>
     <description>A flag to indicate that the collector should close at a fixed
     offset after every rotateInterval. The default value is false which uses
     the default scheme where collectors close after regular rotateIntervals.
@@ -113,13 +113,13 @@ your hbase.zookeeper.quorum setting to the conf/ dir. -->
 
   <property>
     <name>chukwaCollector.fixedTimeIntervalOffset</name>
-    <value>@TODO-COLLECTORS-FIXEDTIMEINTERVALOFFSET@</value>
+    <value>${TODO_COLLECTORS_FIXEDTIMEINTERVALOFFSET}</value>
     <description>Chukwa fixed time interval offset value (ms)</description>
   </property>
 
   <property>
     <name>chukwaCollector.http.port</name>
-    <value>@TODO-COLLECTORS-PORT@</value>
+    <value>${TODO_COLLECTORS_PORT}</value>
     <description>The HTTP port number the collector will listen on</description>
   </property>
 

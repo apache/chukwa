@@ -25,7 +25,7 @@ usage="Usage: start-collectors.sh"
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-. "$bin"/chukwa-config.sh
+. "$bin"/../libexec/chukwa-config.sh
 
 # start jetty collectors
 "$bin"/chukwa-daemons.sh --config $CHUKWA_CONF_DIR --hosts collectors start collector

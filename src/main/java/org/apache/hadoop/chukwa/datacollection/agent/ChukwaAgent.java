@@ -749,7 +749,7 @@ public class ChukwaAgent implements AdaptorManager {
     try { 
       Configuration chukwaAgentConf = new Configuration(false);
       chukwaAgentConf.addResource(new Path(agentConf.getAbsolutePath()));
-      Checker.checkConf(new OptDictionary(new File(new File(chukwaHome, "lib"), "agent.dict")),
+      Checker.checkConf(new OptDictionary(new File(new File(chukwaHome, "share/chukwa/lib"), "agent.dict")),
           HSlurper.fromHConf(chukwaAgentConf));
     } catch(Exception e) {e.printStackTrace();}
     

@@ -1,4 +1,4 @@
-Chukwa 0.4 -- April 2010
+Chukwa 0.5 -- April 2010
 
 This is the second formal release of Chukwa, an Apache Hadoop subproject 
 dedicated to scalable log collection and processing. If you have large 
@@ -10,7 +10,8 @@ The notes for this release are in docs/releasenotes.html
 BUILDING CHUKWA
 
 To build chukwa from source:
-In the Chukwa root directory, say 'ant', and then 'cp build/*.jar build/*.war .'
+
+mvn clean package
 
 To check that things are ok, run 'ant test'. It should take roughly fifteen minutes.
 

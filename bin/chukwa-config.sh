@@ -20,26 +20,15 @@
 
 # resolve links - $0 may be a softlink
 
-this="$0"
-while [ -h "$this" ]; do
-  ls=`ls -ld "$this"`
-  link=`expr "$ls" : '.*-> \(.*\)$'`
-  if expr "$link" : '.*/.*' > /dev/null; then
-    this="$link"
-  else
-    this=`dirname "$this"`/"$link"
-  fi
-done
+this="${BASH_SOURCE-$0}"
 
 # convert relative path to absolute path
-bin=`dirname "$this"`
-script=`basename "$this"`
-bin=`cd "$bin"; pwd`
-this="$bin/$script"
-
+CHUKWA_LIBEXEC=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
+script="$(basename -- "$this")"
+this="$CHUKWA_PREFIX/$script"
 
 # the root of the Chukwa installation
-export CHUKWA_HOME=`dirname "$this"`/..
+export CHUKWA_HOME=`pwd -P ${CHUKWA_LIBEXEC}/..`
 
 #check to see if the conf dir is given as an optional argument
 if [ $# -gt 1 ]
@@ -74,56 +63,22 @@ if [ -z ${CHUKWA_PID_DIR} ]; then
     export CHUKWA_PID_DIR="${CHUKWA_HOME}/var/run"
 fi
 
-CHUKWA_VERSION=`cat ${CHUKWA_HOME}/bin/VERSION`
+CHUKWA_VERSION=`cat ${CHUKWA_HOME}/share/chukwa/VERSION`
 
 # Allow alternate conf dir location.
 if [ -z "$CHUKWA_CONF_DIR" ]; then
-    CHUKWA_CONF_DIR="${CHUKWA_CONF_DIR:-$CHUKWA_HOME/conf}"
-    export CHUKWA_CONF_DIR=${CHUKWA_HOME}/conf
+    export CHUKWA_CONF_DIR="${CHUKWA_CONF_DIR:-$CHUKWA_HOME/etc/chukwa}"
 fi
 
 if [ -f "${CHUKWA_CONF_DIR}/chukwa-env.sh" ]; then
   . "${CHUKWA_CONF_DIR}/chukwa-env.sh"
 fi
 
-if [ -d "${CHUKWA_HOME}/build/ivy/lib/chukwa/common" ]; then
-  COMMON=`ls ${CHUKWA_HOME}/lib/*.jar ${CHUKWA_HOME}/build/ivy/lib/chukwa/common/*.jar`
-else
-  COMMON=`ls ${CHUKWA_HOME}/lib/*.jar`
-fi
-export COMMON=`echo ${COMMON} | sed 'y/ /:/'`
+CHUKWA_CLASSPATH="${CHUKWA_HOME}/share/chukwa/*:${CHUKWA_HOME}/share/chukwa/lib/*"
 
-export CHUKWA_CORE=${CHUKWA_HOME}/chukwa-core-${CHUKWA_VERSION}.jar
-export CHUKWA_AGENT=${CHUKWA_HOME}/chukwa-agent-${CHUKWA_VERSION}.jar
-export HICC_JAR=${CHUKWA_HOME}/hicc.war
 export CURRENT_DATE=`date +%Y%m%d%H%M`
 
-# Deprecated configuration for loading data to database.
-export DATACONFIG=${CHUKWA_CONF_DIR}/mdl.xml
-
-if [ -z ${HADOOP_JAR} ]; then
-  if [ -z ${HADOOP_HOME} ]; then
-    if [ -d ${CHUKWA_HOME}/hadoopjars ]; then
-      echo "WARNING: neither HADOOP_HOME nor HADOOP_JAR is set we we are reverting to defaults in $CHUKWA_HOME/hadoopjars dir"
-      export HADOOP_JAR=`ls ${CHUKWA_HOME}/hadoopjars/hadoop-*-core.jar`
-    else
-      echo "Please make sure hadoop-*-core.jar exists in ${CHUKWA_HOME}/hadoopjars"
-      exit -1
-    fi
-  else
-    if [ -d ${HADOOP_HOME} ]; then
-      export HADOOP_JAR=`ls ${HADOOP_HOME}/hadoop-*-core.jar`
-      if [ -z ${HADOOP_JAR} ]; then
-        echo "Please make sure hadoop-*-core.jar exists in ${HADOOP_HOME}"
-        exit -1
-      fi
-    fi
-  fi    #end if no HADOOP_HOME 
-fi    
-
 if [ -z "$JAVA_HOME" ] ; then
-  echo ERROR! You forgot to set JAVA_HOME in conf/chukwa-env.sh   
+  echo ERROR! You forgot to set JAVA_HOME in CHUKWA_CONF_DIR/chukwa-env.sh   
 fi
-
-export JPS="ps ax"
 

@@ -19,7 +19,7 @@ bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 java=$JAVA_HOME/bin/java
 
-. "$bin"/chukwa-config.sh
+. "$bin"/../libexec/chukwa-config.sh
 
 # stop demux
 pidFile=$CHUKWA_PID_DIR/DemuxManager.pid

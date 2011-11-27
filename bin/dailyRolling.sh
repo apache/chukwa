@@ -18,7 +18,7 @@ pid=$$
 
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
-. "$bin"/chukwa-config.sh
+. "$bin"/../libexec/chukwa-config.sh
 
 
 pidFile=${CHUKWA_PID_DIR}/DailyChukwaRecordRolling.pid

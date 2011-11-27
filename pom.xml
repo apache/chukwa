@@ -36,6 +36,23 @@
         <test.cache.data>${test.build.dir}/cache</test.cache.data>
         <test.debug.data>${test.build.dir}/debug</test.debug.data>
         <test.log.dir>${test.build.dir}/logs</test.log.dir>
+        <TODO_ALERT_EMAIL>user@example.com</TODO_ALERT_EMAIL>
+        <TODO_CLUSTER_NAME>chukwa</TODO_CLUSTER_NAME>
+        <TODO_COLLECTORS_LOCAL_OUTPUT_DIR>/tmp/chukwa/dataSink/</TODO_COLLECTORS_LOCAL_OUTPUT_DIR>
+        <TODO_COLLECTORS_NAMENODE>hdfs://localhost:9000</TODO_COLLECTORS_NAMENODE>
+        <TODO_COLLECTORS_ROTATEINTERVAL>300000</TODO_COLLECTORS_ROTATEINTERVAL>
+        <TODO_COLLECTORS_PORT>8080</TODO_COLLECTORS_PORT>
+        <TODO_COLLECTORS_ISFIXEDTIMEROTATORSCHEME>false</TODO_COLLECTORS_ISFIXEDTIMEROTATORSCHEME>
+        <TODO_COLLECTORS_FIXEDTIMEINTERVALOFFSET>30000</TODO_COLLECTORS_FIXEDTIMEINTERVALOFFSET>
+        <TODO_CHUKWA_PID_DIR>/tmp/chukwa/pidDir</TODO_CHUKWA_PID_DIR>
+        <TODO_CHUKWA_LOG_DIR>/tmp/chukwa/log</TODO_CHUKWA_LOG_DIR>
+        <TODO_AGENTS_INSTANCE_NAME>chukwa</TODO_AGENTS_INSTANCE_NAME>
+        <TODO_NAGIOS_SERVER>localhost</TODO_NAGIOS_SERVER>
+        <TODO_DEMUX_IO_SORT_MB>64</TODO_DEMUX_IO_SORT_MB>
+        <TODO_DEMUX_FS_INMEMORY_SIZE_MB>64</TODO_DEMUX_FS_INMEMORY_SIZE_MB>
+        <TODO_DEMUX_IO_SORT_FACTOR>10</TODO_DEMUX_IO_SORT_FACTOR>
+        <CHUKWA_DIR>/tmp/chukwa</CHUKWA_DIR>
+        <JAVA_HOME>${java.home}</JAVA_HOME>
     </properties>
 
     <name>Apache Chukwa</name>
@@ -179,11 +196,11 @@
             <artifactId>commons-beanutils</artifactId>
             <version>1.8.0</version>
           </dependency>
-          <dependency>
+<!--          <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>jasper</artifactId>
             <version>6.0.33</version>
-          </dependency>
+          </dependency> -->
           <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty</artifactId>
@@ -241,15 +258,30 @@
             <version>0.5.0</version>
           </dependency>
           <dependency>
-            <groupId>org.apache.hadoop</groupId>
+            <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
-            <version>3.3.1</version>
+            <version>3.3.2</version>
           </dependency>
           <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-bundle</artifactId>
-            <version>1.10</version>
+            <version>1.1.0-ea</version>
           </dependency>
+<!--          <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>1.1</version>
+          </dependency>
+          <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <version>1.1</version>
+          </dependency>
+          <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>1.1</version>
+          </dependency> -->
           <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -276,8 +308,35 @@
         <developer>
             <id>eyang</id>
             <name>Eric Yang</name>
-            <email>eric818@gmail.com</email>
-            <timezone>(GMT-08:00) Pacific Time(US &amp; Canada)</timezone>
+            <email>eyang@apache.org</email>
+            <timezone>(GMT-08:00)</timezone>
+            <roles>
+                <role></role>
+            </roles>
+        </developer>
+        <developer>
+            <id>asrabkin</id>
+            <name>Ariel Rabkin</name>
+            <email>asrabkin@apache.org</email>
+            <timezone>(GMT-05:00)</timezone>
+            <roles>
+                <role></role>
+            </roles>
+        </developer>
+        <developer>
+            <id>billgraham</id>
+            <name>Bill Graham</name>
+            <email>billgraham@apache.org</email>
+            <timezone>(GMT-08:00)</timezone>
+            <roles>
+                <role></role>
+            </roles>
+        </developer>
+        <developer>
+            <id>jboulon</id>
+            <name>Jerome Boulon</name>
+            <email>jboulon@apache.org</email>
+            <timezone>(GMT-08:00)</timezone>
             <roles>
                 <role></role>
             </roles>
@@ -304,6 +363,24 @@
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-configuration</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/conf</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>conf</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -311,8 +388,24 @@
                 <version>2.3.1</version>
                 <executions>
                     <execution>
+                        <id>test</id>
                         <goals>
                             <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>client</id>
+                        <configuration>
+                            <classifier>client</classifier>
+                            <includes>
+                                <include>**/inputtools/log4j/**/*</include>
+                                <include>**/datacollection/client/**/*</include>
+                                <include>**/chukwa/util/**/*</include>
+                                <include>**/chukwa/datacollection/controller/**/*</include>
+                            </includes>
+                        </configuration>
+                        <goals>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -430,6 +523,25 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+                <configuration>
+                    <phase>package</phase>
+                    <warName>hicc</warName>
+                    <warSourceDirectory>src/main/web/hicc</warSourceDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>build-hicc</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <finalName>${final.name}</finalName>
@@ -459,7 +571,7 @@
                         <configuration>
                             <tasks name="setup">
                                 <mkdir dir="${basedir}/target"/>
-                                <echo message="0.1.0" file="${basedir}/target/VERSION"/>
+                                <echo message="${VERSION}" file="${basedir}/target/VERSION"/>
                                 <mkdir dir="${basedir}/target/clover"/>
                                 <chmod dir="${basedir}/target/clover" perm="a+w" />
                             </tasks>
@@ -483,40 +595,27 @@
                                     </fileset>
                                 </copy>
                                 <echo message="localhost" file="${test.build.dir}/conf/collectors"/>
-                                <copy file="${basedir}/conf/chukwa-common.xml.template" tofile="${test.build.dir}/conf/chukwa-common.xml">
+                                <copy file="${basedir}/conf/chukwa-common.xml" tofile="${test.build.dir}/conf/chukwa-common.xml">
                                     <filterchain>
-                                        <replacetokens>
+                                        <expandproperties/>
+<!--                                        <replacetokens>
                                             <token key="CHUKWA_DIR" value="/tmp/chukwa" />
-                                        </replacetokens>
+                                        </replacetokens> -->
                                     </filterchain>
                                 </copy>
-                                <copy file="${basedir}/conf/chukwa-agent-conf.xml.template" tofile="${test.build.dir}/conf/chukwa-agent-conf.xml">
+                                <copy file="${basedir}/conf/chukwa-agent-conf.xml" tofile="${test.build.dir}/conf/chukwa-agent-conf.xml">
                                     <filterchain>
-                                        <replacetokens>
-                                            <token key="TODO-CLUSTER-NAME" value="${TODO-CLUSTER-NAME}" />
-                                        </replacetokens>
+                                        <expandproperties/>
                                     </filterchain>
                                 </copy>
-                                <copy file="${basedir}/conf/chukwa-demux-conf.xml.template" tofile="${test.build.dir}/conf/chukwa-demux-conf.xml">
+                                <copy file="${basedir}/conf/chukwa-demux-conf.xml" tofile="${test.build.dir}/conf/chukwa-demux-conf.xml">
                                     <filterchain>
-
-                                        <replacetokens>
-                                            <token key="TODO-DEMUX-IO-SORT-MB" value="${TODO-DEMUX-IO-SORT-MB}" />
-                                        </replacetokens>
-                                        <replacetokens>
-                                            <token key="TODO-DEMUX-FS-INMEMORY-SIZE_MB" value="${TODO-DEMUX-FS-INMEMORY-SIZE_MB}" />
-                                        </replacetokens>
-                                        <replacetokens>
-                                            <token key="TODO-DEMUX-IO-SORT-FACTOR" value="${TODO-DEMUX-IO-SORT-FACTOR}" />
-                                        </replacetokens>
-
+                                        <expandproperties/>
                                     </filterchain>
                                 </copy>
                                 <copy file="${basedir}/src/test/resources/hbase-site.xml" tofile="${test.build.dir}/classes/hbase-site.xml"></copy>
                                 <copy file="${basedir}/conf/log4j.properties" tofile="${test.build.dir}/conf/log4j.properties"></copy>
                                 <copy file="${basedir}/conf/auth.conf" tofile="${test.build.dir}/conf/auth.conf"></copy>
-                                <copy file="${basedir}/conf/jdbc.conf.template" tofile="${test.build.dir}/conf/jdbc.conf"></copy>
-                                <copy file="${basedir}/conf/database_create_tables.sql" tofile="${test.build.dir}/conf/database_create_tables.sql"></copy>
                             </tasks>
                         </configuration>
                         <goals>

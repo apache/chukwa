@@ -21,6 +21,6 @@
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-. "$bin"/chukwa-config.sh
+. "$bin"/../libexec/chukwa-config.sh
 
 "$bin"/chukwa-daemons.sh --config $CHUKWA_CONF_DIR --hosts agents stop agent
