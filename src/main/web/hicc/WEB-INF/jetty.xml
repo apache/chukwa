@@ -103,9 +103,6 @@
              <New id="Contexts" class="org.mortbay.jetty.handler.ContextHandlerCollection"/>
            </Item>
            <Item>
-             <New id="DefaultHandler" class="org.mortbay.jetty.handler.DefaultHandler"/>
-           </Item>
-           <Item>
              <New id="RequestLog" class="org.mortbay.jetty.handler.RequestLogHandler"/>
            </Item>
          </Array>
@@ -113,6 +110,18 @@
       </New>
     </Set>
     
+    <Call name="addHandler">
+      <Arg>
+        <New class="org.mortbay.jetty.handler.MovedContextHandler">
+          <Set name="contextPath">/</Set>
+          <Set name="newContextURL">/hicc</Set>
+          <Set name="permanent">true</Set>
+          <Set name="discardPathInfo">false</Set>
+          <Set name="discardQuery">false</Set>
+        </New>
+      </Arg>
+    </Call>
+
     <!-- =========================================================== -->
     <!-- Configure the context deployer                              -->
     <!-- A context deployer will deploy contexts described in        -->
@@ -189,3 +198,4 @@
     <Set name="gracefulShutdown">1000</Set>
 
 </Configure>
+
