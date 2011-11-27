@@ -98,6 +98,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-588. Updated hbase.schema to match Hadoop 0.20.205.0 metrics and job summary. (Eric Yang)
+
     CHUKWA-609. Map / to /hicc for HICC web server. (Eric Yang)
 
     CHUKWA-593. Fixed infinite loop archiving at midnight. (Sourygna Luangsay via Eric Yang)

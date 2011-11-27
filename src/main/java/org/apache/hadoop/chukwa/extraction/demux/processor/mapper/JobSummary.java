@@ -38,40 +38,17 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 @Tables(annotations={
-@Table(name="Hadoop",columnFamily="jvm_metrics"),
-@Table(name="Hadoop",columnFamily="mapred_metrics"),
-@Table(name="Hadoop",columnFamily="dfs_metrics"),
-@Table(name="Hadoop",columnFamily="dfs_namenode"),
-@Table(name="Hadoop",columnFamily="dfs_FSNamesystem"),
-@Table(name="Hadoop",columnFamily="dfs_datanode"),
-@Table(name="Hadoop",columnFamily="mapred_jobtracker"),
-@Table(name="Hadoop",columnFamily="mapred_shuffleInput"),
-@Table(name="Hadoop",columnFamily="mapred_shuffleOutput"),
-@Table(name="Hadoop",columnFamily="mapred_tasktracker"),
-@Table(name="Hadoop",columnFamily="rpc_metrics")
+@Table(name="Jobs",columnFamily="summary")
 })
-public class HadoopMetricsProcessor extends AbstractProcessor {
-//  public static final String jvm = "jvm_metrics";
-//  public static final String mapred = "mapred_metrics";
-//  public static final String dfs = "dfs_metrics";
-//  public static final String namenode = "dfs_namenode";
-//  public static final String fsdir = "dfs_FSDirectory";
-//  public static final String fsname = "dfs_FSNamesystem";
-//  public static final String datanode = "dfs_datanode";
-//  public static final String jobtracker = "mapred_jobtracker";
-//  public static final String shuffleIn = "mapred_shuffleInput";
-//  public static final String shuffleOut = "mapred_shuffleOutput";
-//  public static final String tasktracker = "mapred_tasktracker";
-//  public static final String mr = "mapred_job";
-  
-  static Logger log = Logger.getLogger(HadoopMetricsProcessor.class);
+public class JobSummary extends AbstractProcessor {  
+  static Logger log = Logger.getLogger(JobSummary.class);
   static final String chukwaTimestampField = "chukwa_timestamp";
   static final String contextNameField = "contextName";
   static final String recordNameField = "recordName";
 
   private SimpleDateFormat sdf = null;
 
-  public HadoopMetricsProcessor() {
+  public JobSummary() {
     // TODO move that to config
     sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
   }
@@ -96,81 +73,52 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
       // log.info("record [" + recordEntry + "] body [" + body +"]");
       Date d = sdf.parse(dStr);
 
-      start = body.indexOf('{');
-      JSONObject json = (JSONObject) JSONValue.parse(body.substring(start));
-
       ChukwaRecord record = new ChukwaRecord();
-      StringBuilder datasource = new StringBuilder();
-      String contextName = null;
-      String recordName = null;
 
-      Iterator<String> ki = json.keySet().iterator();
-      while (ki.hasNext()) {
-        String keyName = ki.next();
-        if (chukwaTimestampField.intern() == keyName.intern()) {
-          d = new Date((Long) json.get(keyName));
-          Calendar cal = Calendar.getInstance();
-          cal.setTimeInMillis(d.getTime());
-          cal.set(Calendar.SECOND, 0);
-          cal.set(Calendar.MILLISECOND, 0);
-          d.setTime(cal.getTimeInMillis());
-        } else if (contextNameField.intern() == keyName.intern()) {
-          contextName = (String) json.get(keyName);
-        } else if (recordNameField.intern() == keyName.intern()) {
-          recordName = (String) json.get(keyName);
-          record.add(keyName, json.get(keyName).toString());
-        } else {
-          if(json.get(keyName)!=null) {
-            record.add(keyName, json.get(keyName).toString());
-          }
-        }
+      String[] list = body.split(",");
+      for(String pair : list) {
+        String[] kv = pair.split("=");
+        record.add(kv[0], kv[1]);
       }
-      if(contextName!=null) {
-        datasource.append(contextName);
-        datasource.append("_");
-      }
-      datasource.append(recordName);
       record.add("cluster", chunk.getTag("cluster"));
-      if(contextName!=null && contextName.equals("jvm")) {
-        buildJVMRecord(record, d.getTime(), datasource.toString());        
-      } else {
-        buildGenericRecord(record, null, d.getTime(), datasource.toString());
-      }
+      buildGenericRecord(record, d.getTime(), "summary");
       output.collect(key, record);
     } catch (ParseException e) {
-      log.warn("Wrong format in HadoopMetricsProcessor [" + recordEntry + "]",
+      log.warn("Wrong format in JobSummary [" + recordEntry + "]",
           e);
       throw e;
     } catch (IOException e) {
-      log.warn("Unable to collect output in HadoopMetricsProcessor ["
+      log.warn("Unable to collect output in JobSummary ["
           + recordEntry + "]", e);
       throw e;
     } catch (Exception e) {
-      log.warn("Wrong format in HadoopMetricsProcessor [" + recordEntry + "]",
+      log.warn("Wrong format in JobSummary [" + recordEntry + "]",
           e);
       throw e;
     }
 
   }
 
-  protected void buildJVMRecord(ChukwaRecord record, long timestamp, String dataSource) {
+  protected void buildGenericRecord(ChukwaRecord record,
+      long timestamp, String dataSource) {
     calendar.setTimeInMillis(timestamp);
     calendar.set(Calendar.MINUTE, 0);
     calendar.set(Calendar.SECOND, 0);
     calendar.set(Calendar.MILLISECOND, 0);
 
-    key.setKey("" + calendar.getTimeInMillis() + "/" + chunk.getSource() + ":" + 
-        record.getValue("processName")+ "/" + timestamp);
+    key.setKey("" + calendar.getTimeInMillis() + "/" + record.getValue("jobId") + "/"
+        + timestamp);
     key.setReduceType(dataSource);
     record.setTime(timestamp);
 
     record.add(Record.tagsField, chunk.getTags());
     record.add(Record.sourceField, chunk.getSource());
     record.add(Record.applicationField, chunk.getStreamName());
+
   }
   
   public String getDataType() {
-    return HadoopMetricsProcessor.class.getName();
+    return JobSummary.class.getName();
   }
 
 }

@@ -26,12 +26,14 @@
     <value>org.apache.hadoop.chukwa.datacollection.writer.PipelineStageWriter</value>
   </property>
 
+  <!-- Sequence File Writer parameters
   <property>
     <name>chukwaCollector.pipeline</name>
     <value>org.apache.hadoop.chukwa.datacollection.writer.SocketTeeWriter,org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter</value>
   </property>
+  -->
 
-<!-- LocalWriter parameters
+  <!-- LocalWriter parameters
   <property>
     <name>chukwaCollector.localOutputDir</name>
     <value>${TODO_COLLECTORS_LOCAL_OUTPUT_DIR}</value>
@@ -43,12 +45,12 @@
     <value>org.apache.hadoop.chukwa.datacollection.writer.localfs.LocalWriter</value>
     <description>Local chukwa writer, see LocalWriter.java</description>
   </property>
--->
+  -->
 
-<!-- When writing to HBase, uncomment the following parameters. If you're running
-HBase in distributed mode, you'll also need to copy your hbase-site.xml file with
-your hbase.zookeeper.quorum setting to the conf/ dir. -->
-<!-- HBaseWriter parameters
+  <!-- When writing to HBase, uncomment the following parameters. If you're running
+  HBase in distributed mode, you'll also need to copy your hbase-site.xml file with
+  your hbase.zookeeper.quorum setting to the conf/ dir. -->
+  <!-- HBaseWriter parameters -->
   <property>
     <name>chukwaCollector.pipeline</name>
     <value>org.apache.hadoop.chukwa.datacollection.writer.SocketTeeWriter,org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter</value>
@@ -76,7 +78,7 @@ your hbase.zookeeper.quorum setting to the conf/ dir. -->
     </description>
   </property>
 
--->
+  <!-- End of HBaseWriter parameters -->
 
   <property>
     <name>writer.hdfs.filesystem</name>

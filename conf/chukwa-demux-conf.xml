@@ -220,5 +220,10 @@
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.SystemMetrics</value>
     <description></description>
    </property>
+
+   <property>
+    <name>JobSummary</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.JobSummary</value>
+   </property>
 </configuration>
  

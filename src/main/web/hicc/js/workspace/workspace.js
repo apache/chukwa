@@ -2573,8 +2573,8 @@ function onLabelClick(id) {
       detail+='</td></tr><tr><td><input class="formButton" type="button" name="addwidget" value="Add Widget" onClick="add_widget(\''+id+'\');"/>';
       detail+="</td></tr>";
       detail+="</table></td>";
-      detail+="<td width='55%'><div id='_preview' style='width:100%;overflow:hidden;'>";
-      detail+="<div id='_preview' class='dragableBoxContent' style='width:100%;height:200px;overflow:hidden;'><img src='/hicc/images/loading.gif'></div></div></td></tr></table>";
+      detail+="<td width='55%'><div style='width:100%;height:280px;overflow:hidden;'>";
+      detail+="<div id='_preview' class='dragableBoxContent' style='width:100%;height:280px;overflow:hidden;'><img src='/hicc/images/loading.gif'></div></div></td></tr></table>";
 
       jQuery('#widget_detail').empty();
       jQuery('#widget_detail').append(detail);
