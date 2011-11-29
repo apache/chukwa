@@ -98,6 +98,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-606. Updated HICC to interface with data in HBase. (Eric Yang)
+
     CHUKWA-588. Updated hbase.schema to match Hadoop 0.20.205.0 metrics and job summary. (Eric Yang)
 
     CHUKWA-609. Map / to /hicc for HICC web server. (Eric Yang)

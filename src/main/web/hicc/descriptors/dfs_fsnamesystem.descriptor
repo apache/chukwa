@@ -1,10 +1,10 @@
 {
 "id":"dfs_fsnamesystem",
-"title":"HDFS File System Name System Metrics",
+"title":"HDFS Metrics",
 "version":"0.1",
 "categories":"Hadoop,HDFS",
 "url":"iframe/jsp/chart.jsp",
-"description":"Display File System Name System related stats",
+"description":"Display HDFS related stats",
 "screendump":"\/images\/server_load.gif",
 "refresh":"15",
 "parameters":[
@@ -13,21 +13,16 @@
 {"name":"group","type":"string","value":"host","edit":"0"},
 {"name":"group_items","type":"string","value":"hosts","edit":"0"},
 {"name":"period","type":"custom","control":"period_control","value":"","label":"Period"},
-{"name":"data","type":"select_multiple","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:CapacityRemainingGB/session/hosts","label":"Metric","options":[
-{"label":"BlockCapacity","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:BlockCapacity/session/hosts"},
-{"label":"BlocksTotal","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:BlocksTotal/session/hosts"},
-{"label":"CapacityRemainingGB","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:CapacityRemainingGB/session/hosts"}, 
-{"label":"CapacityTotalGB","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:CapacityTotalGB/session/hosts"},
-{"label":"CapacityUsedGB","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:CapacityUsedGB/session/hosts"},
-{"label":"CorruptBlocks","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:CorruptBlocks/session/hosts"},
-{"label":"ExcessBlocks","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:ExcessBlocks/session/hosts"},
-{"label":"FilesTotal","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:FilesTotal/session/hosts"},
-{"label":"MissingBlocks","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:MissingBlocks/session/hosts"},
-{"label":"PendingDeletionBlocks","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:PendingDeletionBlocks/session/hosts"}, 
-{"label":"PendingReplicationBlocks","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:PendingReplicationBlocks/session/hosts"},
-{"label":"ScheduledReplicationBlocks","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:ScheduledReplicationBlocks/session/hosts"},
-{"label":"TotalLoad","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:TotalLoad/session/hosts"},
-{"label":"UnderReplicatedBlocks","value":"/hicc/v1/metrics/series/Hadoop/dfs_FSNamesystem:UnderReplicatedBlocks/session/hosts"}
+{"name":"data","type":"select_multiple","value":"/hicc/v1/metrics/series/ClusterSummary/hdfs:CapacityRemainingGB/session/cluster","label":"Metric","options":[
+{"label":"Block Capacity","value":"/hicc/v1/metrics/series/ClusterSummary/hdfs:BlockCapacity/session/cluster"},
+{"label":"Blocks Total","value":"/hicc/v1/metrics/series/ClusterSummary/hdfs:BlocksTotal/session/cluster"},
+{"label":"Capacity Remaining In GB","value":"/hicc/v1/metrics/series/ClusterSummary/hdfs:CapacityRemainingGB/session/cluster"}, 
+{"label":"Capacity Total In GB","value":"/hicc/v1/metrics/series/ClusterSummary/hdfs:CapacityTotalGB/session/cluster"},
+{"label":"Capacity Used In GB","value":"/hicc/v1/metrics/series/ClusterSummary/hdfs:CapacityUsedGB/session/cluster"},
+{"label":"Corrupted Blocks","value":"/hicc/v1/metrics/series/ClusterSummary/hdfs:CorruptBlocks/session/cluster"},
+{"label":"Missing Blocks","value":"/hicc/v1/metrics/series/ClusterSummary/hdfs:MissingBlocks/session/cluster"},
+{"label":"Under Replicated Blocks","value":"/hicc/v1/metrics/series/ClusterSummary/hdfs:UnderReplicatedBlocks/session/cluster"}
+{"label":"Files Total","value":"/hicc/v1/metrics/series/ClusterSummary/hdfs:FilesTotal/session/cluster"}
 ]},
 {"name":"width","type":"select","value":"300","label":"Width","options":[
 {"label":"300","value":"300"},

@@ -17,7 +17,9 @@
  * limitations under the License.
  */
 %><?xml version="1.0" encoding="UTF-8"?>
-<%@ page import = "java.util.Calendar, java.util.Date, java.sql.*, java.text.SimpleDateFormat, java.util.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.util.DatabaseWriter, org.apache.hadoop.chukwa.database.Macro, org.apache.hadoop.chukwa.database.DatabaseConfig, org.apache.hadoop.chukwa.util.XssFilter" %>
+<%@ page import = "java.util.Calendar, java.util.Date, java.sql.*, java.text.SimpleDateFormat, java.util.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, org.apache.hadoop.chukwa.hicc.ClusterConfig, org.apache.hadoop.chukwa.hicc.TimeHandler, org.apache.hadoop.chukwa.util.DatabaseWriter, org.apache.hadoop.chukwa.database.Macro, org.apache.hadoop.chukwa.database.DatabaseConfig, org.apache.hadoop.chukwa.util.XssFilter, org.apache.hadoop.hbase.HBaseConfiguration, org.apache.hadoop.hbase.client.HTableInterface, org.apache.hadoop.hbase.client.HTablePool, org.apache.hadoop.hbase.client.Result, org.apache.hadoop.hbase.client.ResultScanner, org.apache.hadoop.hbase.client.Scan, org.apache.hadoop.conf.Configuration" %>
+<%! final static private Configuration hconf = HBaseConfiguration.create(); %>
+<%! final static private HTablePool pool = new HTablePool(hconf, 60); %>
 <%
     response.setContentType("text/xml");
     XssFilter xf = new XssFilter(request);
@@ -25,74 +27,63 @@
     long start = time.getStartTime();
     long end = time.getEndTime();
     String cluster = (String) session.getAttribute("cluster");
-    String table = "mr_job";
-    if(xf.getParameter("event_type")!=null) {
-      table = xf.getParameter("event_type");
-    }
-    String query = "select job_id,user,submit_time,launch_time,finish_time,status from ["+table+"] where finish_time between '[start]' and '[end]'";
-    Macro mp = new Macro(start,end,query, request);
-    query = mp.toString();
 
+    HTableInterface table = pool.getTable("Jobs");
+
+    String family = "summary";
+
+    Scan scan = new Scan();
+    scan.addColumn(family.getBytes(), "jobId".getBytes());
+    scan.addColumn(family.getBytes(), "user".getBytes());
+    scan.addColumn(family.getBytes(), "submitTime".getBytes());
+    scan.addColumn(family.getBytes(), "launchTime".getBytes());
+    scan.addColumn(family.getBytes(), "finishTime".getBytes());
+    scan.addColumn(family.getBytes(), "status".getBytes());
+    scan.setTimeRange(start, end);
+    scan.setMaxVersions();
+
+    ResultScanner results = table.getScanner(scan);
+    Iterator<Result> it = results.iterator();
     ArrayList<HashMap<String, Object>> events = new ArrayList<HashMap<String, Object>>();
 
-    Connection conn = null;
-    Statement stmt = null;
-    ResultSet rs = null;
-
-    DatabaseWriter dbw = new DatabaseWriter(cluster);
-    try {
-        rs = dbw.query(query);
-        ResultSetMetaData rmeta = rs.getMetaData();
-        int col = rmeta.getColumnCount();
-        while (rs.next()) {
-          HashMap<String, Object> event = new HashMap<String, Object>();
-          long event_time=0;
-          for(int i=1;i<=col;i++) {
-            if(rmeta.getColumnType(i)==java.sql.Types.TIMESTAMP) {
-              event.put(rmeta.getColumnName(i),rs.getTimestamp(i).getTime());
-            } else {
-              event.put(rmeta.getColumnName(i),rs.getString(i));
-            }
-          }
-          events.add(event);
-        }
-    // Now do something with the ResultSet ....
-    } catch (SQLException ex) {
-      // handle any errors
-      //out.println("SQLException: " + ex.getMessage());
-      //out.println("SQLState: " + ex.getSQLState());
-      //out.println("VendorError: " + ex.getErrorCode());
-    } finally {
-      // it is a good idea to release
-      // resources in a finally{} block
-      // in reverse-order of their creation
-      // if they are no-longer needed
-      dbw.close();
+    while(it.hasNext()) {
+      Result result = it.next();
+      HashMap<String, Object> event = new HashMap<String, Object>();
+      event.put("jobId", new String(result.getValue(family.getBytes(), "jobId".getBytes())));
+      event.put("user", new String(result.getValue(family.getBytes(), "user".getBytes())));
+      event.put("submitTime", Long.parseLong(new String(result.getValue(family.getBytes(), "submitTime".getBytes()))));
+      event.put("launchTime", Long.parseLong(new String(result.getValue(family.getBytes(), "launchTime".getBytes()))));
+      event.put("finishTime", Long.parseLong(new String(result.getValue(family.getBytes(), "finishTime".getBytes()))));
+      event.put("status", new String(result.getValue(family.getBytes(), "status".getBytes())));
+      events.add(event);
     }
+    results.close();
+    table.close();
+
 %>
 <data>
 <%
     SimpleDateFormat format = new SimpleDateFormat("MMM dd yyyy HH:mm:ss");
     for(int i=0;i<events.size();i++) {
       HashMap<String, Object> event = events.get(i);
-      start=(Long)event.get("submit_time");
-      end=(Long)event.get("finish_time");
+      start=(Long)event.get("submitTime");
+      end=(Long)event.get("finishTime");
       String event_time = format.format(start);
-      String launch_time = format.format(event.get("launch_time"));
+      String launch_time = format.format((Long)event.get("launchTime"));
       String event_end_time = format.format(end);
       String cell = (String) event.get("_event");
-      if(event.get("status").toString().intern()=="failed".intern()) {
+      if(!event.get("status").toString().equals("SUCCEEDED")) {
 %>
-      <event start="<%= event_time %> GMT" latestStart="<%= launch_time %> GMT" end="<%= event_end_time %> GMT" title="Job ID: <%= event.get("job_id") %>" link="/hicc/jsp/job_viewer.jsp?job_id=<%= event.get("job_id") %>" isDuration="true" color="#f00">
-      Job ID: <%= event.get("job_id") %>
+      <event start="<%= event_time %> GMT" latestStart="<%= launch_time %> GMT" end="<%= event_end_time %> GMT" title="Job ID: <%= event.get("jobId") %>" link="/hicc/jsp/job_viewer.jsp?job_id=<%= event.get("jobId") %>" isDuration="true" color="#f00">
+      Job ID: <%= event.get("jobId") %>
       User: <%= event.get("user") %>
       Status: <%= event.get("status") %>
       </event>
 <%
       } else {
 %>
-      <event start="<%= event_time %> GMT" latestStart="<%= launch_time %> GMT" end="<%= event_end_time %> GMT" title="Job ID: <%= event.get("job_id") %>" link="/hicc/jsp/job_viewer.jsp?job_id=<%= event.get("job_id") %>" isDuration="true">
-      Job ID: <%= event.get("job_id") %>
+      <event start="<%= event_time %> GMT" latestStart="<%= launch_time %> GMT" end="<%= event_end_time %> GMT" title="Job ID: <%= event.get("jobId") %>" link="/hicc/jsp/job_viewer.jsp?job_id=<%= event.get("jobId") %>" isDuration="true">
+      Job ID: <%= event.get("jobId") %>
       User: <%= event.get("user") %>
       Status: <%= event.get("status") %>
       </event>

@@ -17,8 +17,12 @@
  * limitations under the License.
  */
 %>
-<%@ page import = "javax.servlet.http.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*" %>
+<%@ page import = "javax.servlet.http.*, java.sql.*,java.io.*, java.util.Calendar, java.util.Date, java.text.SimpleDateFormat, java.util.*, org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
+       XssFilter xf = new XssFilter(request);
+       response.setContentType("text/html; chartset=UTF-8//IGNORE");
+       response.setHeader("boxId", xf.getParameter("boxId"));
+
        for (Enumeration e = session.getAttributeNames() ; e.hasMoreElements() ;) {
            String name = (String) e.nextElement();
            out.println(name+":"+session.getAttribute(name).toString());

@@ -1,14 +1,14 @@
 {
 "id":"event_browser",
-"title":"Event Viewer",
+"title":"Jobs Summary Browser",
 "version":"0.1",
-"categories":"Global",
+"categories":"Hadoop,Map/Reduce",
 "url":"jsp\/event_viewer.jsp",
-"description":"Display Time sorted events",
+"description":"Display job summary events",
 "screendump":"",
 "refresh":"15",
 "parameters":[
-{"name":"database","type":"select_callback","value":"","label":"Data Source","callback":"/hicc/jsp/get_data_source.jsp"},
+{"name":"table","type":"string","value":"Jobs","edit":"0"},
 {"name":"type","type":"radio","value":"graph","label":"Display Type","options":[
 {"label":"Graph","value":"graph"},
 {"label":"List","value":"list"}

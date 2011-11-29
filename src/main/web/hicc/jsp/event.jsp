@@ -21,20 +21,31 @@
 <% TimeHandler time = new TimeHandler(request, (String)session.getAttribute("time_zone"));
    long start = time.getStartTime();
    long end = time.getEndTime();
+   long midpoint = (end+start)/2;
    SimpleDateFormat formatter = new SimpleDateFormat("MMM dd yyyy HH:mm:ss");
-   String startDate = formatter.format(start);
+   String startDate = formatter.format(midpoint);
    String endDate = formatter.format(end);
    String intervalUnit1="MINUTE";
    String intervalUnit2="HOUR";
-   if(((end-start)/1000)>(15*60*60*24)) {
+   int intervalPixels = 10;
+   if(((end-start)/1000)>=(60*60*24*3)) {
        intervalUnit1 = "DAY";
        intervalUnit2 = "WEEK";
-   } else if(((end-start)/1000)>(60*60*24*3)) {
+       intervalPixels = 600;
+       if(((end-start)/1000)>(60*60*24*15)) {
+         intervalPixels = 300;
+       }
+   } else if(((end-start)/1000)>(60*60*6)) {
        intervalUnit1 = "HOUR";
        intervalUnit2 = "DAY";
+       intervalPixels = 600;
    } else {
        intervalUnit1 = "MINUTE";
        intervalUnit2 = "HOUR";
+       intervalPixels = 600;
+       if(((end-start)/1000)>(60*60*3)) {
+         intervalPixels = 250;
+       }
    }
 %>
 <html>
@@ -58,7 +69,7 @@
                 date:           "<%= startDate %>  GMT",
                 width:          "100%", 
                 intervalUnit:   Timeline.DateTime.<%= intervalUnit2 %>, 
-                intervalPixels: 200,
+                intervalPixels: <%= intervalPixels %>,
                 theme: theme,
             })
           ];

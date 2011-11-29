@@ -28,7 +28,10 @@ export JAVA_HOME=${JAVA_HOME}
 # The location of HBase Configuration directory.  For writing data to
 # HBase, you need to set environment variable HBASE_CONF to HBase conf
 # directory.
-export HBASE_CONF_DIR="${TODO_HBASE_CONF_DIR}"
+export HBASE_CONF_DIR="${HBASE_CONF_DIR}"
+
+# Hadoop Configuration directory
+export HADOOP_CONF_DIR="${HADOOP_CONF_DIR}"
 
 # The location of chukwa data repository (in either HDFS or your local
 # file system, whichever you are using)
@@ -63,4 +66,4 @@ export CHUKWA_HICC_MAX_MEM=
 # HICC Jetty Server port, defaults to 4080
 #export CHUKWA_HICC_PORT=
 
-export CLASSPATH=${CLASSPATH}:${HBASE_CONF_DIR}
+export CLASSPATH=${CLASSPATH}:${HBASE_CONF_DIR}:${HADOOP_CONF_DIR}

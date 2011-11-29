@@ -3,9 +3,10 @@
 "title":"Session Debugger",
 "version":"0.1",
 "categories":"Developer,Utilities",
-"url":"jsp\/debug.jsp",
+"url":"jsp/debug.jsp",
 "description":"Display session stats",
 "refresh":"15",
 "parameters":[
+{"name":"height","type":"string","value":"0","edit":"0"}
 ]
 }

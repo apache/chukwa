@@ -23,7 +23,7 @@
    response.setHeader("boxId", xf.getParameter("boxId"));
    if(xf.getParameter("type").equals("list")) {
 %>
-<IFRAME id="<%= xf.getParameter("boxId") %>iframe" src="/hicc/jsp/event_viewer_helper.jsp?<%= xf.filter(request.getQueryString()) %>" width="100%" frameborder="0" height="400" scrolling="no"></IFRAME>
+<IFRAME id="<%= xf.getParameter("boxId") %>iframe" src="/hicc/jsp/job_viewer.jsp?<%= xf.filter(request.getQueryString()) %>" width="100%" frameborder="0" height="400" scrolling="no"></IFRAME>
 <% } else { %>
 <IFRAME id="<%= xf.getParameter("boxId") %>iframe" src="/hicc/jsp/event.jsp" width="100%" frameborder="0" height="600"></IFRAME>
 <% } %>

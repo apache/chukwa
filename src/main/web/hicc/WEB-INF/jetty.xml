@@ -162,7 +162,7 @@
           <Set name="contexts"><Ref id="Contexts"/></Set>
           <Set name="webAppDir"><SystemProperty name="CHUKWA_HOME" default="."/>/share/chukwa/webapps</Set>
 	  <Set name="parentLoaderPriority">false</Set>
-	  <Set name="extract">false</Set>
+	  <Set name="extract">true</Set>
 	  <Set name="allowDuplicates">false</Set>
         </New>
       </Arg>

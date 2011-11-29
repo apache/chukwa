@@ -3,10 +3,11 @@
 "title":"Cluster Selector",
 "version":"0.1",
 "categories":"Global,Utilities",
-"url":"jsp\/cluster_selector.jsp",
+"url":"jsp/cluster_selector.jsp",
 "description":"Global control to manipulate cluster selection across widgets",
 "screendump":"",
 "refresh":"0",
 "parameters":[
+{"name":"height","type":"string","value":"0","edit":"0"}
 ]
 }
