@@ -98,6 +98,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-611. Updated Chukwa tarball to include chukwa-0.5.0-client.jar. (Eric Yang)
+
     CHUKWA-606. Updated HICC to interface with data in HBase. (Eric Yang)
 
     CHUKWA-588. Updated hbase.schema to match Hadoop 0.20.205.0 metrics and job summary. (Eric Yang)
