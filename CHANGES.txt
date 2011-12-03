@@ -36,6 +36,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-608. Added Quick start guide. (Ahmed Fathalla via Eric Yang)
+
     CHUKWA-605. Update directory structure to be aligned with Hadoop. (Eric Yang)
 
     CHUKWA-601. Removed legacy mysql upgrade script. (Eric Yang)

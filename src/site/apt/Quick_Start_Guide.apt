@@ -1,0 +1,132 @@
+Chukwa Quick Start Guide
+
+Purpose
+
+  Chukwa is a system for large-scale reliable log collection and processing with Hadoop. The Chukwa design overview discusses the overall architecture of Chukwa. You should read that document before this one. The purpose of this document is to help you install and configure Chukwa.
+
+
+Pre-requisites
+
+  Chukwa should work on any POSIX platform, but GNU/Linux is the only production platform that has been tested extensively. Chukwa has also been used successfully on Mac OS X, which several members of the Chukwa team use for development.
+
+  The only absolute software requirements are Java 1.6 or better and Hadoop 0.20.205.0+. HICC, the Chukwa visualization interface, requires HBase 0.90.4.
+
+  The Chukwa cluster management scripts rely on ssh; these scripts, however, are not required if you have some alternate mechanism for starting and stopping daemons.
+
+
+Installing Chukwa
+
+  A minimal Chukwa deployment has five components:
+
+  * A Hadoop and HBase cluster on which Chukwa will process data (referred to as the Chukwa cluster). 
+  
+  * A collector process, that writes collected data to HBase. 
+  
+  * One or more agent processes, that send monitoring data to the collector. The nodes with active agent processes are referred to as the monitored source nodes.
+  
+  * Data analytics script, summarize Hadoop Cluster Health.
+
+  * HICC, the Chukwa visualization tool.
+
+[http://people.apache.org/~eyang/docs/chukwa-0.5-arch.png] Chukwa 0.5.0 Architecture 
+
+First Steps
+
+  * Obtain a copy of Chukwa. You can find the latest release on the Chukwa release page.
+
+  * Un-tar the release, via tar xzf.
+
+  * Make sure a copy of Chukwa is available on each node being monitored, and on each node that will run a collector.
+
+  * We refer to the directory containing Chukwa as CHUKWA_HOME. It may be helpful to set CHUKWA_HOME explicitly in your environment, but Chukwa does not require that you do so.
+
+Setting Up Chukwa Cluster
+
+* Configure Hadoop
+
+  [[1]] Copy Chukwa files to Hadoop directory:
+
+---
+cp $CHUKWA_CONF_DIR/hadoop-log4j.properties $HADOOP_CONF_DIR/log4j.properties
+cp $CHUKWA_HOME/etc/chukwa/hadoop-metrics2.properties $HADOOP_CONF_DIR/hadoop-metrics2.properties
+cp $CHUKWA_HOME/share/chukwa/chukwa-0.5.0-client.jar $HADOOP_HOME/share/hadoop/lib
+cp $CHUKWA_HOME/share/chukwa/lib/json-simple-1.1.jar $HADOOP_HOME/share/hadoop/lib
+---  
+
+  [[2]] Restart your Hadoop Cluster. General Hadoop configuration is available at: {{{http://hadoop.apache.org/common/docs/current/cluster_setup.html}Hadoop Configuration}}
+  
+  [[3]] Make sure HBase is started. General HBASE configuration is available at: {{{http://hbase.apache.org/docs/current/api/overview-summary.html#overview_description}HBase Configuration}}
+  
+  [[4]] After Hadoop and HBase are started, run:
+
+---
+bin/hbase shell < CHUKWA_HOME/etc/chukwa/hbase.schema
+---
+
+  This procedure initializes the default Chukwa HBase schema.
+
+* Configuring And Starting Chukwa Collector
+
+ [[1]] Edit CHUKWA_HOME/etc/chukwa/chukwa-env.sh. Make sure that JAVA_HOME, HADOOP_HOME, HADOOP_CONF_DIR, HBASE_HOME, and HBASE_CONF_DIR are set correctly.
+
+ [[2]] In CHUKWA_HOME, run:
+
+---
+bin/chukwa collector
+---
+
+* Configuring And Starting Chukwa Agent
+
+ [[1]] Add collector hostnames to CHUKWA_HOME/etc/chukwa/collectors. One host per line.
+
+ [[2]] In CHUKWA_HOME, run:
+
+---
+bin/chukwa agent
+---
+
+* Setup Cluster Aggregation Script
+
+  For data analytics with Apache Pig, there are some additional environment setup. Apache Pig does not use the same environment variable name as Hadoop, therefore make sure the following environment are setup correctly:
+
+  [[1]] Download and setup Apache Pig 0.9.1.
+
+  [[2]] Define Apache Pig class path:
+
+---
+export PIG_CLASSPATH=$HADOOP_CONF_DIR:$HBASE_CONF_DIR
+---
+
+  [[3]] Create a jar file of HBASE_CONF_DIR, run:
+
+---
+jar cf $CHUKWA_HOME/hbase-env.jar $HBASE_CONF_DIR
+---
+
+  [[4]] Setup a cron job or Hudson job for analytics script to run periodically:
+
+---
+pig -Dpig.additional.jars=${HBASE_HOME}/hbase-0.90.4.jar:${HBASE_HOME}/lib/zookeeper-3.3.2.jar:${PIG_PATH}/pig.jar:${CHUKWA_HOME}/hbase-env.jar ${CHUKWA_HOME}/script/pig/ClusterSummary.pig
+---
+
+* Start HICC
+
+  The Hadoop Infrastructure Care Center (HICC) is the Chukwa web user interface. 
+
+  [[1]] To start HICC, do the following:
+
+---
+bin/chukwa hicc
+---
+
+* Data Visualization
+
+  [[1]] Once the webcontainer with HICC has been started, point your favorite browser to:
+
+---
+http://<server>:4080/hicc/
+---
+  
+  [[2]] The default user name and password is "admin" without quotes.
+  
+  [[3]] Metrics data collected by Chukwa collector will be browsable through Graph Explorer widget.
