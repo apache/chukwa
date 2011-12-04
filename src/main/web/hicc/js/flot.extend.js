@@ -80,7 +80,7 @@ function calculateStatis() {
   }
   dataTable+='</table>';
   $('#statisLegend').html(dataTable);
-  // $('.statisTable').flexigrid();
+  setIframeHeight(document.getElementById('boxId').value);
 }
 
 /*
@@ -115,13 +115,6 @@ function wholePeriod() {
   $.plot($("#placeholder"), _series, _options);
   // update statis
   calculateStatis();
-  total_height=height+$("#placeholderTitle").height();
-  if (_options.legend.show) {
-    total_height+=$("#placeholderLegend").height();
-    total_height+=$("#statisLegend").height();
-  }
-  total_height+=25;
-  setIframeHeight(document.getElementById('boxId').value, total_height);
 };
 
 /*
@@ -202,6 +195,7 @@ $("#placeholder").bind("selected", function (event, area) {
 			   _options, extra_options
 			   )
 		  );
+    setIframeHeight(document.getElementById('boxId').value);
   });
 
 /*
@@ -219,18 +213,12 @@ function getDocHeight(doc) {
 }
 
 /*
- * set the iframe height to the specified height.
+ * auto resize the iframe height to match content.
  */
-function setIframeHeight(ifrm, height) {
+function setIframeHeight(ifrm) {
   try {
-    frame = window.parent.document.getElementById(ifrm);
-    innerDoc = (frame.contentDocument) ? frame.contentDocument : frame.contentWindow.document;
-    objToResize = (frame.style) ? frame.style: frame;
-    if(height==0) {
-      objToResize.height = innerDoc.body.scrollHeight;
-    } else {
-      objToResize.height = height;
-    }
+    objToResize = parent.document.getElementById(window.name);
+    objToResize.height = document.body.scrollHeight;
   } catch(err) {
     window.status = err.message;
   }

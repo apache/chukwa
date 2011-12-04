@@ -68,6 +68,8 @@ public class Iframe extends HttpServlet {
     StringBuffer output = new StringBuffer();
     output.append("<html><body><iframe id=\"iframe");
     output.append(id);
+    output.append("\" name=\"iframe");
+    output.append(id);
     output.append("\" src=\"");
     output.append(source);
     output.append("\" width=\"100%\" height=\"");
