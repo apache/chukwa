@@ -103,7 +103,7 @@ Agents
 
   Agents are the Chukwa processes that actually produce data. This section
 describes how to configure and run them. More details are available in the
-{{{agent.html}Agent configuration guide}}.
+{{{./agent.html}Agent configuration guide}}.
 
 * Configuration
 
@@ -123,7 +123,7 @@ http://<collector3HostName>:<collector3Port>/
 
   Edit the <CHUKWA_HOME/etc/chukwa/initial_adaptors> configuration file. 
 This is where you tell Chukwa what log files to monitor. See
-{{{agent.html#Adaptors}the adaptor configuration guide}} for
+{{{./agent.html#Adaptors}the adaptor configuration guide}} for
 a list of available adaptors.
 
   There are a number of optional settings in 
