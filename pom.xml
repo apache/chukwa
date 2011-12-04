@@ -265,23 +265,8 @@
           <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-bundle</artifactId>
-            <version>1.1.0-ea</version>
+            <version>1.10</version>
           </dependency>
-<!--          <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-server</artifactId>
-            <version>1.1</version>
-          </dependency>
-          <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-            <version>1.1</version>
-          </dependency>
-          <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>1.1</version>
-          </dependency> -->
           <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
