@@ -36,6 +36,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-615. Changed HICC default view to monitor Hadoop. (Eric Yang)
+
     CHUKWA-612. Convert Chukwa document from forrest format to apt format. (Eric Yang)
 
     CHUKWA-608. Added Quick start guide. (Ahmed Fathalla via Eric Yang)
