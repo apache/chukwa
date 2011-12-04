@@ -309,7 +309,7 @@
             <id>eyang</id>
             <name>Eric Yang</name>
             <email>eyang@apache.org</email>
-            <timezone>(GMT-08:00)</timezone>
+            <timezone>-8</timezone>
             <roles>
                 <role></role>
             </roles>
@@ -318,7 +318,7 @@
             <id>asrabkin</id>
             <name>Ariel Rabkin</name>
             <email>asrabkin@apache.org</email>
-            <timezone>(GMT-05:00)</timezone>
+            <timezone>-5</timezone>
             <roles>
                 <role></role>
             </roles>
@@ -327,7 +327,7 @@
             <id>billgraham</id>
             <name>Bill Graham</name>
             <email>billgraham@apache.org</email>
-            <timezone>(GMT-08:00)</timezone>
+            <timezone>-8</timezone>
             <roles>
                 <role></role>
             </roles>
@@ -336,7 +336,7 @@
             <id>jboulon</id>
             <name>Jerome Boulon</name>
             <email>jboulon@apache.org</email>
-            <timezone>(GMT-08:00)</timezone>
+            <timezone>-8</timezone>
             <roles>
                 <role></role>
             </roles>
@@ -356,6 +356,18 @@
             </resource>
         </resources>
         <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+            <version>3.0</version>
+            <dependencies>
+              <dependency><!-- add support for ssh/scp -->
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0</version>
+              </dependency>
+            </dependencies>
+          </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -667,6 +679,50 @@
         <dependencies>
         </dependencies>
     </dependencyManagement>
+
+    <reporting>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>2.4</version>
+          <configuration>
+            <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.8</version>
+          <reportSets>
+            <reportSet>
+              <id>javadoc</id>
+              <configuration>
+                <aggregate>true</aggregate>
+                <doctitle>${project.name} API ${project.version}</doctitle>
+              </configuration>
+              <reports>
+                <report>javadoc</report>
+              </reports>
+            </reportSet>
+            <reportSet>
+              <id>aggregate</id>
+              <reports>
+                <report>aggregate</report>
+              </reports>
+            </reportSet>
+          </reportSets>
+        </plugin>
+      </plugins>
+    </reporting>
+
+    <distributionManagement>
+      <site>
+        <id>apache-website</id>
+        <name>Apache Website</name>
+        <url>scp://people.apache.org/www/incubator.apache.org/chukwa/docs/r${project.version}</url>
+      </site>
+    </distributionManagement>
 
 </project>
 

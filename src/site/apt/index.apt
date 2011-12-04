@@ -1,0 +1,46 @@
+~~ Licensed to the Apache Software Foundation (ASF) under one or more
+~~ contributor license agreements.  See the NOTICE file distributed with
+~~ this work for additional information regarding copyright ownership.
+~~ The ASF licenses this file to You under the Apache License, Version 2.0
+~~ (the "License"); you may not use this file except in compliance with
+~~ the License.  You may obtain a copy of the License at
+~~
+~~     http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~ Unless required by applicable law or agreed to in writing, software
+~~ distributed under the License is distributed on an "AS IS" BASIS,
+~~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~~ See the License for the specific language governing permissions and
+~~ limitations under the License.
+~~
+Overview
+
+  Log processing was one of the original purposes of MapReduce. Unfortunately,
+using Hadoop for MapReduce processing of logs is somewhat troublesome.
+Logs are generated incrementally across many machines, but Hadoop MapReduce
+works best on a small number of large files. Merging the reduced output
+of multiple runs may require additional mapreduce jobs.  This creates some 
+overhead for data management on Hadoop.
+
+  Chukwa is a Hadoop subproject devoted to bridging that gap between logs
+processing and Hadoop ecosystem.  Chukwa is a scalable distributed monitoring 
+and analysis system, particularly logs from Hadoop and other large systems.
+
+  The Chukwa Documentation provides the information you need to get
+started using Chukwa. You should start with the {{{./design.html}
+Architecture and Design document}}.
+
+  If you're trying to set up a Chukwa cluster from scratch, you should
+read the {{{./admin.html}Chukwa Administration Guide}} which
+shows you how to setup and deploy Chukwa.
+
+  If you want to configure the Chukwa agent process, to control what's
+collected, you should read the {{{./agent.html}Agent Guide}}. There's
+also a  {{{./collector.html}Collector Guide}} describing that part of
+the pipeline.
+     
+  And if you want to use collected data, read the
+{{{./programming.html}User and Programming Guide}}
+
+  If you have more questions, you can ask on the
+{{{mailto:chukwa-user@incubator.apache.org}Chukwa mailing lists}}

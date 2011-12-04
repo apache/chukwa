@@ -28,7 +28,9 @@ Installing Chukwa
 
   * HICC, the Chukwa visualization tool.
 
-[http://people.apache.org/~eyang/docs/chukwa-0.5-arch.png] Chukwa 0.5.0 Architecture 
+[]
+
+[./images/chukwa_architecture.png] Chukwa 0.5.0 Architecture 
 
 First Steps
 
