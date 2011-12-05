@@ -1,0 +1,118 @@
+~~ Licensed to the Apache Software Foundation (ASF) under one or more
+~~ contributor license agreements.  See the NOTICE file distributed with
+~~ this work for additional information regarding copyright ownership.
+~~ The ASF licenses this file to You under the Apache License, Version 2.0
+~~ (the "License"); you may not use this file except in compliance with
+~~ the License.  You may obtain a copy of the License at
+~~
+~~     http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~ Unless required by applicable law or agreed to in writing, software
+~~ distributed under the License is distributed on an "AS IS" BASIS,
+~~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~~ See the License for the specific language governing permissions and
+~~ limitations under the License.
+~~
+
+Chukwa Storage Layout
+
+Overview
+
+  This document describes how Chukwa data is stored in HDFS and the processes that act on it.
+
+HDFS File System Structure
+
+  The general layout of the Chukwa filesystem is as follows.
+
+---
+/chukwa/
+   archivesProcessing/
+   dataSinkArchives/
+   demuxProcessing/
+   finalArchives/
+   logs/
+   postProcess/
+   repos/
+   rolling/
+   temp/
+---
+
+Raw Log Collection and Aggregation Workflow
+
+  What data is stored where is best described by stepping through the Chukwa workflow.
+
+  [[1]] Collectors write chunks to <logs/*.chukwa> files until a 64MB chunk size is reached or a given time interval has passed.
+
+        * <logs/*.chukwa> 
+
+  [[2]] Collectors close chunks and rename them to <*.done>
+
+        * from <logs/*.chukwa>
+
+        * to <logs/*.done>
+
+  [[3]] DemuxManager checks for <*.done> files every 20 seconds.
+
+    [[1]] If <*.done> files exist, moves files in place for demux processing:
+
+           * from: <logs/*.done>
+
+           * to: <demuxProcessing/mrInput>
+
+    [[2]] The Demux MapReduce job is run on the data in <demuxProcessing/mrInput>.
+
+    [[3]] If demux is successful within 3 attempts, archives the completed files:
+
+           * from: <demuxProcessing/mrOutput>
+
+           * to: <dataSinkArchives/[yyyyMMdd]/*/*.done>
+
+    [[4]] Otherwise moves the completed files to an error folder:
+
+           * from: <demuxProcessing/mrOutput>
+
+           * to: <dataSinkArchives/InError/[yyyyMMdd]/*/*.done>
+
+  [[4]] PostProcessManager wakes up every few minutes and aggregates, orders and de-dups record files.
+
+        * from: <postProcess/demuxOutputDir_*/[clusterName]/[dataType]/[dataType]_[yyyyMMdd]_[HH].R.evt>
+
+        * to: <repos/[clusterName]/[dataType]/[yyyyMMdd]/[HH]/[mm]/[dataType]_[yyyyMMdd]_[HH]_[N].[N].evt>
+
+  [[5]] HourlyChukwaRecordRolling runs M/R jobs at 16 past the hour to group 5 minute logs to hourly.
+
+        * from: <repos/[clusterName]/[dataType]/[yyyyMMdd]/[HH]/[mm]/[dataType]_[yyyyMMdd]_[mm].[N].evt>
+
+        * to: <temp/hourlyRolling/[clusterName]/[dataType]/[yyyyMMdd]>
+
+        * to: <repos/[clusterName]/[dataType]/[yyyyMMdd]/[HH]/[dataType]_HourlyDone_[yyyyMMdd]_[HH].[N].evt>
+
+        * leaves: <repos/[clusterName]/[dataType]/[yyyyMMdd]/[HH]/rotateDone/>
+
+  [[6]] DailyChukwaRecordRolling runs M/R jobs at 1:30AM to group hourly logs to daily.
+
+        * from: <repos/[clusterName]/[dataType]/[yyyyMMdd]/[HH]/[dataType]_[yyyyMMdd]_[HH].[N].evt>
+
+        * to: <temp/dailyRolling/[clusterName]/[dataType]/[yyyyMMdd]>
+
+        * to: <repos/[clusterName]/[dataType]/[yyyyMMdd]/[dataType]_DailyDone_[yyyyMMdd].[N].evt>
+
+        * leaves: <repos/[clusterName]/[dataType]/[yyyyMMdd]/rotateDone/>
+
+  [[7]] ChukwaArchiveManager every half hour or so aggregates and removes dataSinkArchives data using M/R.
+
+        * from: <dataSinkArchives/[yyyyMMdd]/*/*.done>
+
+        * to: <archivesProcessing/mrInput>
+
+        * to: <archivesProcessing/mrOutput>
+
+        * to: <finalArchives/[yyyyMMdd]/*/chukwaArchive-part-*>
+
+Log Directories Requiring Cleanup
+
+  The following directories will grow over time and will need to be periodically pruned:
+
+  * <finalArchives/[yyyyMMdd]/*>
+
+  * <repos/[clusterName]/[dataType]/[yyyyMMdd]/*.evt>

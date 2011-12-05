@@ -43,7 +43,7 @@ development.
   The only absolute software requirements are {{{http://java.sun.com}Java 1.6}}
 or better and {{{http://hadoop.apache.org/}Hadoop 0.20.205.1+}}.
   
-  HICC, the Chukwa visualization interface, {{{#Set+Up+the+Database}requires HBase 0.90.4+}}.
+  HICC, the Chukwa visualization interface, requires {{{http://hbase.apache.org}HBase 0.90.4+}}.
 
   The Chukwa cluster management scripts rely on <ssh>; these scripts, however,
 are not required if you have some alternate mechanism for starting and stopping
@@ -183,7 +183,7 @@ Hadoop configuration files.
 
   * Copy CHUKWA_HOME/etc/chukwa/hadoop-metrics2.properties file to HADOOP_CONF_DIR/hadoop-metrics2.properties
 
-  * Edit HADOOP_HOME/etc/hadoop/hadoop-metrics2.properties file and change ${CHUKWA_LOG_DIR} to your actual CHUKWA log dirctory (ie, CHUKWA_HOME/var/log)
+  * Edit HADOOP_HOME/etc/hadoop/hadoop-metrics2.properties file and change $CHUKWA_LOG_DIR to your actual CHUKWA log dirctory (ie, CHUKWA_HOME/var/log)
 
 Setup HBase Table
 
