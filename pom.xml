@@ -674,6 +674,13 @@
           <configuration>
             <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
           </configuration>
+          <reportSets>
+            <reportSet>
+              <reports>
+                <report>dependencies</report>
+              </reports>
+            </reportSet>
+          </reportSets>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -688,12 +695,6 @@
               </configuration>
               <reports>
                 <report>javadoc</report>
-              </reports>
-            </reportSet>
-            <reportSet>
-              <id>aggregate</id>
-              <reports>
-                <report>aggregate</report>
               </reports>
             </reportSet>
           </reportSets>
