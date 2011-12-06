@@ -104,6 +104,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-616. Updated release note and change log generation. (Eric Yang)
+
     CHUKWA-614. Updated parent iframe resize code. (Eric Yang)
 
     CHUKWA-613. Removed Jersey 1.1 from source code library path. (Eric Yang)
@@ -194,7 +196,7 @@ Trunk (unreleased changes)
 
     CHUKWA-478. Fixed TestSocketTee intermittent failure.  (Chris Douglas via Eric Yang)
 
-Chukwa 0.4 
+Release 0.4 
 
   NEW FEATURES
 
