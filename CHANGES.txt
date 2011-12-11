@@ -104,6 +104,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-617. Fixed test case casting and race conditions. (Eric Yang)
+
     CHUKWA-616. Updated release note and change log generation. (Eric Yang)
 
     CHUKWA-614. Updated parent iframe resize code. (Eric Yang)

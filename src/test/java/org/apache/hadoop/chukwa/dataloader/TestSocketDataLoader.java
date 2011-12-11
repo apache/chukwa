@@ -60,7 +60,7 @@ public class TestSocketDataLoader  extends TestCase{
       Collection<Chunk> clist = sdl.read();
       for(Chunk c : clist) {
         if(c!=null && c.getData()!=null) {
-          assertTrue("a".equals(c.getData().toString()));
+          assertTrue("a".equals(new String(c.getData())));
         }
       }
     } catch(NoSuchElementException e) {

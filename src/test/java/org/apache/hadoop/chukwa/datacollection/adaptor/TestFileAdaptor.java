@@ -90,8 +90,10 @@ public class TestFileAdaptor extends TestCase {
       assertTrue(dat.startsWith("0 abcdefghijklmnopqrstuvwxyz"));
       assertTrue(dat.endsWith("9 abcdefghijklmnopqrstuvwxyz\n"));
       assertTrue(c.getDataType().equals("raw"));
-      if(agent.adaptorCount() > 0)
+      while(agent.adaptorCount() > 0) {
         agent.stopAdaptor("adaptor_test", false);
+        Thread.sleep(1000);
+      }
     }
     agent.shutdown();
   }
