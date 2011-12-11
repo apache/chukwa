@@ -1,0 +1,149 @@
+~~ Licensed to the Apache Software Foundation (ASF) under one or more
+~~ contributor license agreements.  See the NOTICE file distributed with
+~~ this work for additional information regarding copyright ownership.
+~~ The ASF licenses this file to You under the Apache License, Version 2.0
+~~ (the "License"); you may not use this file except in compliance with
+~~ the License.  You may obtain a copy of the License at
+~~
+~~     http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~ Unless required by applicable law or agreed to in writing, software
+~~ distributed under the License is distributed on an "AS IS" BASIS,
+~~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~~ See the License for the specific language governing permissions and
+~~ limitations under the License.
+~~
+
+Overview
+
+  HICC stands for Hadoop Infrastructure Care Center.  It is the central dashboard
+for visualize and monitoring of metrics collected by Chukwa.
+
+How HICC is organized
+
+  To get started with HICC, you should get to know the menus and tools of the
+dashboard, and learn how widgets and information are organized.
+
+* Dashboard
+
+  When you login to HICC, the dashboard appears.  You'll see a menu bar along
+the top of the browser window, and widgets in rows and columns.  In between
+the menu bar and the widgets is the tabs.  In the upper right corner of dashboard
+are the icons for HICC global options.
+
+[./images/hicc-dashboard.png]
+
+* How widgets are organized
+
+  HICC organizes widgets in Widgets Catalog where information are organized in
+a tree structure.  Some of the categories are described below.
+
+[./images/hicc-widget.png]
+
+  * <<Developer>> A list of utility widgets for exploring metrics stored on HBase 
+    and debugging tools to help developer to develope new widgets.
+
+  * <<Global>> A list of utility widgets for user to control time, cluster, or 
+    host selection.
+
+  * <<Hadoop>> Hadoop related metrics and job summary are organized in this 
+    category.
+
+  * <<System Metrics>> System related metrics such as cpu, disk, network or 
+    memory utilization are organized in this category.
+
+* Navigating HICC
+
+  The items stored on HICC -- including applications, utilities and widgets --
+are organized in a hierarchy of widget category that you can browse by accessing
+menu bar "Options".  The dashboard has columns and rows and you can rearrange
+the layout of the widgets by drag and drop.  Rearranging widgets on the dashboard
+is only saved when "Save Dashboard" is click. 
+
+Menu, tabs and dashboards
+
+* Menu basics
+
+  Menus contain options that perform actions.  For example, to create an extra
+column on the dashboard, you choose the add column command from the Options 
+menu (Options > Add Column).
+
+** Opening menus:
+
+  * To open a menu in the menu bar across the top of the dashboard, hover over
+the menu item.
+
+  * Many menu item is also a toggle.  For example, choose Dashboard Builder will
+open the view for a list of available dashboards.  Choose Dashboard Builder a
+second time will close Dashboard list view.
+
+** Choosing menu options:
+
+  Click the option you want to use.
+
+  * If the option has an ellipsis (...) next to it, a dialog opens where you can
+make additional choices or provide any necessary information.
+
+  * If an option is dimmed, it is not available.  For example, you can not edit
+name of the dashboard, if you are not the owner of the dashboard.
+
+* Tab basics
+
+  Tab provides a way to organize related information together.  As you create widgets,
+manange cluster and do other work on HICC, you can create new tabs to keep your
+information organized.
+
+  * To create a new tab:
+
+  [[1]] Select "Add New Tab" from menu bar (Options > Add New Tab).
+
+  [[2]] Enter a new name for the tab and press Return.
+
+  []
+
+  * To remove a tab:
+
+  [[1]] Select the tab that you wish to delete.
+
+  [[2]] Select delete current tab from menu bar (Options > Delete Current Tab).
+
+  []
+
+  * To rename a tab:
+
+  [[1]] Double click on the tab to change tab to edit mode.
+
+  [[2]] Enter a new name for the tab and press Return.
+
+* Dashboard basics
+
+  Each dashboard can have multiple tabs and each tab is divided into row and columns.
+You can add more widgets by selecting Options > choose a widget > click Add.
+To remove a widgets by clicking on Close button on the top right hand corner of
+the widget.
+
+User accounts
+
+  You should set up an account for each person who uses HICC on a regular basis.
+
+* Create a new user account
+
+  [[1]] Edit CHUKWA_CONF_DIR/auth.conf
+
+  [[2]] Authentication and authorization information is stored in a properties file.
+Eacho line in the file contains a username, a password and 0 or more role assignment.
+The format is:
+
+---
+username: password[,rolename ...]
+---
+
+* What is an administrator account?
+
+  Administrator account has privileges to modify all dashboard layout and change
+read/write permission of the dashboards.
+
+* What is a user account?
+
+  User account has privileges to modify user's own dashboard layout and change
+read/write permission of his/her own dashboard.

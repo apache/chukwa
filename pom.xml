@@ -51,7 +51,7 @@
         <TODO_DEMUX_IO_SORT_MB>64</TODO_DEMUX_IO_SORT_MB>
         <TODO_DEMUX_FS_INMEMORY_SIZE_MB>64</TODO_DEMUX_FS_INMEMORY_SIZE_MB>
         <TODO_DEMUX_IO_SORT_FACTOR>10</TODO_DEMUX_IO_SORT_FACTOR>
-        <CHUKWA_DIR>/tmp/chukwa</CHUKWA_DIR>
+        <CHUKWA_DIR>/chukwa</CHUKWA_DIR>
         <JAVA_HOME>${java.home}</JAVA_HOME>
     </properties>
 
@@ -595,9 +595,6 @@
                                 <copy file="${basedir}/conf/chukwa-common.xml" tofile="${test.build.dir}/conf/chukwa-common.xml">
                                     <filterchain>
                                         <expandproperties/>
-<!--                                        <replacetokens>
-                                            <token key="CHUKWA_DIR" value="/tmp/chukwa" />
-                                        </replacetokens> -->
                                     </filterchain>
                                 </copy>
                                 <copy file="${basedir}/conf/chukwa-agent-conf.xml" tofile="${test.build.dir}/conf/chukwa-agent-conf.xml">
