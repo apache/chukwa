@@ -36,6 +36,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-618. Added HICC programming guide. (Eric Yang)
+
     CHUKWA-522. Added HICC User guide. (Eric Yang)
 
     CHUKWA-615. Changed HICC default view to monitor Hadoop. (Eric Yang)

@@ -19,7 +19,7 @@ Chukwa User and Programming Guide
   At the core of Chukwa is a flexible system for collecting and processing
 monitoring data, particularly log files. This document describes how to use the
 collected data.  (For an overview of the Chukwa data model and collection 
-pipeline, see the {{{design.html}Design Guide}}.)  
+pipeline, see the {{{./design.html}Design Guide}}.)  
 
   In particular, this document discusses the Chukwa archive file formats, the
 demux and archiving mapreduce jobs, and  the layout of the Chukwa storage directories.
@@ -143,7 +143,7 @@ Demux
 
   A key use for Chukwa is processing arriving data, in parallel, using MapReduce.
 The most common way to do this is using the Chukwa demux framework.
-As {{{dataflow.html}data flows through Chukwa}}, the demux job is often the
+As {{{./dataflow.html}data flows through Chukwa}}, the demux job is often the
 first job that runs.
 
   By default, Chukwa will use the default TsProcessor. This parser will try to
@@ -254,3 +254,204 @@ public class SystemMetrics extends AbstractProcessor {
   In this example, the data collected by SystemMetrics parser is stored into <"SystemMetrics">
 HBase table, and column family is stored to <"cpu"> column family.
 
+
+Create a new HICC widget
+
+  HICC Widget is composed of a JSON data model.  Examples of widget descriptor 
+is located at <src/main/web/hicc/descriptors>.  The data structure looks like
+this:
+
+---
+{
+  "id":"debug",
+  "title":"Session Debugger",
+  "version":"0.1",
+  "categories":"Developer,Utilities",
+  "url":"jsp/debug.jsp",
+  "description":"Display session stats",
+  "refresh":"15",
+  "parameters":[
+    {"name":"height","type":"string","value":"0","edit":"0"}
+  ]
+}
+---
+
+  * <<id>> - Unique identifier of HICC widget.
+
+  * <<title>> - Human readable string for display on widget border.
+
+  * <<version>> - Version number of the widget, used for updating dashboard
+    with new version of the widget.
+
+  * <<categories>> - Category to organize the widget.  The categories hierarchy
+    is separated by comma.
+
+  * <<url>> - The URL to fetch widget content.  Use /iframe/ as prefix to
+    sandbox output of the URL in a iframe.
+
+  * <<description>> - Description of the widget to display on widget browser.
+
+  * <<refresh>> - Predefined interval to refresh widget in minutes, set refresh 
+    to 0 to disable periodical refresh.
+
+  * <<parameters>> - A list of Key Value parameters to pass to <<url>>.
+    Parameters can be constructed from the follow datatype.
+
+    [[1]] <<string>> - A text field for entering string. <edit> set the text 
+          field to be hidden and value is constant.  Example:
+
+---
+{
+  "name":"height",
+  "type":"string",
+  "value":"0",
+  "edit":"0"
+}
+---
+
+    [[2]] <<select>> - A drop down list for making single item selection. 
+          <label> is text string next to the drop down box.  Example:
+
+---
+{
+  "name":"width",
+  "type":"select",
+  "value":"300",
+  "label":"Width",
+  "options":[
+    {"label":"300","value":"300"},
+      ...
+    {"label":"1200","value":"1200"}
+  ]
+}
+---
+
+    [[3]] <<select_callback>> - Single item selection box with data source
+          provided from the <callback> url.  Example:
+
+---
+{
+  "name":"time_zone",
+  "type":"select_callback",
+  "value":"UTC",
+  "label":"Time Zone",
+  "callback":"/hicc/jsp/get_timezone_list.jsp"
+}
+---
+
+    [[4]] <<select_multiple>> - Multiple item selection box.
+
+---
+{
+  "name":"data",
+  "type":"select_multiple",
+  "value":"default",
+  "label":"Metric",
+  "options":[
+    {"label":"Selection 1","value":"1"},
+    {"label":"Selection 2","value":"2"}
+  ]
+}
+---
+
+    [[5]] <<radio>> - Radio button for making boolean selection.
+
+---
+{
+  "name":"legend",
+  "type":"radio",
+  "value":"on",
+  "label":"Show Legends",
+  "options":[
+    {"label":"On","value":"on"},
+    {"label":"Off","value":"off"}
+  ]
+}
+---
+
+    [[6]] <<custom>> - Custom Javascript control.  <control> is a javascript
+          function defined in <src/main/web/hicc/js/workspace/custom_edits.js>.
+
+---
+{
+  "name":"period",
+  "type":"custom",
+  "control":"period_control",
+  "value":"",
+  "label":"Period"
+}
+---
+
+HICC Metrics REST API
+
+  HICC metrics API is designed to run HBase scan function.  One thing to
+keep in mind that the down sampling framework has not been built.  Therefore,
+scanning large number of metrics on HBase may take a long time.
+
+  * Retrieve a time series metrics for a given column and use session key
+    as row key.
+
+---
+/hicc/v1/metrics/series/{table}/{column}/session/{sessionKey}?start={long}&end
+={long}&fullScan={boolean}
+---
+
+  * Retrieve a time series metrics for a given column and given row key.
+
+---
+/hicc/v1/metrics/series/{table}/{family}/{column}/rowkey/{rkey}?start={long}&end={long}&fullScan={boolean}
+---
+
+  * Scan for column names with in a column family.
+
+---
+/hicc/v1/metrics/schema{table}/{family}?start={long}&end={long}&fullScan={boolean}
+---
+
+  * Scan table for unique row names.
+
+---
+/hicc/v1/metrics/rowkey/{table}/{family}/{column}?start={long}&end={long}&fullScan={boolean}
+---
+
+HICC Charting API
+
+  HICC Chart.jsp is the generic interface for piping HICC metrics REST API
+JSON to javascript rendered charting library.  The supported options are:
+
+  * <<title>> - Display a title string on chart.
+
+  * <<width>> - Width of the chart in pixels.
+
+  * <<height>> - Height of the chart in pixels.
+
+  * <<render>> - Type of graph to display.  Available options are:
+    <line>, <bar>, <point>, <area>, <stack-area>.
+
+  * <<series_name>> - Label for series name.
+
+  * <<data>> - URL to retrieve series of JSON data.
+
+  * <<x_label>> - Toggle to display X axis label (<on> or <off>).
+
+  * <<x_axis_label>> - A string to display on X axis of the chart.
+
+  * <<y_label>> - Toggle to display Y axis label (<on> or <off>).
+
+  * <<ymin>> - Y axis minimum value.
+
+  * <<ymax>> or <<y_axis_max>> - Y axis maximum value.
+
+  * <<legend>> - Toggle to display legend for the chart (<on> or <off>).
+
+[]
+
+  Example of using Charting API in combination with HICC Metrics REST API:
+
+---
+http://localhost:4080/hicc/jsp/chart.jsp?width=300&height=200&data=/hicc/v1/metrics/series/ClusterSummary/memory:UsedPercent/session/cluster,/hicc/v1/metrics/series/ClusterSummary/memory:FreePercent/session/cluster&title=Memory%20Utilization
+---
+
+  In this example, the width of the chart is set to 300, and height set to 200.  The chart has a 
+title of <Memory Utilization>, and streaming data from <ClusterSummary> table for column family
+<memory> with <UsedPercent> and <FreePercent> metrics using session key <cluster> as the row key.
