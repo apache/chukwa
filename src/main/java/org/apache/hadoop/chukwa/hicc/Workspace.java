@@ -35,6 +35,11 @@ public class Workspace extends HttpServlet {
   private String user = "admin";
   private XssFilter xf = null;
 
+  @Override  
+  protected void doTrace(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED); 
+  }
+
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
     xf = new XssFilter(request);

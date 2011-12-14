@@ -68,6 +68,11 @@ public class CommitCheckServlet extends HttpServlet {
       throw new ServletException(e);
     }
   }
+
+  @Override
+  protected void doTrace(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException { 
+    resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED); 
+  }
   
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)

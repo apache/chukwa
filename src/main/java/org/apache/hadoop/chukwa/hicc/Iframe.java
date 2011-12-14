@@ -31,6 +31,11 @@ import org.apache.hadoop.chukwa.util.XssFilter;
 public class Iframe extends HttpServlet {
   public static final long serialVersionUID = 100L;
 
+  @Override
+  protected void doTrace(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException { 
+    resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED); 
+  }
+
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
     String id;

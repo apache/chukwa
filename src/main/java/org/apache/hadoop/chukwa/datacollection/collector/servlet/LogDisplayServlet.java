@@ -81,6 +81,11 @@ public class LogDisplayServlet extends HttpServlet {
   public void init(ServletConfig servletConf) throws ServletException {
     BUF_SIZE = conf.getLong(BUF_SIZE_OPT, BUF_SIZE);
   }
+
+  @Override
+  protected void doTrace(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException { 
+    resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED); 
+  }
   
   private String getSID(Chunk c) {
     try { 
