@@ -63,6 +63,8 @@
     <menu name="Miscellaneous">
       <item name="Release Notes" href="releasenotes.html"/>
       <item name="Change Log" href="changes.html"/>
+      <item name="Find Bugs Report" href="findbugs.html"/>
+      <item name="PMD Report" href="pmd.html"/>
     </menu>
 
   </body>

@@ -636,6 +636,59 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>0.7</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <numUnapprovedLicenses>0</numUnapprovedLicenses>
+                    <excludes>
+                        <!-- notice files -->
+                        <exclude>CHANGES.txt</exclude>
+                        <!-- generated files -->
+                        <exclude>bin/VERSION</exclude>
+                        <exclude>**/target/**</exclude>
+                        <exclude>**/.classpath</exclude>
+                        <exclude>**/.project</exclude>
+                        <exclude>**/.settings/**</exclude>
+                        <exclude>conf/**</exclude>
+<!--                        <exclude>lib/**</exclude>-->
+                        <exclude>src/main/web/hicc/descriptors/**</exclude>
+                        <exclude>src/main/web/hicc/views/**</exclude>
+                        <exclude>contrib/chukwa-pig/src/java/org/apache/hadoop/chukwa/ChukwaStorage.java</exclude>
+                        <!-- Test samples -->
+                        <exclude>src/test/resources/Hadoop18JobHistoryLog.txt</exclude>
+                        <exclude>src/test/resources/TestJobLog.txt</exclude>
+                        <exclude>test/samples/ClientTrace.log</exclude>
+                        <exclude>test/samples/Iostat.log</exclude>
+                        <exclude>test/samples/JobHistory.log</exclude>
+                        <!-- bsd/gpl dual licensed files -->
+                        <exclude>src/main/web/hicc/js/jquery-*</exclude>
+                        <exclude>lib/jersey-bundle-LICENSE</exclude>
+                        <!-- MIT licensed files -->
+                        <exclude>src/main/web/hicc/css/**</exclude>
+                        <exclude>src/main/web/hicc/js/**</exclude>
+                        <exclude>src/main/web/hicc/lib/timeline/**</exclude>
+                        <exclude>lib/agent.dict</exclude>
+                        <exclude>lib/collector.dict</exclude>
+                        <exclude>lib/confspellcheck-LICENSE</exclude>
+                        <exclude>lib/confspellcheck-README</exclude>
+                        <exclude>lib/html-filter-LICENSE</exclude>
+                        <exclude>lib/json-LICENSE.txt</exclude>
+                        <exclude>lib/json-README.txt</exclude>
+                        <exclude>lib/jsr311-api-1.0-LICENSE</exclude>
+                        <exclude>lib/license-prefuse.txt</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -682,6 +735,31 @@
 
     <reporting>
       <plugins>
+        <plugin>
+            <artifactId>maven-jxr-plugin</artifactId>
+        </plugin>
+        <plugin>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <reportSets>
+                <reportSet>
+                    <reports>
+                        <report>pmd</report>
+                            <report>cpd</report>
+                        </reports>
+                    </reportSet>
+            </reportSets>
+            <configuration>
+                <targetJdk>1.5</targetJdk>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>findbugs-maven-plugin</artifactId>
+            <configuration>
+                <threshold>Normal</threshold>
+                <effort>Max</effort>
+            </configuration>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>

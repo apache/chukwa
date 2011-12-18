@@ -36,6 +36,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-620. Updated code analysis and license check in build structure. (Eric Yang)
+
     CHUKWA-618. Added HICC programming guide. (Eric Yang)
 
     CHUKWA-522. Added HICC User guide. (Eric Yang)

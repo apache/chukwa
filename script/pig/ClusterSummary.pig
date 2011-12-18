@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 %default START '1234567890';
 SystemMetrics = load 'hbase://SystemMetrics' USING org.apache.pig.backend.hadoop.hbase.HBaseStorage('tags:cluster cpu:combined cpu:idle cpu:sys cpu:user disk:ReadBytes disk:Reads disk:WriteBytes disk:Writes system:LoadAverage.1 memory:FreePercent memory:UsedPercent network:RxBytes network:RxDropped network:RxErrors network:RxPackets network:TxBytes network:TxCollisions network:TxErrors network:TxPackets','-loadKey -gt $START -caster Utf8StorageConverter') AS (rowKey, cluster, cpuCombined, cpuIdle, cpuSys, cpuUser, diskReadBytes, diskReads, diskWriteBytes, diskWrites, LoadAverage, memoryFreePercent, memoryUsedPercent, networkRxBytes, networkRxDropped, networkRxErrors, networkRxPackets, networkTxBytes, networkTxCollisions, networkTxErrors, networkTxPackets);
 CleanseBuffer = foreach SystemMetrics generate REGEX_EXTRACT($0,'^\\d+',0) as time, cluster, cpuCombined, cpuIdle, cpuSys, cpuUser, diskReadBytes, diskReads, diskWriteBytes, diskWrites, LoadAverage, memoryFreePercent, memoryUsedPercent, networkRxBytes, networkRxDropped, networkRxErrors, networkRxPackets, networkTxBytes, networkTxCollisions, networkTxErrors, networkTxPackets;
