@@ -48,7 +48,7 @@
       <item name="Overview" href="index.html"/>
       <item name="Quick Start Guide" href="Quick_Start_Guide.html"/>
       <item name="HICC User Guide" href="hicc.html"/>
-      <item name="Configuration" href="admin.html">
+      <item name="Administration Guide" href="admin.html">
         <item name="Agent" href="agent.html"/>
         <item name="Collector" href="collector.html"/>
       </item>

@@ -18,8 +18,46 @@ Basic Operation
 
   Chukwa Collectors are responsible for accepting incoming data from Agents,
 and storing the data.  Most commonly, collectors simply write all received 
-to HDFS.  In this mode, the filesystem to write to is determined by the option
+to HBase or HDFS.  
+
+* HBase
+
+  For enabling streaming data to HBase, chukwa collector writer class can
+be configured in <chukwa-collector-conf.xml>.
+
+---
+<property>
+  <name>chukwaCollector.writerClass</name>
+  <value>org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter</value>
+</property>
+---
+
+  In this mode, HBase configuration is configured in <chukwa-env.sh>.
+HBASE_CONF_DIR should reference to HBae configuration directory to enable
+Chukwa Collector to load <hbase-site.xml> from class path.
+
+* HDFS
+
+  For enabling streaming data to HDFS, chukwa collector writer class can
+be configured in <chukwa-collector-conf.xml>.
+
+---
+<property>
+  <name>chukwaCollector.writerClass</name>
+  <value>org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter</value>
+</property>
+---
+
+  In this mode, the filesystem to write to is determined by the option
 <writer.hdfs.filesystem> in <chukwa-collector-conf.xml>.
+
+---
+<property>
+    <name>writer.hdfs.filesystem</name>
+    <value>hdfs://localhost:8020/</value>
+    <description>HDFS to dump to</description>
+</property>
+---
 
   This is the only option that you really need to specify to get a working 
 collector.
@@ -41,7 +79,7 @@ the default port number.
 bin/chukwa collector writer=pretend portno=8081
 ---
 
-Advanced options
+Advanced Options
 
   There are some advanced options, not necessarily documented in the
 collector conf file, that are helpful in using Chukwa in nonstandard ways.
@@ -77,7 +115,7 @@ HBaseWriter
 inside for convert unstructured data to semi-structured data, then load the
 key value pairs to HBase table.  HBaseWriter has the following configuration:
 
-  * <hbase.demux.package> Demux parser class package, HBaseWriter uses this 
+  * <<hbase.demux.package>> Demux parser class package, HBaseWriter uses this 
     package name to validate HBase for annotated demux parser classes.
 
 ---
@@ -87,7 +125,7 @@ key value pairs to HBase table.  HBaseWriter has the following configuration:
 </property>
 ---
 
-  * <hbase.writer.verify.schema> Verify HBase Table schema with demux parser 
+  * <<hbase.writer.verify.schema>> Verify HBase Table schema with demux parser 
     schema, log warning if there are mismatch between hbase schema and 
     demux parsers.
 
@@ -98,7 +136,7 @@ key value pairs to HBase table.  HBaseWriter has the following configuration:
 </property>
 ---
 
-  * <hbase.writer.halt.on.schema.mismatch> If this option is set to true, 
+  * <<hbase.writer.halt.on.schema.mismatch>> If this option is set to true, 
     and HBase table schema is mismatched with demux parser, collector will 
     shut down itself.
 
@@ -114,7 +152,7 @@ LocalWriter
   <LocalWriter> writes chunks of data to local disk then upload file to HDFS 
 as a whole file.  This writer is designed for high throughput environment.
 
-  * <chukwaCollector.localOutputDir> Location to buffer data before moving
+  * <<chukwaCollector.localOutputDir>> Location to buffer data before moving
     data to HDFS.
 
 ---
@@ -131,13 +169,37 @@ temp filename with <.chukwa> suffix.  When the file is completed writing,
 the filename is renamed with <.done> suffix.  SeqFileWriter has the following
 configuration in <chukwa-collector-conf.xml>.
 
-  * <writer.hdfs.filesystem> Location to name node address
+  * <<writer.hdfs.filesystem>> Location to name node address
 
-  * <chukwaCollector.outputDir> Location of collect data sink directory
+---
+<property>
+    <name>writer.hdfs.filesystem</name>
+    <value>hdfs://localhost:8020/</value>
+    <description>HDFS to dump to</description>
+</property>
+---
 
-  * <chukwaCollector.rotateInterval> File Rotation Interval
+  * <<chukwaCollector.outputDir>> Location of collect data sink directory
 
-  * <chukwaCollector.isFixedTimeRotatorScheme> A flag to indicate that the 
+---
+<property>
+    <name>chukwaCollector.outputDir</name>
+    <value>/chukwa/logs/</value>
+    <description>Chukwa data sink directory</description>
+</property>
+---
+
+  * <<chukwaCollector.rotateInterval>> File Rotation Interval
+
+---
+<property>
+    <name>chukwaCollector.rotateInterval</name>
+    <value>300000</value>
+    <description>Chukwa rotate interval (ms)</description>
+</property>
+---
+
+  * <<chukwaCollector.isFixedTimeRotatorScheme>> A flag to indicate that the 
     collector should close at a fixed offset after every rotateInterval. 
     The default value is false which uses the default scheme where 
     collectors close after regular rotateIntervals.
@@ -148,8 +210,23 @@ configuration in <chukwa-collector-conf.xml>.
     isFixedTimeRotatorScheme is false, collectors will rotate approximately
     once every 5 minutes
 
-  * <chukwaCollector.fixedTimeIntervalOffset> Chukwa fixed time interval 
+---
+  <property>
+    <name>chukwaCollector.isFixedTimeRotatorScheme</name>
+    <value>false</value>
+  </property>
+---
+
+  * <<chukwaCollector.fixedTimeIntervalOffset>> Chukwa fixed time interval 
     offset value (ms)
+
+---
+<property>
+    <name>chukwaCollector.fixedTimeIntervalOffset</name>
+    <value>30000</value>
+    <description>Chukwa fixed time interval offset value (ms)</description>
+</property>
+---
 
 SocketTeeWriter
 
