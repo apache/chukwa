@@ -24,8 +24,6 @@ import java.util.regex.*;
 import org.apache.hadoop.chukwa.*;
 import org.apache.hadoop.chukwa.datacollection.*;
 import org.apache.hadoop.chukwa.datacollection.adaptor.*;
-import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
-import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 import org.apache.hadoop.conf.Configuration;
 
 /**

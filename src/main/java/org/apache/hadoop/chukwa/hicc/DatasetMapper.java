@@ -19,7 +19,6 @@
 package org.apache.hadoop.chukwa.hicc;
 
 
-import java.text.SimpleDateFormat;
 import java.util.TreeMap;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ import java.util.List;
 import java.sql.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 public class DatasetMapper {
   private String jdbc;
@@ -42,7 +42,6 @@ public class DatasetMapper {
 
   public void execute(String query, boolean groupBySecondColumn,
       boolean calculateSlope, String formatTime, List<Object> parameters) {
-    SimpleDateFormat sdf = null;
     dataset.clear();
     try {
       // The newInstance() call is a work around for some
@@ -55,11 +54,8 @@ public class DatasetMapper {
     Connection conn = null;
     PreparedStatement stmt = null;
     ResultSet rs = null;
-    int counter = 0;
-    int size = 0;
     labels.clear();
     double max = 0.0;
-    int labelsCount = 0;
     long timeWindowSize=0;
     long previousTime=0;
     try {
@@ -88,11 +84,10 @@ public class DatasetMapper {
           String label = "";
           if (rmeta.getColumnType(1) == java.sql.Types.TIMESTAMP) {
             long time = rs.getTimestamp(1).getTime();
-            if(time==previousTime) {
-            } else if(timeWindowSize==0) {
+            if(timeWindowSize==0) {
               timeWindowSize=1;
               previousTime=time;
-            } else {
+            } else if(time!=previousTime) {
               timeWindowSize=(time-previousTime)/60000;
               previousTime=time;
             }
@@ -119,7 +114,7 @@ public class DatasetMapper {
                 double tmp = 0L;
                 if (data.size() > 1) {
                   tmp = (current - previousHash.get(item).doubleValue())/timeWindowSize;
-                  if(tmp==Double.NEGATIVE_INFINITY || tmp==Double.POSITIVE_INFINITY) {
+                  if(timeWindowSize<=0) {
                     tmp = Double.NaN;
                   }
                 } else {
@@ -158,7 +153,7 @@ public class DatasetMapper {
                 double tmp = current;
                 if (data.size() > 1) {
                   tmp = (tmp - previousArray[j])/timeWindowSize;
-                  if(tmp==Double.NEGATIVE_INFINITY || tmp==Double.POSITIVE_INFINITY) {
+                  if(timeWindowSize<=0) {
                     tmp = Double.NaN;
                   }
                 } else {
@@ -176,7 +171,6 @@ public class DatasetMapper {
             }
           }
         }
-        labelsCount = i;
       } else {
         log.error("query is not executed.");
       }
@@ -187,6 +181,7 @@ public class DatasetMapper {
       log.error("SQLState: " + ex.getSQLState());
       log.error("VendorError: " + ex.getErrorCode());
     } catch (Exception ex) {
+      log.debug(ExceptionUtil.getStackTrace(ex));
     } finally {
       // it is a good idea to release
       // resources in a finally{} block
@@ -196,7 +191,7 @@ public class DatasetMapper {
         try {
           rs.close();
         } catch (SQLException sqlEx) {
-          // ignore
+          log.debug(ExceptionUtil.getStackTrace(sqlEx));
         }
         rs = null;
       }
@@ -204,7 +199,7 @@ public class DatasetMapper {
         try {
           stmt.close();
         } catch (SQLException sqlEx) {
-          // ignore
+          log.debug(ExceptionUtil.getStackTrace(sqlEx));
         }
         stmt = null;
       }
@@ -212,7 +207,7 @@ public class DatasetMapper {
         try {
           conn.close();
         } catch (SQLException sqlEx) {
-          // ignore
+          log.debug(ExceptionUtil.getStackTrace(sqlEx));
         }
         conn = null;
       }

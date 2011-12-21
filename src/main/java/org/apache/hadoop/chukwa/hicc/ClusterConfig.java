@@ -25,8 +25,7 @@ import java.util.*;
 import org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore;
 
 public class ClusterConfig {
-  public static Set<String> clusterMap = null;
-  private String path = System.getenv("CHUKWA_CONF_DIR") + File.separator;
+  private static Set<String> clusterMap = null;
 
   static public String getContents(File aFile) {
     // ...checks on aFile are elided

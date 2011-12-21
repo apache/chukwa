@@ -21,9 +21,6 @@ package org.apache.hadoop.chukwa.rest.bean;
 import java.text.ParseException;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -78,7 +75,7 @@ public class PagesBean {
 
   @XmlElement(name="layout")
   public ColumnBean[] getLayout() {
-    return layout;
+    return layout.clone();
   }
   
   public void update() {
@@ -92,16 +89,16 @@ public class PagesBean {
   }
 
   public void setLayout(ColumnBean[] layout) {
-    this.layout = layout;
+    this.layout = (ColumnBean[]) layout.clone();
   }
 
   @XmlElement(name="colSize")
   public int[] getColSize() {
-    return this.columnSizes;  
+    return this.columnSizes.clone();  
   }
   
   public void setColSize(int[] size) {
-    this.columnSizes = size;
+    this.columnSizes = (int[]) size.clone();
   }
 
   @XmlElement(name="columns")

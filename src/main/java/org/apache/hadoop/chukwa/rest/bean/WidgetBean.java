@@ -118,7 +118,7 @@ public class WidgetBean {
   
   @XmlElement
   public ParametersBean[] getParameters() {
-    return parameters;
+    return parameters.clone();
   }
   
   public void setId(String id) {
@@ -150,7 +150,7 @@ public class WidgetBean {
   }
   
   public void setParameters(ParametersBean[] p) {
-    this.parameters=p;
+    this.parameters=p.clone();
   }
   
   public void update() {

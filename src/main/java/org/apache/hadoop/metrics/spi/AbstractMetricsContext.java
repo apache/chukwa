@@ -328,7 +328,6 @@ public abstract class AbstractMetricsContext implements MetricsContext {
    * the internal table of metric data.
    */
   protected void update(MetricsRecordImpl record) {
-    long now = System.currentTimeMillis();
     
     String recordName = record.getRecordName();
     TagMap tagTable = record.getTagTable();

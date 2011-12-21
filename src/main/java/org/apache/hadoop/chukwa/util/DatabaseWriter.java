@@ -18,8 +18,6 @@
 
 package org.apache.hadoop.chukwa.util;
 
-
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -29,7 +27,6 @@ import java.util.List;
 import java.text.SimpleDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.chukwa.inputtools.mdl.DataConfig;
 
 public class DatabaseWriter {
   private static Log log = LogFactory.getLog(DatabaseWriter.class);
@@ -39,7 +36,6 @@ public class DatabaseWriter {
   private ResultSet rs = null;
 
   public DatabaseWriter(String host, String user, String password) {
-    DataConfig mdlConfig = new DataConfig();
     String jdbc_url = "jdbc:mysql://" + host + "/";
     if (user != null) {
       jdbc_url = jdbc_url + "?user=" + user;
@@ -100,6 +96,7 @@ public class DatabaseWriter {
           stmt.close();
         } catch (SQLException sqlEx) {
           // ignore
+          log.debug(ExceptionUtil.getStackTrace(sqlEx));
         }
         stmt = null;
       }
@@ -127,7 +124,6 @@ public class DatabaseWriter {
       log.debug("SQLState: " + ex.getSQLState());
       log.debug("VendorError: " + ex.getErrorCode());
       throw ex;
-    } finally {
     }
     return rs;
   }
@@ -145,7 +141,6 @@ public class DatabaseWriter {
       log.debug("SQLState: " + ex.getSQLState());
       log.debug("VendorError: " + ex.getErrorCode());
       throw ex;
-    } finally {
     }
     return rs;
   }
@@ -160,6 +155,7 @@ public class DatabaseWriter {
         rs.close();
       } catch (SQLException sqlEx) {
         // ignore
+        log.debug(ExceptionUtil.getStackTrace(sqlEx));
       }
       rs = null;
     }
@@ -168,6 +164,7 @@ public class DatabaseWriter {
         stmt.close();
       } catch (SQLException sqlEx) {
         // ignore
+        log.debug(ExceptionUtil.getStackTrace(sqlEx));
       }
       stmt = null;
     }
@@ -176,6 +173,7 @@ public class DatabaseWriter {
         conn.close();
       } catch (SQLException sqlEx) {
         // ignore
+        log.debug(ExceptionUtil.getStackTrace(sqlEx));
       }
       conn = null;
     }

@@ -74,7 +74,7 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
     this.tags = dataFactory.getDefaultTags();
     this.streamName = streamName;
     this.dataType = dataType;
-    this.data = data;
+    this.data = (byte[]) data.clone();
     this.initiator = source;
   }
 
@@ -82,14 +82,14 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
    * @see org.apache.hadoop.chukwa.Chunk#getData()
    */
   public byte[] getData() {
-    return data;
+    return data.clone();
   }
 
   /**
    * @see org.apache.hadoop.chukwa.Chunk#setData(byte[])
    */
   public void setData(byte[] logEvent) {
-    this.data = logEvent;
+    this.data = (byte[]) logEvent.clone();
   }
 
   /**
@@ -153,11 +153,11 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
   public int[] getRecordOffsets() {
     if (recordEndOffsets == null)
       recordEndOffsets = new int[] { data.length - 1 };
-    return recordEndOffsets;
+    return recordEndOffsets.clone();
   }
 
   public void setRecordOffsets(int[] offsets) {
-    recordEndOffsets = offsets;
+    recordEndOffsets = (int[]) offsets.clone();
   }
 
   public String getDataType() {

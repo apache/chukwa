@@ -22,24 +22,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.sql.DatabaseMetaData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.chukwa.inputtools.mdl.DataConfig;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
-import org.apache.hadoop.chukwa.util.ExceptionUtil;
-import org.apache.hadoop.chukwa.util.PidFile;
 
 @SuppressWarnings("unused")
 public class Aggregator {
@@ -125,10 +114,9 @@ public class Aggregator {
     String[] query = queries.split("\n");
     while(startTime<=endTime) {
       for (int i = 0; i < query.length; i++) {
-        if (query[i].equals("")) {
-        } else if (query[i].indexOf("#") == 0) {
+        if (query[i].indexOf("#") == 0) {
           log.debug("skipping: " + query[i]);
-        } else {
+        } else if(!query[i].equals("")) {
           Aggregator dba = new Aggregator();
           long start = Calendar.getInstance().getTimeInMillis();
           try {

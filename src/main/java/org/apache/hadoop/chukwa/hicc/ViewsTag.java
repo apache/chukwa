@@ -23,12 +23,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 import java.io.IOException;
 import java.util.*;
-import org.apache.hadoop.chukwa.hicc.Views;
 
 public class ViewsTag extends SimpleTagSupport {
-  private String key = null;
-  private String owner = null;
-  private String description = null;
   Views views = new Views();
 
   public void doTag() throws JspException, IOException {

@@ -20,15 +20,11 @@ package org.apache.hadoop.chukwa.datacollection.writer.hbase;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Put;
-import org.apache.log4j.Logger;
 
 public class OutputCollector implements
     org.apache.hadoop.mapred.OutputCollector<ChukwaRecordKey, ChukwaRecord> {

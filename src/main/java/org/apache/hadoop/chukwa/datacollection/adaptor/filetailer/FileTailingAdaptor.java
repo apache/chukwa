@@ -18,18 +18,10 @@
 
 package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 
-
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.apache.hadoop.chukwa.ChunkImpl;
-import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
 import org.apache.hadoop.chukwa.datacollection.adaptor.*;
-import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.log4j.Logger;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 /**
  * An adaptor that repeatedly tails a specified file, sending the new bytes.
@@ -195,11 +187,11 @@ public class FileTailingAdaptor extends LWFTAdaptor {
             }
             newReader =null;
           } catch (Throwable e) {
-            // do nothing.
+            log.debug(ExceptionUtil.getStackTrace(e));
           }
         }
       } catch (IOException e) {
-        // do nothing, if file doesn't exist.
+        log.debug(ExceptionUtil.getStackTrace(e));
       }
       if (len >= fileReadOffset) {
         if (offsetOfFirstByte > fileReadOffset) {

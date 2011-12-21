@@ -54,7 +54,7 @@ public class SysLog extends AbstractProcessor {
       start = idx + 1;
       idx = recordEntry.indexOf(' ', start);
       String body = recordEntry.substring(idx + 1);
-      body.replaceAll("\n", "");
+      body = body.replaceAll("\n", "");
 
       Calendar convertDate = Calendar.getInstance();
       Date d = sdf.parse(dStr);

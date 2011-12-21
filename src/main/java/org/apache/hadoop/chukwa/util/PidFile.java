@@ -43,6 +43,7 @@ public class PidFile extends Thread {
       chukwaHome = new File(tmpDir, "chukwa");
       chukwaHome.mkdir();
     } catch(IOException e) {
+      log.debug(ExceptionUtil.getStackTrace(e));
     } finally {    
       DEFAULT_CHUKWA_HOME = chukwaHome.getAbsolutePath();
     }

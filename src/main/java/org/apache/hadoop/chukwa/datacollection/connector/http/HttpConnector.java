@@ -166,7 +166,6 @@ public class HttpConnector implements Connector, Runnable {
           Thread.currentThread().interrupt();
           break;
         }
-        int toSend = newQueue.size();
         List<ChukwaHttpSender.CommitListEntry> results = connectorClient
             .send(newQueue);
         // checkpoint the chunks which were committed

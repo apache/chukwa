@@ -30,25 +30,17 @@ import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.PipelineableWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.WriterException;
 import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter.CommitStatus;
-
 import org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MapProcessor;
 import org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MapProcessorFactory;
-
 import org.apache.hadoop.chukwa.util.ClassUtils;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
-
 import org.apache.hadoop.hbase.client.HBaseAdmin;
-
-import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
-
-import org.apache.hadoop.chukwa.datacollection.writer.hbase.OutputCollector;
-import org.apache.hadoop.chukwa.datacollection.writer.hbase.Reporter;
 import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
 import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Tables;
 import org.apache.log4j.Logger;

@@ -53,6 +53,7 @@ public class XssFilter {
         }
       } catch(NullPointerException ex) {
         // Do nothing if session does not exist.
+        log.debug(ExceptionUtil.getStackTrace(ex));
       }
     }
     

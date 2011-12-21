@@ -34,7 +34,6 @@ public class MaxRateSender extends Thread implements Adaptor {
   private long offset;
   private String type;
   ChunkReceiver dest;
-  private String adaptorID;
 
   public String getCurrentStatus() {
     return type;
@@ -43,7 +42,6 @@ public class MaxRateSender extends Thread implements Adaptor {
   public void start(String adaptorID, String type, long offset,
       ChunkReceiver dest) throws AdaptorException {
     this.setName("MaxRateSender adaptor");
-    this.adaptorID = adaptorID;
     this.offset = offset;
     this.type = type;
     this.dest = dest;

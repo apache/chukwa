@@ -50,7 +50,7 @@ public class Torque extends AbstractProcessor {
       start = idx + 1;
       idx = recordEntry.indexOf(' ', start);
       String body = recordEntry.substring(idx + 1);
-      body.replaceAll("\n", "");
+      body = body.replaceAll("\n", "");
       Date d = sdf.parse(dStr);
       String[] kvpairs = body.split(", ");
 

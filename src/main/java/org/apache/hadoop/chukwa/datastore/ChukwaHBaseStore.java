@@ -17,7 +17,6 @@
  */
 package org.apache.hadoop.chukwa.datastore;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,16 +26,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter;
 import org.apache.hadoop.chukwa.hicc.bean.Series;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
@@ -47,7 +43,6 @@ import org.apache.hadoop.hbase.filter.RowFilter;
 import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
 import org.apache.log4j.Logger;
-import org.mortbay.log.Log;
 
 public class ChukwaHBaseStore {
   private static Configuration hconf = HBaseConfiguration.create();
@@ -83,7 +78,6 @@ public class ChukwaHBaseStore {
         scan.setFilter(rf);
       }
       ResultScanner results = table.getScanner(scan);
-      long step = startTime;
       Iterator<Result> it = results.iterator();
       // TODO: Apply discrete wavelet transformation to limit the output
       // size to 1000 data points for graphing optimization. (i.e jwave)
@@ -110,7 +104,6 @@ public class ChukwaHBaseStore {
     Set<String> familyNames = new CopyOnWriteArraySet<String>();
     try {
       HTableInterface table = pool.getTable(tableName);
-      Calendar c = Calendar.getInstance();
       Set<byte[]> families = table.getTableDescriptor().getFamiliesKeys();
       for(byte[] name : families) {
         familyNames.add(new String(name));

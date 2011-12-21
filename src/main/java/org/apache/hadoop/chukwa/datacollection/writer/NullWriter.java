@@ -20,6 +20,8 @@ package org.apache.hadoop.chukwa.datacollection.writer;
 import java.util.List;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.log4j.Logger;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 /**
  * Minimal writer; does nothing with data.
@@ -29,6 +31,7 @@ import org.apache.hadoop.conf.Configuration;
  *
  */
 public class NullWriter implements ChukwaWriter {
+  private static final Logger log = Logger.getLogger(NullWriter.class);
   
   //in kb per sec
   int maxDataRate = Integer.MAX_VALUE;
@@ -41,19 +44,19 @@ public class NullWriter implements ChukwaWriter {
         dataBytes +=c.getData().length;
       if(maxDataRate > 0)
         Thread.sleep(dataBytes / maxDataRate);
-    } catch(Exception e) {}
+    } catch(Exception e) {
+      log.debug(ExceptionUtil.getStackTrace(e));
+    }
     return COMMIT_OK;
   }
 
   @Override
   public void close() throws WriterException {
-    return;
   }
 
   @Override
   public void init(Configuration c) throws WriterException {
     maxDataRate = c.getInt(RATE_OPT_NAME, 0);
-    return;
   }
 
 }

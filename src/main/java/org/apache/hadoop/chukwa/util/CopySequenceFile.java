@@ -21,8 +21,6 @@ package org.apache.hadoop.chukwa.util;
 
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
-import org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter;
-import org.apache.hadoop.chukwa.datacollection.writer.localfs.LocalWriter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.ChecksumException;
 import org.apache.hadoop.fs.FSDataOutputStream;

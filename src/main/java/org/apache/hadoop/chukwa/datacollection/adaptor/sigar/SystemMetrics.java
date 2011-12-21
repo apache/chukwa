@@ -37,8 +37,6 @@ import java.util.Timer;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AbstractAdaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy;
-import org.apache.hadoop.chukwa.datacollection.adaptor.jms.JMSMessageTransformer;
-import org.apache.hadoop.chukwa.datacollection.adaptor.jms.JMSTextMessageTransformer;
 import org.apache.log4j.Logger;
 
 public class SystemMetrics extends AbstractAdaptor {

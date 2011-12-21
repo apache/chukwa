@@ -21,9 +21,6 @@ package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import org.apache.hadoop.chukwa.datacollection.ChunkQueue;
-import org.apache.hadoop.chukwa.datacollection.DataFactory;
-import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 

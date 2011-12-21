@@ -21,10 +21,8 @@ import java.io.IOException;
 import java.net.URI;
 
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.Chunk;
@@ -37,7 +35,6 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.SequenceFile;
-import org.mortbay.log.Log;
 
 /**
  * A writer that writes a file for each post. Intended ONLY for architectural

@@ -32,9 +32,7 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.hadoop.chukwa.extraction.demux.processor.mapper.AbstractProcessor;
 import org.apache.log4j.Logger;
-import org.mortbay.log.Log;
 
 public class ClassUtils {
   static Logger log = Logger.getLogger(ClassUtils.class);

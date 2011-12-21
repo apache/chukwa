@@ -27,6 +27,7 @@ import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -183,7 +184,7 @@ public class FileAdaptor extends AbstractAdaptor {
            try {
              reader.close();
            } catch (Exception e) {
-            // do nothing
+             log.debug(ExceptionUtil.getStackTrace(e));
           }
            reader = null;
          }
@@ -205,7 +206,7 @@ public class FileAdaptor extends AbstractAdaptor {
       try {
         reader.close();
       } catch (Exception e) {
-       // do nothing
+        log.debug(ExceptionUtil.getStackTrace(e));
      }
       reader = null;
     } 

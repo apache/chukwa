@@ -20,12 +20,12 @@ package org.apache.hadoop.chukwa.datacollection.adaptor;
 
 
 import org.apache.hadoop.chukwa.ChunkImpl;
-import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
 import org.apache.hadoop.chukwa.inputtools.plugin.ExecPlugin;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.ISO8601DateFormat;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
 import java.util.*;
 
 /**
@@ -68,7 +68,7 @@ public class ExecAdaptor extends AbstractAdaptor {
       JSONObject o = exec.execute();
       try {
 
-        if (o.getInt("status") == exec.statusKO) {
+        if (((Integer) o.get("status")).intValue() == exec.statusKO) {
           deregisterAndStop();
           return;
         }
@@ -84,12 +84,12 @@ public class ExecAdaptor extends AbstractAdaptor {
           result.append(" INFO org.apache.hadoop.chukwa.");
           result.append(type);
           result.append("= ");
-          result.append(o.getString("exitValue"));
+          result.append(o.get("exitValue"));
           result.append(": ");
-          result.append(o.getString("stdout"));
+          result.append((String) o.get("stdout"));
           data = result.toString().getBytes();
         } else {
-          String stdout = o.getString("stdout");
+          String stdout = (String) o.get("stdout");
           data = stdout.getBytes();
         }
 
@@ -110,10 +110,8 @@ public class ExecAdaptor extends AbstractAdaptor {
         //We can't replay exec data, so we might as well commit to it now.
         control.reportCommit(ExecAdaptor.this, sendOffset);
         dest.add(c);
-      } catch (JSONException e) {
-        log.warn(e);
       } catch (InterruptedException e) {
-        ;
+        log.debug(e);
       } 
     }
   };

@@ -25,9 +25,6 @@ package org.apache.hadoop.chukwa.inputtools.log4j;
  * Copy chukwa-hadoop-*-client.jar and json.jar to HADOOP_HOME/lib
  * 
  */
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.hadoop.metrics.ContextFactory;
 import org.apache.hadoop.metrics.MetricsException;
 import org.apache.hadoop.metrics.spi.AbstractMetricsContext;
@@ -38,7 +35,8 @@ import org.json.simple.JSONObject;
 import java.util.TreeMap;
 import java.util.Map;
 import java.util.Collection;
-import java.util.List;
+import java.io.IOException;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 public class Log4JMetricsContext extends AbstractMetricsContext {
   Logger log = Logger.getLogger(Log4JMetricsContext.class);
@@ -67,6 +65,7 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
       try {
         period = Integer.parseInt(periodStr);
       } catch (NumberFormatException nfe) {
+        log.debug(ExceptionUtil.getStackTrace(nfe));
       }
       if (period <= 0) {
         throw new MetricsException("Invalid period: " + periodStr);

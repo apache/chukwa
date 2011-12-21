@@ -19,7 +19,6 @@
 package org.apache.hadoop.chukwa.analysis.salsa.fsm;
 
 import org.apache.hadoop.mapred.Partitioner;
-import org.apache.hadoop.mapred.JobConfigurable;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 
@@ -35,7 +34,6 @@ public class FSMIntermedEntryPartitioner
 	
 	public void configure(JobConf job) {
 		// do nothing
-		return;
 	}
 
 }

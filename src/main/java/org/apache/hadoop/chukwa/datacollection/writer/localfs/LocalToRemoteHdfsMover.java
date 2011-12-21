@@ -120,6 +120,7 @@ public class LocalToRemoteHdfsMover extends Thread {
         throw new RuntimeException("Cannot rename remote file, " + pRemoteFilePath + " to " + pFinalRemoteFilePath);
       }
     }catch(FileNotFoundException ex) {
+      log.debug("File not found: " + remoteFilePath);
       //do nothing since if the file is no longer there it's
       // because it has already been moved over by the cleanup task.
     }

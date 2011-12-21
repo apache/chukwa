@@ -37,7 +37,7 @@ import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 @Path ("/user")
 public class UserResource {
-  protected static Log log = LogFactory.getLog(UserResource.class);
+  protected static final Log log = LogFactory.getLog(UserResource.class);
   
   @GET
   @Path("uid/{uid}")

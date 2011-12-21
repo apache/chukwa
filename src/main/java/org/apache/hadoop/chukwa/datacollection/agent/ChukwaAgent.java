@@ -48,6 +48,7 @@ import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
 import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
 import org.apache.hadoop.chukwa.util.AdaptorNamingUtils;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
@@ -90,7 +91,7 @@ public class ChukwaAgent implements AdaptorManager {
     return agent;
   }
 
-  Configuration conf = null;
+  static Configuration conf = null;
   Connector connector = null;
 
   // doesn't need an equals(), comparator, etc
@@ -164,15 +165,14 @@ public class ChukwaAgent implements AdaptorManager {
         System.exit(0);
       }
 
-      Configuration conf = readConfig();
+      conf = readConfig();
+      agent = new ChukwaAgent(conf);
       
-      ChukwaAgent localAgent = new ChukwaAgent(conf);
-
       if (agent.anotherAgentIsRunning()) {
         System.out
             .println("another agent is running (or port has been usurped). "
                 + "Bailing out now");
-        DaemonWatcher.bailout(-1);
+        throw new AlreadyRunningException();
       }
 
       int uriArgNumber = 0;
@@ -198,6 +198,7 @@ public class ChukwaAgent implements AdaptorManager {
       System.out
           .println("agent started already on this machine with same portno;"
               + " bailing out");
+      DaemonWatcher.bailout(-1);
       System.exit(0); // better safe than sorry
     } catch (Exception e) {
       e.printStackTrace();
@@ -744,15 +745,14 @@ public class ChukwaAgent implements AdaptorManager {
           .getAbsolutePath());
     conf.set("chukwaAgent.initial_adaptors", new File(chukwaConf,
         "initial_adaptors").getAbsolutePath());
-    
-    
     try { 
       Configuration chukwaAgentConf = new Configuration(false);
       chukwaAgentConf.addResource(new Path(agentConf.getAbsolutePath()));
       Checker.checkConf(new OptDictionary(new File(new File(chukwaHome, "share/chukwa/lib"), "agent.dict")),
           HSlurper.fromHConf(chukwaAgentConf));
-    } catch(Exception e) {e.printStackTrace();}
-    
+    } catch(Exception e) {
+      e.printStackTrace();
+    }    
     return conf;
   }
 
@@ -783,6 +783,7 @@ public class ChukwaAgent implements AdaptorManager {
         if (needNewCheckpoint)
           writeCheckpoint(); // write a last checkpoint here, before stopping
       } catch (IOException e) {
+        log.debug(ExceptionUtil.getStackTrace(e));
       }
     }
     // adaptors

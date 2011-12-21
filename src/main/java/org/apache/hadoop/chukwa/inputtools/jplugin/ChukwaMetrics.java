@@ -20,8 +20,6 @@ package org.apache.hadoop.chukwa.inputtools.jplugin;
 
 import java.util.HashMap;
 
-import org.w3c.dom.Element;
-
 public interface ChukwaMetrics {
   String getKey();
   HashMap<String, String> getAttributes();

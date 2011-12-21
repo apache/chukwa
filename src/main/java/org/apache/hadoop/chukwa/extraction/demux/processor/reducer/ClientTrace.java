@@ -19,13 +19,6 @@
 package org.apache.hadoop.chukwa.extraction.demux.processor.reducer;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.Iterator;
 
 import org.apache.hadoop.chukwa.extraction.engine.Record;

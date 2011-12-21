@@ -23,7 +23,6 @@
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TimeZone;
 

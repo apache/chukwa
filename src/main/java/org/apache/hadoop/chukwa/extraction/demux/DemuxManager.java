@@ -18,7 +18,6 @@
 
 package org.apache.hadoop.chukwa.extraction.demux;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -58,7 +57,6 @@ public class DemuxManager implements CHUKWA_CONSTANT {
   
   protected SimpleDateFormat dayTextFormat = new java.text.SimpleDateFormat("yyyyMMdd");
   protected volatile boolean isRunning = true;
-  private final static String demuxPath = System.getenv("CHUKWA_HOME")+File.separator+"lib"+File.separator+"demux";
 
   final private static PathFilter DATA_SINK_FILTER = new PathFilter() {
     public boolean accept(Path file) {

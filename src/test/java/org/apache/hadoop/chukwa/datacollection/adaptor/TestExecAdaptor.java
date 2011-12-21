@@ -38,10 +38,10 @@ public class TestExecAdaptor extends TestCase {
     ChunkCatcherConnector chunks = new ChunkCatcherConnector();
     chunks.start();
     String psAgentID = agent.processAddCommand(
-        "add org.apache.hadoop.chukwa.datacollection.adaptor.ExecAdaptor ps ps aux 0");
-    assertNotNull(psAgentID);
+        "add exec= org.apache.hadoop.chukwa.datacollection.adaptor.ExecAdaptor ps 500 ps aux 0");
     Chunk c = chunks.waitForAChunk();
     System.out.println(new String(c.getData()));
+    assertNotNull(psAgentID);
     agent.shutdown();
   }
   

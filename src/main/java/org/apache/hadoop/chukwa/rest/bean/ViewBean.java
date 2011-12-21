@@ -73,7 +73,7 @@ public class ViewBean {
   
   @XmlElement
   public PagesBean[] getPages() {
-    return pages;
+    return pages.clone();
   }
   
   @XmlElement
@@ -102,7 +102,7 @@ public class ViewBean {
   }
   
   public void setPages(PagesBean[] pages) {
-    this.pages = pages;
+    this.pages = (PagesBean[]) pages.clone();
   }
   
   public void setDescription(String description) {

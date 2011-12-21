@@ -19,19 +19,16 @@
 package org.apache.hadoop.chukwa.hicc;
 
 
-import java.io.PrintWriter;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.Date;
-import java.text.ParseException;
+import java.util.Map.Entry;
 import java.text.SimpleDateFormat;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.hadoop.chukwa.hicc.ColorPicker;
+import javax.swing.text.html.HTMLDocument.Iterator;
+
 import org.apache.hadoop.chukwa.util.XssFilter;
 import org.json.JSONArray;
 
@@ -148,7 +145,7 @@ public class Chart {
   }
 
   public void setSeriesOrder(String[] metrics) {
-    this.seriesOrder = metrics;
+    this.seriesOrder = (String[]) metrics.clone();
   }
 
   public void setXAxisLabels(boolean toggle) {
@@ -190,7 +187,6 @@ public class Chart {
   }
 
   public String plot() {
-    SimpleDateFormat format = new SimpleDateFormat("m:s:S");
     StringBuilder output = new StringBuilder();
     if (dataset == null && restData == null) {
       output.append("No Data available.");
@@ -352,108 +348,110 @@ public class Chart {
     output.append("_series=[\n");
     ColorPicker cp = new ColorPicker();
     int i = 0;
-    for (TreeMap<String, TreeMap<String, Double>> dataMap : this.dataset) {
-      String[] keyNames = null;
-      if (this.seriesOrder != null) {
-        keyNames = this.seriesOrder;
-      } else {
-        keyNames = dataMap.keySet().toArray(
-            new String[dataMap.size()]);
-      }
-      int counter = 0;
-      if (i != 0) {
-        if (!this.userDefinedMax) {
-          this.max = 0;
+    if(this.dataset!=null) {
+      for (TreeMap<String, TreeMap<String, Double>> dataMap : this.dataset) {
+        String[] keyNames;
+        if (this.seriesOrder != null) {
+          keyNames = this.seriesOrder;
+        } else {
+          keyNames = dataMap.keySet().toArray(
+              new String[dataMap.size()]);
         }
-      }
-      for (String seriesName : keyNames) {
-        int counter2 = 0;
-        if ((counter != 0) || (i != 0)) {
-          output.append(",");
+        int counter = 0;
+        if (i != 0 && !this.userDefinedMax) {
+            this.max = 0;
         }
-        String param = "fill: false, lineWidth: 1";
-        String type = "lines";
-        if (this.chartType.get(i).intern() == "stack-area".intern()
-            || this.chartType.get(i).intern() == "area".intern()) {
-          param = "fill: true, lineWidth: 0";
-        }
-        if (this.chartType.get(i).intern() == "bar".intern()) {
-          type = "bars";
-          param = "stepByStep: true, lineWidth: 0";
-        }
-        if (this.chartType.get(i).intern() == "point".intern()) {
-          type = "points";
-          param = "fill: false";
-        }
-        output.append("  {");
-        output.append(type);
-        output.append(": { show: true, ");
-        output.append(param);
-        output.append(" }, color: \"");
-        output.append(cp.getNext());
-        output.append("\", label: \"");
-        output.append(seriesName);
-        output.append("\", ");
-        String showYAxis = "false";
-        String shortRow = "false";
-        if (counter == 0 || i > 0) {
-          showYAxis = "true";
-          shortRow = "false";
-        }
-        output.append(" row: { show: ");
-        output.append(showYAxis);
-        output.append(",shortRow:");
-        output.append(shortRow);
-        output.append(", showYAxis:");
-        output.append(showYAxis);
-        output.append("}, data:[");
-        TreeMap<String, Double> data = dataMap.get(seriesName);
-        if(data!=null) {
-          for (String dp : data.keySet()) {
-            int rangeLabel = 0;
-            if (counter2 != 0) {
-              output.append(",");
-            }
-            if (xLabel.equals("Time")) {
-              if (data.get(dp) == Double.NaN) {
-                output.append("[");
-                output.append(dp);
-                output.append(",NULL]");
-              } else {
-                output.append("[");
-                output.append(dp);
-                output.append(",");
-                output.append(data.get(dp));
-                output.append("]");
-              }
-            } else {
-              long value = xLabelRangeHash.get(dp);
-              if (data.get(dp) == Double.NaN) {
-                output.append("[");
-                output.append(value);
-                output.append(",NULL]");
-              } else {
-                output.append("[");
-                output.append(value);
-                output.append(",");
-                output.append(data.get(dp));
-                output.append("]");
-              }
-              rangeLabel++;
-            }
-            counter2++;
+        for (String seriesName : keyNames) {
+          int counter2 = 0;
+          if ((counter != 0) || (i != 0)) {
+            output.append(",");
           }
+          String param = "fill: false, lineWidth: 1";
+          String type = "lines";
+          if (this.chartType.get(i).intern() == "stack-area".intern()
+              || this.chartType.get(i).intern() == "area".intern()) {
+            param = "fill: true, lineWidth: 0";
+          }
+          if (this.chartType.get(i).intern() == "bar".intern()) {
+            type = "bars";
+            param = "stepByStep: true, lineWidth: 0";
+          }
+          if (this.chartType.get(i).intern() == "point".intern()) {
+            type = "points";
+            param = "fill: false";
+          }
+          output.append("  {");
+          output.append(type);
+          output.append(": { show: true, ");
+          output.append(param);
+          output.append(" }, color: \"");
+          output.append(cp.getNext());
+          output.append("\", label: \"");
+          output.append(seriesName);
+          output.append("\", ");
+          String showYAxis = "false";
+          String shortRow = "false";
+          if (counter == 0 || i > 0) {
+            showYAxis = "true";
+            shortRow = "false";
+          }
+          output.append(" row: { show: ");
+          output.append(showYAxis);
+          output.append(",shortRow:");
+          output.append(shortRow);
+          output.append(", showYAxis:");
+          output.append(showYAxis);
+          output.append("}, data:[");
+          TreeMap<String, Double> data = dataMap.get(seriesName);
+          if(data!=null) {
+            java.util.Iterator<Entry<String, Double>> iter = data.entrySet().iterator();
+            while (iter.hasNext()) {
+              Map.Entry<String, Double> entry = (Map.Entry<String, Double>) iter.next();
+              int rangeLabel = 0;
+              if (counter2 != 0) {
+                output.append(",");
+              }
+              if (xLabel.equals("Time")) {
+                if (Double.isNaN(entry.getValue())) {
+                  output.append("[");
+                  output.append(entry.getKey());
+                  output.append(",NULL]");
+                } else {
+                  output.append("[");
+                  output.append(entry.getKey());
+                  output.append(",");
+                  output.append(entry.getValue());
+                  output.append("]");
+                }
+              } else {
+                long value = xLabelRangeHash.get(entry.getKey());
+                if (Double.isNaN(entry.getValue())) {
+                  output.append("[");
+                  output.append(value);
+                  output.append(",NULL]");
+                } else {
+                  output.append("[");
+                  output.append(value);
+                  output.append(",");
+                  output.append(entry.getValue());
+                  output.append("]");
+                }
+                rangeLabel++;
+              }
+              counter2++;
+            }
+          }
+          output.append("], min:0");
+          if (this.userDefinedMax) {
+            output.append(", max:");
+            output.append(this.max);
+          }
+          output.append("}");
+          counter++;
         }
-        output.append("], min:0");
-        if (this.userDefinedMax) {
-          output.append(", max:");
-          output.append(this.max);
-        }
-        output.append("}");
-        counter++;
+        i++;
       }
-      i++;
-    }
+      }
     output.append(" ];\n");
     if(this.restData!=null) {
       JSONArray arr = new JSONArray();

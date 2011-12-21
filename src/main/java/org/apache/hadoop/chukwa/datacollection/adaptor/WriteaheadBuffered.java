@@ -22,7 +22,6 @@ import java.io.*;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
-import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 import org.apache.log4j.Logger;
 import static org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy.*;
 

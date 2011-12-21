@@ -24,7 +24,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 
 import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Tables;
 import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
@@ -34,8 +33,6 @@ import org.apache.hadoop.chukwa.extraction.engine.Record;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 @Tables(annotations={
 @Table(name="Jobs",columnFamily="summary")
@@ -69,7 +66,7 @@ public class JobSummary extends AbstractProcessor {
       idx = recordEntry.indexOf(' ', start);
       // String className = recordEntry.substring(start, idx-1);
       String body = recordEntry.substring(idx + 1);
-      body.replaceAll("\n", "");
+      body = body.replaceAll("\n", "");
       // log.info("record [" + recordEntry + "] body [" + body +"]");
       Date d = sdf.parse(dStr);
 

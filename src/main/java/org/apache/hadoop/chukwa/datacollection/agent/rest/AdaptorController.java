@@ -21,9 +21,12 @@ import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.OffsetStatsManager;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.json.JSONObject;
 import org.json.JSONException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
@@ -70,6 +73,7 @@ import java.util.Map;
 public class AdaptorController {
 
   private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat();
+  private static final Log log = LogFactory.getLog(AdaptorController.class);
 
   static {
     DECIMAL_FORMAT.setMinimumFractionDigits(2);
@@ -345,7 +349,9 @@ public class AdaptorController {
   private static String fetchOptionalString(JSONObject json, String name) {
     try {
       return json.getString(name);
-    } catch (JSONException e) {}
+    } catch (JSONException e) {
+      log.debug(ExceptionUtil.getStackTrace(e));
+    }
     return null;
   }
 

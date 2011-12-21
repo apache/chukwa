@@ -24,12 +24,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -37,73 +34,53 @@ import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.MiniDFSCluster;
-import org.json.JSONObject;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.ContextHandler;
 import org.mortbay.xml.XmlConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class HiccWebServer {
   private static Log log = LogFactory.getLog(HiccWebServer.class);
-  private static URL serverConf = null;
+  private static URL serverConf = HiccWebServer.class.getResource("/WEB-INF/jetty.xml");
   private Server server = null;
   private String chukwaHdfs;
   private String hiccData;
-  public static ChukwaConfiguration chukwaConf = new ChukwaConfiguration();
-  public static Configuration config = new Configuration();
-  public static FileSystem fs = null;
   private static HiccWebServer instance = null;
+  private static final Configuration config = new Configuration();
+  protected static final ChukwaConfiguration chukwaConf = new ChukwaConfiguration();
 
   protected HiccWebServer() {
   }
-
-//  public HiccWebServer(Configuration conf) {
-//    config = conf;
-//  }
-//  
+ 
   public static HiccWebServer getInstance() {
     if(instance==null) {
-      config = new Configuration();
       instance = new HiccWebServer();
     }
+    if(serverConf==null) {
+      log.error("Unable to locate jetty-web.xml.");
+      DaemonWatcher.bailout(-1);
+    }
     return instance;
- }
+  }
 
   public void start() {
     try {
-      if(fs==null) {
-        fs = FileSystem.get(config);
-        chukwaHdfs = config.get("fs.default.name")+File.separator+chukwaConf.get("chukwa.data.dir");
-        hiccData = chukwaHdfs+File.separator+"hicc";
-        DaemonWatcher.createInstance("hicc");
-        serverConf = HiccWebServer.class.getResource("/WEB-INF/jetty.xml");
-        if(serverConf==null) {
-          log.error("Unable to locate jetty-web.xml.");
-          DaemonWatcher.bailout(-1);
-        }
-        instance = this;
-        setupDefaultData();
-        run();
-      }
+      chukwaHdfs = config.get("fs.default.name")+File.separator+chukwaConf.get("chukwa.data.dir");
+      hiccData = chukwaHdfs+File.separator+"hicc";
+      DaemonWatcher.createInstance("hicc");
+      setupDefaultData();
+      run();
     } catch(Exception e) {
       log.error("HDFS unavailable, check configuration in chukwa-env.sh.");
-      System.exit(-1);
+      DaemonWatcher.bailout(-1);
     }
   }
 
   public static Configuration getConfig() {
     return config;
-  }
-  
-  public static FileSystem getFileSystem() {
-    return fs;
   }
   
   public List<String> getResourceListing(String path) throws URISyntaxException, IOException {
@@ -138,14 +115,15 @@ public class HiccWebServer {
   }
   
   public void populateDir(List<String> files, Path path) {
-    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+    try {
+      FileSystem fs = FileSystem.get(config);
+      ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
       for(String source : files) {
         String name = source.substring(source.indexOf(File.separator));
         Path dest = new Path(path.toString()+File.separator+name);
         InputStream is = contextClassLoader.getResourceAsStream(source);
         StringBuilder sb = new StringBuilder();
         String line = null;
-
         try {
           BufferedReader reader = new BufferedReader(new InputStreamReader(is));
           while ((line = reader.readLine()) != null) {
@@ -154,16 +132,20 @@ public class HiccWebServer {
           FSDataOutputStream out = fs.create(dest);
           out.write(sb.toString().getBytes());
           out.close();
-          } catch(IOException e) {
+          reader.close();
+        } catch(IOException e) {
             log.error("Error writing file: "+dest.toString());
-          }
+        }
       }
+    } catch(IOException e) {
+      log.error("HDFS unavailable, check configuration in chukwa-env.sh.");
+    }
   }
   
   public void setupDefaultData() {
     Path hiccPath = new Path(hiccData);
     try {
-      fs = FileSystem.get(config);
+      FileSystem fs = FileSystem.get(config);
       if(!fs.exists(hiccPath)) {
         log.info("Initializing HICC Datastore.");
         // Create chukwa directory
@@ -209,8 +191,10 @@ public class HiccWebServer {
         populateDir(views, viewsPath);
         log.info("HICC Datastore initialization completed.");
       }
-    } catch (Exception ex) {
+    } catch (IOException ex) {
       log.error(ExceptionUtil.getStackTrace(ex));
+    } catch (URISyntaxException ex) {
+      log.error(ExceptionUtil.getStackTrace(ex));      
     }
   }
 

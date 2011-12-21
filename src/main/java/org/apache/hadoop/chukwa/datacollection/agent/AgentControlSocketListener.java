@@ -27,10 +27,10 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.*;
 import java.util.Map;
-import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy;
 import org.apache.log4j.Logger;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 /**
  * Class to handle the agent control protocol. This is a simple line-oriented
@@ -88,7 +88,9 @@ public class AgentControlSocketListener extends Thread {
         log.warn("a control connection broke", e);
         try {
           connection.close();
-        } catch(Exception ex) {}
+        } catch(Exception ex) {
+          log.debug(ExceptionUtil.getStackTrace(ex));
+        }
       }
     }
 
@@ -258,6 +260,7 @@ public class AgentControlSocketListener extends Thread {
         s.close();
       s = null;
     } catch (IOException e) {
+      log.debug(ExceptionUtil.getStackTrace(e));
     } // ignore exception on close
   }
 

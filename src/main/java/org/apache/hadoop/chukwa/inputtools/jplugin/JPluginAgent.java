@@ -25,7 +25,7 @@ import java.util.TimerTask;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
-import org.apache.hadoop.chukwa.util.PidFile;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 public class JPluginAgent {
   private static Log log = LogFactory.getLog(JPluginAgent.class);
@@ -124,6 +124,7 @@ public class JPluginAgent {
             period * 1000);
       }
     } catch (Exception ex) {
+      log.debug(ExceptionUtil.getStackTrace(ex));
     }
   }
 }

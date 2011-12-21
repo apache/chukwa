@@ -19,24 +19,19 @@ package org.apache.hadoop.chukwa.rest.resource;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.dataloader.SocketDataLoader;
 import org.apache.hadoop.chukwa.rest.bean.ClientTraceBean;
-import org.apache.hadoop.chukwa.util.RecordConstants;
 
 /**
  * Client Trace REST API for parsing client trace log file and convert
@@ -44,7 +39,7 @@ import org.apache.hadoop.chukwa.util.RecordConstants;
  */
 @Path("clienttrace")
 public class ClientTrace {
-  protected static Log log = LogFactory.getLog(ClientTrace.class);
+  protected static final Log log = LogFactory.getLog(ClientTrace.class);
   private static SocketDataLoader sdl = null;
   // Client trace log file pattern
   private final Pattern pattern =

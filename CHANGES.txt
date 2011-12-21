@@ -110,6 +110,8 @@ Trunk (unreleased changes)
 
   BUG FIXES
 
+    CHUKWA-621. Implemented findbugs and pmd code analysis check. (Eric Yang)
+
     CHUKWA-619. Disabled trace method on Chukwa servlets. (Julio Conca via Eric Yang)
 
     CHUKWA-617. Fixed test case casting and race conditions. (Eric Yang)

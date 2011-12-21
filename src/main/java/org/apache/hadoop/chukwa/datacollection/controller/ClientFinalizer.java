@@ -18,15 +18,11 @@
 
 package org.apache.hadoop.chukwa.datacollection.controller;
 
-import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
-import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
 
 
 public class ClientFinalizer extends Thread {
   private ChukwaAgentController chukwaClient = null;
-  private String recordType = null;
-  private String fileName = null;
 
   public ClientFinalizer(ChukwaAgentController chukwaClient) {
     this.chukwaClient = chukwaClient;

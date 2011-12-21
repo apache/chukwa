@@ -19,8 +19,6 @@
 package org.apache.hadoop.chukwa.dataloader;
 
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -30,8 +28,6 @@ public abstract class DataLoaderFactory {
   static ChukwaConfiguration conf = null;
   static FileSystem fs = null;
   protected FileStatus[] source = null;
-
-  private static Log log = LogFactory.getLog(DataLoaderFactory.class);
 
   public DataLoaderFactory() {
   }

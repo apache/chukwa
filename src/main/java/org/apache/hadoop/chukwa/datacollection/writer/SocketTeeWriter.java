@@ -22,15 +22,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.regex.PatternSyntaxException;
 import org.apache.hadoop.chukwa.Chunk;
-import org.apache.hadoop.chukwa.util.DumpChunks;
 import org.apache.hadoop.chukwa.util.Filter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
-import org.mortbay.log.Log;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.io.*;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 /**
  * Effectively a "Tee" in the writer pipeline.
@@ -95,7 +93,7 @@ public class SocketTeeWriter extends PipelineableWriter {
           new Tee(sock);
         }
       } catch(IOException e) {
-        
+        log.debug(ExceptionUtil.getStackTrace(e)); 
       }
     }
     
@@ -105,7 +103,7 @@ public class SocketTeeWriter extends PipelineableWriter {
         s.close(); //to break out of run loop
         this.interrupt();
       } catch(IOException e) {
-        
+        log.debug(ExceptionUtil.getStackTrace(e)); 
       }
     }
   }
@@ -222,7 +220,9 @@ public class SocketTeeWriter extends PipelineableWriter {
       try {
         out.close();
         in.close();
-      } catch(Exception e) {}
+      } catch(Exception e) {
+        log.debug(ExceptionUtil.getStackTrace(e));
+      }
     }
 
     public void handle(Chunk c) {

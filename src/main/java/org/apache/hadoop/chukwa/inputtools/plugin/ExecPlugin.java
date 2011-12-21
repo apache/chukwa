@@ -23,7 +23,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 /**
  * Runs external command-line tools, captures output.

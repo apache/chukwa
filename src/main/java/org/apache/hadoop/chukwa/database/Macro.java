@@ -20,7 +20,6 @@ package org.apache.hadoop.chukwa.database;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
@@ -152,7 +151,6 @@ public class Macro {
             }
             return meta;
         } else if(macro.indexOf("now")==0) {
-            SimpleDateFormat sdf = new SimpleDateFormat();
             return DatabaseWriter.formatTimeStamp(current);
         } else if(macro.intern()=="start".intern()) {
             return DatabaseWriter.formatTimeStamp(start);

@@ -19,8 +19,6 @@
 package org.apache.hadoop.chukwa.inputtools.mdl;
 
 
-import java.io.IOException;
-import java.io.File;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.nio.channels.*;

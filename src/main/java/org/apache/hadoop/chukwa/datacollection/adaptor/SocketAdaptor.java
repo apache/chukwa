@@ -18,20 +18,15 @@
 package org.apache.hadoop.chukwa.datacollection.adaptor;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.*;
-import java.util.ArrayList;
 
 import org.apache.hadoop.chukwa.*;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.spi.LoggerRepository;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
@@ -77,6 +72,7 @@ public class SocketAdaptor extends AbstractAdaptor {
       try {
         listener.close();
       } catch (IOException e) {
+        log.debug(ExceptionUtil.getStackTrace(e));
       }
     }
   }
@@ -130,8 +126,9 @@ public class SocketAdaptor extends AbstractAdaptor {
           try {
             server.close();
           } catch(InterruptedIOException e) {
-              Thread.currentThread().interrupt();
+            Thread.currentThread().interrupt();
           } catch(IOException ex) {
+            log.debug(ExceptionUtil.getStackTrace(ex));
           }
         }
       }
@@ -142,6 +139,7 @@ public class SocketAdaptor extends AbstractAdaptor {
         ois.close();
         server.close();
       } catch (IOException e) {
+        log.debug(ExceptionUtil.getStackTrace(e));
       }
     }
   }
@@ -176,7 +174,9 @@ public class SocketAdaptor extends AbstractAdaptor {
     try {
       running = false;
       disp.shutdown();
-    } catch(Exception e) {}
+    } catch(Exception e) {
+      log.debug(ExceptionUtil.getStackTrace(e));
+    }
     return 0;
   }
 

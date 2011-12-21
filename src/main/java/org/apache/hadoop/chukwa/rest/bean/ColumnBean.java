@@ -21,8 +21,6 @@ package org.apache.hadoop.chukwa.rest.bean;
 import java.text.ParseException;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,11 +51,11 @@ public class ColumnBean {
   
   @XmlElement
   public WidgetBean[] getWidgets() {
-    return widgets;
+    return widgets.clone();
   }
   
   public void setWidgets(WidgetBean[] ws) {
-    widgets=ws;
+    widgets=(WidgetBean[]) ws.clone();
   }
   
   public void update() {

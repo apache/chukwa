@@ -17,17 +17,11 @@
  */
 package org.apache.hadoop.chukwa.hicc.bean;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 
-import org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;

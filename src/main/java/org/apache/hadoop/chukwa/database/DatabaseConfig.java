@@ -22,17 +22,10 @@ package org.apache.hadoop.chukwa.database;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-
 public class DatabaseConfig {
-    private static Log log = LogFactory.getLog(DatabaseConfig.class);
   private Configuration config = null;
   public final static long CENTURY = 36500 * 24 * 60 * 60 * 1000L;
   public final static long DECADE = 3650 * 24 * 60 * 60 * 1000L;

@@ -19,15 +19,8 @@
 package org.apache.hadoop.chukwa.analysis.salsa.fsm;
 
 import java.io.IOException;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.ArrayList;
-import java.util.TreeSet;
 import java.util.regex.*;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Random;
 
 import org.apache.commons.logging.Log;
@@ -38,12 +31,6 @@ import org.apache.hadoop.chukwa.extraction.engine.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.util.*;
-import org.apache.hadoop.io.WritableComparable;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.filecache.DistributedCache;
 
 /**
  * Pluggable mapper for FSMBuilder
@@ -69,10 +56,6 @@ public class TaskTrackerClientTraceMapper
 		 Reporter reporter)
     throws IOException 
   {
-		String newkey = new String("");
-		String key_trimmed = key.toString().trim();
-		String task_type;
-		FSMIntermedEntry this_rec = new FSMIntermedEntry(); 
 
 		/* Extract field names for checking */
 		String [] fieldNames = val.getFields();
@@ -90,7 +73,6 @@ public class TaskTrackerClientTraceMapper
 		    parseClientTraceDetailed(key, val, output, reporter, fieldNamesList);
 	    } // pick up only mapreduce operations
 		} 
-		return;
   } // end of map()
 
   protected final int DEFAULT_SHUFFLE_DURATION_MS = 10;
@@ -215,7 +197,6 @@ public class TaskTrackerClientTraceMapper
     output.collect(new ChukwaRecordKey(FSM_CRK_ReduceType, crk_mid_string_start), start_rec);
     output.collect(new ChukwaRecordKey(FSM_CRK_ReduceType, crk_mid_string_end), end_rec);
     
-    return;
   }
 
 } // end of mapper class

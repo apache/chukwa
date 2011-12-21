@@ -20,7 +20,6 @@ package org.apache.hadoop.chukwa.datacollection.sender;
 
 
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 import org.apache.hadoop.conf.Configuration;
 

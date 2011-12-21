@@ -21,7 +21,6 @@ import com.sun.jersey.api.json.JSONJAXBContext;
 
 import org.apache.hadoop.chukwa.rest.bean.CatalogBean;
 import org.apache.hadoop.chukwa.rest.bean.CategoryBean;
-import org.apache.hadoop.chukwa.rest.bean.ViewBean;
 
 import java.util.Arrays;
 import java.util.HashMap;

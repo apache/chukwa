@@ -24,16 +24,18 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.sql.*;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.util.XssFilter;
 import org.json.*;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 public class Workspace extends HttpServlet {
   public static final long serialVersionUID = 101L;
+  private static final Log log = LogFactory.getLog(Workspace.class);
   private String path = System.getenv("CHUKWA_DATA_DIR");
-  private JSONObject hash = new JSONObject();
-  private String user = "admin";
-  private XssFilter xf = null;
+  transient private JSONObject hash = new JSONObject();
+  transient private XssFilter xf;
 
   @Override  
   protected void doTrace(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -44,7 +46,6 @@ public class Workspace extends HttpServlet {
       throws IOException, ServletException {
     xf = new XssFilter(request);
     response.setContentType("text/plain");
-    PrintWriter out = response.getWriter();
     String method = xf.getParameter("method");
     if (method.equals("get_views_list")) {
       getViewsList(request, response);
@@ -137,7 +138,9 @@ public class Workspace extends HttpServlet {
     }
     setContents(path + "/views/" + name + ".view", config);
     File deleteCache = new File(path + "/views/workspace_view_list.cache");
-    deleteCache.delete();
+    if(!deleteCache.delete()) {
+      log.warn("Can not delete "+path + "/views/workspace_view_list.cache");
+    }
     genViewCache(path + "/views");
     aFile = new File(path + "/views/workspace_view_list.cache");
     String viewsCache = getContents(aFile);
@@ -146,19 +149,21 @@ public class Workspace extends HttpServlet {
 
   public void deleteView(HttpServletRequest request,
       HttpServletResponse response) throws IOException, ServletException {
-    PrintWriter out = response.getWriter();
     String name = xf.getParameter("name");
     File aFile = new File(path + "/views/" + name + ".view");
-    aFile.delete();
+    if(!aFile.delete()) {
+      log.warn("Can not delete " + path + "/views/" + name + ".view");
+    }
     File deleteCache = new File(path + "/views/workspace_view_list.cache");
-    deleteCache.delete();
+    if(!deleteCache.delete()) {
+      log.warn("Can not delete "+path + "/views/workspace_view_list.cache");
+    }
     genViewCache(path + "/views");
   }
 
   public void getViewsList(HttpServletRequest request,
       HttpServletResponse response) throws IOException, ServletException {
     PrintWriter out = response.getWriter();
-    String format = xf.getParameter("format");
     genViewCache(path + "/views");
     File aFile = new File(path + "/views/workspace_view_list.cache");
     String viewsCache = getContents(aFile);
@@ -191,7 +196,9 @@ public class Workspace extends HttpServlet {
         throw new Exception("Rename view file failed");
       }
       File deleteCache = new File(path + "/views/workspace_view_list.cache");
-      deleteCache.delete();
+      if(!deleteCache.delete()) {
+        log.warn("Can not delete "+path + "/views/workspace_view_list.cache");
+      }
       genViewCache(path + "/views");
       out.println("Workspace is stored successfully.");
     } catch (Exception e) {
@@ -204,7 +211,6 @@ public class Workspace extends HttpServlet {
     PrintWriter out = response.getWriter();
     String id = xf.getParameter("name");
     String config = request.getParameter("config");
-    File aFile = new File(path + "/views/" + id + ".view");
     setContents(path + "/views/" + id + ".view", config);
     out.println("Workspace is stored successfully.");
   }
@@ -212,7 +218,6 @@ public class Workspace extends HttpServlet {
   public void getWidgetList(HttpServletRequest request,
       HttpServletResponse response) throws IOException, ServletException {
     PrintWriter out = response.getWriter();
-    String format = xf.getParameter("format");
     genWidgetCache(path + "/descriptors");
     File aFile = new File(path + "/descriptors/workspace_plugin.cache");
     String viewsCache = getContents(aFile);
@@ -237,6 +242,7 @@ public class Workspace extends HttpServlet {
           jt.put("key", fn.substring(0, (fn.length() - 5)));
           cacheGroup[i] = jt;
         } catch (Exception e) {
+          log.debug(ExceptionUtil.getStackTrace(e));
         }
       }
       String viewList = convertObjectsToViewList(cacheGroup);
@@ -288,6 +294,7 @@ public class Workspace extends HttpServlet {
           JSONObject jt = new JSONObject(buffer);
           cacheGroup[i] = jt;
         } catch (Exception e) {
+          log.debug(ExceptionUtil.getStackTrace(e));
         }
       }
       String widgetList = convertObjectsToWidgetList(cacheGroup);
@@ -306,7 +313,6 @@ public class Workspace extends HttpServlet {
     } catch (Exception e) {
       System.err.println("JSON Exception: " + e.getMessage());
     }
-    JSONObject tmpHash = new JSONObject();
     for (int i = 0; i < objArray.length; i++) {
       try {
         String[] categoriesArray = objArray[i].get("categories").toString()
@@ -344,6 +350,7 @@ public class Workspace extends HttpServlet {
             subHash.put("node:" + id, tmpHash);
             subHash = tmpHash;
           } catch (JSONException ex) {
+            log.debug(ExceptionUtil.getStackTrace(e));
           }
         }
       }
@@ -356,14 +363,14 @@ public class Workspace extends HttpServlet {
       File view = new File(path + "/views/" + id + ".view");
       File newFile = new File(path + File.separator + "views" + File.separator
           + desc + ".view");
-      view.renameTo(newFile);
+      if(!view.renameTo(newFile)) {
+        log.warn("Can not rename " + path + "/views/" + id + ".view to " + 
+            path + File.separator + "views" + File.separator + desc + ".view");
+      }
     } catch (Exception e) {
       return false;
     }
     return true;
   }
 
-  private JSONObject filterViewsByPermission(String userid, JSONObject viewArray) {
-    return viewArray;
-  }
 }

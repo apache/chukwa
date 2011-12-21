@@ -19,7 +19,6 @@ package org.apache.hadoop.chukwa.dataloader;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
@@ -31,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.hadoop.chukwa.analysis.salsa.fsm.FSMBuilder;
@@ -108,6 +106,7 @@ public class FSMDataLoader extends DataLoaderFactory {
           outputPaths.add(outputPath);
           if(hasData) {
             int res = ToolRunner.run(fsmConf, new FSMBuilder(), args);
+            log.debug("Job Status: "+res);
           }
         }
       }
@@ -137,7 +136,6 @@ public class FSMDataLoader extends DataLoaderFactory {
     } catch(Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
       throw new IOException();
-    } finally {
     }
   }
 

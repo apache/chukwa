@@ -23,8 +23,6 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.util.Iterator;
 import java.util.TreeMap;
-import java.util.ArrayList;
-import java.util.TreeSet;
 import java.util.Set;
 
 import org.apache.hadoop.io.WritableComparable;

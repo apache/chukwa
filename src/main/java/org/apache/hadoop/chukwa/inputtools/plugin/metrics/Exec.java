@@ -18,22 +18,17 @@
 package org.apache.hadoop.chukwa.inputtools.plugin.metrics;
 
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.chukwa.inputtools.plugin.ExecPlugin;
 import org.apache.hadoop.chukwa.inputtools.plugin.IPlugin;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 public class Exec extends TimerTask {
   private static Log log = LogFactory.getLog(Exec.class);
   private String cmde = null;
-  private Timer timer = null;
   private IPlugin plugin = null;
 
   public Exec(String[] cmds) {
@@ -49,15 +44,15 @@ public class Exec extends TimerTask {
   public void run() {
     try {
       JSONObject result = plugin.execute();
-      if (result.getInt("status") < 0) {
+      int status = (Integer) result.get("status");
+      if (status < 0) {
         System.out.println("Error");
         log.warn("[ChukwaError]:" + Exec.class + ", "
-            + result.getString("stderr"));
-        System.exit(-1);
+            + result.get("stderr"));
       } else {
         log.info(result.get("stdout"));
       }
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.error("Exec output unparsable:" + this.cmde);
     }
   }

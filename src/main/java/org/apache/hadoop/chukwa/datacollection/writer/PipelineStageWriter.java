@@ -19,7 +19,6 @@
 package org.apache.hadoop.chukwa.datacollection.writer;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.conf.Configuration;

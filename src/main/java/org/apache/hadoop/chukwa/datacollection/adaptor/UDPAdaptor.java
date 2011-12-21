@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.*;
 import java.util.Arrays;
 import org.apache.hadoop.chukwa.*;
-import org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.FileTailingAdaptor;
 import org.apache.log4j.Logger;
 
 public class UDPAdaptor extends AbstractAdaptor {

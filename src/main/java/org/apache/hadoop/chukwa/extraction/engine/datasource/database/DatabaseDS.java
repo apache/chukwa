@@ -22,7 +22,6 @@ package org.apache.hadoop.chukwa.extraction.engine.datasource.database;
 
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -37,10 +36,14 @@ import org.apache.hadoop.chukwa.extraction.engine.SearchResult;
 import org.apache.hadoop.chukwa.extraction.engine.Token;
 import org.apache.hadoop.chukwa.extraction.engine.datasource.DataSource;
 import org.apache.hadoop.chukwa.extraction.engine.datasource.DataSourceException;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 //import org.apache.hadoop.chukwa.hicc.ClusterConfig;
 
 public class DatabaseDS implements DataSource {
+  private static final Log log = LogFactory.getLog(DatabaseDS.class);
 
   public SearchResult search(SearchResult result, String cluster,
       String dataSource, long t0, long t1, String filter, Token token)
@@ -127,7 +130,7 @@ public class DatabaseDS implements DataSource {
         try {
           rs.close();
         } catch (SQLException sqlEx) {
-          // ignore
+          log.debug(ExceptionUtil.getStackTrace(sqlEx));
         }
         rs = null;
       }
@@ -135,7 +138,7 @@ public class DatabaseDS implements DataSource {
         try {
           stmt.close();
         } catch (SQLException sqlEx) {
-          // ignore
+          log.debug(ExceptionUtil.getStackTrace(sqlEx));
         }
         stmt = null;
       }

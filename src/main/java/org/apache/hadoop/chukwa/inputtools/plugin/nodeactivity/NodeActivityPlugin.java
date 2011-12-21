@@ -22,7 +22,7 @@ package org.apache.hadoop.chukwa.inputtools.plugin.nodeactivity;
 import org.apache.hadoop.chukwa.inputtools.mdl.DataConfig;
 import org.apache.hadoop.chukwa.inputtools.plugin.ExecPlugin;
 import org.apache.hadoop.chukwa.inputtools.plugin.IPlugin;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 public class NodeActivityPlugin extends ExecPlugin {
   private String cmde = null;
@@ -41,11 +41,11 @@ public class NodeActivityPlugin extends ExecPlugin {
   @Override
   public JSONObject postProcess(JSONObject execResult) {
     try {
-      if (execResult.getInt("status") < 0) {
+      if ( (Integer) execResult.get("status") < 0) {
         return execResult;
       }
 
-      String res = execResult.getString("stdout");
+      String res = (String) execResult.get("stdout");
 
       String[] tab = res.split("\n");
       int totalFreeNode = 0;

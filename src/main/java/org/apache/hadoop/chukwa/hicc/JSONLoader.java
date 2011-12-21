@@ -22,9 +22,12 @@ package org.apache.hadoop.chukwa.hicc;
 import java.net.*;
 import java.io.*;
 import org.json.*;
+import org.apache.log4j.Logger;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 public class JSONLoader {
   public JSONArray jsonData;
+  private static Logger log = Logger.getLogger(JSONLoader.class);
 
   static public String getContents(String source) {
     // ...checks on aFile are elided
@@ -57,6 +60,7 @@ public class JSONLoader {
       JSONObject rows = new JSONObject(buffer);
       jsonData = new JSONArray(rows.get("rows").toString());
     } catch (JSONException e) {
+      log.debug(ExceptionUtil.getStackTrace(e)); 
     }
   }
 
@@ -65,6 +69,7 @@ public class JSONLoader {
     try {
       ts = ((JSONObject) jsonData.get(i)).get("ts").toString();
     } catch (JSONException e) {
+      log.debug(ExceptionUtil.getStackTrace(e)); 
     }
     return ts;
   }
@@ -75,6 +80,7 @@ public class JSONLoader {
       tags = ((JSONObject) jsonData.get(i)).get("tags")
           .toString();
     } catch (JSONException e) {
+      log.debug(ExceptionUtil.getStackTrace(e)); 
     }
     return tags;
   }
@@ -85,6 +91,7 @@ public class JSONLoader {
       value = ((JSONObject) jsonData.get(i)).get("value")
           .toString();
     } catch (JSONException e) {
+      log.debug(ExceptionUtil.getStackTrace(e)); 
     }
     return value;
   }

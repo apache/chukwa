@@ -26,7 +26,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -41,7 +40,7 @@ import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 @Path ("/view")
 public class ViewResource {
-  protected static Log log = LogFactory.getLog(ViewResource.class);
+  protected static final Log log = LogFactory.getLog(ViewResource.class);
 
   @GET
   @Path("vid/{vid}")

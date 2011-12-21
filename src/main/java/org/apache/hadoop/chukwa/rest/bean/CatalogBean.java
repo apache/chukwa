@@ -19,7 +19,6 @@
 package org.apache.hadoop.chukwa.rest.bean;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -32,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
 @XmlRootElement
 @XmlType(propOrder={"type", "id", "label", "children"})
 public class CatalogBean {
-  private static Log log = LogFactory.getLog(CatalogBean.class);
+  private static final Log log = LogFactory.getLog(CatalogBean.class);
   private List<CatalogBean> children = new ArrayList<CatalogBean>();
   private String type = "text";
   private String label = null;

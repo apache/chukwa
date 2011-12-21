@@ -104,7 +104,6 @@ public class JobConfProcessor extends AbstractProcessor {
             NodeList fields = prop.getChildNodes();
             String attr = null;
             String value = null;
-            boolean finalParameter = false;
             for (int j = 0; j < fields.getLength(); j++) {
                 Node fieldNode = fields.item(j);
                 if (!(fieldNode instanceof Element))
@@ -114,8 +113,6 @@ public class JobConfProcessor extends AbstractProcessor {
                     attr = ((Text)field.getFirstChild()).getData().trim();
                 if ("value".equals(field.getTagName()) && field.hasChildNodes())
                     value = ((Text)field.getFirstChild()).getData();
-                if ("final".equals(field.getTagName()) && field.hasChildNodes())
-                    finalParameter = "true".equals(((Text)field.getFirstChild()).getData());
             }
             
             // Ignore this parameter if it has already been marked as 'final'

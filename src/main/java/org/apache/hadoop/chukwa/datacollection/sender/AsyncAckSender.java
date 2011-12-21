@@ -17,12 +17,7 @@
  */
 package org.apache.hadoop.chukwa.datacollection.sender;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.DataFactory;
 import org.apache.hadoop.chukwa.datacollection.agent.*;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;

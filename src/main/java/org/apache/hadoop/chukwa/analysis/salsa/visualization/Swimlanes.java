@@ -19,7 +19,6 @@
 package org.apache.hadoop.chukwa.analysis.salsa.visualization;
 
 import prefuse.data.io.sql.*;
-import prefuse.data.Table;
 import prefuse.data.expression.parser.*;
 import prefuse.data.expression.*;
 import prefuse.data.column.*;
@@ -45,12 +44,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.http.*;
-import javax.swing.BorderFactory;
 
 import java.sql.*;
 import java.util.*;
-import java.text.NumberFormat;
-import java.text.DateFormat;
 
 import java.awt.Font;
 import java.awt.geom.Rectangle2D;
@@ -213,10 +209,8 @@ public class Swimlanes {
       while (state_iter.hasNext()) {
         curr_state = state_iter.next();
         
-        if (this.collate_reduces) {
-          if (curr_state.equals("reduce_reducer") || curr_state.equals("reduce_sort")) {
-            continue;
-          }
+        if (this.collate_reduces && ((curr_state.equals("reduce_reducer") || curr_state.equals("reduce_sort")))) {
+          continue;
         }
         rownumiter = this.plot_tab.rows(
           (Predicate) ExpressionParser.parse("[state_name] == '"+curr_state+"'")
@@ -243,10 +237,7 @@ public class Swimlanes {
     
     public void groupByStartTime() {
       int counter, rownum;
-      int rowcount = this.plot_tab.getRowCount();
-      HashSet<String> states = new HashSet<String>();
       String curr_state = null;
-      Iterator<String> state_iter;
       IntIterator rownumiter;
      
       rownumiter = this.plot_tab.rowsSortedBy(START_FIELD_NAME, true);
@@ -271,10 +262,7 @@ public class Swimlanes {
     
     public void groupByEndTime() {
       int counter, rownum;
-      int rowcount = this.plot_tab.getRowCount();
-      HashSet<String> states = new HashSet<String>();
       String curr_state = null;
-      Iterator<String> state_iter;
       IntIterator rownumiter;
      
       rownumiter = this.plot_tab.rowsSortedBy(END_FIELD_NAME, true);
@@ -396,9 +384,7 @@ public class Swimlanes {
       SwimlanesStatePalette pal = new SwimlanesStatePalette();
       
       Iterator curr_group_items = this.m_vis.items(this.m_group);
-      
-      int i = 0;
-      
+          
       while (curr_group_items.hasNext()) {
         item = (VisualItem) curr_group_items.next();
         
@@ -416,7 +402,6 @@ public class Swimlanes {
 
         item.set(VisualItem.POLYGON,coords);
         item.setStrokeColor(pal.getColour(item.getString("state_name")));
-        i++;
       }
     }    
   } // SwimlanesStateAction
@@ -725,7 +710,6 @@ public class Swimlanes {
     shapes_table.addColumn(VisualItem.Y,float.class);
     
     Table legend_labels_table = new Table();
-    Table legend_squares_table = new Table();
     legend_labels_table.addColumn("label",String.class);
     
     // add labels
@@ -884,7 +868,6 @@ public class Swimlanes {
     
     Table rs_tab = null;    
     DatabaseDataSource dds; 
-    DefaultSQLDataHandler dh = new DefaultSQLDataHandler();
 
     log.debug("Query: " + query);
     // execute query

@@ -19,7 +19,7 @@
 package org.apache.hadoop.chukwa.inputtools.plugin;
 
 
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 public interface IPlugin {
   JSONObject execute();

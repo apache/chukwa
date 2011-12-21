@@ -23,8 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.inputtools.mdl.DataConfig;
 import org.apache.hadoop.chukwa.inputtools.plugin.ExecPlugin;
 import org.apache.hadoop.chukwa.inputtools.plugin.IPlugin;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 public class PbsNodePlugin extends ExecPlugin {
   private static Log log = LogFactory.getLog(PbsNodePlugin.class);
@@ -41,15 +40,15 @@ public class PbsNodePlugin extends ExecPlugin {
     return cmde;
   }
 
-  public static void main(String[] args) throws JSONException {
+  public static void main(String[] args) {
     IPlugin plugin = new PbsNodePlugin();
     JSONObject result = plugin.execute();
     System.out.print("Result: " + result);
 
-    if (result.getInt("status") < 0) {
+    if ((Integer) result.get("status") < 0) {
       System.out.println("Error");
       log.warn("[ChukwaError]:" + PbsNodePlugin.class + ", "
-          + result.getString("stderr"));
+          + result.get("stderr"));
     } else {
       log.info(result.get("stdout"));
     }

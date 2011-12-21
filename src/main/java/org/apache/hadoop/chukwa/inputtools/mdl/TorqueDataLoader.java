@@ -18,17 +18,11 @@
 package org.apache.hadoop.chukwa.inputtools.mdl;
 
 
-import java.lang.Thread;
-import java.lang.management.ManagementFactory;
-import java.io.FileOutputStream;
 import java.sql.SQLException;
-import java.io.IOException;
-import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.chukwa.inputtools.mdl.TorqueInfoProcessor;
-import org.apache.hadoop.chukwa.inputtools.mdl.DataConfig;
 import org.apache.hadoop.chukwa.util.PidFile;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 public class TorqueDataLoader {
   private static Log log = LogFactory.getLog("TorqueDataLoader");
@@ -86,7 +80,7 @@ public class TorqueDataLoader {
         try {
           Thread.sleep(16 * 1000);
         } catch (InterruptedException e) {
-          ;
+          log.debug(ExceptionUtil.getStackTrace(e));
         }
         tp.shutdown();
         log.error("process died...." + ex.getMessage());

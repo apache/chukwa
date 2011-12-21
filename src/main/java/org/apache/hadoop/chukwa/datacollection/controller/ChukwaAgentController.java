@@ -164,7 +164,7 @@ public class ChukwaAgentController {
           .getInputStream()));
       String resp = br.readLine();
       if (resp == null || !resp.startsWith("OK")) {
-        // error. What do we do?
+        log.error("adaptor unregister error, id: " + id);
       } else if (resp.startsWith("OK")) {
         String[] respSplit = resp.split(" ");
         String newOffset = respSplit[respSplit.length - 1];

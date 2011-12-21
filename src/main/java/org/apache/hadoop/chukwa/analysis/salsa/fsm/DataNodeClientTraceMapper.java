@@ -19,15 +19,8 @@
 package org.apache.hadoop.chukwa.analysis.salsa.fsm;
 
 import java.io.IOException;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.ArrayList;
-import java.util.TreeSet;
 import java.util.regex.*;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,12 +30,6 @@ import org.apache.hadoop.chukwa.extraction.engine.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.util.*;
-import org.apache.hadoop.io.WritableComparable;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.filecache.DistributedCache;
 
 /**
  * Pluggable mapper for FSMBuilder
@@ -61,7 +48,6 @@ public class DataNodeClientTraceMapper
 	protected static String FSM_CRK_ReduceType = FSMType.NAMES[FSMType.FILESYSTEM_FSM];
 	private final Pattern ipPattern =
     Pattern.compile(".*[a-zA-Z\\-_:\\/]([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)[a-zA-Z0-9\\-_:\\/].*");
-  private final Pattern logMsgPattern = Pattern.compile("^(.{23}) ([A-Z]+) ([a-zA-Z0-9\\.]+): (.*)");
 
   public void map
     (ChukwaRecordKey key, ChukwaRecord val,
@@ -69,10 +55,6 @@ public class DataNodeClientTraceMapper
 		 Reporter reporter)
     throws IOException 
   {
-		String newkey = new String("");
-		String key_trimmed = key.toString().trim();
-		String task_type;
-		FSMIntermedEntry this_rec = new FSMIntermedEntry(); 
 
 		/* Extract field names for checking */
 		String [] fieldNames = val.getFields();
@@ -92,7 +74,6 @@ public class DataNodeClientTraceMapper
 		} 
 		// ignore "DataNode" type log messages; unsupported
 				
-		return;
   } // end of map()
 
   protected final int DEFAULT_READ_DURATION_MS = 10;
@@ -230,7 +211,6 @@ public class DataNodeClientTraceMapper
     output.collect(new ChukwaRecordKey(FSM_CRK_ReduceType, crk_mid_string_start), start_rec);
     output.collect(new ChukwaRecordKey(FSM_CRK_ReduceType, crk_mid_string_end), end_rec);
     
-    return;
   }
 
 } // end of mapper class

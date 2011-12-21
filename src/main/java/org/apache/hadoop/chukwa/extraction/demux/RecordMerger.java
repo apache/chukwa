@@ -28,6 +28,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 public class RecordMerger extends Thread {
   static Logger log = Logger.getLogger(RecordMerger.class);
@@ -77,6 +78,7 @@ public class RecordMerger extends Thread {
                                                  * Not an Hour or Minutes
                                                  * directory- Do nothing
                                                  */
+              log.debug(ExceptionUtil.getStackTrace(e));
             }
           }
         }

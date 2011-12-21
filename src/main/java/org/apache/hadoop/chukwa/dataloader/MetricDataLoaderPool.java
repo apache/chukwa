@@ -68,7 +68,6 @@ public class MetricDataLoaderPool extends DataLoaderFactory {
     } catch(Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
       throw new IOException();
-    } finally {
     }
   }
 

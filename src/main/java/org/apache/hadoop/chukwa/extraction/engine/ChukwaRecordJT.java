@@ -202,7 +202,7 @@ public class ChukwaRecordJT extends org.apache.hadoop.record.Record {
       java.util.Set<String> _rio_set20 = _rio_peer.mapFields.keySet();
       java.util.Iterator<String> _rio_miter10 = _rio_set10.iterator();
       java.util.Iterator<String> _rio_miter20 = _rio_set20.iterator();
-      for (; _rio_miter10.hasNext() && _rio_miter20.hasNext();) {
+      while(_rio_miter10.hasNext() && _rio_miter20.hasNext()) {
         String _rio_k10 = _rio_miter10.next();
         String _rio_k20 = _rio_miter20.next();
         _rio_ret = _rio_k10.compareTo(_rio_k20);

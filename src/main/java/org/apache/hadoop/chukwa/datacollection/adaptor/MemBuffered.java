@@ -21,7 +21,6 @@ import static org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPol
 import java.util.*;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
-import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 
 public class MemBuffered extends AbstractWrapper {
   

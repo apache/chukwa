@@ -24,8 +24,6 @@ import java.util.regex.*;
 import org.apache.hadoop.chukwa.*;
 import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
 import org.apache.log4j.Logger;
 

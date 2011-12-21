@@ -17,10 +17,8 @@
  */
 package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 
-
-import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
-import org.apache.hadoop.chukwa.datacollection.adaptor.FileAdaptor;
 import org.apache.log4j.Logger;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 public class TerminatorThread extends Thread {
   private static Logger log = Logger.getLogger(TerminatorThread.class);
@@ -69,7 +67,7 @@ public class TerminatorThread extends Thread {
     try {
       adaptor.reader.close();
     } catch (Throwable ex) {
-      // do nothing
+      log.debug(ExceptionUtil.getStackTrace(ex));
     }
   }
 }

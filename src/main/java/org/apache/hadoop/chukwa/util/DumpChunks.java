@@ -18,16 +18,13 @@
 package org.apache.hadoop.chukwa.util;
 
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.regex.*;
 import java.util.*;
 import java.io.*;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.chukwa.*;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
-import org.apache.hadoop.chukwa.extraction.engine.RecordUtil;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FileUtil;
@@ -231,7 +228,7 @@ public class DumpChunks {
     }
     
     protected void displayResults(PrintStream out) throws IOException{
-      ; //did this in updateMatchCatalog
+      //did this in updateMatchCatalog
     }
     
   }

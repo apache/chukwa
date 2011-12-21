@@ -92,7 +92,7 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
       idx = recordEntry.indexOf(' ', start);
       // String className = recordEntry.substring(start, idx-1);
       String body = recordEntry.substring(idx + 1);
-      body.replaceAll("\n", "");
+      body = body.replaceAll("\n", "");
       // log.info("record [" + recordEntry + "] body [" + body +"]");
       Date d = sdf.parse(dStr);
 

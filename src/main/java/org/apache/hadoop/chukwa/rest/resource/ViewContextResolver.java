@@ -17,7 +17,6 @@
  */
 package org.apache.hadoop.chukwa.rest.resource;
 
-import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.api.json.JSONJAXBContext;
 import org.apache.hadoop.chukwa.rest.bean.ViewBean;
 

@@ -19,12 +19,7 @@
 package org.apache.hadoop.chukwa.analysis.salsa.fsm;
 
 import java.io.IOException;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.ArrayList;
-import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,12 +29,6 @@ import org.apache.hadoop.chukwa.extraction.engine.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.util.*;
-import org.apache.hadoop.io.WritableComparable;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.filecache.DistributedCache;
 
 /**
  * Pluggable mapper for FSMBuilder
@@ -90,7 +79,6 @@ public class JobHistoryTaskDataMapper
 		
 		assert(mapCounterDestNames.length == mapCounterNames.length);
 		
-		String currstr = new String();
 		for (int i = 0; i < mapCounterDestNames.length; i++) {
 			if (fieldNamesList.contains(mapCounterNames[i])) {
 				this_rec.add_info.put(mapCounterDestNames[i], val.getValue(mapCounterNames[i]));				
@@ -134,7 +122,6 @@ public class JobHistoryTaskDataMapper
 		
 		assert(redCounterDestNames.length == redCounterNames.length);
 		
-		String currstr = new String();
 		for (int i = 0; i < redCounterDestNames.length; i++) {
 			if (fieldNamesList.contains(redCounterNames[i])) {
 				this_rec.add_info.put(redCounterDestNames[i], val.getValue(redCounterNames[i]));				
@@ -152,7 +139,6 @@ public class JobHistoryTaskDataMapper
 		 Reporter reporter)
     throws IOException 
   {
-		String newkey = new String("");
 		String task_type;
 		FSMIntermedEntry this_rec = new FSMIntermedEntry(); 
 		boolean add_record = true;
@@ -170,10 +156,6 @@ public class JobHistoryTaskDataMapper
 			task_type = val.getValue("TASK_TYPE"); 
 			if (!task_type.equals("MAP") && !task_type.equals("REDUCE")) {
 				return; // do nothing
-			} else {
-				// newkey = newkey.concat(task_type);
-				// newkey = newkey.concat("@");
-				// newkey = newkey.concat(val.getValue("TASK_ATTEMPT_ID"));
 			} 
 		} 
 
@@ -222,7 +204,6 @@ public class JobHistoryTaskDataMapper
 		this_rec.state_name = new String(this_rec.state_mapred.toString());
 		this_rec.identifier = new String(val.getValue("TASK_ATTEMPT_ID"));
 		this_rec.generateUniqueID();
-		newkey = new String(this_rec.getUniqueID());
 		
 		// Extract hostname from tracker name (if present), or directly fill from hostname (<= 0.18)
 		if (fieldNamesList.contains("HOSTNAME")) {
@@ -281,7 +262,6 @@ public class JobHistoryTaskDataMapper
 		  output.collect(new ChukwaRecordKey(FSM_CRK_ReduceType,this_rec.getUniqueID()),this_rec); 
 	  }
 		
-		return;
   } // end of map()
 
 	protected boolean expandReduceStart
@@ -291,7 +271,6 @@ public class JobHistoryTaskDataMapper
 			throws IOException
 	{
 		FSMIntermedEntry redshuf_start_rec = null;
-		String newkey = new String("");
 		
 		try {
 			redshuf_start_rec = this_rec.clone();

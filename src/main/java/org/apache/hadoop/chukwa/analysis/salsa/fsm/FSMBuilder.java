@@ -19,12 +19,8 @@
 package org.apache.hadoop.chukwa.analysis.salsa.fsm;
 
 import java.io.IOException;
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.ArrayList;
-import java.util.TreeSet;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -35,16 +31,8 @@ import org.apache.hadoop.chukwa.extraction.engine.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.util.*;
-import org.apache.hadoop.io.WritableComparable;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.chukwa.extraction.demux.processor.ChukwaOutputCollector;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * FSM Builder
@@ -119,7 +107,6 @@ public class FSMBuilder extends Configured implements Tool {
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
       cr.add(JCDF_EDGE_VOL, ev);
-      return;
     }
 
     /**
@@ -144,7 +131,6 @@ public class FSMBuilder extends Configured implements Tool {
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
       cr.add(JCDF_EDGE_VOL, ev);
-      return;
     }
 
     /**
@@ -158,7 +144,7 @@ public class FSMBuilder extends Configured implements Tool {
       assert(fnl.contains("TIME_START"));
       assert(fnl.contains("COUNTER_BYTES"));
 
-      String mapid, redid, statename;
+      String mapid, redid;
       String id_parts[];
       
       id_parts = (cr.getValue("TASK_ID")).split("@");
@@ -179,7 +165,6 @@ public class FSMBuilder extends Configured implements Tool {
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
       cr.add(JCDF_EDGE_VOL, ev);
-      return;
     }    
 
     /**
@@ -204,7 +189,6 @@ public class FSMBuilder extends Configured implements Tool {
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
       cr.add(JCDF_EDGE_VOL, ev);
-      return;
     }
 
     /**
@@ -229,7 +213,6 @@ public class FSMBuilder extends Configured implements Tool {
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
       cr.add(JCDF_EDGE_VOL, ev);
-      return;
     }    
     
     /**
@@ -254,7 +237,6 @@ public class FSMBuilder extends Configured implements Tool {
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
       cr.add(JCDF_EDGE_VOL, ev);
-      return;
     }    
     
     protected void addStitchingFields_blockwrite
@@ -277,7 +259,6 @@ public class FSMBuilder extends Configured implements Tool {
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
       cr.add(JCDF_EDGE_VOL, ev);
-      return;
     }
 
     public void addStitchingFields
@@ -310,7 +291,6 @@ public class FSMBuilder extends Configured implements Tool {
         addStitchingFields_blockwrite(cr, fieldNamesList);
       } 
       // else add nothing
-      return;
     }
 
     public void reduce
@@ -325,7 +305,7 @@ public class FSMBuilder extends Configured implements Tool {
 			String newkey;
 			ArrayList<FSMIntermedEntry> ents = new ArrayList<FSMIntermedEntry>();
 			ArrayList<String> noncounters = new ArrayList<String>();
-			keystr.trim();
+			keystr = keystr.trim();
 			ChukwaRecord cr = new ChukwaRecord();
 			
 			for (int i = 0; i < NON_COUNTER_KEYS.length; i++) noncounters.add(NON_COUNTER_KEYS[i]);

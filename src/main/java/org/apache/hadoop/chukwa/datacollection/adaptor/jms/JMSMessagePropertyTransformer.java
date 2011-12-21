@@ -121,11 +121,9 @@ public class JMSMessagePropertyTransformer implements JMSMessageTransformer {
       String value = transformValue(propertyName, propertyValue);
 
       // is a required value not found?
-      if (value == null) {
-        if (requiredPropertyNames == null ||
-            requiredPropertyNames.contains(propertyName)) {
-          return null;
-        }
+      if (value == null && (requiredPropertyNames == null ||
+          requiredPropertyNames.contains(propertyName))) {
+        return null;
       }
 
       if (valuesFound > 0) {

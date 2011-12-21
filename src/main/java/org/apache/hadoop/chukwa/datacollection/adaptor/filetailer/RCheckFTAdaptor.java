@@ -24,9 +24,7 @@ import java.io.RandomAccessFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Collections;
-import java.util.Queue;
 import java.util.LinkedList;
-import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
 
 /**
  * Checkpoint state:

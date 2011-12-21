@@ -19,10 +19,8 @@
 package org.apache.hadoop.chukwa.dataloader;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
@@ -262,6 +260,7 @@ public class MetricDataLoader implements Callable {
           priKeys = mdlConfig.get("report.db.primary.key." + recordType).split(
               ",");
         } catch (Exception nullException) {
+          log.debug(ExceptionUtil.getStackTrace(nullException));
         }
         for (String field : fields) {
           String keyName = escape(field.toLowerCase(), newSpace);
@@ -352,6 +351,7 @@ public class MetricDataLoader implements Callable {
             }
           } catch (Exception nullException) {
             // ignore if primary key is empty
+            log.debug(ExceptionUtil.getStackTrace(nullException));
           }
           // Map the hash objects to database table columns
           StringBuilder sqlValues = new StringBuilder();

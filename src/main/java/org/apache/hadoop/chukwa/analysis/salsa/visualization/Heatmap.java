@@ -19,7 +19,6 @@
 package org.apache.hadoop.chukwa.analysis.salsa.visualization;
 
 import prefuse.data.io.sql.*;
-import prefuse.data.Table;
 import prefuse.data.expression.parser.*;
 import prefuse.data.expression.*;
 import prefuse.data.column.*;
@@ -41,16 +40,12 @@ import org.apache.hadoop.chukwa.database.Macro;
 import org.apache.hadoop.chukwa.util.XssFilter;
 
 import javax.servlet.http.*;
-import javax.swing.BorderFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.sql.*;
 import java.util.*;
-import java.text.NumberFormat;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 import java.awt.Font;
 import java.awt.geom.Rectangle2D;
@@ -371,9 +366,6 @@ public class Heatmap {
     legend_labels_table.setString(1,"label","Src. Hosts");
     legend_labels_table.setString(2,"label","Dest. Hosts");
     
-    float start_x = LEGEND_X_OFFSET;
-    float start_y = LEGEND_Y_OFFSET + BORDER[1] + (BOXWIDTH/2);    
-    float incr = this.BOXWIDTH;
     VisualTable legend_labels_table_viz = this.viz.addTable(addinfogroup, legend_labels_table);
 
     legend_labels_table_viz.setFloat(0, VisualItem.X, this.SIZE_X/2);
@@ -418,7 +410,7 @@ public class Heatmap {
     HeatmapData hd = this.setupDataTable();
 
     // setup bounds
-    int width, realwidth;
+    int width;
     if (SIZE_X-BORDER[0]-BORDER[2] < SIZE_Y-BORDER[1]-BORDER[3]) {
       BOXWIDTH = (SIZE_X-BORDER[0]-BORDER[2]) / hd.num_hosts;
     } else {
@@ -486,7 +478,7 @@ public class Heatmap {
     int statlen = stat.length;
     long [] rowSums = new long[statlen];
     int [] permute = new int[statlen];
-    int i,j,k;
+    int i,j;
 
     // initialize permutation
     for (i = 0; i < statlen; i++) {
@@ -585,7 +577,6 @@ public class Heatmap {
       int col = rmeta.getColumnCount();
       while (rs.next()) {
         HashMap<String, Object> event = new HashMap<String, Object>();
-        long event_time=0;
         for(int i=1;i<=col;i++) {
           if(rmeta.getColumnType(i)==java.sql.Types.TIMESTAMP) {
             event.put(rmeta.getColumnName(i),rs.getTimestamp(i).getTime());
@@ -603,7 +594,6 @@ public class Heatmap {
     } finally {
       dbw.close();
     }    
-    SimpleDateFormat format = new SimpleDateFormat("MMM dd yyyy HH:mm:ss");
 
     log.info(events.size() + " results returned.");
 
@@ -646,7 +636,6 @@ public class Heatmap {
         end=(Long)event.get("finish_time");
         start_millis = Integer.parseInt(((String)event.get("start_time_millis")));
         end_millis = Integer.parseInt(((String)event.get("finish_time_millis")));      
-        String cell = (String) event.get("state_name");      
         String this_host = (String) event.get("hostname");
         String other_host = (String) event.get("other_host");
         int this_host_idx = host_indices.get(this_host).intValue();
@@ -662,7 +651,6 @@ public class Heatmap {
         end=(Long)event.get("finish_time");
         start_millis = Integer.parseInt(((String)event.get("start_time_millis")));
         end_millis = Integer.parseInt(((String)event.get("finish_time_millis")));      
-        String cell = (String) event.get("state_name");      
         String this_host = (String) event.get("hostname");
         String other_host = (String) event.get("other_host");
         int this_host_idx = host_indices.get(this_host).intValue();
@@ -686,7 +674,6 @@ public class Heatmap {
         end=(Long)event.get("finish_time");
         start_millis = Integer.parseInt(((String)event.get("start_time_millis")));
         end_millis = Integer.parseInt(((String)event.get("finish_time_millis")));      
-        String cell = (String) event.get("state_name");      
         String this_host = (String) event.get("hostname");
         String other_host = (String) event.get("other_host");
         int this_host_idx = host_indices.get(this_host).intValue();
@@ -710,7 +697,6 @@ public class Heatmap {
         end=(Long)event.get("finish_time");
         start_millis = Integer.parseInt(((String)event.get("start_time_millis")));
         end_millis = Integer.parseInt(((String)event.get("finish_time_millis")));      
-        String cell = (String) event.get("state_name");      
         String this_host = (String) event.get("hostname");
         String other_host = (String) event.get("other_host");
         int this_host_idx = host_indices.get(this_host).intValue();
@@ -728,7 +714,6 @@ public class Heatmap {
         end=(Long)event.get("finish_time");
         start_millis = Integer.parseInt(((String)event.get("start_time_millis")));
         end_millis = Integer.parseInt(((String)event.get("finish_time_millis")));      
-        String cell = (String) event.get("state_name");      
         String this_host = (String) event.get("hostname");
         String other_host = (String) event.get("other_host");
         int this_host_idx = host_indices.get(this_host).intValue();

@@ -45,52 +45,47 @@ public class ParametersBean {
   }
   
   public ParametersBean(JSONObject json) throws ParseException {
-    try {
-      name=(String) json.get("name");
-      type=(String) json.get("type");
-      if(json.containsKey("value")) {
-        if(json.get("value").getClass()==JSONArray.class) {
-          JSONArray ja = (JSONArray) json.get("value");
-          Collection<String> c = new HashSet<String>();
-          for(int i = 0; i < ja.size(); i++) {
-            c.add((String) ja.get(i));
-          }
-          this.value = c;
-        } else {
-          Collection<String> c = new HashSet<String>();
-          c.add((String)json.get("value"));
-          this.value = c;
-        }        
-      }
-      if(json.containsKey("label")) {
-        label=(String) json.get("label");
+    name=(String) json.get("name");
+    type=(String) json.get("type");
+    if(json.containsKey("value")) {
+      if(json.get("value").getClass()==JSONArray.class) {
+        JSONArray ja = (JSONArray) json.get("value");
+        Collection<String> c = new HashSet<String>();
+        for(int i = 0; i < ja.size(); i++) {
+          c.add((String) ja.get(i));
+        }
+        this.value = c;
       } else {
-        label=(String) json.get("name");
+        Collection<String> c = new HashSet<String>();
+        c.add((String)json.get("value"));
+        this.value = c;
+      }        
+    }
+    if(json.containsKey("label")) {
+      label=(String) json.get("label");
+    } else {
+      label=(String) json.get("name");
+    }
+    if(json.get("type").toString().intern()=="custom".intern()) {
+      control=(String) json.get("control");
+    }
+    if(json.containsKey("callback")) {
+      callback=(String) json.get("callback");
+    }
+    if(json.containsKey("options")) {
+      JSONArray aj = (JSONArray) json.get("options");
+      options = new OptionBean[aj.size()];
+      for(int i=0;i<aj.size();i++) {
+        OptionBean o = new OptionBean((JSONObject) aj.get(i));
+        options[i]=o;
       }
-      if(json.get("type").toString().intern()=="custom".intern()) {
-        control=(String) json.get("control");
+    }
+    if(json.containsKey("edit")) {
+      if(json.get("edit").getClass().equals(String.class)) {
+        edit=(new Integer((String)json.get("edit"))).intValue();          
+      } else if(json.get("edit").getClass().equals(Long.class)) {
+        edit=((Long)json.get("edit")).intValue();          
       }
-      if(json.containsKey("callback")) {
-        callback=(String) json.get("callback");
-      }
-      if(json.containsKey("options")) {
-        JSONArray aj = (JSONArray) json.get("options");
-        options = new OptionBean[aj.size()];
-        for(int i=0;i<aj.size();i++) {
-          OptionBean o = new OptionBean((JSONObject) aj.get(i));
-          options[i]=o;
-        }
-      }
-      if(json.containsKey("edit")) {
-        if(json.get("edit").getClass().equals(String.class)) {
-          edit=(new Integer((String)json.get("edit"))).intValue();          
-        } else if(json.get("edit").getClass().equals(Long.class)) {
-          edit=((Long)json.get("edit")).intValue();          
-        }
-      }
-    } catch (Exception e) {
-      log.error(ExceptionUtil.getStackTrace(e));
-      throw new ParseException(ExceptionUtil.getStackTrace(e), 0);
     }
   }
   
@@ -121,7 +116,10 @@ public class ParametersBean {
   
   @XmlElement
   public OptionBean[] getOptions() {
-   return options; 
+    if(options==null) {
+      options = new OptionBean[1];
+    }
+    return options.clone();       
   }
   
   @XmlElement
@@ -155,7 +153,7 @@ public class ParametersBean {
   }
   
   public void setOptions(OptionBean[] options) {
-    this.options = options;
+    this.options = (OptionBean[]) options.clone();
   }
   
   public void setEdit(int edit) {

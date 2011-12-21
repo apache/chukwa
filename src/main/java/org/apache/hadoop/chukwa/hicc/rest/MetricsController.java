@@ -19,7 +19,6 @@ package org.apache.hadoop.chukwa.hicc.rest;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,16 +33,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-import org.apache.hadoop.chukwa.datacollection.adaptor.sigar.SigarRunner;
 import org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore;
 import org.apache.hadoop.chukwa.hicc.TimeHandler;
 import org.apache.hadoop.chukwa.hicc.bean.Series;
-import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 
 @Path("/metrics")
 public class MetricsController {
-  private static Logger log = Logger.getLogger(MetricsController.class);
 
   @GET
   @Path("series/{table}/{family}/{column}/rowkey/{rkey}")
@@ -86,7 +82,6 @@ public class MetricsController {
   public String getSeriesBySessionAttribute(@Context HttpServletRequest request, @PathParam("table") String table, @PathParam("column") String column, @PathParam("sessionKey") String skey, @QueryParam("start") String start, @QueryParam("end") String end) {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     String buffer = "";
-    Series series;
     long startTime = 0;
     long endTime = 0;
     TimeHandler time = new TimeHandler(request);
@@ -152,8 +147,6 @@ public class MetricsController {
   @Produces("application/json")
   public String getColumnNames(@Context HttpServletRequest request, @PathParam("table") String tableName, @PathParam("family") String family, @QueryParam("start") String start, @QueryParam("end") String end, @DefaultValue("false") @QueryParam("fullScan") boolean fullScan) {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-    String buffer = "";
-    Series series;
     long startTime = 0;
     long endTime = 0;
     TimeHandler time = new TimeHandler(request);
@@ -185,8 +178,6 @@ public class MetricsController {
   @Produces("application/json")
   public String getRowNames(@Context HttpServletRequest request, @PathParam("table") String tableName, @PathParam("family") String family, @PathParam("column") String column, @QueryParam("start") String start, @QueryParam("end") String end, @QueryParam("fullScan") @DefaultValue("false") boolean fullScan) {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-    String buffer = "";
-    Series series;
     long startTime = 0;
     long endTime = 0;
     TimeHandler time = new TimeHandler(request);

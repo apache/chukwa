@@ -75,7 +75,9 @@ public class BackfillingLoader {
     adaptor.start("", recordType,  0l,queue);
     adaptor.shutdown(AdaptorShutdownPolicy.WAIT_TILL_FINISHED);
     connector.shutdown();
-    file.renameTo(new File(logFile + ".sav"));
+    if(!file.renameTo(new File(logFile + ".sav"))) {
+      System.err.println("Error in renaming "+logFile+" to "+logFile+".sav");
+    }
   }
   
   public static void usage() {

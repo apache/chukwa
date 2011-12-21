@@ -22,12 +22,8 @@ package org.apache.hadoop.mapred;
 import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.JobHistory;
-import org.apache.hadoop.mapred.JobID;
-import org.apache.hadoop.mapred.JobTracker;
-import org.apache.hadoop.mapred.TaskAttemptID;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.fs.Path;
 
 public class ChukwaJobTrackerInstrumentation extends
@@ -53,7 +49,6 @@ public class ChukwaJobTrackerInstrumentation extends
 
   public void submitJob(JobConf conf, JobID id) {
     super.submitJob(conf,id);
-    String chukwaJobConf = tracker.getLocalJobFilePath(id);
     try {
       String jobFileName = JobHistory.JobInfo.getJobHistoryFileName(conf, id);
       Path jobHistoryPath = JobHistory.JobInfo
@@ -75,7 +70,7 @@ public class ChukwaJobTrackerInstrumentation extends
       }
       jobHistories.put(id, adaptorID);
     } catch (Exception ex) {
-
+      log.warn(ExceptionUtil.getStackTrace(ex));
     }
   }
 

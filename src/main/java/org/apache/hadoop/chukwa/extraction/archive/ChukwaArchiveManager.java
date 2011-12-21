@@ -51,11 +51,6 @@ public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
     init();
   }
 
-  public ChukwaArchiveManager(ChukwaConfiguration conf) throws Exception {
-    conf = new ChukwaConfiguration();
-    init();
-  }
-  
   protected void init() throws IOException, URISyntaxException {
     String fsName = conf.get(HDFS_DEFAULT_NAME_FIELD);
     fs = FileSystem.get(new URI(fsName), conf);

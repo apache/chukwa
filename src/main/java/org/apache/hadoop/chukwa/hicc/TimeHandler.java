@@ -23,7 +23,6 @@ import javax.servlet.http.*;
 
 import org.apache.hadoop.chukwa.util.XssFilter;
 
-import java.util.Date;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.StringTokenizer;
@@ -32,14 +31,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.mdimension.jchronic.Chronic;
 import com.mdimension.jchronic.Options;
-import com.mdimension.jchronic.tags.Pointer;
 import com.mdimension.jchronic.utils.Span;
-import com.mdimension.jchronic.utils.Time;
-
 
 public class TimeHandler {
   private HttpSession session = null;
-  private HttpServletRequest request = null;
   private TimeZone tz = null;
   private long start = 0;
   private long end = 0;
@@ -76,9 +71,7 @@ public class TimeHandler {
 	Calendar now = Calendar.getInstance();
 	long l=now.getTimeInMillis();
 	d=d.trim();
-	if (d.compareToIgnoreCase("now")==0) {
-	    // do nothing because it is default to now.
-	} else {
+	if (d.compareToIgnoreCase("now")!=0) {
 	    Options options= new Options(false);
 	    options.setCompatibilityMode(true);
 	    options.setNow(now);
@@ -153,13 +146,10 @@ public class TimeHandler {
     xf = new XssFilter(request);
     Calendar now = Calendar.getInstance();
     this.session = request.getSession();
-    this.request = request;
-    String timeType = "last";
     if (request.getParameter("time_type") == null
         && session.getAttribute("time_type") == null
         && session.getAttribute("period") == null
         && request.getParameter("period") == null) {
-      timeType = "last";
       end = now.getTimeInMillis();
       start = end - 60 * 60 * 1000;
       session.setAttribute("period", "last1hr");
@@ -182,33 +172,7 @@ public class TimeHandler {
       String period = (String) session.getAttribute("period");
       parsePeriodValue(period);
     }
-    // if((request.getParameter("period")==null ||
-    // request.getParameter("period").equals("")) &&
-    // session.getAttribute("time_type")!=null) {
-    // timeType = (String)session.getAttribute("time_type");
-    // }
-    // if((request.getParameter("period")!=null &&
-    // !request.getParameter("period").equals("")) || (timeType!=null &&
-    // timeType.equals("last"))) {
-    // String period = request.getParameter("period");
-    // if(period == null) {
-    // period = (String) session.getAttribute("period");
-    // if(period == null) {
-    // period = "last1hr";
-    // session.setAttribute("period",period);
-    // }
-    // }
-    // // no time specified in request nor session, set default time in session.
-    // if(request.getParameter("time_type")!=null &&
-    // request.getParameter("time_type").equals("range")) {
-    // session.setAttribute("start", ""+start);
-    // session.setAttribute("end", ""+end);
-    // }
-    // } else {
-    // // no time specified in request, use session time.
-    // start = Long.parseLong((String) session.getAttribute("start"));
-    // end = Long.parseLong((String) session.getAttribute("end"));
-    // }
+
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat formatHour = new SimpleDateFormat("HH");

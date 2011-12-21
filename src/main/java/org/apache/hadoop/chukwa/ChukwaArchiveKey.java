@@ -225,6 +225,7 @@ public class ChukwaArchiveKey extends org.apache.hadoop.record.Record {
   }
 
   public Object clone() throws CloneNotSupportedException {
+    super.clone();
     ChukwaArchiveKey _rio_other = new ChukwaArchiveKey();
     _rio_other.timePartition = this.timePartition;
     _rio_other.dataType = this.dataType;

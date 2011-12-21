@@ -19,34 +19,22 @@ package org.apache.hadoop.chukwa.inputtools.mdl;
 
 
 import java.sql.SQLException;
-import java.sql.ResultSet;
-import java.lang.Exception;
 import java.util.Calendar;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.TreeMap;
 import java.util.Iterator;
-import java.lang.StringBuffer;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.lang.Thread;
 import java.util.Timer;
-import java.lang.ProcessBuilder;
-import java.lang.Process;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.InterruptedException;
-import java.lang.System;
 import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.chukwa.inputtools.mdl.DataConfig;
-import org.apache.hadoop.chukwa.inputtools.mdl.TorqueTimerTask;
-import org.apache.hadoop.chukwa.inputtools.mdl.ErStreamHandler;
-import org.apache.hadoop.chukwa.util.DatabaseWriter;
 
 public class TorqueInfoProcessor {
 
@@ -291,7 +279,6 @@ public class TorqueInfoProcessor {
       SQLException {
     TreeMap<String, String> aJobData = currentHodJobs.get(hodId);
     String userId = aJobData.get("userId");
-    String process = aJobData.get("process");
 
     StringBuffer sb = new StringBuffer();
     sb.append(torqueBinDir).append("/tracejob -n 10 -l -m -s ").append(hodId);
@@ -416,7 +403,6 @@ public class TorqueInfoProcessor {
 
     long currentTime = System.currentTimeMillis();
     currentTime = currentTime - currentTime % (60 * 1000);
-    Timestamp timestamp = new Timestamp(currentTime);
 
     Set<String> hodIds = currentHodJobs.keySet();
 

@@ -38,9 +38,6 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-import org.json.simple.parser.JSONParser;
 
 public class ViewStore {
   private String vid = null;
@@ -53,7 +50,6 @@ public class ViewStore {
   private static String publicViewPath = viewPath+File.separator+"public";
   private static String usersViewPath = viewPath+File.separator+"users";
   private static String PUBLIC = "public".intern();
-  private static String PRIVATE = "private".intern();
 
   public ViewStore() throws IllegalAccessException {
     ViewStore.config = HiccWebServer.getConfig();
