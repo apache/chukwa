@@ -540,13 +540,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <finalName>${final.name}</finalName>
-                    <tarLongFileMode>gnu</tarLongFileMode>
-                    <descriptors>
-                        <descriptor>src/packages/tarball/all.xml</descriptor>
-                    </descriptors>
-                </configuration>
                 <executions>
                     <execution>
                         <id>build-tarball</id>
@@ -554,6 +547,13 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
+                        <configuration>
+                            <finalName>${final.name}</finalName>
+                            <tarLongFileMode>gnu</tarLongFileMode>
+                            <descriptors>
+                                <descriptor>src/packages/tarball/all.xml</descriptor>
+                            </descriptors>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -690,6 +690,13 @@
                 </configuration>
             </plugin>
         </plugins>
+        <extensions>
+          <extension>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-ssh-external</artifactId>
+            <version>1.0</version>
+          </extension>
+        </extensions>
     </build>
 
     <profiles>
@@ -703,6 +710,44 @@
             <properties>
                 <BUILD_NUMBER>0</BUILD_NUMBER>
             </properties>
+        </profile>
+        <profile>
+            <id>src</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>build-release-tarball</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <finalName>chukwa-incubating-src-${VERSION}</finalName>
+                                    <tarLongFileMode>gnu</tarLongFileMode>
+                                    <descriptors>
+                                        <descriptor>src/packages/tarball/src.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin> 
+                        <groupId>org.apache.maven.plugins</groupId> 
+                        <artifactId>maven-install-plugin</artifactId> 
+                        <configuration> 
+                            <createChecksum>true</createChecksum> 
+                        </configuration> 
+                    </plugin> 
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
@@ -805,6 +850,10 @@
         <name>Apache Website</name>
         <url>scp://people.apache.org/www/incubator.apache.org/chukwa/docs/r${project.version}</url>
       </site>
+      <repository>
+        <id>apache-repository</id>
+        <url>scpexe://people.apache.org//www/www.apache.org/dist/incubator/chukwa</url>
+      </repository>
     </distributionManagement>
 
 </project>
