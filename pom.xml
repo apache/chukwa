@@ -22,14 +22,14 @@
     <properties>
         <buildtype>test</buildtype>
         <BUILD_NUMBER>${env.BUILD_NUMBER}</BUILD_NUMBER>
-        <VERSION>0.5.0-SNAPSHOT</VERSION>
+        <VERSION>0.6.0-SNAPSHOT</VERSION>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <package.prefix>/usr</package.prefix>
         <package.conf.dir>/etc/chukwa</package.conf.dir>
         <package.log.dir>/var/log/chukwa</package.log.dir>
         <package.pid.dir>/var/run/chukwa</package.pid.dir>
         <package.release>1</package.release>
-        <package.version>0.5.0</package.version>
+        <package.version>0.6.0</package.version>
         <final.name>${project.artifactId}-incubating-${package.version}</final.name>
         <test.build.dir>${basedir}/target/test</test.build.dir>
         <test.build.data>${test.build.dir}/data</test.build.data>
@@ -65,7 +65,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.incubator</groupId>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
     <artifactId>chukwa</artifactId>
     <packaging>jar</packaging>
 
