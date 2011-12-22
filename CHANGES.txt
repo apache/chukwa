@@ -36,6 +36,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-623. Added build profile src for building release source tarball. (Eric Yang)
+
     CHUKWA-622. Updated HDFS instruction for collector configuration. (Eric Yang)
 
     CHUKWA-620. Updated code analysis and license check in build structure. (Eric Yang)
