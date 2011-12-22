@@ -44,6 +44,8 @@ Release 0.5
 
   IMPROVEMENTS
 
+    CHUKWA-624. Added md5 signature signing to maven build for release tarball. (Eric Yang)
+
     CHUKWA-623. Added build profile src for building release source tarball. (Eric Yang)
 
     CHUKWA-622. Updated HDFS instruction for collector configuration. (Eric Yang)
