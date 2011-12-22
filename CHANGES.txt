@@ -4,6 +4,14 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+  IMPROVEMENTS
+
+  BUGS
+
+Release 0.5
+
+  NEW FEATURES
+
     CHUKWA-590. Migrate from ant to maven. (Eric Yang)
 
     CHUKWA-599. Added Metrics 2 support for Hadoop 0.20.203+. (Eric Yang)
