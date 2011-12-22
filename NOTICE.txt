@@ -1,5 +1,5 @@
 Chukwa, a subproject of Apache Hadoop
-Copyright 2009 The Apache Software Foundation
+Copyright 2011 The Apache Software Foundation
 
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
@@ -22,12 +22,24 @@ The NagiosAppender library was written by Jar Lyons and is under the Apache Lice
 Prefuse is under BSD License.
 * Available from http://prefuse.org/.
 
-iUI is under a BSD license, with media portions under a Creative Commons Attribution-Share Alike 3.0 License. 
+iUI is under BSD license, with media portions under a Creative Commons Attribution-Share Alike 3.0 License. 
 Copyright is held by its developers.
 * Available from http://code.google.com/p/iui/
 
-JChronic is under an MIT license, copyright is held by the developers.
+JChronic is under MIT license, copyright is held by the developers.
 * Available from https://jchronic.dev.java.net/
 
 The configuration spellchecker was written by Ari Rabkin [a Chukwa committer], and is available under a 2-clause BSD-style license. 
 * Available from http://code.google.com/p/jchord/source/browse/#svn/trunk/conf_spellchecker
+
+Timeline is under BSD License.
+* Available from: http://www.simile-widgets.org/timeline/
+
+jQuery is under MIT License.
+* Available from: http://jquery.org/
+
+HTML Filtering utility for Java is under Creative Commons Attribution-ShareAlike 2.5 Generic
+* Available from: http://josephoconnell.com/java/xss-html-filter/
+
+Hyperic Sigar is the Apache License, version 2.0
+* Available from: http://sourceforge.net/projects/sigar/files/sigar/1.6/
