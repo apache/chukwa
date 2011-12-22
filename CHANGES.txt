@@ -1,6 +1,6 @@
 Chukwa Change Log
 
-Trunk (unreleased changes)
+Release 0.5
 
   NEW FEATURES
 
@@ -35,6 +35,8 @@ Trunk (unreleased changes)
     CHUKWA-477. Support post-demux trigger.  (Bill Graham via Eric Yang)
 
   IMPROVEMENTS
+
+    CHUKWA-623. Added build profile src for building release source tarball. (Eric Yang)
 
     CHUKWA-622. Updated HDFS instruction for collector configuration. (Eric Yang)
 
