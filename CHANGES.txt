@@ -116,6 +116,8 @@ Release 0.5
 
   BUG FIXES
 
+    CHUKWA-625. Updated version number to 0.5.0. (Eric Yang)
+
     CHUKWA-621. Implemented findbugs and pmd code analysis check. (Eric Yang)
 
     CHUKWA-619. Disabled trace method on Chukwa servlets. (Julio Conca via Eric Yang)
