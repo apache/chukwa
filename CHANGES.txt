@@ -128,6 +128,8 @@ Release 0.5
 
   BUG FIXES
 
+    CHUKWA-628. Updated LICENSE.txt and NOTICE.txt to meet IPMC request. (Eric Yang)
+
     CHUKWA-621. Implemented findbugs and pmd code analysis check. (Eric Yang)
 
     CHUKWA-619. Disabled trace method on Chukwa servlets. (Julio Conca via Eric Yang)
