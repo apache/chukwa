@@ -1,11 +1,8 @@
 Apache Chukwa
-Copyright 2011 The Apache Software Foundation
+Copyright 2008-2012 The Apache Software Foundation
 
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
-
-Chukwa incorporates a number of components, not copyright by the Apache
-Foundation, and under permissive licenses.
 
 iUI is under BSD license, with media portions under a 
 Creative Commons Attribution-Share Alike 3.0 License. 
@@ -21,4 +18,11 @@ HTML Filtering utility for Java is under Creative Commons Attribution-ShareAlike
 
 JUnit (http://www.junit.org/) included under the Common Public License v1.0.  See
 the full text here: http://junit.sourceforge.net/cpl-v10.html
+
+YUI is copyright 2009 by Yahoo, Inc, and distributed under a BSD license.
+* Available from http://developer.yahoo.com/yui/
+
+This product includes the JQuery JavaScript library, developed by
+John Resig, distributed under the terms of the MIT license.
+* Available from http://jquery.com/
 
