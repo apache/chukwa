@@ -659,8 +659,13 @@
                         <exclude>**/.classpath</exclude>
                         <exclude>**/.project</exclude>
                         <exclude>**/.settings/**</exclude>
-                        <exclude>conf/**</exclude>
-<!--                        <exclude>lib/**</exclude>-->
+                        <!-- Data files -->
+                        <exclude>conf/agents</exclude>
+                        <exclude>conf/alert</exclude>
+                        <exclude>conf/auth.conf</exclude>
+                        <exclude>conf/collectors</exclude>
+                        <exclude>conf/hbase.schema</exclude>
+                        <exclude>conf/initial_adaptors</exclude>
                         <exclude>src/main/web/hicc/descriptors/**</exclude>
                         <exclude>src/main/web/hicc/views/**</exclude>
                         <exclude>contrib/chukwa-pig/src/java/org/apache/hadoop/chukwa/ChukwaStorage.java</exclude>
@@ -670,22 +675,42 @@
                         <exclude>test/samples/ClientTrace.log</exclude>
                         <exclude>test/samples/Iostat.log</exclude>
                         <exclude>test/samples/JobHistory.log</exclude>
-                        <!-- bsd/gpl dual licensed files -->
+                        <!-- bsd licensed files -->
                         <exclude>src/main/web/hicc/js/jquery-*</exclude>
-                        <exclude>lib/jersey-bundle-LICENSE</exclude>
+                        <exclude>src/main/web/hicc/css/iui.css</exclude>
+                        <exclude>src/main/web/hicc/js/behaviour.js</exclude>
+                        <exclude>src/main/web/hicc/js/iui.js</exclude>
+                        <exclude>src/main/web/hicc/js/yahoo-dom-event.js</exclude>
+                        <exclude>src/main/web/hicc/js/treeview-min.js</exclude>
                         <!-- MIT licensed files -->
-                        <exclude>src/main/web/hicc/css/**</exclude>
-                        <exclude>src/main/web/hicc/js/**</exclude>
+                        <exclude>src/main/web/hicc/css/flexigrid/flexigrid.css</exclude>
+                        <exclude>src/main/web/hicc/css/timeline.css</exclude>
                         <exclude>src/main/web/hicc/lib/timeline/**</exclude>
                         <exclude>lib/agent.dict</exclude>
                         <exclude>lib/collector.dict</exclude>
-                        <exclude>lib/confspellcheck-LICENSE</exclude>
                         <exclude>lib/confspellcheck-README</exclude>
-                        <exclude>lib/html-filter-LICENSE</exclude>
-                        <exclude>lib/json-LICENSE.txt</exclude>
                         <exclude>lib/json-README.txt</exclude>
-                        <exclude>lib/jsr311-api-1.0-LICENSE</exclude>
-                        <exclude>lib/license-prefuse.txt</exclude>
+                        <exclude>src/main/web/hicc/js/ajaxtree.js</exclude>
+                        <exclude>src/main/web/hicc/js/flexigrid.js</exclude>
+                        <exclude>src/main/web/hicc/js/flexigrid.pack.js</exclude>
+                        <exclude>src/main/web/hicc/js/workspace/builder.js</exclude>
+                        <exclude>src/main/web/hicc/js/workspace/controls.js</exclude>
+                        <exclude>src/main/web/hicc/js/workspace/dragdrop.js</exclude>
+                        <exclude>src/main/web/hicc/js/workspace/effects.js</exclude>
+                        <exclude>src/main/web/hicc/js/workspace/scriptaculous.js</exclude>
+                        <exclude>src/main/web/hicc/js/workspace/slider.js</exclude>
+                        <exclude>src/main/web/hicc/js/workspace/sound.js</exclude>
+                        <exclude>src/main/web/hicc/js/org/tool-man/*</exclude>
+                        <exclude>src/main/web/hicc/js/timeframe.js</exclude>
+                        <exclude>src/main/web/hicc/js/workspace/prototype.js</exclude>
+                        <exclude>src/main/web/hicc/js/jquery.flot.pack.js</exclude>
+                        <exclude>src/main/web/hicc/js/gsv.js</exclude>
+                        <!-- Creative Commons licensed files -->
+                        <exclude>src/main/web/hicc/js/autoHeight.js</exclude>
+                        <!-- Public Domain -->
+                        <exclude>src/main/web/hicc/js/base64.js</exclude>
+                        <exclude>src/main/web/hicc/js/canvas2image.js</exclude>
+                        <exclude>src/main/web/hicc/js/json.js</exclude>
                     </excludes>
                 </configuration>
             </plugin>
