@@ -44,6 +44,8 @@ Release 0.5
 
   IMPROVEMENTS
 
+    CHUKWA-629. Updated Hadoop dependency to Hadoop 1.0.0 (Eric Yang)
+
     CHUKWA-627. Updated DISCLAIMER.txt and LICENSE.txt (Eric Yang)
 
     CHUKWA-626. Updated NOTICE.txt to include dependency licenses. (Eric Yang)
