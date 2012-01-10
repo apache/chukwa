@@ -4,25 +4,57 @@ Copyright 2008-2012 The Apache Software Foundation
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
-iUI is under BSD license, with media portions under a 
-Creative Commons Attribution-Share Alike 3.0 License. 
-Copyright is held by its developers.
-* Available from http://code.google.com/p/iui/
+This product includes Script.aculo.us
+Copyright (c) 2005-2008 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
 
-The configuration spellchecker was written by Ari Rabkin 
-[a Chukwa committer], and is available under a 2-clause BSD-style license. 
-* Available from http://code.google.com/p/jchord/source/browse/#svn/trunk/conf_spellchecker
+This product includes YUI
+Copyright Yahoo inc, 2009
 
-HTML Filtering utility for Java is under Creative Commons Attribution-ShareAlike 2.5 Generic
-* Available from: http://josephoconnell.com/java/xss-html-filter/
+This product includes iUI
+Copyright (c) 2007-2009, iUI Project Members
 
-JUnit (http://www.junit.org/) included under the Common Public License v1.0.  See
-the full text here: http://junit.sourceforge.net/cpl-v10.html
+This product includes jChronic
+Copyright (c) 2009 Mike Schrag, Sam Tingleff
 
-YUI is copyright 2009 by Yahoo, Inc, and distributed under a BSD license.
-* Available from http://developer.yahoo.com/yui/
+This product includes Perfuse
+Copyright (c) 2004-2006 Regents of the University of California.
 
-This product includes the JQuery JavaScript library, developed by
-John Resig, distributed under the terms of the MIT license.
-* Available from http://jquery.com/
+This product includes Timeline
+(c) Copyright The SIMILE Project 2003-2005.
+
+This product includes jQuery
+Copyright (c) 2011 John Resig, http://jquery.com/
+
+This product includes Ajax.Tree
+Copyright (c) Colin Mollenhour, http://colin.mollenhour.com/ajaxtree/files/ajaxtree-js.html
+
+This product includes Jersey
+Copyright (c) 2012 Oracle, http://jersey.java.net/
+
+This product includes json
+Copyright (c) 2002 JSON.org
+
+This product includes xmlenc
+Copyright 2003-2005, Ernst de Haan <wfe.dehaan@gmail.com> All rights reserved.
+
+This product includes flexigrid
+Copyright (c) 2011 Paulo P. Marinas, http://flexigrid.info/
+
+This product includes GSV
+Copyright (c) 2005 Michal Migurski <mike-gsv@teczno.com>
+
+This product includes ToolMan
+Copyright (c) 2005 Tim Taylor, http://blog.tool-man.org/2005/04/27/toolman-dhtml-02-released/
+
+This product includes Timeframe
+Copyright (c) 2008-2009 Stephen Celis, http://stephencelis.github.com/timeframe/
+
+This product includes flot
+Copyright (c) 2008-2012 Ole Laursen, http://code.google.com/p/flot/
+
+This product includes conf_spellchecker
+Copyright (c) 2008-2010, Ariel Rabkin
+
+This product includes JUnit
+Copyright (c) 2006 JUnit.org
 
