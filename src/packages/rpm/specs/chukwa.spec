@@ -64,11 +64,14 @@ cd %{buildroot}%{_prefix}
 chmod a+x %{buildroot}%{_prefix}/tools/expire.sh
 rm -rf %{buildroot}%{_prefix}/src
 rm -rf %{buildroot}%{_prefix}/build.xml
+%pre
+/usr/sbin/useradd --shell /sbin/nologin -u 210 --comment "Chukwa" -r --home %{_prefix} %{uid} &> /dev/null || :
 %post
 echo "Congratulation!  You have successfully installed Chukwa."
 %preun
 echo
 %postun
+/usr/sbin/userdel %{uid} &> /dev/null
 %files
 %defattr(-,%{uid},%{gid})
 %{_prefix}

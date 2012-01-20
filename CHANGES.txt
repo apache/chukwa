@@ -6,6 +6,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-630. Added chukwa user setup to rpm package. (Noel Duffy via Eric Yang)
+
   BUGS
 
 Release 0.5
