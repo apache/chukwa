@@ -244,13 +244,13 @@
           <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase</artifactId>
-            <version>0.90.4</version>
+            <version>0.92.0</version>
           </dependency>
           <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase</artifactId>
             <classifier>tests</classifier>
-            <version>0.90.4</version>
+            <version>0.92.0</version>
           </dependency>
           <dependency>
             <groupId>org.apache.hadoop</groupId>
