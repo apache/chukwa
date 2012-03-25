@@ -8,6 +8,8 @@ Trunk (unreleased changes)
 
     CHUKWA-630. Added chukwa user setup to rpm package. (Noel Duffy via Eric Yang)
 
+    CHUKWA-639. Updated to HBase 0.92.1. (Eric Yang)
+
   BUGS
 
     CHUKWA-636. Updated dependency to HBase 0.92.0. (Eric Yang)
