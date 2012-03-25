@@ -313,7 +313,7 @@ public class TestChukwaWriters extends TestCase{
   public void testFixedIntervalOffsetCalculation(){
     try{
       SeqFileWriter seqFileWriter = new SeqFileWriter();
-      SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd hh:mm:ssZ");
 
       //rotateInterval >> offsetInterval
       long rotateInterval = 300000; //5 min
@@ -321,26 +321,26 @@ public class TestChukwaWriters extends TestCase{
       long currentTimestamps[] = new long[5] ;
       long expectedRotateTimestamps[] = new long[5];
 
-      Date date = formatter.parse("2011/06/15 01:05:00");
+      Date date = formatter.parse("2011/06/15 01:05:00+0000");
 	    currentTimestamps[0] = date.getTime();
-      expectedRotateTimestamps[0] = 1308096660000L; //2011/06/15 01:11:00
+      expectedRotateTimestamps[0] = 1308100260000L; //2011/06/15 01:11:00
 
-      date = formatter.parse("2011/06/15 01:06:00");
+      date = formatter.parse("2011/06/15 01:06:00+0000");
 	    currentTimestamps[1] = date.getTime();
-      expectedRotateTimestamps[1] = 1308096660000L; //2011/06/15 01:11:00
+      expectedRotateTimestamps[1] = 1308100260000L; //2011/06/15 01:11:00
 
-      date = formatter.parse("2011/06/15 01:02:00");
+      date = formatter.parse("2011/06/15 01:02:00+0000");
       currentTimestamps[2] = date.getTime();
-      expectedRotateTimestamps[2] = 1308096360000L; //2011/06/15 01:06:00
+      expectedRotateTimestamps[2] = 1308099960000L; //2011/06/15 01:06:00
 
-      date = formatter.parse("2011/06/15 01:04:00");
+      date = formatter.parse("2011/06/15 01:04:00+0000");
       currentTimestamps[3] = date.getTime();
-      expectedRotateTimestamps[3] = 1308096360000L; //2011/06/15 01:06:00
+      expectedRotateTimestamps[3] = 1308099960000L; //2011/06/15 01:06:00
 
       //edge case, when there is a change in the "hour"
-      date = formatter.parse("2011/06/15 01:56:00");
+      date = formatter.parse("2011/06/15 01:56:00+0000");
       currentTimestamps[4] = date.getTime();
-      expectedRotateTimestamps[4] = 1308099660000L; //2011/06/15 02:01:00
+      expectedRotateTimestamps[4] = 1308103260000L; //2011/06/15 02:01:00
 
       int i=0;
       long expectedDelay = 0;
@@ -349,7 +349,7 @@ public class TestChukwaWriters extends TestCase{
         expectedDelay = seqFileWriter.getDelayForFixedInterval(
                 currentTimestamps[i], rotateInterval, offsetInterval);
         actualRotateTimestamp = currentTimestamps[i] + expectedDelay;
-        Assert.assertTrue("Incorrect value for delay "+i+" current "+currentTimestamps[i]+" expectedDelay "+expectedDelay+" actualRotate "+actualRotateTimestamp+" expectedRotateTimestamp "+expectedRotateTimestamps[i],
+        Assert.assertTrue("Incorrect value for delay",
                 (actualRotateTimestamp==expectedRotateTimestamps[i]));
       }
 
@@ -357,26 +357,26 @@ public class TestChukwaWriters extends TestCase{
       rotateInterval = 60000; //1 min
       offsetInterval = 30000; //30 sec
 
-      date = formatter.parse("2011/06/15 01:05:00");
+      date = formatter.parse("2011/06/15 01:05:00+0000");
 	    currentTimestamps[0] = date.getTime();
-      expectedRotateTimestamps[0] = 1308096390000L; //2011/06/15 01:06:30
+      expectedRotateTimestamps[0] = 1308099990000L; //2011/06/15 01:06:30
 
-      date = formatter.parse("2011/06/15 01:04:30");
+      date = formatter.parse("2011/06/15 01:04:30+0000");
 	    currentTimestamps[1] = date.getTime();
-      expectedRotateTimestamps[1] = 1308096330000L; //2011/06/15 01:05:30
+      expectedRotateTimestamps[1] = 1308099930000L; //2011/06/15 01:05:30
 
-      date = formatter.parse("2011/06/15 01:05:30");
+      date = formatter.parse("2011/06/15 01:05:30+0000");
       currentTimestamps[2] = date.getTime();
-      expectedRotateTimestamps[2] = 1308096390000L; //2011/06/15 01:06:30
+      expectedRotateTimestamps[2] = 1308099990000L; //2011/06/15 01:06:30
 
-      date = formatter.parse("2011/06/15 01:04:00");
+      date = formatter.parse("2011/06/15 01:04:00+0000");
       currentTimestamps[3] = date.getTime();
-      expectedRotateTimestamps[3] = 1308096330000L; //2011/06/15 01:05:30
+      expectedRotateTimestamps[3] = 1308099930000L; //2011/06/15 01:05:30
 
       //edge case, when there is a change in the "hour"
-      date = formatter.parse("2011/06/15 01:59:30");
+      date = formatter.parse("2011/06/15 01:59:30+0000");
       currentTimestamps[4] = date.getTime();
-      expectedRotateTimestamps[4] = 1308099630000L; //2011/06/15 02:00:30
+      expectedRotateTimestamps[4] = 1308103230000L; //2011/06/15 02:00:30
 
       for(i=0; i<5; i++){
         expectedDelay = seqFileWriter.getDelayForFixedInterval(
@@ -390,18 +390,18 @@ public class TestChukwaWriters extends TestCase{
       rotateInterval = 60000; //1 min
       offsetInterval = 60000; //1 min
 
-      date = formatter.parse("2011/06/15 01:02:00");
+      date = formatter.parse("2011/06/15 01:02:00+0000");
       currentTimestamps[0] = date.getTime();
-      expectedRotateTimestamps[0] = 1308096240000L; //2011/06/15 01:04:00
+      expectedRotateTimestamps[0] = 1308099840000L; //2011/06/15 01:04:00
 
-      date = formatter.parse("2011/06/15 01:02:30");
+      date = formatter.parse("2011/06/15 01:02:30+0000");
       currentTimestamps[1] = date.getTime();
-      expectedRotateTimestamps[1] = 1308096240000L; //2011/06/15 01:04:00
+      expectedRotateTimestamps[1] = 1308099840000L; //2011/06/15 01:04:00
 
       //edge case, when there is a change in the "hour"
-      date = formatter.parse("2011/06/15 01:59:30");
+      date = formatter.parse("2011/06/15 01:59:30+0000");
       currentTimestamps[2] = date.getTime();
-      expectedRotateTimestamps[2] = 1308099660000L; //2011/06/15 02:01:00
+      expectedRotateTimestamps[2] = 1308103260000L; //2011/06/15 02:01:00
 
       for(i=0; i<3; i++){
         expectedDelay = seqFileWriter.getDelayForFixedInterval(
@@ -415,18 +415,18 @@ public class TestChukwaWriters extends TestCase{
       rotateInterval = 60000; //1 min
       offsetInterval = 120000; //2 min
 
-      date = formatter.parse("2011/06/15 01:02:00");
+      date = formatter.parse("2011/06/15 01:02:00+0000");
       currentTimestamps[0] = date.getTime();
-      expectedRotateTimestamps[0] = 1308096300000L; //2011/06/15 01:05:00
+      expectedRotateTimestamps[0] = 1308099900000L; //2011/06/15 01:05:00
 
-      date = formatter.parse("2011/06/15 01:02:30");
+      date = formatter.parse("2011/06/15 01:02:30+0000");
       currentTimestamps[1] = date.getTime();
-      expectedRotateTimestamps[1] = 1308096300000L; //2011/06/15 01:05:00
+      expectedRotateTimestamps[1] = 1308099900000L; //2011/06/15 01:05:00
 
       //edge case, when there is a change in the "hour"
-      date = formatter.parse("2011/06/15 01:59:30");
+      date = formatter.parse("2011/06/15 01:59:30+0000");
       currentTimestamps[2] = date.getTime();
-      expectedRotateTimestamps[2] = 1308099720000L; //2011/06/15 02:02:00
+      expectedRotateTimestamps[2] = 1308103320000L; //2011/06/15 02:02:00
 
       for(i=0; i<3; i++){
         expectedDelay = seqFileWriter.getDelayForFixedInterval(
