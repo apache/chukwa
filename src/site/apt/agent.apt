@@ -104,7 +104,7 @@ Adaptors
  Takes one mandatory parameter; the file to push.
 
 ---
-add FileTailer FooData /tmp/foo 0
+add FileAdaptor FooData /tmp/foo 0
 ---
   This pushes file </tmp/foo> as one chunk, with datatype <FooData>.
 

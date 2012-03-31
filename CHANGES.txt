@@ -16,6 +16,8 @@ Trunk (unreleased changes)
 
     CHUKWA-638. Fixed timezone offset in test case. (Eric Yang)
 
+    CHUKWA-300. Updated adaptor list in document. (Eric Yang)
+
 Release 0.5
 
   NEW FEATURES
