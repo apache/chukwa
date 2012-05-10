@@ -81,11 +81,16 @@ public class DumpChunks {
       nosort = true;
     }
     
-    Filter patterns;
+    Filter patterns = null;
     if(args[filterArg].toLowerCase().equals("all"))
       patterns = Filter.ALL;
     else
-      patterns = new Filter(args[filterArg]);
+      try {
+        patterns = new Filter(args[filterArg]);
+      } catch (PatternSyntaxException pse) {
+        System.err.println("Error parsing \"tags\" regular expression: " + pse.getMessage());
+        System.exit(-1);
+      }
 
     System.err.println("Patterns:" + patterns);
     ArrayList<Path> filesToSearch = new ArrayList<Path>();

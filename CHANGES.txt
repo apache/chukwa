@@ -12,6 +12,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-641. Fix stack trace for dumpChunk command when invalid regular expression is specified. (Eric Spishak via Eric Yang)
+
     CHUKWA-640. Use timer thread to schedule adatpor registration. (Abhijit Dhar via Eric Yang)
 
     CHUKWA-636. Updated dependency to HBase 0.92.0. (Eric Yang)
