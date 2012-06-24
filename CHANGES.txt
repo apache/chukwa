@@ -12,6 +12,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-643. Updated Jersey dependency. (Prakhar Srivastava via Eric Yang)
+
     CHUKWA-641. Fix stack trace for dumpChunk command when invalid regular expression is specified. (Eric Spishak via Eric Yang)
 
     CHUKWA-640. Use timer thread to schedule adaptor registration. (Abhijit Dhar via Eric Yang)
