@@ -273,10 +273,9 @@ public class ChukwaAgentController {
                 + numRetries
                 + " retries remaining");
 
-        AddAdaptorTask task = new AddAdaptorTask(adaptorName, type, params,
-            offset, numRetries - 1, retryInterval);
-        Timer timerThread = new Timer(true);		// set as daemon thread
-        timerThread.schedule(task, retryInterval);		
+        Timer addFileTimer = new Timer();
+        addFileTimer.schedule(new AddAdaptorTask(adaptorName, type, params,
+            offset, numRetries - 1, retryInterval), retryInterval);
       }
     } else {
       System.err.println("Giving up on connecting to the local agent");
