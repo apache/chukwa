@@ -6,6 +6,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-645. Updated Hadoop and HBase dependency. (Eric Yang)
+
     CHUKWA-630. Added chukwa user setup to rpm package. (Noel Duffy via Eric Yang)
 
     CHUKWA-639. Updated to HBase 0.92.1. (Eric Yang)

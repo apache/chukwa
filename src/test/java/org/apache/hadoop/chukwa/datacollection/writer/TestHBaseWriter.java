@@ -96,7 +96,7 @@ public class TestHBaseWriter extends TestCase{
       if(hbw.add(chunks)!=ChukwaWriter.COMMIT_OK) {
         Assert.fail("Commit status is not OK.");
       }
-      HTable testTable = new HTable(table);
+      HTable testTable = new HTable(conf, table);
       ResultScanner scanner = testTable.getScanner(columnFamily, qualifier);
       for(Result res : scanner) {
         Assert.assertEquals(new String(expectedValue), new String(res.getValue(columnFamily, qualifier)));
