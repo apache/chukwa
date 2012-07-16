@@ -20,6 +20,7 @@ package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.File;
 import org.apache.hadoop.chukwa.datacollection.adaptor.*;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
@@ -168,55 +169,59 @@ public class FileTailingAdaptor extends LWFTAdaptor {
 
       long len = 0L;
       try {
-        RandomAccessFile newReader = new RandomAccessFile(toWatch, "r");
         len = reader.length();
-        long newLength = newReader.length();
-        if (newLength < len && fileReadOffset >= len) {
-          if (reader != null) {
-            reader.close();
-          }
-          
-          reader = newReader;
-          fileReadOffset = 0L;
-          log.debug("Adaptor|"+ adaptorID + "| File size mismatched, rotating: "
-              + toWatch.getAbsolutePath());
-        } else {
-          try {
-            if (newReader != null) {
-              newReader.close();
-            }
-            newReader =null;
-          } catch (Throwable e) {
-            log.debug(ExceptionUtil.getStackTrace(e));
-          }
+        if (lastSlurpTime == 0) {
+          lastSlurpTime = System.currentTimeMillis();
         }
-      } catch (IOException e) {
-        log.debug(ExceptionUtil.getStackTrace(e));
-      }
-      if (len >= fileReadOffset) {
         if (offsetOfFirstByte > fileReadOffset) {
           // If the file rotated, the recorded offsetOfFirstByte is greater than
-          // file size,
-          // reset the first byte position to beginning of the file.
+          // file size,reset the first byte position to beginning of the file.
           fileReadOffset = 0;
           offsetOfFirstByte = 0L;
           log.warn("offsetOfFirstByte>fileReadOffset, resetting offset to 0");
         }
-        hasMoreData = slurp(len, reader);
-
-      } else {
-        // file has rotated and no detection
-        if (reader != null) {
-          reader.close();
+        if (len == fileReadOffset) {
+          File fixedNameFile = new File(toWatch.getAbsolutePath());
+          long fixedNameLastModified = fixedNameFile.lastModified();
+          if (fixedNameLastModified > lastSlurpTime) {
+            // If len == fileReadOffset,the file stops rolling log or the file
+            // has rotated.
+            // But fixedNameLastModified > lastSlurpTime , this means after the
+            // last slurping,the file has been written ,
+            // so the file has been rotated.
+            boolean hasLeftData = true;
+            while (hasLeftData) {// read the possiblly generated log
+              hasLeftData = slurp(len, reader);
+            }
+            RandomAccessFile newReader = new RandomAccessFile(toWatch, "r");
+            if (reader != null) {
+              reader.close();
+            }
+            reader = newReader;
+            fileReadOffset = 0L;
+            len = reader.length();
+            log.debug("Adaptor|" + adaptorID 
+                + "| File size mismatched, rotating: " 
+                + toWatch.getAbsolutePath());
+          }
+          hasMoreData = slurp(len, reader);
+        } else if (len < fileReadOffset) {
+          // file has rotated and no detection
+          if (reader != null) {
+            reader.close();
+          }
+          reader = null;
+          fileReadOffset = 0L;
+          offsetOfFirstByte = 0L;
+          hasMoreData = true;
+          log.warn("Adaptor|" + adaptorID + "| file: " + toWatch.getPath() 
+              + ", has rotated and no detection - reset counters to 0L");
+        } else {
+          hasMoreData = slurp(len, reader);
         }
-        
-        reader = null;
-        fileReadOffset = 0L;
-        offsetOfFirstByte = 0L;
-        hasMoreData = true;
-        log.warn("Adaptor|" + adaptorID + "| file: " + toWatch.getPath()
-            + ", has rotated and no detection - reset counters to 0L");
-      }
+      } catch (IOException e) {
+        // do nothing, if file doesn't exist.
+      }       
     } catch (IOException e) {
       log.warn("failure reading " + toWatch, e);
     }

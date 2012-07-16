@@ -188,6 +188,7 @@ public class ChukwaHttpSender implements ChukwaSender {
       // store a CLE for this chunk which we will use to ack this chunk to the
       // caller of send()
       // (e.g. the agent will use the list of CLE's for checkpointing)
+      log.info("chunk seqID:"+c.getSeqID());
       commitResults.add(new CommitListEntry(c.getInitiator(), c.getSeqID(), 
          c.getSeqID() - c.getData().length));
     }

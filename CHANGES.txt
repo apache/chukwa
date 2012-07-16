@@ -14,6 +14,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-646. Fix file rotation correctly for 0 byte rotated files. (Ivy Tang via Eric Yang)
+
     CHUKWA-643. Updated Jersey dependency. (Prakhar Srivastava via Eric Yang)
 
     CHUKWA-641. Fix stack trace for dumpChunk command when invalid regular expression is specified. (Eric Spishak via Eric Yang)

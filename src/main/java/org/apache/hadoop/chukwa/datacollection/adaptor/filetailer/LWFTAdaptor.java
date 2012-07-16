@@ -72,7 +72,11 @@ public class LWFTAdaptor extends AbstractAdaptor {
    */
   protected long offsetOfFirstByte = 0;
   protected Configuration conf = null;
-  
+  /**
+   * The timestamp of last slurping.
+   */ 
+  protected long lastSlurpTime = 0l;
+
   File toWatch;
 
   @Override
