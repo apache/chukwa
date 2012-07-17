@@ -21,6 +21,8 @@ package org.apache.hadoop.chukwa.extraction.demux;
 
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
+import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
+
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.Partitioner;
 import org.apache.log4j.Logger;
@@ -44,7 +46,9 @@ public class ChukwaRecordPartitioner<K, V> implements
               + "] - Reducer:"
               + ((key.getReduceType().hashCode() & Integer.MAX_VALUE) % numReduceTasks));
     }
-    return (key.getReduceType().hashCode() & Integer.MAX_VALUE)
+    String hashkey = key.getReduceType();
+    if(key.getKey().startsWith(CHUKWA_CONSTANT.INCLUDE_KEY_IN_PARTITIONER)) hashkey = key.getReduceType()+"#"+key.getKey();
+    return (hashkey.hashCode() & Integer.MAX_VALUE)
         % numReduceTasks;
   }
 
