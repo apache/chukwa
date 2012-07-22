@@ -161,7 +161,11 @@ elif [ "$COMMAND" = "tail" ]; then
 fi
 
 if [ "$1" = "stop" ]; then
-  kill -TERM `cat ${CHUKWA_PID_DIR}/$PID.pid`
+  if [ -e ${CHUKWA_PID_DIR}/$PID.pid ]; then 
+    kill -TERM `cat ${CHUKWA_PID_DIR}/$PID.pid`
+  else 
+    echo "Cannot find PID file - $PID.pid; NO $PID to stop";
+  fi
 else 
   # run command
   if [ "$BACKGROUND" = "false" ]; then
