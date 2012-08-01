@@ -6,6 +6,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-650. Re-configure Demux ReduceNumber without re-starting the DemuxManager service. (Jie Huang via asrabkin)
+    
     CHUKWA-649. Handle pid-file missing case while stoping chukwa processes. (Jie Huang via asrabkin)
 
     CHUKWA-645. Updated Hadoop and HBase dependency. (Eric Yang)

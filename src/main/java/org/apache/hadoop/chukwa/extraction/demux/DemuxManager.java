@@ -28,6 +28,7 @@ import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
 import org.apache.hadoop.chukwa.util.NagiosHelper;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -328,17 +329,21 @@ public class DemuxManager implements CHUKWA_CONSTANT {
     * @param demuxOutputDir
     * @return true id Demux succeed
     */
-   protected boolean runDemux(String demuxInputDir, String demuxOutputDir) {
+   protected boolean runDemux(String demuxInputDir, String demuxOutputDir) { 
+     // to reload the configuration, and demux's reduce number
+     Configuration tempConf = new Configuration(conf);
+     tempConf.reloadConfiguration();
+     demuxReducerCount = tempConf.getInt(CHUKWA_DEMUX_REDUCER_COUNT_FIELD, DEFAULT_REDUCER_COUNT);
      String[] demuxParams;
      int i=0;
-     Demux.addParsers(conf);
+     Demux.addParsers(tempConf);
      demuxParams = new String[4];
      demuxParams[i++] = "-r";
      demuxParams[i++] = "" + demuxReducerCount;
      demuxParams[i++] = demuxInputDir;
      demuxParams[i++] = demuxOutputDir;
      try {
-       return ( 0 == ToolRunner.run(this.conf,new Demux(), demuxParams) );
+       return ( 0 == ToolRunner.run(tempConf,new Demux(), demuxParams) );
      } catch (Throwable e) {
        e.printStackTrace();
        globalErrorcounter ++;
