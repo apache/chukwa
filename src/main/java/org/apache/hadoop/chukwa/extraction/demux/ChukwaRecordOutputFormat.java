@@ -23,6 +23,7 @@ import org.apache.hadoop.chukwa.extraction.demux.processor.Util;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.chukwa.extraction.engine.RecordUtil;
+import org.apache.hadoop.chukwa.util.HierarchyDataType;
 import org.apache.hadoop.mapred.lib.MultipleSequenceFileOutputFormat;
 import org.apache.log4j.Logger;
 
@@ -33,8 +34,14 @@ public class ChukwaRecordOutputFormat extends
   @Override
   protected String generateFileNameForKeyValue(ChukwaRecordKey key,
       ChukwaRecord record, String name) {
+    //CHUKWA-648:  Make Chukwa Reduce Type to support hierarchy format    
+    //Allow the user to define hierarchy data-type separated by slash mark
+    //Transform the reduceType from
+    // "datatypeLevel1-datatypeLevel2-datatypeLevel3" to
+    // "datatypeLevel1/datatypeLevel2/datatypeLevel3"
     String output = RecordUtil.getClusterName(record) + "/"
-        + key.getReduceType() + "/" + key.getReduceType()
+        + key.getReduceType() + "/"
+        + HierarchyDataType.getHierarchyDataTypeDirectory(key.getReduceType())
         + Util.generateTimeOutput(record.getTime());
 
     // {log.info("ChukwaOutputFormat.fileName: [" + output +"]");}

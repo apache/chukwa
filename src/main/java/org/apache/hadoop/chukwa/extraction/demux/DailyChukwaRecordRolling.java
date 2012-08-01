@@ -30,6 +30,7 @@ import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
+import org.apache.hadoop.chukwa.util.HierarchyDataType;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -114,82 +115,87 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
           + workingDay + "/" + cluster);
       FileStatus[] dataSourcesFS = fs.listStatus(dataSourceClusterHourPaths);
       for (FileStatus dataSourceFS : dataSourcesFS) {
-        String dataSource = dataSourceFS.getPath().getName();
-        // Repo path = reposRootDirectory/<cluster>/<day>/*/*.evt
+        //CHUKWA-648:  Make Chukwa Reduce Type to support hierarchy format  
+        for (FileStatus dataSourcePath : HierarchyDataType.globStatus(fs,
+            dataSourceFS.getPath(), true)) {
+          String dataSource = HierarchyDataType.getDataType(
+              dataSourcePath.getPath(),
+              fs.getFileStatus(dataSourceClusterHourPaths).getPath());
+          // Repo path = reposRootDirectory/<cluster>/<day>/*/*.evt
 
 
-        // put the rotate flag
-        fs.mkdirs(new Path(chukwaMainRepository + "/" + cluster + "/"
-            + dataSource + "/" + workingDay + "/rotateDone"));
-        
-        if (hourlyRolling(chukwaMainRepository + "/" + cluster + "/" + dataSource + "/" + workingDay) == false) {
-          log.warn("Skipping this directory, hourly not done. " + chukwaMainRepository + "/" + cluster + "/"
-            + dataSource + "/" + workingDay );
-          alldone = false;
-          continue;
-        } 
-        
-        log.info("Running Daily rolling for " + chukwaMainRepository + "/" + cluster + "/"
-            + dataSource + "/" + workingDay + "/rotateDone");
-        
-        // rotate
-        // Merge
-        String[] mergeArgs = new String[5];
-        // input
-        mergeArgs[0] = chukwaMainRepository + "/" + cluster + "/" + dataSource
-            + "/" + workingDay + "/[0-9]*/*.evt";
-        // temp dir
-        mergeArgs[1] = tempDir + "/" + cluster + "/" + dataSource + "/"
-            + workingDay + "_" + System.currentTimeMillis();
-        // final output dir
-        mergeArgs[2] = chukwaMainRepository + "/" + cluster + "/" + dataSource
-            + "/" + workingDay;
-        // final output fileName
-        mergeArgs[3] = dataSource + "_DailyDone_"  + workingDay;
-        // delete rolling directory
-        mergeArgs[4] = rollingFolder + "/daily/" + workingDay + "/" + cluster
-            + "/" + dataSource;
+          // put the rotate flag
+          fs.mkdirs(new Path(chukwaMainRepository + "/" + cluster + "/"
+              + dataSource + "/" + workingDay + "/rotateDone"));
 
-        log.info("DailyChukwaRecordRolling 0: " + mergeArgs[0]);
-        log.info("DailyChukwaRecordRolling 1: " + mergeArgs[1]);
-        log.info("DailyChukwaRecordRolling 2: " + mergeArgs[2]);
-        log.info("DailyChukwaRecordRolling 3: " + mergeArgs[3]);
-        log.info("DailyChukwaRecordRolling 4: " + mergeArgs[4]);
+          if (hourlyRolling(chukwaMainRepository + "/" + cluster + "/" + dataSource + "/" + workingDay) == false) {
+            log.warn("Skipping this directory, hourly not done. " + chukwaMainRepository + "/" + cluster + "/"
+                + dataSource + "/" + workingDay );
+            alldone = false;
+            continue;
+          } 
 
-        RecordMerger merge = new RecordMerger(conf, fs,
-            new DailyChukwaRecordRolling(), mergeArgs, deleteRawdata);
-        List<RecordMerger> allMerge = new ArrayList<RecordMerger>();
-        if (rollInSequence) {
-          merge.run();
-        } else {
-          allMerge.add(merge);
-          merge.start();
-        }
+          log.info("Running Daily rolling for " + chukwaMainRepository + "/" + cluster + "/"
+              + dataSource + "/" + workingDay + "/rotateDone");
 
-        // join all Threads
-        if (!rollInSequence) {
-          while (allMerge.size() > 0) {
-            RecordMerger m = allMerge.remove(0);
-            try {
-              m.join();
-            } catch (InterruptedException e) {
-            }
+          // rotate
+          // Merge
+          String[] mergeArgs = new String[5];
+          // input
+          mergeArgs[0] = chukwaMainRepository + "/" + cluster + "/" + dataSource
+              + "/" + workingDay + "/[0-9]*/*.evt";
+          // temp dir
+          mergeArgs[1] = tempDir + "/" + cluster + "/" + dataSource + "/"
+              + workingDay + "_" + System.currentTimeMillis();
+          // final output dir
+          mergeArgs[2] = chukwaMainRepository + "/" + cluster + "/" + dataSource
+              + "/" + workingDay;
+          // final output fileName
+          mergeArgs[3] = dataSource + "_DailyDone_"  + workingDay;
+          // delete rolling directory
+          mergeArgs[4] = rollingFolder + "/daily/" + workingDay + "/" + cluster
+              + "/" + dataSource;
+
+          log.info("DailyChukwaRecordRolling 0: " + mergeArgs[0]);
+          log.info("DailyChukwaRecordRolling 1: " + mergeArgs[1]);
+          log.info("DailyChukwaRecordRolling 2: " + mergeArgs[2]);
+          log.info("DailyChukwaRecordRolling 3: " + mergeArgs[3]);
+          log.info("DailyChukwaRecordRolling 4: " + mergeArgs[4]);
+
+          RecordMerger merge = new RecordMerger(conf, fs,
+              new DailyChukwaRecordRolling(), mergeArgs, deleteRawdata);
+          List<RecordMerger> allMerge = new ArrayList<RecordMerger>();
+          if (rollInSequence) {
+            merge.run();
+          } else {
+            allMerge.add(merge);
+            merge.start();
           }
-        } // End if (!rollInSequence)
 
-        // Delete the processed dataSourceFS
+          // join all Threads
+          if (!rollInSequence) {
+            while (allMerge.size() > 0) {
+              RecordMerger m = allMerge.remove(0);
+              try {
+                m.join();
+              } catch (InterruptedException e) {
+              }
+            }
+          } // End if (!rollInSequence)
+
+          // Delete the processed dataSourceFS
           FileUtil.fullyDelete(fs, dataSourceFS.getPath());
 
-      } // End for(FileStatus dataSourceFS : dataSourcesFS)
+        } // End for(FileStatus dataSourceFS : dataSourcesFS)
 
-      // Delete the processed clusterFs
-      if (alldone == true) {
-        FileUtil.fullyDelete(fs, clusterFs.getPath());
-      }
-      
+        // Delete the processed clusterFs
+        if (alldone == true) {
+          FileUtil.fullyDelete(fs, clusterFs.getPath());
+        }
 
-    } // End for(FileStatus clusterFs : clustersFS)
 
+      } // End for(FileStatus clusterFs : clustersFS)
+    }
     // Delete the processed dayPath
     if (alldone == true) {
       FileUtil.fullyDelete(fs, dayPath);

@@ -25,8 +25,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
+import org.apache.hadoop.chukwa.util.HierarchyDataType;
+import org.apache.hadoop.fs.PathFilter;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
@@ -66,20 +69,35 @@ public class MoveToRepository {
                   + datasourceDirectory.getPath());
         }
 
-        String dirName = datasourceDirectory.getPath().getName();
-        Path destPath = new Path(destDir + "/" + dirName);
-        log.info("dest directory path: " + destPath);
-        log.info("processClusterDirectory processing Datasource: (" + dirName
-            + ")");
-        destFiles.addAll(processDatasourceDirectory(srcDir.getName(),
-            datasourceDirectory.getPath(), destDir + "/" + dirName));
+        PathFilter filter = new PathFilter()
+        {public boolean accept(Path file) {
+          return file.getName().endsWith(".evt");
+        }  };
+        //CHUKWA-648:  Make Chukwa Reduce Type to support hierarchy format
+        // to processDataSourceDirectory according to hierarchy data type format 
+        List<FileStatus> eventfiles = HierarchyDataType.globStatus(fs, datasourceDirectory.getPath(),filter,true);
+        for (FileStatus eventfile : eventfiles){
+          Path datatypeDir = eventfile.getPath().getParent();
+          String dirName = HierarchyDataType.getDataType(datatypeDir, srcDir);
+        
+          Path destPath = new Path(destDir + "/" + dirName);
+          log.info("dest directory path: " + destPath);
+          log.info("processClusterDirectory processing Datasource: (" + dirName
+              + ")");
+          StringBuilder dtDir = new StringBuilder(srcDir.toString()).append("/").append(dirName);
+          log.debug("srcDir: " + dtDir.toString());
+          processDatasourceDirectory(srcDir.toString(), new Path(dtDir.toString()), destDir + "/" + dirName);
+        }
       }
     }
     return destFiles;
   }
 
-  static Collection<Path> processDatasourceDirectory(String cluster, Path srcDir,
+  static Collection<Path> processDatasourceDirectory(String clusterpath, Path srcDir,
       String destDir) throws Exception {
+    Path cPath = new Path(clusterpath);
+    String cluster = cPath.getName();
+    
     Collection<Path> destFiles = new HashSet<Path>();
     String fileName = null;
     int fileDay = 0;
@@ -97,7 +115,7 @@ public class MoveToRepository {
       log.info("fileName: " + fileName);
 
       int l = fileName.length();
-      String dataSource = srcDir.getName();
+      String dataSource = HierarchyDataType.getDataType(srcDir, cPath);
       log.info("Datasource: " + dataSource);
 
       if (fileName.endsWith(".D.evt")) {
@@ -105,7 +123,9 @@ public class MoveToRepository {
 
         fileDay = Integer.parseInt(fileName.substring(l - 14, l - 6));
         Path destFile = writeRecordFile(destDir + "/" + fileDay + "/",
-            recordFile.getPath(), dataSource + "_" + fileDay);
+            recordFile.getPath(),
+            HierarchyDataType.getHierarchyDataTypeFileName(dataSource) + "_"
+                + fileDay);
         if (destFile != null) {
           destFiles.add(destFile);
         }
@@ -129,8 +149,10 @@ public class MoveToRepository {
         fileDay = Integer.parseInt(day);
         fileHour = Integer.parseInt(hour);
         // rotate there so spill
-        Path destFile = writeRecordFile(destDir + "/" + fileDay + "/" + fileHour + "/",
-            recordFile.getPath(), dataSource + "_" + fileDay + "_" + fileHour);
+        Path destFile = writeRecordFile(destDir + "/" + fileDay + "/"
+            + fileHour + "/", recordFile.getPath(),
+            HierarchyDataType.getHierarchyDataTypeFileName(dataSource) + "_"
+                + fileDay + "_" + fileHour);
         if (destFile != null) {
           destFiles.add(destFile);
         }
@@ -150,9 +172,11 @@ public class MoveToRepository {
         log.info("fileDay: " + fileDay);
         log.info("fileHour: " + fileHour);
         log.info("fileMin: " + fileMin);
-        Path destFile = writeRecordFile(destDir + "/" + fileDay + "/" + fileHour + "/"
-            + fileMin, recordFile.getPath(), dataSource + "_" + fileDay + "_"
-            + fileHour + "_" + fileMin);
+        Path destFile = writeRecordFile(
+            destDir + "/" + fileDay + "/" + fileHour + "/" + fileMin,
+            recordFile.getPath(),
+            HierarchyDataType.getHierarchyDataTypeFileName(HierarchyDataType.trimSlash(dataSource))
+            + "_" + fileDay + "_" + fileHour + "_" + fileMin);
         if (destFile != null) {
           destFiles.add(destFile);
         }

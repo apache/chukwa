@@ -65,5 +65,9 @@ public interface CHUKWA_CONSTANT {
 
   public static final String POST_DEMUX_DATA_LOADER = "chukwa.post.demux.data.loader";  
   public static final String INCLUDE_KEY_IN_PARTITIONER = "_";
+  
+  //CHUKWA-648:  Make Chukwa Reduce Type to support hierarchy format
+  //To support Hierarchy datatype
+  public static final String HIERARCHY_CONNECTOR = "-";
   public static final String POST_DEMUX_SUCCESS_ACTION = "chukwa.post.demux.success.action";  
 }

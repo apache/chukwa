@@ -31,6 +31,7 @@ import org.apache.hadoop.chukwa.dataloader.DataLoaderFactory;
 import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
+import org.apache.hadoop.chukwa.util.HierarchyDataType;
 import org.apache.hadoop.chukwa.datatrigger.TriggerAction;
 import org.apache.hadoop.chukwa.datatrigger.TriggerEvent;
 import org.apache.hadoop.fs.FileStatus;
@@ -201,9 +202,17 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
         log.info(dataLoaderName+" processing: "+directory);
         StringBuilder dirSearch = new StringBuilder();
         dirSearch.append(directory);
-        dirSearch.append("/*/*/*.evt");
+        dirSearch.append("/*/*");
+        log.debug("dirSearch: " + dirSearch);
         Path demuxDir = new Path(dirSearch.toString());
-        FileStatus[] events = fs.globStatus(demuxDir);
+        // CHUKWA-648:  Make Chukwa Reduce Type to support hierarchy format
+        // List all event files under the hierarchy data-type directory
+        PathFilter filter = new PathFilter()
+        {public boolean accept(Path file) {
+          return file.getName().endsWith(".evt");
+        }  };
+        List<FileStatus> eventfiles = HierarchyDataType.globStatus(fs, demuxDir,filter,true);
+        FileStatus[] events = eventfiles.toArray(new FileStatus[eventfiles.size()]);
         dataloader.load(conf, fs, events);
       }
     } catch(Exception e) {

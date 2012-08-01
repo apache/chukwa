@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
+import org.apache.hadoop.chukwa.util.HierarchyDataType;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileStatus;
@@ -80,59 +81,64 @@ public class HourlyChukwaRecordRolling extends Configured implements Tool {
       FileStatus[] dataSourcesFS = fs.listStatus(dataSourceClusterHourPaths);
       
       for (FileStatus dataSourceFS : dataSourcesFS) {
-        String dataSource = dataSourceFS.getPath().getName();
-        // Repo path = reposRootDirectory/<cluster>/<datasource>/<day>/<hour>/*/*.evt
+        //CHUKWA-648:  Make Chukwa Reduce Type to support hierarchy format  
+        for (FileStatus dataSourcePath : HierarchyDataType.globStatus(fs,
+            dataSourceFS.getPath(), true)) {
+          String dataSource = HierarchyDataType.getDataType(
+              dataSourcePath.getPath(),
+              fs.getFileStatus(dataSourceClusterHourPaths).getPath());
+          // Repo path = reposRootDirectory/<cluster>/<datasource>/<day>/<hour>/*/*.evt
 
-        // put the rotate flag
-        fs.mkdirs(new Path(chukwaMainRepository + "/" + cluster + "/"
-                + dataSource + "/" + workingDay + "/" + workingHour
-                + "/rotateDone"));
+          // put the rotate flag
+          fs.mkdirs(new Path(chukwaMainRepository + "/" + cluster + "/"
+              + dataSource + "/" + workingDay + "/" + workingHour
+              + "/rotateDone"));
 
-        // rotate
-        // Merge
-        String[] mergeArgs = new String[5];
-        // input
-        mergeArgs[0] = chukwaMainRepository + "/" + cluster + "/" + dataSource
-            + "/" + workingDay + "/" + workingHour + "/[0-5]*/*.evt";
-        // temp dir
-        mergeArgs[1] = tempDir + "/" + cluster + "/" + dataSource + "/"
-            + workingDay + "/" + workingHour + "_" + System.currentTimeMillis();
-        // final output dir
-        mergeArgs[2] = chukwaMainRepository + "/" + cluster + "/" + dataSource
-            + "/" + workingDay + "/" + workingHour;
-        // final output fileName
-        mergeArgs[3] = dataSource + "_HourlyDone_" + workingDay + "_" + workingHour;
-        // delete rolling directory
-        mergeArgs[4] = rollingFolder + "/hourly/" + workingDay + "/"
-            + workingHour + "/" + cluster + "/" + dataSource;
+          // rotate
+          // Merge
+          String[] mergeArgs = new String[5];
+          // input
+          mergeArgs[0] = chukwaMainRepository + "/" + cluster + "/" + dataSource
+              + "/" + workingDay + "/" + workingHour + "/[0-5]*/*.evt";
+          // temp dir
+          mergeArgs[1] = tempDir + "/" + cluster + "/" + dataSource + "/"
+              + workingDay + "/" + workingHour + "_" + System.currentTimeMillis();
+          // final output dir
+          mergeArgs[2] = chukwaMainRepository + "/" + cluster + "/" + dataSource
+              + "/" + workingDay + "/" + workingHour;
+          // final output fileName
+          mergeArgs[3] = dataSource + "_HourlyDone_" + workingDay + "_" + workingHour;
+          // delete rolling directory
+          mergeArgs[4] = rollingFolder + "/hourly/" + workingDay + "/"
+              + workingHour + "/" + cluster + "/" + dataSource;
 
-        log.info("HourlyChukwaRecordRolling 0: " + mergeArgs[0]);
-        log.info("HourlyChukwaRecordRolling 1: " + mergeArgs[1]);
-        log.info("HourlyChukwaRecordRolling 2: " + mergeArgs[2]);
-        log.info("HourlyChukwaRecordRolling 3: " + mergeArgs[3]);
-        log.info("HourlyChukwaRecordRolling 4: " + mergeArgs[4]);
+          log.info("HourlyChukwaRecordRolling 0: " + mergeArgs[0]);
+          log.info("HourlyChukwaRecordRolling 1: " + mergeArgs[1]);
+          log.info("HourlyChukwaRecordRolling 2: " + mergeArgs[2]);
+          log.info("HourlyChukwaRecordRolling 3: " + mergeArgs[3]);
+          log.info("HourlyChukwaRecordRolling 4: " + mergeArgs[4]);
 
-        RecordMerger merge = new RecordMerger(conf, fs,
-            new HourlyChukwaRecordRolling(), mergeArgs, deleteRawdata);
-        List<RecordMerger> allMerge = new ArrayList<RecordMerger>();
-        if (rollInSequence) {
-          merge.run();
-        } else {
-          allMerge.add(merge);
-          merge.start();
-        }
-
-        // join all Threads
-        if (!rollInSequence) {
-          while (allMerge.size() > 0) {
-            RecordMerger m = allMerge.remove(0);
-            try {
-              m.join();
-            } catch (InterruptedException e) {
-            }
+          RecordMerger merge = new RecordMerger(conf, fs,
+              new HourlyChukwaRecordRolling(), mergeArgs, deleteRawdata);
+          List<RecordMerger> allMerge = new ArrayList<RecordMerger>();
+          if (rollInSequence) {
+            merge.run();
+          } else {
+            allMerge.add(merge);
+            merge.start();
           }
-        } // End if (!rollInSequence)
 
+          // join all Threads
+          if (!rollInSequence) {
+            while (allMerge.size() > 0) {
+              RecordMerger m = allMerge.remove(0);
+              try {
+                m.join();
+              } catch (InterruptedException e) {
+              }
+            }
+          } // End if (!rollInSequence)
+        }
         // Delete the processed dataSourceFS
         FileUtil.fullyDelete(fs, dataSourceFS.getPath());
 
