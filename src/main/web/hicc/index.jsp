@@ -40,10 +40,13 @@
     }
     String cluster = "none";
     try{
-      if(session.getAttribute("cluster")==null) {
+      if(session.getAttribute("cluster")==null ||
+         session.getAttribute("cluster").equals("none")) {
         ClusterConfig cc = new ClusterConfig();
         Iterator ci = cc.getClusters();
         cluster = (String) ci.next();
+      } else {
+        cluster = (String) session.getAttribute("cluster");
       }
     } catch(Exception e) {
     }
@@ -131,6 +134,9 @@ function toggle_view_all() {
     <td align="left" nowrap class="portal_top_nav_bar" nowrap> </td></tr>
 </table>
 <% } %>
+<% if(request.getParameter("embed")!=null) { %>
+<div id="hide-menubar" style="display:none;">
+<% } %>
 <table width="100%" cellpadding=0 cellspacing=0 class="menubar">
 <tr><td>
 <div id="menu">
@@ -161,6 +167,9 @@ function toggle_view_all() {
 </td><td align="right"><a href='#' onmouseover='javascript:build_permlink();' id='permlink' class='glossy_icon'><img id='permlink_icon' src='/hicc/images/server_link.png' border=0></a> <a href='#' onclick='toggle_view_all()' class='glossy_icon'><img id='view_all' src='/hicc/images/stop.png' border=0></a>  <a href='#' onclick='_currentView.getCurrentPage().refresh_all();' class='glossy_icon'><img src='/hicc/images/refresh.png' border=0></a>&nbsp;</div>
 </td></tr>
 </table>
+<% if(request.getParameter("embed")!=null) { %>
+  </div>
+<% } %>
 <table width="100%" cellpadding=0 cellspacing=0>
 <tr><td colspan="3">
 <!-- first page for manage view -->
@@ -217,7 +226,7 @@ Select the widget from the widget tree to see the detail.
 </tr>
 </table>
 </td></tr>
-<tr><td bgcolor="white" id="workspaceContainer" colspan="3">
+<tr><td id="workspaceContainer" colspan="3">
 <!-- content location -->
 </td></tr>
 </table>

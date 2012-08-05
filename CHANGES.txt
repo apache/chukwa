@@ -22,6 +22,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-637. Fixed default cluster selection in hicc. (Eric Yang)
+
     CHUKWA-654. Added additional check for getting row key. (Saisai Shao via Eric Yang)
 
     CHUKWA-652. Fixed JSON error in utilization.descriptor. (Saisai Shao via Eric Yang)
