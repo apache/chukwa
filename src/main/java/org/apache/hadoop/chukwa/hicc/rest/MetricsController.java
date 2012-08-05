@@ -103,6 +103,9 @@ public class MetricsController {
           String[] rkeys = (session.getAttribute(skey).toString()).split(",");
           JSONArray seriesList = new JSONArray();
           for(String rowKey : rkeys) {
+        	if (rowKey == null || rowKey.equals("")) {
+        		continue;
+        	}
             Series output = ChukwaHBaseStore.getSeries(table, rowKey, family, qualifier, startTime, endTime, true);
             seriesList.add(output.toJSONObject());
           }

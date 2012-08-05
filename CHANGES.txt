@@ -22,6 +22,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-654. Added additional check for getting row key. (Saisai Shao via Eric Yang)
+
     CHUKWA-652. Fixed JSON error in utilization.descriptor. (Saisai Shao via Eric Yang)
 
     CHUKWA-646. Fix file rotation correctly for 0 byte rotated files. (Ivy Tang via Eric Yang)
