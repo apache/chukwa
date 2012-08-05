@@ -102,6 +102,16 @@ public class SystemMetrics extends AbstractProcessor {
     }
     buildGenericRecord(record, null, cal.getTimeInMillis(), "memory");
     output.collect(key, record);    
+
+    record = new ChukwaRecord();
+    JSONObject swap = (JSONObject) json.get("swap");
+    Iterator<String> swapKeys = swap.keySet().iterator();
+    while(swapKeys.hasNext()) {
+      String key = swapKeys.next();
+      record.add(key, swap.get(key).toString());
+    }
+    buildGenericRecord(record, null, cal.getTimeInMillis(), "swap");
+    output.collect(key, record);
     
     double rxBytes = 0;
     double rxDropped = 0;

@@ -24,6 +24,11 @@
 {"label":"Disk Write Operations","value":"/hicc/v1/metrics/series/ClusterSummary/disk:Writes/session/cluster"},
 {"label":"Memory Free Percentage","value":"/hicc/v1/metrics/series/ClusterSummary/memory:FreePercent/session/cluster"},
 {"label":"Memory Used Percentage","value":"/hicc/v1/metrics/series/ClusterSummary/memory:UsedPercent/session/cluster"},
+{"label":"Swap Total","value":"/hicc/v1/metrics/series/ClusterSummary/memory:SwapTotal/session/cluster"},
+{"label":"Swap Used","value":"/hicc/v1/metrics/series/ClusterSummary/swap:Used/session/cluster"},
+{"label":"Swap Free","value":"/hicc/v1/metrics/series/ClusterSummary/swap:Free/session/cluster"},
+{"label":"Swap Page In","value":"/hicc/v1/metrics/series/ClusterSummary/swap:PageIn/session/cluster"},
+{"label":"Swap Page Out","value":"/hicc/v1/metrics/series/ClusterSummary/swap:PageOut/session/cluster"},
 {"label":"Network Receive Bytes","value":"/hicc/v1/metrics/series/ClusterSummary/network:RxBytes/session/cluster"},
 {"label":"Network Receive Dropped","value":"/hicc/v1/metrics/series/ClusterSummary/network:RxDropped/session/cluster"},
 {"label":"Network Receive Errors","value":"/hicc/v1/metrics/series/ClusterSummary/network:RxErrors/session/cluster"},
@@ -32,7 +37,7 @@
 {"label":"Network Transfer Collisions","value":"/hicc/v1/metrics/series/ClusterSummary/network:TxCollisions/session/cluster"},
 {"label":"Network Transfer Errors","value":"/hicc/v1/metrics/series/ClusterSummary/network:TxErrors/session/cluster"},
 {"label":"Network Transfer Packets","value":"/hicc/v1/metrics/series/ClusterSummary/network:TxPackets/session/cluster"},
-{"label":"Load Average","value":"/hicc/v1/metrics/series/ClusterSummary/system:LoadAverage/session/cluster"},
+{"label":"Load Average","value":"/hicc/v1/metrics/series/ClusterSummary/system:LoadAverage/session/cluster"}
 ]},
 {"name":"width","type":"select","value":"300","label":"Width","options":[
 {"label":"300","value":"300"},

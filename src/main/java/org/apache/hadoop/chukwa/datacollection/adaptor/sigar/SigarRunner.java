@@ -30,6 +30,7 @@ import org.hyperic.sigar.CpuPerc;
 import org.hyperic.sigar.FileSystem;
 import org.hyperic.sigar.FileSystemUsage;
 import org.hyperic.sigar.Mem;
+import org.hyperic.sigar.Swap;
 import org.hyperic.sigar.NetInterfaceStat;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.Uptime;
@@ -61,6 +62,7 @@ public class SigarRunner extends TimerTask {
     CpuInfo[] cpuinfo = null;
     CpuPerc[] cpuPerc = null;
     Mem mem = null;
+    Swap swap = null;
     FileSystem[] fs = null;
     String[] netIf = null;
     Uptime uptime = null;
@@ -103,6 +105,12 @@ public class SigarRunner extends TimerTask {
       JSONObject memMap = new JSONObject();
       memMap.putAll(mem.toMap());
       json.put("memory", memMap);
+
+      // Swap Utilization
+      swap = sigar.getSwap();
+      JSONObject swapMap = new JSONObject();
+      swapMap.putAll(swap.toMap());
+      json.put("swap", swapMap);
       
       // Network Utilization
       netIf = sigar.getNetInterfaceList();
