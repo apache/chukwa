@@ -22,6 +22,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-652. Fixed JSON error in utilization.descriptor. (Saisai Shao via Eric Yang)
+
     CHUKWA-646. Fix file rotation correctly for 0 byte rotated files. (Ivy Tang via Eric Yang)
 
     CHUKWA-643. Updated Jersey dependency. (Prakhar Srivastava via Eric Yang)
