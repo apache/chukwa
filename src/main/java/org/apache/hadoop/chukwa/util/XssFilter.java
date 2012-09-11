@@ -82,7 +82,7 @@ public class XssFilter {
       return values;
     }
     
-    public String filter( String input ) {
+    public static String filter( String input ) {
         if(input==null) {
             return null;
         }

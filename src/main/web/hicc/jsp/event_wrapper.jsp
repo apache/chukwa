@@ -19,6 +19,7 @@
 %>
 <%@page import = "org.apache.hadoop.chukwa.util.XssFilter" %>
 <%
+   XssFilter xf = new XssFilter(request);
    response.setHeader("boxId", xf.getParameter("boxId"));
 %>
 <IFRAME id="<%= xf.getParameter("boxId") %>iframe" src="/hicc/jsp/event.jsp" width="100%" frameborder="0" height="600"></IFRAME>
