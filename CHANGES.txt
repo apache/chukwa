@@ -24,6 +24,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-653. Added pre-compile JSP code profile for build process. (Jie Huang via Eric Yang)
+
     CHUKWA-642. Added regular expression validation. (Eric Spishak via Eric Yang)
 
     CHUKWA-632. Added getter method for startOffset in AbstractProcessor. (Abhijit Dhar via Eric Yang)

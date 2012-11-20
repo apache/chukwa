@@ -944,6 +944,43 @@
                 </dependency>
             </dependencies>
         </profile>
+        <profile>
+            <id>jspc</id>
+            <activation>
+                <property>
+                    <name>jspc</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                      <groupId>org.mortbay.jetty</groupId>
+                      <artifactId>maven-jetty-jspc-plugin</artifactId>
+                      <version>6.1.26</version>
+                      <executions>
+                        <execution>
+                          <id>jspc</id>
+                          <goals>
+                             <goal>jspc</goal>
+                          </goals>
+                          <configuration>
+                             <webAppSourceDirectory>
+                             src/main/web/hicc
+                             </webAppSourceDirectory>
+                             <generatedClasses>
+                             ${basedir}/target/web
+                             </generatedClasses>
+                             <verbose>true</verbose>
+                             <keepSources>false</keepSources>
+                             <packageRoot>org.apache.jsp</packageRoot>
+                             <ignoreJspFragmentErrors>true</ignoreJspFragmentErrors>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile> 
     </profiles>
 
     <repositories>
