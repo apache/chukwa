@@ -203,8 +203,8 @@ public class FileTailingAdaptor extends LWFTAdaptor {
             log.debug("Adaptor|" + adaptorID 
                 + "| File size mismatched, rotating: " 
                 + toWatch.getAbsolutePath());
-          }
-          hasMoreData = slurp(len, reader);
+            hasMoreData = slurp(len, reader);
+          } 
         } else if (len < fileReadOffset) {
           // file has rotated and no detection
           if (reader != null) {

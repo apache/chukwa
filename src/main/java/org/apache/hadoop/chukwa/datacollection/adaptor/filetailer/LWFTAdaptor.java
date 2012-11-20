@@ -166,6 +166,7 @@ public class LWFTAdaptor extends AbstractAdaptor {
 
     long curOffset = fileReadOffset;
 
+    lastSlurpTime = System.currentTimeMillis();
     int bufferRead = reader.read(buf);
     assert reader.getFilePointer() == fileReadOffset + bufSize : " event size arithmetic is broken: "
         + " pointer is "
@@ -214,7 +215,7 @@ public class LWFTAdaptor extends AbstractAdaptor {
         handleShrunkenFile(len);
       } else if(len > fileReadOffset) {
         RandomAccessFile reader = new RandomAccessFile(toWatch, "r");
-        slurp(len, reader);
+        hasMoreData = slurp(len, reader);
         reader.close();
       }
     } catch(IOException e) {
