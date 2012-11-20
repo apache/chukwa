@@ -20,6 +20,8 @@ package org.apache.hadoop.chukwa.inputtools;
 
 
 import java.io.IOException;
+import java.util.regex.PatternSyntaxException;
+
 import org.apache.hadoop.mapred.Reporter;
 import junit.framework.TestCase;
 import org.apache.hadoop.chukwa.*;
@@ -82,4 +84,25 @@ public class TestInputFormat extends TestCase {
     }
   }
 
+  public void testInputFormatIllegalRegex() {
+    try {
+      JobConf conf = new JobConf();
+      conf.set("chukwa.inputfilter.datatype", "(");
+      String TMP_DIR = System.getProperty("test.build.data", "/tmp");
+      Path filename = new Path("file:///" + TMP_DIR + "/tmpSeqFile");
+      long len = FileSystem.getLocal(conf).getFileStatus(filename).getLen();
+      InputSplit split = new FileSplit(filename, 0, len, (String[]) null);
+
+      ChukwaInputFormat in = new ChukwaInputFormat();
+      RecordReader<LongWritable, Text> r = in.getRecordReader(split, conf,
+          Reporter.NULL);
+
+    } catch (PatternSyntaxException e) {
+      e.printStackTrace();
+      fail("Illegal regular expression caused PatternSyntaxException: " + e);
+    } catch (IOException e) {
+      e.printStackTrace();
+      fail("IO exception " + e);
+    }
+  }
 }

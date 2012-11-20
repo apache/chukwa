@@ -23,6 +23,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.regex.PatternSyntaxException;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.util.Filter;
+import org.apache.hadoop.chukwa.util.RegexUtil;
+import org.apache.hadoop.chukwa.util.RegexUtil.CheckedPatternSyntaxException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 import java.net.ServerSocket;
@@ -167,7 +169,7 @@ public class SocketTeeWriter extends PipelineableWriter {
      */
     public void setup() {
       try {   //outer try catches IOExceptions
-       try { //inner try catches Pattern Syntax errors
+       try { //inner try catches bad command syntax errors
         sock.setSoTimeout(timeout);
         sock.setKeepAlive(USE_KEEPALIVE);
         in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
@@ -175,8 +177,8 @@ public class SocketTeeWriter extends PipelineableWriter {
         String cmd = in.readLine();
         if(!cmd.contains(" ")) {
           
-          throw new PatternSyntaxException(
-              "command should be keyword pattern, but no ' ' seen", cmd, -1);
+          throw new IllegalArgumentException(
+              "command should be keyword pattern, but no ' ' seen: " + cmd);
         }
         String uppercased = cmd.substring(0, cmd.indexOf(' ')).toUpperCase();
         if(RAW.equals(uppercased))
@@ -186,16 +188,27 @@ public class SocketTeeWriter extends PipelineableWriter {
         else if(ASCII_HEADER.equals(uppercased))
           fmt = DataFormat.Header;
         else {
-          throw new PatternSyntaxException("bad command '" + uppercased+
+          throw new IllegalArgumentException("bad command '" + uppercased+
               "' -- starts with neither '"+ RAW+ "' nor '"+ WRITABLE + " nor " 
-              + ASCII_HEADER+"'.", cmd, -1);
+              + ASCII_HEADER+"':" + cmd);
         }
         
         String cmdAfterSpace = cmd.substring(cmd.indexOf(' ')+1);
         if(cmdAfterSpace.toLowerCase().equals("all"))
           rules = Filter.ALL;
         else
-          rules = new Filter(cmdAfterSpace);
+          try {
+            rules = new Filter(cmdAfterSpace);
+          } catch (CheckedPatternSyntaxException pse) {
+            out.write("Error parsing command as a regex: ".getBytes());
+            out.write(pse.getMessage().getBytes());
+            out.writeByte('\n');
+            out.close();
+            in.close();
+            sock.close();
+            log.warn(pse);
+            return;
+          }
 
           //now that we read everything OK we can add ourselves to list, and return.
         synchronized(tees) {
@@ -203,7 +216,7 @@ public class SocketTeeWriter extends PipelineableWriter {
         }
         out.write("OK\n".getBytes());
         log.info("tee to " + sock.getInetAddress() + " established");
-      } catch(PatternSyntaxException e) {
+      } catch(IllegalArgumentException e) {
           out.write(e.toString().getBytes());
           out.writeByte('\n');
           out.close();

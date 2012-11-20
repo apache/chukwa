@@ -41,6 +41,7 @@ import org.apache.hadoop.chukwa.extraction.engine.RecordUtil;
 import org.apache.hadoop.chukwa.util.ClusterConfig;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
+import org.apache.hadoop.chukwa.util.RegexUtil;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.SequenceFile;
@@ -220,7 +221,13 @@ public class MetricDataLoader implements Callable {
         String dbKey = "report.db.name." + recordType;
         Matcher m = p.matcher(recordType);
         if (dbTables.containsKey(dbKey)) {
-          String[] tmp = mdlConfig.findTableName(mdlConfig.get(dbKey), record
+          String tableName = mdlConfig.get(dbKey);
+          if (!RegexUtil.isRegex(tableName)) {
+            log.error("Error parsing 'tableName' as a regex: "
+                + RegexUtil.regexError(tableName));
+            return false;
+          }
+          String[] tmp = mdlConfig.findTableName(tableName, record
               .getTime(), record.getTime());
           table = tmp[0];
         } else if(m.matches()) {

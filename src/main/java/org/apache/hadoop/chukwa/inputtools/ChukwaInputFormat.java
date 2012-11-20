@@ -22,6 +22,7 @@ package org.apache.hadoop.chukwa.inputtools;
 import java.io.IOException;
 import java.util.regex.*;
 import org.apache.hadoop.chukwa.*;
+import org.apache.hadoop.chukwa.util.RegexUtil;
 import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.*;
@@ -46,6 +47,9 @@ public class ChukwaInputFormat extends
 
     static Logger LOG = Logger.getLogger(ChukwaInputFormat.class);
 
+    public static final String DATATYPE_PROPERTY = "chukwa.inputfilter.datatype";
+    public static final String DATATYPE_PROPERTY_DEFAULT = ".*";
+
     private SequenceFileRecordReader<ChukwaArchiveKey, Chunk> sfrr;
     private long lineInFile = 0;
     private Chunk curChunk = null;
@@ -58,8 +62,14 @@ public class ChukwaInputFormat extends
     public ChukwaRecordReader(Configuration conf, FileSplit split)
         throws IOException {
       sfrr = new SequenceFileRecordReader<ChukwaArchiveKey, Chunk>(conf, split);
-      dtPattern = Pattern
-          .compile(conf.get("chukwa.inputfilter.datatype", ".*"));
+      String datatype = conf.get(DATATYPE_PROPERTY, DATATYPE_PROPERTY_DEFAULT);
+      if (!RegexUtil.isRegex(datatype)) {
+        LOG.warn("Error parsing '" + DATATYPE_PROPERTY
+            + "' property as a regex: " + RegexUtil.regexError(datatype)
+            + ". Using default instead: " + DATATYPE_PROPERTY_DEFAULT);
+        datatype = DATATYPE_PROPERTY_DEFAULT;
+      }
+      dtPattern = Pattern.compile(datatype);
     }
 
     @Override

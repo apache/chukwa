@@ -19,6 +19,7 @@ package org.apache.hadoop.chukwa.util;
 
 import junit.framework.TestCase;
 import org.apache.hadoop.chukwa.ChunkImpl;
+import org.apache.hadoop.chukwa.util.RegexUtil.CheckedPatternSyntaxException;
 
 public class TestFilter extends TestCase {
   
@@ -65,7 +66,13 @@ public class TestFilter extends TestCase {
     ChunkImpl chunk1 = new ChunkImpl("Data", "aname", dat.length, dat, null);
     chunk1.setSource("asource");
     assertTrue(Filter.ALL.matches(chunk1));
-    Filter rule = new Filter("tags.foo=bar");
+    Filter rule = null;
+    try {
+      rule = new Filter("tags.foo=bar");
+    } catch (CheckedPatternSyntaxException e) {
+      e.printStackTrace();
+      fail("Regular expression error: " + e);
+    }
     
     assertFalse(rule.matches(chunk1));
     chunk1.addTag("foo=\"bar\"");
@@ -75,4 +82,12 @@ public class TestFilter extends TestCase {
     assertTrue(Filter.ALL.matches(chunk1));
   }
   
+  public void testIllegalRegex() {
+    try {
+      new Filter("tags.foo=(");
+    } catch (CheckedPatternSyntaxException e) {
+      return;
+    }
+    fail("No CheckedPatternSyntaxException thrown for illegal regular expression.");
+  }
 }

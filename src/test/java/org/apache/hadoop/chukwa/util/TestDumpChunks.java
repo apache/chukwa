@@ -19,6 +19,7 @@ package org.apache.hadoop.chukwa.util;
 
 import junit.framework.TestCase;
 import java.util.*;
+import java.util.regex.PatternSyntaxException;
 import java.io.*;
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
@@ -86,4 +87,15 @@ public class TestDumpChunks extends TestCase {
     
   }
 
+  public void testIllegalRegex() throws Exception {
+    String[] args = { "tags.command=(" };
+    Configuration conf = new Configuration();
+
+    try {
+      DumpChunks.dump(args, conf, System.out);
+    } catch (PatternSyntaxException e) {
+      e.printStackTrace();
+      fail("Illegal regular expression caused PatternSyntaxException: " + e);
+    }
+  }
 }

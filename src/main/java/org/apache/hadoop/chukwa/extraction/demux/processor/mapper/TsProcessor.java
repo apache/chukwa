@@ -31,6 +31,7 @@ import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.chukwa.extraction.demux.Demux;
+import org.apache.hadoop.chukwa.util.RegexUtil;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.mapred.JobConf;
@@ -65,6 +66,8 @@ public class TsProcessor extends AbstractProcessor {
   static Logger log = Logger.getLogger(TsProcessor.class);
 
   public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";
+  public static final String DEFAULT_TIME_REGEX = "TsProcessor.default.time.regex";
+  public static final String TIME_REGEX = "TsProcessor.time.regex.";
 
   private Map<String, Pattern> datePatternMap;
   private Map<String, SimpleDateFormat> dateFormatMap;
@@ -155,14 +158,24 @@ public class TsProcessor extends AbstractProcessor {
 
     JobConf jobConf = Demux.jobConf;
     String datePattern = null;
+    Pattern pattern = null;
 
     if (jobConf != null) {
-      datePattern = jobConf.get("TsProcessor.default.time.regex", null);
-      datePattern = jobConf.get("TsProcessor.time.regex." + chunk.getDataType(),
-                               datePattern);
+      String timeRegexProperty = TIME_REGEX + chunk.getDataType();
+      datePattern = jobConf.get(DEFAULT_TIME_REGEX, null);
+      datePattern = jobConf.get(timeRegexProperty, datePattern);
+      if (datePattern != null) {
+        if (!RegexUtil.isRegex(datePattern, 1)) {
+          log.warn("Error parsing '" + DEFAULT_TIME_REGEX + "' or '"
+              + timeRegexProperty + "' properties as a regex: "
+              + RegexUtil.regexError(datePattern, 1)
+              + ". This date pattern will be skipped.");
+          return null;
+        }
+        pattern = Pattern.compile(datePattern);
+      }
     }
 
-    Pattern pattern = datePattern != null ? Pattern.compile(datePattern) : null;
     datePatternMap.put(dataType, pattern);
 
     return pattern;

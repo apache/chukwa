@@ -24,10 +24,14 @@ import java.util.regex.PatternSyntaxException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.extraction.engine.RecordUtil;
+import org.apache.hadoop.chukwa.util.RegexUtil.CheckedPatternSyntaxException;
+import org.apache.log4j.Logger;
 
 
 public class Filter {
-  
+
+  static Logger log = Logger.getLogger(Filter.class);
+
   private static final String[] SEARCH_TARGS = 
   {"datatype", "name", "host", "cluster", "content"};
   static final String SEPARATOR="&";
@@ -56,6 +60,11 @@ public class Filter {
         return p.matcher(content).matches();
       } else if(targ.startsWith("tags.")) {
         String tagName = targ.substring("tags.".length());
+        if (!RegexUtil.isRegex(tagName)) {
+          log.warn("Error parsing 'tagName' as a regex: "
+              + RegexUtil.regexError(tagName));
+          return false;
+        }
         String tagVal = chunk.getTag(tagName);
         if(tagVal == null)
           return false;
@@ -73,7 +82,7 @@ public class Filter {
 
   List<SearchRule> compiledPatterns;
     
-  public Filter(String listOfPatterns) throws  PatternSyntaxException{
+  public Filter(String listOfPatterns) throws CheckedPatternSyntaxException {
     compiledPatterns = new ArrayList<SearchRule>();
     //FIXME: could escape these
     String[] patterns = listOfPatterns.split(SEPARATOR);
@@ -81,17 +90,22 @@ public class Filter {
       int equalsPos = p.indexOf('=');
       
       if(equalsPos < 0 || equalsPos > (p.length() -2)) {
-        throw new PatternSyntaxException(
+        throw new CheckedPatternSyntaxException(
             "pattern must be of form targ=pattern", p, -1);
       }
       
       String targ = p.substring(0, equalsPos);
       if(!targ.startsWith("tags.") && !ArrayUtils.contains(SEARCH_TARGS, targ)) {
-        throw new PatternSyntaxException(
+        throw new CheckedPatternSyntaxException(
             "pattern doesn't start with recognized search target", p, -1);
       }
       
-      Pattern pat = Pattern.compile(p.substring(equalsPos+1), Pattern.DOTALL);
+      String regex = p.substring(equalsPos+1);
+      if (!RegexUtil.isRegex(regex)) {
+          throw new CheckedPatternSyntaxException(RegexUtil.regexException(regex));
+      }
+
+      Pattern pat = Pattern.compile(regex, Pattern.DOTALL);
       compiledPatterns.add(new SearchRule(pat, targ));
     }
   }
@@ -119,7 +133,7 @@ public class Filter {
   }
   
   private static final class MatchAll extends Filter {
-    public MatchAll() {
+    public MatchAll() throws CheckedPatternSyntaxException {
       super("datatype=.*");
     }
     
@@ -131,6 +145,14 @@ public class Filter {
       return "ALL";
     }
   } 
-  public static final Filter ALL = new MatchAll();
+
+  public static final Filter ALL = newMatchAll();
+  private static Filter newMatchAll() {
+    try {
+      return new MatchAll();
+    } catch (CheckedPatternSyntaxException e) {
+      throw new RuntimeException("Illegal MatchAll regular expression.", e);
+    }
+  }
   
 }//end class

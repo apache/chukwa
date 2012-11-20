@@ -25,6 +25,7 @@ import java.util.*;
 import java.io.*;
 import org.apache.hadoop.chukwa.*;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
+import org.apache.hadoop.chukwa.util.RegexUtil.CheckedPatternSyntaxException;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FileUtil;
@@ -84,13 +85,14 @@ public class DumpChunks {
     Filter patterns = null;
     if(args[filterArg].toLowerCase().equals("all"))
       patterns = Filter.ALL;
-    else
+    else {
       try {
         patterns = new Filter(args[filterArg]);
-      } catch (PatternSyntaxException pse) {
+      } catch (CheckedPatternSyntaxException pse) {
         System.err.println("Error parsing \"tags\" regular expression: " + pse.getMessage());
-        System.exit(-1);
+        return;
       }
+    }
 
     System.err.println("Patterns:" + patterns);
     ArrayList<Path> filesToSearch = new ArrayList<Path>();

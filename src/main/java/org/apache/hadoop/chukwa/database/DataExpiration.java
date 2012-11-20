@@ -27,6 +27,7 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
+import org.apache.hadoop.chukwa.util.RegexUtil;
 
 public class DataExpiration {
   private static DatabaseConfig dbc = null;
@@ -50,6 +51,12 @@ public class DataExpiration {
       while (ki.hasNext()) {
         String name = ki.next();
         String tableName = dbNames.get(name);
+        if (!RegexUtil.isRegex(tableName)) {
+          log.warn("Skipping tableName: '" + tableName
+              + "' because there was an error parsing it as a regex: "
+              + RegexUtil.regexError(tableName));
+          return;
+        }
         String[] tableList = dbc.findTableName(tableName, start, end);
         for (String tl : tableList) {
           log.debug("table name: " + tableList[0]);

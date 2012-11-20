@@ -165,4 +165,24 @@ public class TestTsProcessor extends TestCase {
     return key;
   }
 
+  public void testParseIllegalRegex() {
+    jobConf.set(TsProcessor.DEFAULT_TIME_REGEX, "(");
+
+    ChunkBuilder cb = new ChunkBuilder();
+    cb.addRecord("2012-10-25 00:18:44,818 some sample record data".getBytes());
+    Chunk chunk = cb.getChunk();
+
+    TsProcessor p = new TsProcessor();
+    p.reset(chunk);
+
+    ChukwaTestOutputCollector<ChukwaRecordKey, ChukwaRecord> output =
+            new ChukwaTestOutputCollector<ChukwaRecordKey, ChukwaRecord>();
+
+    p.process(null, chunk, output, Reporter.NULL);
+
+    assertEquals("Output data size not correct.", 1, output.data.size());
+    ChukwaRecordKey key = output.data.keySet().iterator().next();
+    ChukwaRecord record = output.data.get(key);
+    assertNull("Output should not be error.", record.getValue("cchunkData"));
+  }
 }
