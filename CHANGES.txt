@@ -24,6 +24,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-632. Added getter method for startOffset in AbstractProcessor. (Abhijit Dhar via Eric Yang)
+
     CHUKWA-637. Fixed default cluster selection in hicc. (Eric Yang)
 
     CHUKWA-654. Added additional check for getting row key. (Saisai Shao via Eric Yang)

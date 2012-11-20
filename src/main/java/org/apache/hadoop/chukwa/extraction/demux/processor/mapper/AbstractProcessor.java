@@ -36,8 +36,8 @@ public abstract class AbstractProcessor implements MapProcessor {
   Calendar calendar = Calendar.getInstance();
   byte[] bytes;
   int[] recordOffsets;
-  int currentPos = 0;
-  int startOffset = 0;
+  protected int currentPos = 0;
+  protected int startOffset = 0;
 
   protected ChukwaArchiveKey archiveKey = null;
   protected ChukwaRecordKey key = new ChukwaRecordKey();
@@ -125,5 +125,21 @@ public abstract class AbstractProcessor implements MapProcessor {
     startOffset = recordOffsets[currentPos] + 1;
     currentPos++;
     return RecordConstants.recoverRecordSeparators("\n", log);
-  }  
+  }
+
+public int getCurrentPos() {
+	return currentPos;
+}
+
+public void setCurrentPos(int currentPos) {
+	this.currentPos = currentPos;
+}
+
+public int getStartOffset() {
+	return startOffset;
+}
+
+public void setStartOffset(int startOffset) {
+	this.startOffset = startOffset;
+}  
 }
