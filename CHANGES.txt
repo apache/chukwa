@@ -6,6 +6,8 @@ Trunk (unreleased changes)
 
     CHUKWA-635. Collect swap usage. (Eric Yang)
 
+    CHUKWA-664. Added network compression between agent and collector. (Sourygna Luangsay via Eric Yang)
+
   IMPROVEMENTS
 
     CHUKWA-648. Make Chukwa Reduce Type to support hierarchy format. (Jie Huang via asrabkin)

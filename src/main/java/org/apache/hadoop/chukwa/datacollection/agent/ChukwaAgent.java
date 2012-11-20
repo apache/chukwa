@@ -740,6 +740,7 @@ public class ChukwaAgent implements AdaptorManager {
     log.info("Config - CHUKWA_CONF_DIR: [" + chukwaConf.toString() + "]");
     File agentConf = new File(chukwaConf, "chukwa-agent-conf.xml");
     conf.addResource(new Path(agentConf.getAbsolutePath()));
+    conf.addResource(new Path( new File(chukwaConf, "chukwa-common.xml").getAbsolutePath()));
     if (conf.get("chukwaAgent.checkpoint.dir") == null)
       conf.set("chukwaAgent.checkpoint.dir", new File(chukwaHome, "var")
           .getAbsolutePath());

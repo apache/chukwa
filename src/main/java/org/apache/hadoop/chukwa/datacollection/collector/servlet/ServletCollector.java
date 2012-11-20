@@ -21,19 +21,29 @@ package org.apache.hadoop.chukwa.datacollection.collector.servlet;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.hadoop.conf.Configuration;
+
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.ChunkImpl;
-import org.apache.hadoop.chukwa.datacollection.writer.*;
+import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter;
+import org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter;
+import org.apache.hadoop.chukwa.datacollection.writer.WriterException;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.util.ReflectionUtils;
 import org.apache.log4j.Logger;
 
 public class ServletCollector extends HttpServlet {
@@ -48,6 +58,10 @@ public class ServletCollector extends HttpServlet {
 
   private static final long serialVersionUID = 6286162898591407111L;
   Logger log = Logger.getRootLogger();// .getLogger(ServletCollector.class);
+  
+  static boolean COMPRESS;
+  static String CODEC_NAME;
+  static CompressionCodec codec;
 
   public void setWriter(ChukwaWriter w) {
     writer = w;
@@ -103,6 +117,20 @@ public class ServletCollector extends HttpServlet {
       log.warn("failed to use user-chosen writer class, defaulting to SeqFileWriter", e);
     }
 
+    COMPRESS = conf.getBoolean("chukwaAgent.output.compress", false);
+    if( COMPRESS) {
+	    CODEC_NAME = conf.get( "chukwaAgent.output.compression.type", "org.apache.hadoop.io.compress.DefaultCodec");
+	    Class<?> codecClass = null;
+	    try {
+			codecClass = Class.forName( CODEC_NAME);
+			codec = (CompressionCodec) ReflectionUtils.newInstance(codecClass, conf);
+			log.info("codec " + CODEC_NAME + " loaded for network compression");
+		} catch (ClassNotFoundException e) {
+			log.warn("failed to create codec " + CODEC_NAME + ". Network compression won't be enabled.", e);
+			COMPRESS = false;
+		}
+    }
+    
     // We default to here if the pipeline construction failed or didn't happen.
     try {
       if (writer == null) {
@@ -132,7 +160,17 @@ public class ServletCollector extends HttpServlet {
       java.io.InputStream in = req.getInputStream();
 
       ServletOutputStream l_out = resp.getOutputStream();
-      final DataInputStream di = new DataInputStream(in);
+      
+      DataInputStream di = null;
+      boolean compressNetwork = COMPRESS;
+      if( compressNetwork){
+          InputStream cin = codec.createInputStream( in);
+          di = new DataInputStream(cin);
+      }
+      else {
+    	  di = new DataInputStream(in);
+      }
+
       final int numEvents = di.readInt();
       // log.info("saw " + numEvents+ " in request");
 

@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
@@ -36,13 +37,17 @@ import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.*;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.sender.metrics.HttpSenderMetrics;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.DataOutputBuffer;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionOutputStream;
+import org.apache.hadoop.util.ReflectionUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -81,6 +86,10 @@ public class ChukwaHttpSender implements ChukwaSender {
   int postID = 0;
 
   protected Iterator<String> collectors;
+  
+  static boolean COMPRESS;
+  static String CODEC_NAME;
+  static CompressionCodec codec;
 
   static {
     connectionManager = new MultiThreadedHttpConnectionManager();
@@ -106,12 +115,21 @@ public class ChukwaHttpSender implements ChukwaSender {
     public BuffersRequestEntity(List<DataOutputBuffer> buf) {
       buffers = buf;
     }
+    
+    private long getUncompressedContentLenght(){
+        long len = 4;// first we send post length, then buffers
+        for (DataOutputBuffer b : buffers)
+          len += b.getLength();
+        return len;
+    }
 
     public long getContentLength() {
-      long len = 4;// first we send post length, then buffers
-      for (DataOutputBuffer b : buffers)
-        len += b.getLength();
-      return len;
+    	if( COMPRESS) {
+    		return -1;
+    	}
+    	else {
+    		return getUncompressedContentLenght();
+    	}
     }
 
     public String getContentType() {
@@ -122,11 +140,23 @@ public class ChukwaHttpSender implements ChukwaSender {
       return true;
     }
 
+    private void doWriteRequest( DataOutputStream out ) throws IOException {
+        out.writeInt(buffers.size());
+        for (DataOutputBuffer b : buffers)
+      	 out.write(b.getData(), 0, b.getLength());
+    }
+    
     public void writeRequest(OutputStream out) throws IOException {
-      DataOutputStream dos = new DataOutputStream(out);
-      dos.writeInt(buffers.size());
-      for (DataOutputBuffer b : buffers)
-        dos.write(b.getData(), 0, b.getLength());
+      if( COMPRESS) {
+          CompressionOutputStream cos = codec.createOutputStream(out);
+          DataOutputStream dos = new DataOutputStream( cos);
+          doWriteRequest( dos);
+          cos.finish();
+      }
+      else {
+          DataOutputStream dos = new DataOutputStream( out);
+          doWriteRequest( dos);
+      }
     }
   }
 
@@ -140,6 +170,19 @@ public class ChukwaHttpSender implements ChukwaSender {
     WAIT_FOR_COLLECTOR_REBOOT = c.getInt("chukwaAgent.sender.retryInterval",
         20 * 1000);
     COLLECTOR_TIMEOUT = c.getInt(COLLECTOR_TIMEOUT_OPT, 30*1000);
+    COMPRESS = c.getBoolean("chukwaAgent.output.compress", false);
+    if( COMPRESS) {
+	    CODEC_NAME = c.get( "chukwaAgent.output.compression.type", "org.apache.hadoop.io.compress.DefaultCodec");
+	    Class<?> codecClass = null;
+	    try {
+			codecClass = Class.forName( CODEC_NAME);
+			codec = (CompressionCodec) ReflectionUtils.newInstance(codecClass, c);
+			log.info("codec " + CODEC_NAME + " loaded for network compression");
+		} catch (ClassNotFoundException e) {
+			log.warn("failed to create codec " + CODEC_NAME + ". Network compression won't be enabled.", e);
+			COMPRESS = false;
+		}
+    }
   }
 
   /**
@@ -199,7 +242,16 @@ public class ChukwaHttpSender implements ChukwaSender {
 
     PostMethod method = new PostMethod();
     method.setRequestEntity(postData);
-    log.info(">>>>>> HTTP post_"+thisPost + " to " + currCollector + " length = " + postData.getContentLength());
+    StringBuilder sb = new StringBuilder( ">>>>>> HTTP post_");
+    sb.append( thisPost).append( " to ").append( currCollector).append( " length = ");
+	if( COMPRESS) {
+		sb.append( ((BuffersRequestEntity)postData).getUncompressedContentLenght())
+			.append( " of uncompressed data");
+	}
+	else {
+		sb.append( postData.getContentLength());
+	}
+	log.info( sb);
 
     List<CommitListEntry> results =  postAndParseResponse(method, commitResults);
     log.info("post_" + thisPost + " sent " + toSendSize + " chunks, got back " + results.size() + " acks");

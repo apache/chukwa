@@ -33,4 +33,18 @@
     <description>Location of Chukwa data on HDFS</description>
   </property>
 
+  <!-- uncomment to enable network compression
+  <property>
+    <name>chukwaAgent.output.compress</name>
+    <value>true</value>
+    <description>boolean: true if we want to compress data on the wire between the agent and the collector</description>
+  </property>
+
+  <property>
+    <name>chukwaAgent.output.compression.type</name>
+	<value>org.apache.hadoop.io.compress.GzipCodec</value>
+    <description>compression codec if the network data should be compressed</description>
+  </property>
+  -->
+
 </configuration>
