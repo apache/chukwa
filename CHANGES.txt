@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-669. JMX Adaptor.  (shreyas subramanya via asrabkin)
+
     CHUKWA-671. Json processors for processing JMX data from Hadoop, HBase and Zookeeper.  (shreyas subramanya via asrabkin)
 
     CHUKWA-635. Collect swap usage. (Eric Yang)
