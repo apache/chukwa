@@ -26,6 +26,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-675. Bad sleeping condition in FileTailer.java (Sourygna Luangsay via asrabkin)
+
     CHUKWA-668. Fix infinite loop in FileTailingAdaptor. (Sourygna Luangsay via Eric Yang)
 
     CHUKWA-653. Added pre-compile JSP code profile for build process. (Jie Huang via Eric Yang)

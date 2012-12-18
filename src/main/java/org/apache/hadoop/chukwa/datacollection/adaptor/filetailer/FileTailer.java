@@ -84,7 +84,7 @@ class FileTailer extends Thread {
         long timeToReadFiles = System.currentTimeMillis() - startTime;
         if(timeToReadFiles > MAX_SAMPLE_PERIOD)
           log.warn("took " + timeToReadFiles + " ms to check all files being tailed");
-        if (timeToReadFiles < SAMPLE_PERIOD_MS || shouldISleep) {
+        if (timeToReadFiles < SAMPLE_PERIOD_MS && shouldISleep) {
           Thread.sleep(SAMPLE_PERIOD_MS);
         }
       } catch (Throwable e) {
