@@ -38,3 +38,24 @@ create "chukwa",
 {NAME=>"chukwaAgent_chunkQueue", VERSIONS => 65535},
 {NAME => "chukwaAgent_metrics", VERSION => 65535},
 {NAME => "chukwaAgent_httpSender", VERSION => 65535}
+create "HBase",
+{NAME => "master", VERSIONS => 65535},
+{NAME => "regionserver", VERSIONS => 65535}
+create "Namenode",
+{NAME => "summary", VERSIONS => 65535},
+{NAME => "hdfs", VERSIONS => 65535},
+{NAME => "rpc", VERSIONS => 65535},
+{NAME => "jvm", VERSIONS => 65535}
+create "Zookeeper",
+{NAME => "zk", VERSIONS => 65535}
+create "JobTracker",
+{NAME => "jt", VERSIONS => 65535},
+{NAME => "jvm", VERSIONS => 65535},
+{NAME => "rpc", VERSIONS => 65535}
+create "Datanode",
+{NAME => "dn", VERSIONS => 65535},
+{NAME => "jvm", VERSIONS => 65535},
+{NAME => "rpc", VERSIONS => 65535}
+
+
+

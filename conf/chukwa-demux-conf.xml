@@ -225,5 +225,35 @@
     <name>JobSummary</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.JobSummary</value>
    </property>
+
+   <property>
+    <name>DatanodeProcessor</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.DatanodeProcessor</value>
+   </property>
+
+   <property>
+    <name>NamenodeProcessor</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.NamenodeProcessor</value>
+   </property>
+
+   <property>
+    <name>JobTrackerProcessor</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.JobTrackerProcessor</value>
+   </property>
+
+   <property>
+    <name>ZookeeperProcessor</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.ZookeeperProcessor</value>
+   </property>
+
+   <property>
+    <name>HBaseMasterProcessor</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HBaseMasterProcessor</value>
+   </property>
+
+   <property>
+    <name>HBaseRegionServerProcessor</name>
+    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HBaseRegionServerProcessor</value>
+   </property>
 </configuration>
  

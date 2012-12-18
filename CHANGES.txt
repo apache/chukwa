@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-671. Json processors for processing JMX data from Hadoop, HBase and Zookeeper.  (shreyas subramanya via asrabkin)
+
     CHUKWA-635. Collect swap usage. (Eric Yang)
 
     CHUKWA-664. Added network compression between agent and collector. (Sourygna Luangsay via Eric Yang)
