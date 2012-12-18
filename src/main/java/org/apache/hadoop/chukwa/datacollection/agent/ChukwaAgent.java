@@ -778,15 +778,6 @@ public class ChukwaAgent implements AdaptorManager {
       log.error("Couldn't stop jetty server.", e);
     }
 
-    if (checkpointer != null) {
-      checkpointer.cancel();
-      try {
-        if (needNewCheckpoint)
-          writeCheckpoint(); // write a last checkpoint here, before stopping
-      } catch (IOException e) {
-        log.debug(ExceptionUtil.getStackTrace(e));
-      }
-    }
     // adaptors
 
     synchronized (adaptorsByName) {
@@ -797,6 +788,15 @@ public class ChukwaAgent implements AdaptorManager {
         } catch (AdaptorException e) {
           log.warn("failed to cleanly stop " + a, e);
         }
+      }
+    }
+    if (checkpointer != null) {
+      checkpointer.cancel();
+      try {
+        if (needNewCheckpoint)
+          writeCheckpoint(); // write a last checkpoint here, before stopping
+      } catch (IOException e) {
+        log.debug(ExceptionUtil.getStackTrace(e));
       }
     }
     adaptorsByName.clear();
