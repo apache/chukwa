@@ -30,6 +30,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-677. Added pid file check before starting processes. (Sreepathi Prasanna via Eric Yang)
+
     CHUKWA-676. Exclude temporarily data from release audit tools. (Eric Yang)
 
     CHUKWA-672. Fix adaptor not found in checkpoint after shutdown. (shreyas subramanya via asrabkin)
