@@ -61,7 +61,7 @@ import org.apache.log4j.Logger;
 public class Demux extends Configured implements Tool {
   static Logger log = Logger.getLogger(Demux.class);
   static SimpleDateFormat day = new java.text.SimpleDateFormat("yyyyMMdd_HH_mm");
-  public static JobConf jobConf = null;
+  public static Configuration jobConf = null;
 
   public static class MapClass extends MapReduceBase implements
       Mapper<ChukwaArchiveKey, ChunkImpl, ChukwaRecordKey, ChukwaRecord> {

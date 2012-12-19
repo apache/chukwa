@@ -34,7 +34,7 @@ import org.apache.hadoop.chukwa.extraction.demux.Demux;
 import org.apache.hadoop.chukwa.util.RegexUtil;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
-import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 
 /**
@@ -81,10 +81,10 @@ public class TsProcessor extends AbstractProcessor {
   protected void parse(String recordEntry,
       OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter)
       throws Throwable {
+    String dStr = null;
     try {
       SimpleDateFormat sdf = fetchDateFormat(chunk.getDataType());
       Pattern datePattern = fetchDateLocationPattern(chunk.getDataType());
-      String dStr = null;
 
       // fetch the part of the record that contains the date.
       if(datePattern != null) {
@@ -108,7 +108,7 @@ public class TsProcessor extends AbstractProcessor {
       output.collect(key, record);
     } catch (ParseException e) {
       log.warn("Unable to parse the date in DefaultProcessor [" + recordEntry
-          + "]", e);
+          + "], date string='" + dStr + "'", e);
       e.printStackTrace();
       throw e;
     } catch (IOException e) {
@@ -130,7 +130,7 @@ public class TsProcessor extends AbstractProcessor {
       return dateFormatMap.get(dataType);
     }
 
-    JobConf jobConf = Demux.jobConf;
+    Configuration jobConf = Demux.jobConf;
     String dateFormat = DEFAULT_DATE_FORMAT;
 
     if (jobConf != null) {
@@ -139,6 +139,7 @@ public class TsProcessor extends AbstractProcessor {
                                dateFormat);
     }
 
+    log.info("dataType: " + chunk.getDataType() + ", dateFormat="+ dateFormat);
     SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
     dateFormatMap.put(dataType, sdf);
 
@@ -156,7 +157,7 @@ public class TsProcessor extends AbstractProcessor {
       return datePatternMap.get(dataType);
     }
 
-    JobConf jobConf = Demux.jobConf;
+    Configuration jobConf = Demux.jobConf;
     String datePattern = null;
     Pattern pattern = null;
 

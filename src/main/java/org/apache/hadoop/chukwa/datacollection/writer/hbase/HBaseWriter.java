@@ -29,9 +29,10 @@ import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.PipelineableWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.WriterException;
-import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter.CommitStatus;
 import org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MapProcessor;
 import org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MapProcessorFactory;
+import org.apache.hadoop.chukwa.extraction.demux.processor.mapper.UnknownRecordTypeException;
+import org.apache.hadoop.chukwa.extraction.demux.Demux;
 import org.apache.hadoop.chukwa.util.ClassUtils;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
@@ -52,10 +53,8 @@ public class HBaseWriter extends PipelineableWriter {
   final Timer statTimer;
   private OutputCollector output;
   private Reporter reporter;
-  private ChukwaConfiguration conf = new ChukwaConfiguration();
-  String defaultProcessor = conf.get(
-      "chukwa.demux.mapper.default.processor",
-      "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.DefaultProcessor");
+  private ChukwaConfiguration conf;
+  String defaultProcessor;
   private HTablePool pool;
   private Configuration hconf;
   
@@ -83,27 +82,36 @@ public class HBaseWriter extends PipelineableWriter {
   }
 
   public HBaseWriter(boolean reportStats) {
-    this.reportStats = reportStats;
-    statTimer = new Timer();
-    /* HBase Version 0.20.x */
-    //hconf = new HBaseConfiguration();
-    
-    /* HBase Version 0.89.x */
-    hconf = HBaseConfiguration.create();
+    /* HBase Version >= 0.89.x */
+    this(reportStats, new ChukwaConfiguration(), HBaseConfiguration.create());
   }
 
   public HBaseWriter(ChukwaConfiguration conf, Configuration hconf) {
-    this(true);
+    this(true, conf, hconf);
+  }
+
+  private HBaseWriter(boolean reportStats, ChukwaConfiguration conf, Configuration hconf) {
+    this.reportStats = reportStats;
     this.conf = conf;
     this.hconf = hconf;
+    this.statTimer = new Timer();
+    this.defaultProcessor = conf.get(
+      "chukwa.demux.mapper.default.processor",
+      "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.DefaultProcessor");
+    Demux.jobConf = conf;
+    log.info("hbase.zookeeper.quorum: " + hconf.get("hbase.zookeeper.quorum"));
   }
 
   public void close() {
-    statTimer.cancel();
+    if (reportStats) {
+      statTimer.cancel();
+    }
   }
 
   public void init(Configuration conf) throws WriterException {
-    statTimer.schedule(new StatReportingTask(), 1000, 10 * 1000);
+    if (reportStats) {
+      statTimer.schedule(new StatReportingTask(), 1000, 10 * 1000);
+    }
     output = new OutputCollector();
     reporter = new Reporter();
     if(conf.getBoolean("hbase.writer.verify.schema", false)) {
@@ -175,23 +183,15 @@ public class HBaseWriter extends PipelineableWriter {
     CommitStatus rv = ChukwaWriter.COMMIT_OK;
     try {
       for(Chunk chunk : chunks) {
-        String processorClass = conf.get(chunk.getDataType(),
-                defaultProcessor);
         synchronized (this) {
-          MapProcessor processor = MapProcessorFactory.getProcessor(processorClass);
           try {
-            Table table = null;
-            if(processor.getClass().isAnnotationPresent(Table.class)) {
-              table = processor.getClass().getAnnotation(Table.class);
-            } else if(processor.getClass().isAnnotationPresent(Tables.class)) {
-              Tables tables = processor.getClass().getAnnotation(Tables.class);
-              for(Table t : tables.annotations()) {
-                table = t;
-              }
-            }
+            Table table = findHBaseTable(chunk.getDataType());
+
             if(table!=null) {
-              HTableInterface hbase = pool.getTable(table.name().getBytes());  
+              HTableInterface hbase = pool.getTable(table.name().getBytes());
+              MapProcessor processor = getProcessor(chunk.getDataType());
               processor.process(new ChukwaArchiveKey(), chunk, output, reporter);
+
               hbase.put(output.getKeyValues());
               pool.putTable(hbase);
             }
@@ -214,4 +214,30 @@ public class HBaseWriter extends PipelineableWriter {
     return rv;
   }
 
+  public Table findHBaseTable(String dataType) throws UnknownRecordTypeException {
+    MapProcessor processor = getProcessor(dataType);
+
+    Table table = null;
+    if(processor.getClass().isAnnotationPresent(Table.class)) {
+      return processor.getClass().getAnnotation(Table.class);
+    } else if(processor.getClass().isAnnotationPresent(Tables.class)) {
+      Tables tables = processor.getClass().getAnnotation(Tables.class);
+      for(Table t : tables.annotations()) {
+        table = t;
+      }
+    }
+
+    return table;
+  }
+
+  public String findHBaseColumnFamilyName(String dataType)
+          throws UnknownRecordTypeException {
+    Table table = findHBaseTable(dataType);
+    return table.columnFamily();
+  }
+
+  private MapProcessor getProcessor(String dataType) throws UnknownRecordTypeException {
+    String processorClass = conf.get(dataType, defaultProcessor);
+    return MapProcessorFactory.getProcessor(processorClass);
+  }
 }
