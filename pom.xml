@@ -717,6 +717,8 @@
                         <exclude>conf/collectors</exclude>
                         <exclude>conf/hbase.schema</exclude>
                         <exclude>conf/initial_adaptors</exclude>
+                        <exclude>conf/jmxremote.access</exclude>
+                        <exclude>conf/jmxremote.password</exclude>
                         <exclude>src/main/web/hicc/descriptors/**</exclude>
                         <exclude>src/main/web/hicc/views/**</exclude>
                         <exclude>contrib/chukwa-pig/src/java/org/apache/hadoop/chukwa/ChukwaStorage.java</exclude>
