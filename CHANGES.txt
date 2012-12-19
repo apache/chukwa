@@ -30,6 +30,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-676. Exclude temporarily data from release audit tools. (Eric Yang)
+
     CHUKWA-672. Fix adaptor not found in checkpoint after shutdown. (shreyas subramanya via asrabkin)
 
     CHUKWA-675. Bad sleeping condition in FileTailer.java (Sourygna Luangsay via asrabkin)
