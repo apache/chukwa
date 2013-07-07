@@ -144,6 +144,13 @@ add filetailer.FileTailingAdaptor BarData /foo/bar 0
      Chukwa-formatted log files, where exception
      stack traces stay in a single chunk.
 
+  * <<filetailer.FileTailingAdaptorPreserveLines>>
+	Similar to CharFileTailingAdaptorUTF8. The difference with the latter is
+	mainly seen in the Demux Chukwa process: CharFileTailingAdaptorUTF8 will process
+	every line one by one whereas FileTailingAdaptorPreserveLines will process
+	all the lines of a same Chunk in a same go which makes the Demux jobs faster.
+	Same parameters and usage as the above.
+
   * <<DirTailingAdaptor>> Takes a directory path and an
     adaptor name as mandatory parameters; repeatedly scans that directory 
     and all subdirectories, and starts the indicated adaptor running on 
