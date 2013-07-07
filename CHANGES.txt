@@ -30,6 +30,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-691. Improve pid file handling. (Eric Yang)
+
     CHUKWA-565. Added support HBaseWriter support for TsProcessor. (Bill Graham via Eric Yang)
 
     CHUKWA-677. Added pid file check before starting processes. (Sreepathi Prasanna via Eric Yang)

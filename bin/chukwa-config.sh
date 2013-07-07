@@ -82,3 +82,4 @@ if [ -z "$JAVA_HOME" ] ; then
   echo ERROR! You forgot to set JAVA_HOME in CHUKWA_CONF_DIR/chukwa-env.sh   
 fi
 
+CHUKWA_STOP_TIMEOUT=${CHUKWA_STOP_TIMEOUT:-3}

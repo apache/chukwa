@@ -162,8 +162,15 @@ fi
 
 pid="${CHUKWA_PID_DIR}/$PID.pid"
 if [ "$1" = "stop" ]; then
-  if [ -e $pid ]; then 
-    kill -TERM `cat $pid`
+  if [ -e $pid ]; then
+    TARGET_PID=`cat $pid`
+    if kill -0 $TARGET_PID > /dev/null 2>&1; then
+      kill -TERM $TARGET_PID
+      sleep $CHUKWA_STOP_TIMEOUT
+      if kill -0 $TARGET_PID > /dev/null 2>&1; then
+        kill -9 $TARGET_PID
+      fi
+    fi
   else 
     echo "Cannot find PID file - $PID.pid; NO $PID to stop";
   fi
@@ -178,6 +185,7 @@ else
     ${JAVA_HOME}/bin/java ${JAVA_OPT} -Djava.library.path=${JAVA_LIBRARY_PATH} -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DCHUKWA_DATA_DIR=${CHUKWA_DATA_DIR} -DAPP=${APP} -Dlog4j.configuration=chukwa-log4j.properties -classpath ${CHUKWA_CONF_DIR}:${CLASSPATH}:${CHUKWA_CLASSPATH}:${tools} ${CLASS} $OPTS $@
   else
     exec ${JAVA_HOME}/bin/java ${JAVA_OPT} -Djava.library.path=${JAVA_LIBRARY_PATH} -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DCHUKWA_DATA_DIR=${CHUKWA_DATA_DIR} -DAPP=${APP} -Dlog4j.configuration=chukwa-log4j.properties -classpath ${CHUKWA_CONF_DIR}:${CLASSPATH}:${CHUKWA_CLASSPATH}:${tools} ${CLASS} $OPTS $@ &
+    sleep 1
   fi
 fi
 
