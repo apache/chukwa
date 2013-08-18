@@ -28,13 +28,22 @@ import org.apache.hadoop.chukwa.datacollection.test.*;
 public class TestExecAdaptor extends TestCase {
 
   Connector chunks;
+  private ChukwaAgent agent;
 
-
-  public void testWithPs() throws ChukwaAgent.AlreadyRunningException, InterruptedException {
+  @Override
+  protected void setUp() throws ChukwaAgent.AlreadyRunningException, InterruptedException {
     Configuration conf = new Configuration();
     conf.set("chukwaAgent.control.port", "0");
     conf.setBoolean("chukwaAgent.checkpoint.enabled", false);
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    agent = new ChukwaAgent(conf);
+  }
+
+  @Override
+  protected void tearDown() {
+    this.agent.shutdown();
+  }
+
+  public void testWithPs() throws InterruptedException {
     ChunkCatcherConnector chunks = new ChunkCatcherConnector();
     chunks.start();
     String psAgentID = agent.processAddCommand(
@@ -42,7 +51,6 @@ public class TestExecAdaptor extends TestCase {
     Chunk c = chunks.waitForAChunk();
     System.out.println(new String(c.getData()));
     assertNotNull(psAgentID);
-    agent.shutdown();
   }
   
   /*
@@ -50,11 +58,6 @@ public class TestExecAdaptor extends TestCase {
    * Length of loop controlled by sleep statement near bottom of function
    */
   public void testForLeaks()  throws ChukwaAgent.AlreadyRunningException, InterruptedException {
-    Configuration conf = new Configuration();
-    conf.set("chukwaAgent.control.port", "0");
-    conf.setBoolean("chukwaAgent.checkpoint.enabled", false);
-    ChukwaAgent agent = new ChukwaAgent(conf);
-
     chunks = new ConsoleOutConnector(agent, false);
     chunks.start();
     assertEquals(0, agent.adaptorCount());

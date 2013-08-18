@@ -34,6 +34,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-692. Fixed race condition of agent startup in TestExecAdaptor.  (Eric Yang)
+
     CHUKWA-691. Improve pid file handling. (Eric Yang)
 
     CHUKWA-565. Added support HBaseWriter support for TsProcessor. (Bill Graham via Eric Yang)
