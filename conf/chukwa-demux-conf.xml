@@ -105,7 +105,7 @@
 
 <!-- -->
 
-<!-- Demux configs for mapper-->
+<!-- Demux configs for mapper -->
 
   <property>
     <name>demux.max.error.count.before.shutdown</name>
@@ -256,17 +256,11 @@
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HBaseRegionServerProcessor</value>
    </property>
 
-    <!-- Demux configs for reducer-->
+    <!-- Demux configs for reducer -->
     <property>
         <name>JobLogHistoryReduceProcessor</name>
         <value>,org.apache.hadoop.chukwa.extraction.demux.processor.reducer.JobLogHistoryReduceProcessor</value>
         <description> Reducer class for Reduce Type JobLogHistoryReduceProcessor </description>
-    </property>
-
-    <property>
-        <name>SystemMetrics</name>
-        <value>,org.apache.hadoop.chukwa.extraction.demux.processor.reducer.SystemMetrics</value>
-        <description> Reducer class for Reduce Type SystemMetrics </description>
     </property>
 
     <property>
@@ -275,9 +269,16 @@
         <description> Reducer class for Reduce Type MRJobReduceProcessor </description>
     </property>
 
+    <!-- Demux configs for both mapper and reducer -->
+    <property>
+        <name>SystemMetrics</name>
+        <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.SystemMetrics,org.apache.hadoop.chukwa.extraction.demux.processor.reducer.SystemMetrics</value>
+        <description> Reducer class for Reduce Type SystemMetrics </description>
+    </property>
+
     <property>
         <name>ClientTrace</name>
-        <value>,org.apache.hadoop.chukwa.extraction.demux.processor.reducer.ClientTrace</value>
+        <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.ClientTraceProcessor,org.apache.hadoop.chukwa.extraction.demux.processor.reducer.ClientTrace</value>
         <description> Reducer class for Reduce Type ClientTrace </description>
     </property>
 </configuration>
