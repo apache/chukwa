@@ -4,6 +4,14 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+  IMPROVEMENTS
+
+  BUGS
+
+Release 0.6 - Unreleased
+
+  NEW FEATURES
+
     CHUKWA-581. Added support for custom reducer package name. (Ivy Tang via Eric Yang)
 
     CHUKWA-669. JMX Adaptor.  (shreyas subramanya via asrabkin)
@@ -15,6 +23,8 @@ Trunk (unreleased changes)
     CHUKWA-664. Added network compression between agent and collector. (Sourygna Luangsay via Eric Yang)
 
   IMPROVEMENTS
+
+    CHUKWA-693. Updated Hadoop, ZooKeeper and HBase version for 0.6.0 release.  (Eric Yang)
 
     CHUKWA-686. Added FileTailingAdaptorPreserveLines adaptor. (Sourygna Luangsay via Eric Yang)
 
