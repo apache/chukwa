@@ -105,7 +105,7 @@
 
 <!-- -->
 
-<!-- Demux configs -->
+<!-- Demux configs for mapper-->
 
   <property>
     <name>demux.max.error.count.before.shutdown</name>
@@ -128,49 +128,49 @@
   <property>
     <name>SysLog</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.SysLog</value>
-    <description>Parser class for </description>
+    <description>Parser class for SysLog</description>
   </property>
 
   <property>
     <name>Df</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Df</value>
-    <description>Parser class for </description>
+    <description>Parser class for Df</description>
   </property>
 
   <property>
     <name>HadoopLog</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopLogProcessor</value>
-    <description>Parser class for </description>
+    <description>Parser class for HadoopLog</description>
   </property>
 
   <property>
     <name>Iostat</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Iostat</value>
-    <description>Parser class for </description>
+    <description>Parser class for Iostat</description>
   </property>
  
    <property>
     <name>PbsNodes</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.PbsNodes</value>
-    <description>Parser class for </description>
+    <description>Parser class for PbsNodes</description>
   </property>
  
    <property>
     <name>Sar</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Sar</value>
-    <description>Parser class for </description>
+    <description>Parser class for Sar</description>
   </property>
 
    <property>
     <name>TsProcessor</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.TsProcessor</value>
-    <description>Parser class for </description>
+    <description>Parser class for TsProcessor</description>
    </property>
   
    <property>
     <name>Top</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Top</value>
-    <description>Parser class for </description>
+    <description>Parser class for Top</description>
    </property>
 
    <property>
@@ -182,7 +182,7 @@
    <property>
     <name>DbLoader</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.TsProcessor</value>
-    <description>Parser class for </description>
+    <description>Parser class for DbLoader</description>
    </property>
 
    <property>
@@ -255,5 +255,29 @@
     <name>HBaseRegionServerProcessor</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HBaseRegionServerProcessor</value>
    </property>
+
+    <!-- Demux configs for reducer-->
+    <property>
+        <name>JobLogHistoryReduceProcessor</name>
+        <value>,org.apache.hadoop.chukwa.extraction.demux.processor.reducer.JobLogHistoryReduceProcessor</value>
+        <description> Reducer class for Reduce Type JobLogHistoryReduceProcessor </description>
+    </property>
+
+    <property>
+        <name>SystemMetrics</name>
+        <value>,org.apache.hadoop.chukwa.extraction.demux.processor.reducer.SystemMetrics</value>
+        <description> Reducer class for Reduce Type SystemMetrics </description>
+    </property>
+
+    <property>
+        <name>MRJobReduceProcessor</name>
+        <value>,org.apache.hadoop.chukwa.extraction.demux.processor.reducer.MRJobReduceProcessor</value>
+        <description> Reducer class for Reduce Type MRJobReduceProcessor </description>
+    </property>
+
+    <property>
+        <name>ClientTrace</name>
+        <value>,org.apache.hadoop.chukwa.extraction.demux.processor.reducer.ClientTrace</value>
+        <description> Reducer class for Reduce Type ClientTrace </description>
+    </property>
 </configuration>
- 

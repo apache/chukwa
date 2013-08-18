@@ -44,7 +44,7 @@ public class TestDemuxMapperConfigs extends TestCase {
 
     JobConf conf = new JobConf();
     conf.set("chukwa.demux.mapper.default.processor",
-             "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MockMapProcessor");
+             "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MockMapProcessor,");
     mapper.configure(conf);
 
     ChunkBuilder cb = new ChunkBuilder();
@@ -60,4 +60,31 @@ public class TestDemuxMapperConfigs extends TestCase {
     assertEquals("MockMapProcessor never invoked - no records found", 1, output.data.size());
     assertNotNull("MockMapProcessor never invoked", output.data.get(recordKey));
   }
+
+  public void testSetCustomeMapProcessor() throws IOException {
+    Mapper<ChukwaArchiveKey, ChunkImpl, ChukwaRecordKey, ChukwaRecord> mapper =
+            new Demux.MapClass();
+    String custom_DataType = "cus_dt";
+
+    JobConf conf = new JobConf();
+    conf.set(custom_DataType,
+            "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MockMapProcessor,");
+    mapper.configure(conf);
+
+    ChunkBuilder cb = new ChunkBuilder();
+    cb.addRecord(SAMPLE_RECORD_DATA.getBytes());
+    ChunkImpl chunk = (ChunkImpl)cb.getChunk();
+    chunk.setDataType(custom_DataType);
+
+    ChukwaTestOutputCollector<ChukwaRecordKey, ChukwaRecord> output =
+            new ChukwaTestOutputCollector<ChukwaRecordKey, ChukwaRecord>();
+
+    mapper.map(new ChukwaArchiveKey(), chunk, output, Reporter.NULL);
+    ChukwaRecordKey recordKey = new ChukwaRecordKey("someReduceType", SAMPLE_RECORD_DATA);
+
+    assertEquals("MockMapProcessor never invoked - no records found", 1, output.data.size());
+    assertNotNull("MockMapProcessor never invoked", output.data.get(recordKey));
+  }
+
+
 }

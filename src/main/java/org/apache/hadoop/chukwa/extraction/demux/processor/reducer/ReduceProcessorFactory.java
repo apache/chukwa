@@ -20,6 +20,7 @@ package org.apache.hadoop.chukwa.extraction.demux.processor.reducer;
 
 
 import java.util.HashMap;
+
 import org.apache.log4j.Logger;
 
 public class ReduceProcessorFactory {
@@ -41,52 +42,39 @@ public class ReduceProcessorFactory {
   private ReduceProcessorFactory() {
   }
 
-  public static ReduceProcessor getProcessor(String reduceType, String defaultProcessor)
-      throws UnknownReduceTypeException {
-    String path = "org.apache.hadoop.chukwa.extraction.demux.processor.reducer."
-        + reduceType;
-    if (processors.containsKey(reduceType)) {
-      return processors.get(reduceType);
-    } else {
-      ReduceProcessor processor = null;
-      try {
-        processor = (ReduceProcessor) Class.forName(path).getConstructor()
-            .newInstance();
-      } catch (ClassNotFoundException e) {
-        // ******** WARNING ********
-        // If the ReduceProcessor is not there see if there is a configured
-        // default processor. If not, fall back on the Identity instead
-        if(defaultProcessor != null) {
-          processor = getProcessor(defaultProcessor, null);
-        }
-        else {
-          processor = getProcessor("IdentityReducer", null);
-        }
-        register(reduceType, processor);
-        return processor;
-      } catch (Exception e) {
-        throw new UnknownReduceTypeException("error constructing processor", e);
-      }
-
-      // TODO using a ThreadSafe/reuse flag to actually decide if we want
-      // to reuse the same processor again and again
-      register(reduceType, processor);
-      return processor;
-    }
-  }
-
   /**
    * Register a specific parser for a {@link ReduceProcessor} implementation.
    */
   public static synchronized void register(String reduceType,
-      ReduceProcessor processor) {
+                                           ReduceProcessor processor) {
     log.info("register " + processor.getClass().getName()
-        + " for this recordType :" + reduceType);
+            + " for this recordType :" + reduceType);
     if (processors.containsKey(reduceType)) {
       throw new DuplicateReduceProcessorException(
-          "Duplicate processor for recordType:" + reduceType);
+              "Duplicate processor for recordType:" + reduceType);
     }
     ReduceProcessorFactory.processors.put(reduceType, processor);
   }
+
+  public static ReduceProcessor getProcessor(String processorClass) throws UnknownReduceTypeException {
+    if (processors.containsKey(processorClass)) {
+      return processors.get(processorClass);
+    } else {
+      ReduceProcessor processor = null;
+      try {
+        processor = (ReduceProcessor) Class.forName(processorClass).newInstance();
+      } catch (ClassNotFoundException e) {
+        throw new UnknownReduceTypeException("Unknown reducer class for:" + processorClass, e);
+      } catch (Exception e) {
+        throw new UnknownReduceTypeException("error constructing processor", e);
+      }
+      // TODO using a ThreadSafe/reuse flag to actually decide if we want
+      // to reuse the same processor again and again
+      register(processorClass, processor);
+      return processor;
+    }
+
+  }
+
 
 }

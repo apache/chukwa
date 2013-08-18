@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-581. Added support for custom reducer package name. (Ivy Tang via Eric Yang)
+
     CHUKWA-669. JMX Adaptor.  (shreyas subramanya via asrabkin)
 
     CHUKWA-671. Json processors for processing JMX data from Hadoop, HBase and Zookeeper.  (shreyas subramanya via asrabkin)

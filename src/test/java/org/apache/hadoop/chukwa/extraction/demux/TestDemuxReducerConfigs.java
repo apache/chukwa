@@ -39,10 +39,34 @@ public class TestDemuxReducerConfigs extends TestCase {
             new Demux.ReduceClass();
 
     JobConf conf = new JobConf();
-    conf.set("chukwa.demux.reducer.default.processor", "MockReduceProcessor");
+    conf.set("chukwa.demux.reducer.default.processor", ",org.apache.hadoop.chukwa.extraction.demux.processor.reducer" +
+            ".MockReduceProcessor");
     reducer.configure(conf);
 
     ChukwaRecordKey key = new ChukwaRecordKey("someReduceType", "someKey");
+    ChukwaTestOutputCollector<ChukwaRecordKey, ChukwaRecord> output =
+            new ChukwaTestOutputCollector<ChukwaRecordKey, ChukwaRecord>();
+
+    reducer.reduce(key, null, output, Reporter.NULL);
+
+    assertEquals("MockReduceProcessor never invoked - no records found", 1, output.data.size());
+    assertNotNull("MockReduceProcessor never invoked", output.data.get(key));
+    assertEquals("MockReduceProcessor never invoked - key value incorrect",
+            "MockReduceProcessorValue",
+            output.data.get(key).getValue("MockReduceProcessorKey"));
+  }
+
+  public void testSetCustomReducerProcessor() throws IOException {
+    Reducer<ChukwaRecordKey, ChukwaRecord, ChukwaRecordKey, ChukwaRecord> reducer =
+            new Demux.ReduceClass();
+
+    JobConf conf = new JobConf();
+    String cus_reduceType = "someReduceType";
+    conf.set(cus_reduceType, ",org.apache.hadoop.chukwa.extraction.demux.processor.reducer" +
+            ".MockReduceProcessor");
+    reducer.configure(conf);
+
+    ChukwaRecordKey key = new ChukwaRecordKey(cus_reduceType, "someKey");
     ChukwaTestOutputCollector<ChukwaRecordKey, ChukwaRecord> output =
             new ChukwaTestOutputCollector<ChukwaRecordKey, ChukwaRecord>();
 

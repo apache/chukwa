@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
@@ -64,53 +65,54 @@ public class Demux extends Configured implements Tool {
   public static Configuration jobConf = null;
 
   public static class MapClass extends MapReduceBase implements
-      Mapper<ChukwaArchiveKey, ChunkImpl, ChukwaRecordKey, ChukwaRecord> {
+          Mapper<ChukwaArchiveKey, ChunkImpl, ChukwaRecordKey, ChukwaRecord> {
 
     @Override
     public void configure(JobConf jobConf) {
       super.configure(jobConf);
-      Demux.jobConf= jobConf;
+      Demux.jobConf = jobConf;
     }
 
     public void map(ChukwaArchiveKey key, ChunkImpl chunk,
-        OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter)
-        throws IOException {
+                    OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter)
+            throws IOException {
 
       ChukwaOutputCollector chukwaOutputCollector = new ChukwaOutputCollector(
-          "DemuxMapOutput", output, reporter);
+              "DemuxMapOutput", output, reporter);
       try {
         long duration = System.currentTimeMillis();
         if (log.isDebugEnabled()) {
           log.debug("Entry: [" + chunk.getData() + "] EventType: ["
-              + chunk.getDataType() + "]");
+                  + chunk.getDataType() + "]");
         }
 
         String defaultProcessor = Demux.jobConf.get(
-            "chukwa.demux.mapper.default.processor",
-            "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.DefaultProcessor");
+                "chukwa.demux.mapper.default.processor",
+                "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.DefaultProcessor");
 
-        String processorClass = Demux.jobConf.get(chunk.getDataType(),
+        String processorClass_pri = Demux.jobConf.get(chunk.getDataType(),
                 defaultProcessor);
 
+        String processorClass = processorClass_pri.split(",")[0];
         if (!processorClass.equalsIgnoreCase("Drop")) {
           reporter.incrCounter("DemuxMapInput", "total chunks", 1);
           reporter.incrCounter("DemuxMapInput",
-              chunk.getDataType() + " chunks", 1);
+                  chunk.getDataType() + " chunks", 1);
 
           MapProcessor processor = MapProcessorFactory
-              .getProcessor(processorClass);
+                  .getProcessor(processorClass);
           processor.process(key, chunk, chukwaOutputCollector, reporter);
           if (log.isDebugEnabled()) {
             duration = System.currentTimeMillis() - duration;
             log.debug("Demux:Map dataType:" + chunk.getDataType()
-                + " duration:" + duration + " processor:" + processorClass
-                + " recordCount:" + chunk.getRecordOffsets().length);
+                    + " duration:" + duration + " processor:" + processorClass
+                    + " recordCount:" + chunk.getRecordOffsets().length);
           }
 
         } else {
           log.info("action:Demux, dataType:" + chunk.getDataType()
-              + " duration:0 processor:Drop recordCount:"
-              + chunk.getRecordOffsets().length);
+                  + " duration:0 processor:Drop recordCount:"
+                  + chunk.getRecordOffsets().length);
         }
 
       } catch (Exception e) {
@@ -121,7 +123,7 @@ public class Demux extends Configured implements Tool {
   }
 
   public static class ReduceClass extends MapReduceBase implements
-      Reducer<ChukwaRecordKey, ChukwaRecord, ChukwaRecordKey, ChukwaRecord> {
+          Reducer<ChukwaRecordKey, ChukwaRecord, ChukwaRecordKey, ChukwaRecord> {
 
     public void configure(JobConf jobConf) {
       super.configure(jobConf);
@@ -129,27 +131,37 @@ public class Demux extends Configured implements Tool {
     }
 
     public void reduce(ChukwaRecordKey key, Iterator<ChukwaRecord> values,
-        OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter)
-        throws IOException {
+                       OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter)
+            throws IOException {
       ChukwaOutputCollector chukwaOutputCollector = new ChukwaOutputCollector(
-          "DemuxReduceOutput", output, reporter);
+              "DemuxReduceOutput", output, reporter);
       try {
         long duration = System.currentTimeMillis();
         reporter.incrCounter("DemuxReduceInput", "total distinct keys", 1);
         reporter.incrCounter("DemuxReduceInput", key.getReduceType()
-            + " total distinct keys", 1);
+                + " total distinct keys", 1);
 
-        String defaultProcessor = Demux.jobConf.get(
-            "chukwa.demux.reducer.default.processor", null);
-        ReduceProcessor processor = ReduceProcessorFactory.getProcessor(
-            key.getReduceType(), defaultProcessor);
+        String defaultProcessor_classname = "org.apache.hadoop.chukwa.extraction.demux.processor.reducer" +
+                ".IdentityReducer";
+        String defaultProcessor = Demux.jobConf.get("chukwa.demux.reducer.default.processor",
+                "," + defaultProcessor_classname);
 
+        String processClass_pri = Demux.jobConf.get(key.getReduceType(), defaultProcessor);
+        String[] processClass_tmps = processClass_pri.split(",");
+        String processClass = null;
+        if (processClass_tmps.length != 2)
+          processClass = defaultProcessor_classname;
+        else
+          processClass = processClass_tmps[1];
+
+        ReduceProcessor processor = ReduceProcessorFactory.getProcessor(processClass);
+        System.out.println(processor.getClass().getName());
         processor.process(key, values, chukwaOutputCollector, reporter);
 
         if (log.isDebugEnabled()) {
           duration = System.currentTimeMillis() - duration;
           log.debug("Demux:Reduce, dataType:" + key.getReduceType()
-              + " duration:" + duration);
+                  + " duration:" + duration);
         }
 
       } catch (Exception e) {
@@ -166,14 +178,14 @@ public class Demux extends Configured implements Tool {
   }
 
   public static void addParsers(Configuration conf) {
-    String parserPath = conf.get("chukwa.data.dir")+File.separator+"demux";
+    String parserPath = conf.get("chukwa.data.dir") + File.separator + "demux";
     try {
       FileSystem fs = FileSystem.get(new Configuration());
       FileStatus[] fstatus = fs.listStatus(new Path(parserPath));
-      if(fstatus!=null) {
+      if (fstatus != null) {
         String hdfsUrlPrefix = conf.get("fs.default.name");
 
-        for(FileStatus parser : fstatus) {
+        for (FileStatus parser : fstatus) {
           Path jarPath = new Path(parser.getPath().toString().replace(hdfsUrlPrefix, ""));
           log.debug("Adding parser JAR path " + jarPath);
           DistributedCache.addFileToClassPath(jarPath, conf);
@@ -183,10 +195,10 @@ public class Demux extends Configured implements Tool {
       log.error(ExceptionUtil.getStackTrace(e));
     }
   }
-  
+
   public int run(String[] args) throws Exception {
     JobConf conf = new JobConf(new ChukwaConfiguration(), Demux.class);
-    
+
 
     conf.setJobName("Chukwa-Demux_" + day.format(new Date()));
     conf.setInputFormat(SequenceFileInputFormat.class);
@@ -199,7 +211,7 @@ public class Demux extends Configured implements Tool {
     conf.setOutputFormat(ChukwaRecordOutputFormat.class);
     conf.setJobPriority(JobPriority.VERY_HIGH);
     addParsers(conf);
-    
+
     List<String> other_args = new ArrayList<String>();
     for (int i = 0; i < args.length; ++i) {
       try {
@@ -215,14 +227,14 @@ public class Demux extends Configured implements Tool {
         return printUsage();
       } catch (ArrayIndexOutOfBoundsException except) {
         System.out.println("ERROR: Required parameter missing from "
-            + args[i - 1]);
+                + args[i - 1]);
         return printUsage();
       }
     }
     // Make sure there are exactly 2 parameters left.
     if (other_args.size() != 2) {
       System.out.println("ERROR: Wrong number of parameters: "
-          + other_args.size() + " instead of 2.");
+              + other_args.size() + " instead of 2.");
       return printUsage();
     }
 
