@@ -45,7 +45,7 @@ Installing Chukwa
 
 []
 
-[./images/chukwa_architecture.png] Chukwa 0.5.0 Architecture 
+[./images/chukwa_architecture.png] Chukwa 0.6.0 Architecture 
 
 First Steps
 
@@ -66,7 +66,7 @@ Setting Up Chukwa Cluster
 ---
 cp $CHUKWA_CONF_DIR/hadoop-log4j.properties $HADOOP_CONF_DIR/log4j.properties
 cp $CHUKWA_HOME/etc/chukwa/hadoop-metrics2.properties $HADOOP_CONF_DIR/hadoop-metrics2.properties
-cp $CHUKWA_HOME/share/chukwa/chukwa-0.5.0-client.jar $HADOOP_HOME/share/hadoop/lib
+cp $CHUKWA_HOME/share/chukwa/chukwa-0.6.0-client.jar $HADOOP_HOME/share/hadoop/lib
 cp $CHUKWA_HOME/share/chukwa/lib/json-simple-1.1.jar $HADOOP_HOME/share/hadoop/lib
 ---  
 

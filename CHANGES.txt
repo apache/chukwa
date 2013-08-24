@@ -44,6 +44,8 @@ Release 0.6 - Unreleased
 
   BUGS
 
+    CHUKWA-694. Improve demux configuration processing in HBaseWriter.  (Eric Yang)
+
     CHUKWA-692. Fixed race condition of agent startup in TestExecAdaptor.  (Eric Yang)
 
     CHUKWA-691. Improve pid file handling. (Eric Yang)

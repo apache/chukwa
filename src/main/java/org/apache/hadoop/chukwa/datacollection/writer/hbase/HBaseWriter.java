@@ -237,7 +237,28 @@ public class HBaseWriter extends PipelineableWriter {
   }
 
   private MapProcessor getProcessor(String dataType) throws UnknownRecordTypeException {
-    String processorClass = conf.get(dataType, defaultProcessor);
+    String processorClass = findProcessor(conf.get(dataType, defaultProcessor), defaultProcessor);
     return MapProcessorFactory.getProcessor(processorClass);
+  }
+
+  /**
+   * Look for mapper parser class in the demux configuration.
+   * Demux configuration has been changed since CHUKWA-581 to
+   * support mapping of both mapper and reducer, and this utility
+   * class is to detect the mapper class and return the mapper
+   * class only.
+   *
+   */
+  private String findProcessor(String processors, String defaultProcessor) {
+    if(processors.startsWith(",")) {
+      // No mapper class defined.
+      return defaultProcessor;
+    } else if(processors.contains(",")) {
+      // Both mapper and reducer defined.
+      String[] parsers = processors.split(",");
+      return parsers[0];
+    }
+    // No reducer defined.
+    return processors;
   }
 }
