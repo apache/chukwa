@@ -179,7 +179,7 @@ portalView.prototype = {
 	// add the tablist part
 	var tabNode=document.createElement("li");
 	tabNode.id="li_"+t;
-	tabNode.className="tab-off";
+	//tabNode.className="tab-off";
 
 	var tabInputSpan=document.createElement("span");
 	tabInputSpan.id="page_tab_input_span_"+t;
@@ -212,15 +212,15 @@ portalView.prototype = {
 	tabSpan.id='page_tab_span_'+t;
         tabSpan.onmouseover=function() {
             var id=this.id.substring(14);
-            if ($('li_'+id).className!='tab-on') {
+            /*if ($('li_'+id).className!='tab-on') {
                 $('li_'+id).className='tab-hover';
-            } 
+            }*/ 
         };
         tabSpan.onmouseout=function() {
             var id=this.id.substring(14);
-            if ($('li_'+id).className!='tab-on') {
+            /*if ($('li_'+id).className!='tab-on') {
                 $('li_'+id).className='tab-off';
-            }
+            }*/
         };
 
 	var tabHref=document.createElement("a");
@@ -1643,7 +1643,7 @@ portalPage.prototype = {
 	}
 	this.initEvents();
 	this.view.currentPage=this.view.findPage(this.page_tag);
-	$('li_'+this.page_tag).className='tab-on';
+	$('li_'+this.page_tag).className='selected';
 	$('page_'+this.page_tag).style.display='block';
 	$('page_control_'+this.page_tag).style.display='block';
 	$('page_tab_input_span_'+this.page_tag).style.display='none';

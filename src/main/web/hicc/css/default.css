@@ -40,7 +40,7 @@ A.sectionLink:link {font-family:Arial;color:#FFFFFF;text-decoration:none;}
 
 
 body {font-family:Arial;background-color:#ffffff;}
-
+.error input {color:#FFCCCC;}
 .messageTable {font:normal 11px Arial;background-color:#999999;border-style:solid;border-top:0;border-bottom:0;border-width:1px;border-color:#777772;}
 .messageTableContent {font:normal 11px Arial;background-color:#FFFFFF;color:#1E4F66;text-align:left;}
 .messageTableLeft {font:bold 11px Arial;background-color:#e9e8e6;text-align:left;color:#555555;vertical-align:top;}
@@ -709,3 +709,4 @@ fieldset > .row:last-child {
 *.ygtvlabel {
     font-size:11px;
 }
+

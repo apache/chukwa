@@ -12,6 +12,8 @@ Release 0.6 - Unreleased
 
   NEW FEATURES
 
+    CHUKWA-695. Added ability to export widgets from graph explorer. (Eric Yang)
+
     CHUKWA-581. Added support for custom reducer package name. (Ivy Tang via Eric Yang)
 
     CHUKWA-669. JMX Adaptor.  (shreyas subramanya via asrabkin)

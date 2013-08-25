@@ -87,6 +87,7 @@
 <link href="css/menu.css" rel="stylesheet" type="text/css">
 <link href="css/tab.css" rel="stylesheet" type="text/css">
 <link href="css/timeframe.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="formalize.css" />
 <!-- all the necessary js files -->
 <script type="text/javascript" src="./js/yahoo-dom-event.js"></script>
 <script type="text/javascript" src="./js/treeview-min.js"></script>
@@ -105,6 +106,7 @@
 <script type="text/javascript" src="/hicc/js/slider.js"></script>
 <script type="text/javascript" src="/hicc/js/swfobject.js"></script>
 <script type="text/javascript" src="/hicc/js/time.js"></script>
+<script src="js/jquery.formalize.js"></script>
 
 <script type="text/javascript">
 var _users_list=''; //'[% users_list_json %]'.evalJSON();
@@ -216,15 +218,7 @@ Select the widget from the widget tree to see the detail.
 </div>
 <!-- end of widget catalog -->
 <!-- page selector -->
-<table class="page_selector_table" width="100%" cellspacing=0 cellpadding=0>
-<tr><td>
-<div id="page_selector" style="display:block;">
-<ul id="tablist">
-</ul>
-</div>
-</td>
-</tr>
-</table>
+<ul id="tablist" class="tabrow"></ul>
 </td></tr>
 <tr><td id="workspaceContainer" colspan="3">
 <!-- content location -->

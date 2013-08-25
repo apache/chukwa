@@ -63,7 +63,7 @@ public class WidgetStore {
       try {
         fs = FileSystem.get(config);
         FSDataOutputStream out = fs.create(widgetFile,true);
-        out.writeUTF(widget.deserialize().toString());
+        out.writeBytes(widget.deserialize().toString());
         out.close();
       } catch (IOException ex) {
         log.error(ExceptionUtil.getStackTrace(ex));
