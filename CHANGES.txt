@@ -26,6 +26,8 @@ Release 0.6 - Unreleased
 
   IMPROVEMENTS
 
+    CHUKWA-696. Improve hicc stylesheets for form input.  (Eric Yang)
+
     CHUKWA-693. Updated Hadoop, ZooKeeper and HBase version for 0.6.0 release.  (Eric Yang)
 
     CHUKWA-686. Added FileTailingAdaptorPreserveLines adaptor. (Sourygna Luangsay via Eric Yang)

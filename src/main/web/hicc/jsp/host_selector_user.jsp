@@ -32,4 +32,4 @@
     }
   }
 %></textarea><br>
-<input type="button" onClick="save_host_user('<%= boxId %>');" name="Apply" value="Apply" class="formButton">
+<input type="button" onClick="save_host_user('<%= boxId %>');" name="Apply" value="Apply">

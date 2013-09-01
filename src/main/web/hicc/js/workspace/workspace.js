@@ -197,7 +197,6 @@ portalView.prototype = {
 	tabPageInputTitle.type='text';
 	tabPageInputTitle.id='page_rename_'+t;
 	tabPageInputTitle.value=title;
-	tabPageInputTitle.className='FormInput';
 	tabPageInputTitle.onblur=function() {
 	    var id=this.id.substring(12);
 	    renamePageForm(id);
@@ -447,7 +446,7 @@ portalWidget.prototype = {
 			    label=param.label;
 			}
 			label=label;
-			content+='<tr><td valign="top">'+label+':<\/td><td>';
+			content+='<tr><td>'+label+':<\/td><td>';
 			if (param.type=='string') {
 			    content+='<input type="text" id="'+param_id+'" value="' + param.value + '" size="20" maxlength="255"\/>'
 			} else if (param.type=='text') {
@@ -510,7 +509,7 @@ portalWidget.prototype = {
 			    }
 			    content+='</select>';
 			    content+='</td><td valign="middle">';
-			    content+='<table cellspacing="2" cellpadding="0"><tr><td><input class=formButton type=button name="add" value=" >> " onclick="moveItem(\'available_'+param_id+'\',\''+param_id+'\');" /></td></tr><tr><td><input class=formButton type=button name="delete" value=" << " onclick="moveItem(\''+param_id+'\',\'available_'+param_id+'\');" /></td></tr></table>';
+			    content+='<table cellspacing="2" cellpadding="0"><tr><td><input type=button name="add" value=" >> " onclick="moveItem(\'available_'+param_id+'\',\''+param_id+'\');" /></td></tr><tr><td><input type=button name="delete" value=" << " onclick="moveItem(\''+param_id+'\',\'available_'+param_id+'\');" /></td></tr></table>';
 			    content+='</td><td>';
 			    content+='Selected:<br/><select multiple size="10" class="formSelect" id="'+param_id+'" name="'+param_id+'" >';
 			    for (var k=0;k<param.value.length;k++) {
@@ -524,9 +523,9 @@ portalWidget.prototype = {
 			    content+='</select>';
 			    content+='</td><td valign="middle">';
 			    content+='<table cellspacing="2" cellpadding="0"><tr><td>';
-			    content+='<input class=formButton border=0 type=image src="/hicc/images/u.gif" name="up" value="up" onclick="moveUpList(\''+param_id+'\');return false;"></td></tr>';
+			    content+='<input border=0 type=image src="/hicc/images/u.gif" name="up" value="up" onclick="moveUpList(\''+param_id+'\');return false;"></td></tr>';
 			    content+='<tr><td>';
-			    content+='<input class=formButton border=0 type=image src="/hicc/images/d.gif" name="down" value="down" onclick="moveDownList(\''+param_id+'\');return false;">';
+			    content+='<input border=0 type=image src="/hicc/images/d.gif" name="down" value="down" onclick="moveDownList(\''+param_id+'\');return false;">';
 			    content+='</td></tr>';
 			    content+='</table>';
 			    content+='</td></tr>';
@@ -567,7 +566,7 @@ portalWidget.prototype = {
 	content+='<tr><td>'+'Refresh (min)'+':<\/td><td>';
 	content+='<input type="text" id="'+this.pageid+'_'+this.boxIndex + '_refreshrate" value="' + this.block_obj.refresh + '" size="20" maxlength="255"\/><\/td><\/tr>'
 
-      	content+='<tr><td colspan="2"><input class="formButton" type="button" onclick="saveParameters(\'' + this.pageid+'_'+this.boxIndex + '\');" value="'+'Apply'+'">&nbsp;<input class="formButton" type="button" onclick="resetParameters(\'' + this.pageid+'_'+this.boxIndex + '\');" value="'+'Reset'+'">&nbsp;<input class="formButton" type="button" onclick="closeEditBox(\'' + this.pageid+'_'+this.boxIndex + '\');" value="'+'Close'+'"><\/td><\/tr><\/table><\/form>';
+      	content+='<tr><td colspan="2"><input type="button" onclick="saveParameters(\'' + this.pageid+'_'+this.boxIndex + '\');" value="'+'Apply'+'">&nbsp;<input type="button" onclick="resetParameters(\'' + this.pageid+'_'+this.boxIndex + '\');" value="'+'Reset'+'">&nbsp;<input type="button" onclick="closeEditBox(\'' + this.pageid+'_'+this.boxIndex + '\');" value="'+'Close'+'"><\/td><\/tr><\/table><\/form>';
 	content+='<\/td><\/tr><\/table>';
 	content+='<br/>';
 
@@ -2319,7 +2318,7 @@ function create_new_view() {
 }
 
 function clone_view(owner,vid) {
-  var viewName=prompt("Enter a new name for "+vid+" dashboard.");
+  var viewName=prompt("Enter a new name to clone "+vid+" dashboard.");
   if(viewName==null) {
     return false;
   }
@@ -2340,7 +2339,7 @@ function clone_view(owner,vid) {
 }
 
 function rename_view(owner,vid) {
-  var viewName=prompt("Enter a new name for "+vid+" dashboard.");
+  var viewName=prompt("Enter a new name to rename "+vid+" dashboard.");
   if(viewName==null) {
     return false;
   }
@@ -2410,9 +2409,9 @@ function update_views_list() {
         var view="<tr>";
         if(data[i].editable=="true") {
           view=view+"<td>";
-          view=view+"<a href='#' class='glossy_icon' onclick='delete_view(\""+data[i].owner+"\",\""+data[i].name+"\")'><img src='images/close.png'></a>";
-          view=view+"<a href='#' class='glossy_icon' onclick='clone_view(\""+data[i].owner+"\",\""+data[i].name+"\")'><img src='images/clone.png'></a>";
-          view=view+"</td>";
+          view=view+"<a href='#' class='glossy_icon' onclick='delete_view(\""+data[i].owner+"\",\""+data[i].name+"\")'><img src='images/close.png'></a> ";
+          view=view+"<a href='#' class='glossy_icon' onclick='rename_view(\""+data[i].owner+"\",\""+data[i].name+"\")'><img src='images/application_edit.png'></a> ";
+          view=view+"<a href='#' class='glossy_icon' onclick='clone_view(\""+data[i].owner+"\",\""+data[i].name+"\")'><img src='images/clone.png'></a></td>";
           view=view+"<td><input type='radio' name='permission."+data[i].name+"."+data[i].owner+"' value='public' ";
           if(data[i].type=="public") {
             view=view+"checked";
@@ -2424,7 +2423,7 @@ function update_views_list() {
           }
           view=view+" onclick='update_permission(\""+data[i].owner+"\",\""+data[i].name+"\",\"private\")'> Private</td>";
           view=view+"<td>"+data[i].name;
-          view=view+"<a href='#' class='glossy_icon' onclick='rename_view(\""+data[i].owner+"\",\""+data[i].name+"\")'><img src='images/application_edit.png' align='right'></a></td>";
+          view=view+"</td>";
         } else {
           view=view+"<td>";
           view=view+"<img src='images/bullet_white.png' width='16'>";
@@ -2561,19 +2560,19 @@ function onLabelClick(id) {
   jQuery.getJSON('/hicc/v1/widget/wid/'+id,
     function(node) {
       var detail='';
-      detail+="<table class='configurationTableContent' width='95%'><tr><td valign='top' width='40%'><table class='configurationTableContent'>";
-      detail+="<tr><td><b>"+'Name'+":</b>&nbsp;</td><td>";
+      detail+="<table class='configurationTableContent' width='95%'><tr><td>";
+      detail+="<tr><td style='width: 100px;'>Name</td><td>";
       detail+=node.title;
       detail+="</td></tr>";
-      detail+="<tr><td><b>"+'Version'+":&nbsp;</b></td><td>";
+      detail+="<tr><td>Version</td><td>";
       detail+=node.version;
       detail+="</td></tr>";
-      detail+="<tr><td valign='top'><b>"+'Description'+":&nbsp;</b></td><td>";
+      detail+="<tr><td>Description</td><td>";
       detail+=node.description;
-      detail+='</td></tr><tr><td><input class="formButton" type="button" name="addwidget" value="Add Widget" onClick="add_widget(\''+id+'\');"/>';
       detail+="</td></tr>";
-      detail+="</table></td>";
-      detail+="<td width='55%'><div style='width:100%;height:280px;overflow:hidden;'>";
+      detail+='<tr><td><input type="button" name="addwidget" value="Add Widget" onClick="add_widget(\''+id+'\');"/></td></tr>';
+      detail+="<tr>";
+      detail+="<td colspan='2'><div style='width:100%;height:280px;overflow:hidden;'>";
       detail+="<div id='_preview' class='dragableBoxContent' style='width:100%;height:280px;overflow:hidden;'><img src='/hicc/images/loading.gif'></div></div></td></tr></table>";
 
       jQuery('#widget_detail').empty();

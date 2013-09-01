@@ -40,7 +40,7 @@
 <div id="displayViewNameBlock${key}">
 <a href="#" onClick="javascript:set_current_view('${key}');initScript('${key}');">${description}</a></div>
 <div id="changeViewNameBlock${key}" style="display:none;">
-<input type=text class=formInput name="changeViewNameField${key}" id="changeViewNameField${key}" value='${description}'/>
+<input type=text name="changeViewNameField${key}" id="changeViewNameField${key}" value='${description}'/>
 </div>
 </td><td align='center'>${owner}</td>
 <td align='center' width="270">
@@ -88,7 +88,7 @@
 </tbody>
 </table>
 <br/>
-<input type=button class=formButton name="addPermissionRowButton" value="Add More Permission" onClick="addPermissionRow('${key}','',false,false);"/>
+<input type=button name="addPermissionRowButton" value="Add More Permission" onClick="addPermissionRow('${key}','',false,false);"/>
   </div>
 </div>
 <!-- end permission -->
@@ -96,30 +96,30 @@
 <!-- begin operations -->
 <!--c:if test="${permission.all.modify=='1'} || ${permission.user.modify=='1'}"-->
   <div id="changeViewNameButtonBlock${key}" style="display:block;">
-    <input class="formButton" name="changeNameButton${key}" id="changeNameButton${key}" value="Change" type="button" onClick="changeViewName('${key}',false);"/>&nbsp;
+    <input name="changeNameButton${key}" id="changeNameButton${key}" value="Change" type="button" onClick="changeViewName('${key}',false);"/>&nbsp;
   </div>
   <div id="cancelChangeViewNameBlock${key}" style="display:none;">
-    <input class="formButton" name="saveNameButton${key}" id="saveNameButton${key}" value="Save" type="button" onClick="changeViewName('${key}',true);"/>&nbsp;
-    <input class="formButton" name="cancelChangeNameButton${key}" id="cancelChangeNameButton${key}" value="Cancel" type="button" onClick="changeViewName('${key}',false);"/>&nbsp;
+    <input name="saveNameButton${key}" id="saveNameButton${key}" value="Save" type="button" onClick="changeViewName('${key}',true);"/>&nbsp;
+    <input name="cancelChangeNameButton${key}" id="cancelChangeNameButton${key}" value="Cancel" type="button" onClick="changeViewName('${key}',false);"/>&nbsp;
   </div>
 <!--/c:if-->
 </td>
 <td nowrap width="60">
-<input class="formButton" name="cloneview" value="Clone" type="button" onClick="cloneView('${key}');"/>&nbsp;
+<input name="cloneview" value="Clone" type="button" onClick="cloneView('${key}');"/>&nbsp;
 </td>
 <td nowrap width="60">
 <!--c:if test="${key=='default'}"-->
-<!--  <input class="formButton" name="restoreview" value="Restore" type="button" onClick="if (confirm(Are you sure you want to restore the default workspace?)){ restoreView('${key}');}"/> -->
+<!--  <input name="restoreview" value="Restore" type="button" onClick="if (confirm(Are you sure you want to restore the default workspace?)){ restoreView('${key}');}"/> -->
 <!--/c:if-->
 
 <!--c:if test="${permision.all.modify=='1'} || ${permission.user.modify=='1'} && ${key!='default'}"-->
-  <input class="formButton" name="delelete" value="Delete" type="button" onClick="if (confirm('Are you sure you want to delete the workspace?')){ deleteView('${key}');}"/>
+  <input name="delelete" value="Delete" type="button" onClick="if (confirm('Are you sure you want to delete the workspace?')){ deleteView('${key}');}"/>
 <!--/c:if-->
 </td>
 <td nowrap width="60">
 <c:choose>
   <c:when test="${key!=default_view}"> 
-    <input class="formButton" name="setDefault" value="Set As Default" type="button" onClick="setDefaultView('${key}');"/>
+    <input name="setDefault" value="Set As Default" type="button" onClick="setDefaultView('${key}');"/>
   </c:when>
   <c:otherwise>
     Default View

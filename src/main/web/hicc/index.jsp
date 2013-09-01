@@ -87,7 +87,7 @@
 <link href="css/menu.css" rel="stylesheet" type="text/css">
 <link href="css/tab.css" rel="stylesheet" type="text/css">
 <link href="css/timeframe.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="formalize.css" />
+<link href="css/formalize.css" rel="stylesheet" type="text/css" />
 <!-- all the necessary js files -->
 <script type="text/javascript" src="./js/yahoo-dom-event.js"></script>
 <script type="text/javascript" src="./js/treeview-min.js"></script>
@@ -106,7 +106,7 @@
 <script type="text/javascript" src="/hicc/js/slider.js"></script>
 <script type="text/javascript" src="/hicc/js/swfobject.js"></script>
 <script type="text/javascript" src="/hicc/js/time.js"></script>
-<script src="js/jquery.formalize.js"></script>
+<script type="text/javascript" src="/hicc/js/jquery.formalize.js"></script>
 
 <script type="text/javascript">
 var _users_list=''; //'[% users_list_json %]'.evalJSON();
@@ -181,7 +181,7 @@ function toggle_view_all() {
 <table width="100%" class="titlebar"><tr><td width="16"><span class="glossy_icon"><a href="#" onClick="javascript:manage_content('close'); return false;" class='glossy_icon'><img src="images/bullet_arrow_top.png" alig
 n="absmiddle"></a></span></td><td>Dashboard</td></tr></table>
 <table id="views_list" class="portal_table" cellspacing="0" cellpadding="2" width="100%">
-<tr><th width="32"></th><th width="15%" align="center">Permission</th><th>View Name</th><th>Owner</th></tr>
+<tr><th width="60"></th><th width="15%" align="center">Permission</th><th>View Name</th><th>Owner</th></tr>
 </table></td></tr>
 </table>
 </div>
@@ -195,7 +195,7 @@ n="absmiddle"></a></span></td><td>Dashboard</td></tr></table>
 <tr><td class="table-subhead" align="center">Widgets Catalog</td><td class="table-subhead" align="center">Widget Details</td></tr>
 <tr><td valign="top" width="250" class="white">
 <table class="menu_table"><tr><td>
-<div id="myWidgetContainer" style="width: 250px; height: 300px; border: none;overflow: auto;>
+<div id="myWidgetContainer" style="width: 250px; height: 400px; border: none;overflow: auto;>
      <span id="treePlaceHolder"
         style="background-color:#F00; color:#FFF;">
        Loading tree widget...

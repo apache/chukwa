@@ -87,4 +87,4 @@ HDFS Cluster<br>
 Map Reduce Cluster<br>
 <input type="checkbox" id="<%= boxId %>jobtracker" value="true" <%= roles.get("jobtracker") %>> Job Tracker<br>
 <input type="checkbox" id="<%= boxId %>tasktracker" value="true" <%= roles.get("tasktracker") %>> Task Trackers<br><br>
-<input type="button" onClick="save_host_role('<%= boxId %>');" name="Apply" value="Apply" class="formButton">
+<input type="button" onClick="save_host_role('<%= boxId %>');" name="Apply" value="Apply">

@@ -102,7 +102,7 @@ Time Period
     </fieldset>
 
     </div>
-<input type="button" name="<%= boxId %>apply" value="Apply" onclick="save_time_range('<%= boxId %>')" class="formButton">
+<input type="button" name="<%= boxId %>apply" value="Apply" onclick="save_time_range('<%= boxId %>')">
 
 <script type='text/javascript' src="/hicc/js/"></script>
 <script>

@@ -28,8 +28,8 @@
   }
 %>
 <div style="height:300px;overflow:auto;">
-Filter: <input type="text" id="<%=XssFilter.filter(request.getParameter("boxId"))%>filter" name="<%=XssFilter.filter(request.getParameter("boxId"))%>filter" value="<%=filter%>" class="formInput">
-<input type="button" name="apply_filter" value="Filter" onClick="filter_event_viewer('<%=XssFilter.filter(request.getParameter("boxId"))%>');" class="formButton">
+Filter: <input type="text" id="<%=XssFilter.filter(request.getParameter("boxId"))%>filter" name="<%=XssFilter.filter(request.getParameter("boxId"))%>filter" value="<%=filter%>">
+<input type="button" name="apply_filter" value="Filter" onClick="filter_event_viewer('<%=XssFilter.filter(request.getParameter("boxId"))%>');">
 <table class="simple" width="100%">
 <tr>
 <th>Time</th>

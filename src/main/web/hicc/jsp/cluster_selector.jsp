@@ -48,4 +48,4 @@ Cluster
            }
        } %>
 </select>
-<input type="button" onClick="save_cluster('<%= boxId %>');" name="Apply" value="Apply" class="formButton">
+<input type="button" onClick="save_cluster('<%= boxId %>');" name="Apply" value="Apply">

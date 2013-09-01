@@ -107,7 +107,7 @@
 </select>
 </div>
 <div class="row">
-<input type="button" name="apply" value="Apply" onclick="save_time('<%= boxId %>');" class="formButton">
+<input type="button" name="apply" value="Apply" onclick="save_time('<%= boxId %>');">
 </div>
 </fieldset>
 </div>

@@ -38,14 +38,14 @@
 </td></tr>
 <tr><td colspan="3" align="center">
 <span>
-  <input type="text" name="<%= boxId %>start" value="<%= time.getStartDate("MMMMM dd, yyyy") %>" id="<%= boxId %>start" class="formInput" size="10"/>
+  <input type="text" name="<%= boxId %>start" value="<%= time.getStartDate("MMMMM dd, yyyy") %>" id="<%= boxId %>start" size="10"/>
   &ndash;
-  <input type="text" name="<%= boxId %>end" value="<%= time.getEndDate("MMMMM dd, yyyy") %>" id="<%= boxId %>end" class="formInput" size="10"/>
+  <input type="text" name="<%= boxId %>end" value="<%= time.getEndDate("MMMMM dd, yyyy") %>" id="<%= boxId %>end" size="10"/>
 </span>
 </td></tr>
 </table>
 <div style="display:none"><a href="#" onclick="return false;" id="<%= boxId %>reset">Reset</a></a></div>
-<input type="button" name="<%=boxId%>apply" value="Apply" class="formButton" onclick="save_timeframe('<%= boxId %>');">
+<input type="button" name="<%=boxId%>apply" value="Apply" onclick="save_timeframe('<%= boxId %>');">
 <script type="text/javascript">
       new Timeframe('<%= boxId %>calendars', {
         previousButton: "<%= boxId %>previous",

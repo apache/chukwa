@@ -86,7 +86,7 @@
 %>
 </select></div>
 <div class="row">
-<input type="button" onClick="save_host('<%= boxId %>');" name="Apply" value="Apply" class="formButton">
+<input type="button" onClick="save_host('<%= boxId %>');" name="Apply" value="Apply">
 </div>
 </fieldset>
 </div>
