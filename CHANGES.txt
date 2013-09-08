@@ -28,6 +28,8 @@ Release 0.6 - Unreleased
 
   IMPROVEMENTS
 
+    CHUKWA-698. Update RAT plugin to 0.10 release and fixed missing license header. (Eric Yang)
+
     CHUKWA-696. Improve hicc stylesheets for form input.  (Eric Yang)
 
     CHUKWA-693. Updated Hadoop, ZooKeeper and HBase version for 0.6.0 release.  (Eric Yang)
