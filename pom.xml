@@ -388,29 +388,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-                <executions>
-                        <execution>
-                        <id>chmod-jmx-file</id>
-                        <phase>process-resources</phase>
-                        <configuration>
-                            <tasks name="setup">
-                                <chmod file="target/conf/jmxremote.password" perm="600" />
-                                <chmod file="target/conf/jmxremote.access" perm="600" />
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.1</version>
                 <executions>
@@ -597,7 +574,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.4</version>
+                <version>1.6</version>
                 <executions>
                     <execution>
                         <id>setup</id>
@@ -608,6 +585,19 @@
                                 <echo message="${VERSION}" file="${basedir}/target/VERSION"/>
                                 <mkdir dir="${basedir}/target/clover"/>
                                 <chmod dir="${basedir}/target/clover" perm="a+w" />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>chmod-jmx-file</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <tasks name="setup">
+                                <chmod file="target/conf/jmxremote.password" perm="600" />
+                                <chmod file="target/conf/jmxremote.access" perm="600" />
                             </tasks>
                         </configuration>
                         <goals>

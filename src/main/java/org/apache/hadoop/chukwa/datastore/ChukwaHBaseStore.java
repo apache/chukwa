@@ -17,15 +17,20 @@
  */
 package org.apache.hadoop.chukwa.datastore;
 
+import java.io.IOException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.hadoop.chukwa.hicc.bean.HeatMapPoint;
+import org.apache.hadoop.chukwa.hicc.bean.Heatmap;
 import org.apache.hadoop.chukwa.hicc.bean.Series;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
@@ -39,6 +44,7 @@ import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.ColumnPrefixFilter;
 import org.apache.hadoop.hbase.filter.RowFilter;
 import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
@@ -251,4 +257,81 @@ public class ChukwaHBaseStore {
     }
     return clusters;
   }
+  
+  public static Heatmap getHeatmap(String tableName, String family, String column, 
+		  long startTime, long endTime, double max, double scale, int height) {
+	final long MINUTE = TimeUnit.MINUTES.toMillis(1);
+	Heatmap heatmap = new Heatmap();
+    HTableInterface table = pool.getTable(tableName);
+    try {
+        Scan scan = new Scan();
+        ColumnPrefixFilter cpf = new ColumnPrefixFilter(column.getBytes());
+        scan.addFamily(family.getBytes());
+        scan.setFilter(cpf);
+    	scan.setTimeRange(startTime, endTime);
+    	scan.setBatch(10000);
+        ResultScanner results = table.getScanner(scan);
+	    Iterator<Result> it = results.iterator();
+		int index = 0;
+		// Series display in y axis
+		int y = 0;
+		HashMap<String, Integer> keyMap = new HashMap<String, Integer>();
+	    while(it.hasNext()) {
+		  Result result = it.next();
+		  List<KeyValue> kvList = result.list();
+	      for(KeyValue kv : kvList) {
+			String key = parseRowKey(result.getRow());
+			StringBuilder tmp = new StringBuilder();
+			tmp.append(key);
+			tmp.append(":");
+			tmp.append(new String(kv.getQualifier()));
+			String seriesName = tmp.toString();
+			long time = parseTime(result.getRow());
+			// Time display in x axis
+			int x = (int) ((time - startTime) / MINUTE);
+			if(keyMap.containsKey(seriesName)) {
+			  y = keyMap.get(seriesName);
+		    } else {
+			  keyMap.put(seriesName, new Integer(index));
+		      y = index;
+		      index++;
+			}
+			double v = Double.parseDouble(new String(kv.getValue()));
+			heatmap.put(x, y, v);
+			if(v > max) {
+				max = v;
+			}
+	      }
+	    }
+	    results.close();
+	    table.close();
+	    int radius = height / index;
+	    // Usually scale max from 0 to 100 for visualization
+	    heatmap.putMax(scale);
+	    for(HeatMapPoint point : heatmap.getHeatmap()) {
+	      double round = point.count / max * scale;
+	      round = Math.round(round * 100.0) / 100.0;
+	      point.put(point.x, point.y * radius, round);
+	    }
+	    heatmap.putRadius(radius);
+	    heatmap.putSeries(index);
+	} catch (IOException e) {
+	    log.error(ExceptionUtil.getStackTrace(e));
+	}
+	return heatmap;
+  }
+  
+  private static String parseRowKey(byte[] row) {
+	  String key = new String(row);
+	  String[] parts = key.split("-", 2);
+	  return parts[1];
+  }
+
+  private static long parseTime(byte[] row) {
+	  String key = new String(row);
+	  String[] parts = key.split("-", 2);
+	  long time = Long.parseLong(parts[0]);
+	  return time;
+  }
+
 }

@@ -1,0 +1,38 @@
+{
+"id":"system_heatmap",
+"title":"System Heatmap",
+"version":"0.1",
+"categories":"System Metrics,Server",
+"url":"iframe/jsp/heatmap.jsp",
+"description":"Display system related stats",
+"screendump":"\/images\/server_load.gif",
+"refresh":"15",
+"parameters":[
+{"name":"title","type":"string","value":"CPU Utilization","edit":"1","label":"Title"},
+{"name":"period","type":"custom","control":"period_control","value":"","label":"Period"},
+{"name":"url","type":"select","value":"/hicc/v1/heatmap/SystemMetrics/cpu/combined.","label":"Metric","options":[
+{"label":"CPU Utilization Distribution","value":"/hicc/v1/heatmap/SystemMetrics/cpu/combined.?max=1"},
+{"label":"Memory Utilization Distribution","value":"/hicc/v1/heatmap/SystemMetrics/memory/ActualUsed?max=16000000000"},
+{"label":"Disk Read Distribution","value":"/hicc/v1/heatmap/SystemMetrics/disk/ReadBytes.?max=125000000"},
+{"label":"Disk Write Distribution","value":"/hicc/v1/heatmap/SystemMetrics/disk/WriteBytes.?max=125000000"},
+{"label":"Network Transfer Distribution","value":"/hicc/v1/heatmap/SystemMetrics/network/TxBytes.?max=125000000"}
+{"label":"Network Receive Distribution","value":"/hicc/v1/heatmap/SystemMetrics/network/RxBytes.?max=125000000"}
+]},
+{"name":"width","type":"select","value":"300","label":"Width","options":[
+{"label":"300","value":"300"},
+{"label":"400","value":"400"},
+{"label":"500","value":"500"},
+{"label":"600","value":"600"},
+{"label":"800","value":"800"},
+{"label":"1000","value":"1000"},
+{"label":"1200","value":"1200"}
+]},
+{"name":"height","type":"select","value":"200","label":"Height","options":[
+{"label":"200","value":"200"},
+{"label":"400","value":"400"},
+{"label":"600","value":"600"},
+{"label":"800","value":"800"},
+{"label":"1000","value":"1000"}
+]}
+]
+}
