@@ -51,6 +51,9 @@
 <html>
   <head>
     <link rel='stylesheet' href='/hicc/lib/timeline/bundle.css' type='text/css' />
+    <link href="/hicc/css/default.css" rel="stylesheet" type="text/css">
+    <link href="/hicc/css/formalize.css" rel="stylesheet" type="text/css" />
+    <script src="/hicc/js/jquery.formalize.js"></script>
     <script src="/hicc/lib/timeline/timeline-api.js?bundle=true" type="text/javascript"></script>
     <script src="/hicc/lib/timeline/search.js" type="text/javascript"></script>
     <script type="text/javascript">

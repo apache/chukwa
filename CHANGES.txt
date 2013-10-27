@@ -12,6 +12,8 @@ Release 0.6 - Unreleased
 
   NEW FEATURES
 
+    CHUKWA-699. Updated timeline widget stylesheet.  (Eric Yang)
+
     CHUKWA-697. Added generic heatmap REST API and visualization.  (Eric Yang)
 
     CHUKWA-695. Added ability to export widgets from graph explorer. (Eric Yang)
