@@ -12,6 +12,8 @@ Release 0.6 - Unreleased
 
   NEW FEATURES
 
+    CHUKWA-710. Set TCP socket reuse option for server sockets
+
     CHUKWA-699. Updated timeline widget stylesheet.  (Eric Yang)
 
     CHUKWA-697. Added generic heatmap REST API and visualization.  (Eric Yang)
