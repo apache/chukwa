@@ -55,6 +55,7 @@ public class SocketAdaptor extends AbstractAdaptor {
     public void run() {
       try{
         listener = new ServerSocket(port);
+        listener.setReuseAddress(true);
         Socket server;
 
         while(running){

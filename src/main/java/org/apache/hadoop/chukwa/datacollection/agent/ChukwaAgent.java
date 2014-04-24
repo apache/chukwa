@@ -336,6 +336,7 @@ public class ChukwaAgent implements AdaptorManager {
     jettyConnector.setLowResourcesConnections(HTTP_SERVER_THREADS - 10);
     jettyConnector.setLowResourceMaxIdleTime(1500);
     jettyConnector.setPort(portNum);
+    jettyConnector.setReuseAddress(true);
 
     // Set up jetty server, using connector
     jettyServer = new Server(portNum);
