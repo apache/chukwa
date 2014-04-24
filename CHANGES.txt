@@ -12,8 +12,6 @@ Release 0.6 - Unreleased
 
   NEW FEATURES
 
-    CHUKWA-710. Set TCP socket reuse option for server sockets
-
     CHUKWA-699. Updated timeline widget stylesheet.  (Eric Yang)
 
     CHUKWA-697. Added generic heatmap REST API and visualization.  (Eric Yang)
@@ -55,6 +53,8 @@ Release 0.6 - Unreleased
     CHUKWA-647. Spread out intermediate data with the same ReduceType into different Reduce Tasks. (Jie Huang via asrabkin)
 
   BUGS
+
+    CHUKWA-710. Set TCP socket reuse option for server sockets
 
     CHUKWA-694. Improve demux configuration processing in HBaseWriter.  (Eric Yang)
 
