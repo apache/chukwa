@@ -293,6 +293,7 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-test</artifactId>
             <version>1.2.1</version>
+            <scope>test</scope>
           </dependency>
     </dependencies>
 
@@ -388,6 +389,29 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+                <executions>
+                        <execution>
+                        <id>chmod-jmx-file</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <tasks name="setup">
+                                <chmod file="target/conf/jmxremote.password" perm="600" />
+                                <chmod file="target/conf/jmxremote.access" perm="600" />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.1</version>
                 <executions>
@@ -424,12 +448,42 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <compilerVersion>1.5</compilerVersion>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
+                <executions>
+                  <execution>
+                    <id>default-compile</id>
+                    <phase>compile</phase>
+                    <configuration>
+                      <goals>
+                        <goal>compile</goal>
+                      </goals>
+                      <compilerVersion>1.7</compilerVersion>
+                      <source>1.7</source>
+                      <target>1.7</target>
+                      <excludes>
+                        <exclude>**/JobLog.java</exclude>
+                        <exclude>**/TestJobLogEntry.java</exclude>
+                        <exclude>**/ChukwaJobTrackerInstrumentation.java</exclude>
+                      </excludes>
+                    </configuration>
+                  </execution>
+                  <execution>
+                    <id>default-testCompile</id>
+                    <phase>test-compile</phase>
+                    <configuration>
+                      <goals>
+                        <goal>testCompile</goal>
+                      </goals>
+                      <compilerVersion>1.7</compilerVersion>
+                      <source>1.7</source>
+                      <target>1.7</target>
+                      <testExcludes>
+                        <exclude>**/JobLog.java</exclude>
+                        <exclude>**/TestJobLogEntry.java</exclude>
+                        <exclude>**/ChukwaJobTrackerInstrumentation.java</exclude>
+                      </testExcludes>
+                    </configuration>
+                  </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -472,6 +526,7 @@
                                 <exclude>**/TestFSMBuilder.java</exclude>
                                 <exclude>**/TestDatabase*.java</exclude>
                                 <exclude>**/TestArchive.java</exclude>
+                                <exclude>**/TestJobLogEntry.java</exclude>
                                 <exclude>**/*$*</exclude>
                             </excludes>
                             <systemPropertyVariables>
@@ -824,7 +879,7 @@
                 </property>
             </activation>
             <properties>
-                <hbase.version>0.95-SNAPSHOT</hbase.version>
+                <hbase.version>0.96.1.1</hbase.version>
             </properties>
             <dependencies>
                 <dependency>
@@ -1034,6 +1089,10 @@
         <repository>
             <id>clojars</id>
             <url>http://clojars.org/repo/</url>
+        </repository>
+        <repository>
+            <id>Apache</id>
+            <url>http://repo.maven.apache.org/maven2/</url>
         </repository>
     </repositories>
 

@@ -70,6 +70,12 @@ public class Reporter implements org.apache.hadoop.mapred.Reporter {
     return 0;
   }
 
+  @Override
+  public float getProgress() {
+    // TODO Auto-generated method stub
+    return 0.0f;
+  }
+
   public void clear() {
     // TODO Auto-generated method stub
     

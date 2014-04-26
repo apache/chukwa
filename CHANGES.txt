@@ -12,6 +12,8 @@ Release 0.6 - Unreleased
 
   NEW FEATURES
 
+    CHUKWA-705. Updated Chukwa to support JDK7 and updated to Hadoop 1.2.1 and HBase 0.96.1.1.  (Eric Yang)
+
     CHUKWA-699. Updated timeline widget stylesheet.  (Eric Yang)
 
     CHUKWA-697. Added generic heatmap REST API and visualization.  (Eric Yang)
