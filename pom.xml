@@ -59,10 +59,10 @@
     inherits Hadoop’s scalability and robustness. Chukwa also includes a ﬂexible and powerful toolkit 
     for displaying, monitoring and analyzing results to make the best use of the collected data.</description>
 
-    <url>http://incubator.apache.org/chukwa</url>
+    <url>http://chukwa.apache.org/</url>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.apache.incubator</groupId>
+    <groupId>org.apache.chukwa</groupId>
     <version>0.6.0</version>
     <artifactId>chukwa</artifactId>
     <packaging>jar</packaging>
@@ -73,17 +73,31 @@
     </issueManagement>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/chukwa</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/chukwa</developerConnection>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/chukwa</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/chukwa</developerConnection>
         <tag></tag>
     </scm>
 
     <mailingLists>
         <mailingList>
-            <name>chukwa</name>
-            <subscribe>chukwa-dev-subscribe@incubator.apache.org</subscribe>
-            <unsubscribe>chukwa-dev-unsubscribe@incubator.apache.org</unsubscribe>
-            <post>mailto:chukwa-user@incubator.apache.org</post>
+            <name>User list</name>
+            <subscribe>mailto:user-subscribe@chukwa.apache.org</subscribe>
+            <unsubscribe>mailto:user-unsubscribe@chukwa.apache.org</unsubscribe>
+            <post>mailto:user@chukwa.apache.org</post>
+            <archive></archive>
+        </mailingList>
+        <mailingList>
+            <name>Development list</name>
+            <subscribe>mailto:dev-subscribe@chukwa.apache.org</subscribe>
+            <unsubscribe>mailto:dev-unsubscribe@chukwa.apache.org</unsubscribe>
+            <post>mailto:dev@chukwa.apache.org</post>
+            <archive></archive>
+        </mailingList>
+        <mailingList>
+            <name>Commit list</name>
+            <subscribe>mailto:commits-subscribe@chukwa.apache.org</subscribe>
+            <unsubscribe>mailto:commits-unsubscribe@chukwa.apache.org</unsubscribe>
+            <post>mailto:commits@chukwa.apache.org</post>
             <archive></archive>
         </mailingList>
     </mailingLists>
@@ -879,7 +893,7 @@
                 </property>
             </activation>
             <properties>
-                <hbase.version>0.96.1.1</hbase.version>
+                <hbase.version>0.96.1.1-hadoop1</hbase.version>
             </properties>
             <dependencies>
                 <dependency>
@@ -1171,11 +1185,11 @@
       <site>
         <id>apache-website</id>
         <name>Apache Website</name>
-        <url>scp://people.apache.org/www/incubator.apache.org/chukwa/docs/r${project.version}</url>
+        <url>scp://people.apache.org/www/chukwa.apache.org/content/docs/r${project.version}</url>
       </site>
       <repository>
         <id>apache-repository</id>
-        <url>scpexe://people.apache.org//www/www.apache.org/dist/incubator/chukwa</url>
+        <url>scpexe://people.apache.org//www/www.apache.org/dist/chukwa</url>
       </repository>
     </distributionManagement>
 

@@ -56,6 +56,8 @@ Release 0.6 - Unreleased
 
   BUGS
 
+    CHUKWA-708. Update website reference to top level project.  (Eric Yang)
+
     CHUKWA-710. Set TCP socket reuse option for server sockets. (Shreyas Subramanya)
 
     CHUKWA-694. Improve demux configuration processing in HBaseWriter.  (Eric Yang)

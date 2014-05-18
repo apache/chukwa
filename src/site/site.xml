@@ -21,13 +21,8 @@
   <bannerLeft>
     <name>Chukwa</name>
     <src>images/chukwa_logo_small.jpg</src>
-    <href>http://incubator.apache.org/chukwa</href>
+    <href>http://chukwa.apache.org/</href>
   </bannerLeft>
-  <bannerRight>
-    <name>Chukwa</name>
-    <src>images/apache-incubator-logo.png</src>
-    <href>http://incubator.apache.org/</href>
-  </bannerRight>
   <skin>
     <groupId>org.apache.maven.skins</groupId>
     <artifactId>maven-fluido-skin</artifactId>
