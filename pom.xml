@@ -471,11 +471,9 @@
                         <goal>compile</goal>
                       </goals>
                       <compilerVersion>1.7</compilerVersion>
-                      <source>1.7</source>
-                      <target>1.7</target>
+                      <source>1.6</source>
+                      <target>1.6</target>
                       <excludes>
-                        <exclude>**/JobLog.java</exclude>
-                        <exclude>**/TestJobLogEntry.java</exclude>
                         <exclude>**/ChukwaJobTrackerInstrumentation.java</exclude>
                       </excludes>
                     </configuration>
@@ -488,11 +486,9 @@
                         <goal>testCompile</goal>
                       </goals>
                       <compilerVersion>1.7</compilerVersion>
-                      <source>1.7</source>
-                      <target>1.7</target>
+                      <source>1.6</source>
+                      <target>1.6</target>
                       <testExcludes>
-                        <exclude>**/JobLog.java</exclude>
-                        <exclude>**/TestJobLogEntry.java</exclude>
                         <exclude>**/ChukwaJobTrackerInstrumentation.java</exclude>
                       </testExcludes>
                     </configuration>
