@@ -40,6 +40,8 @@ import org.apache.hadoop.io.SequenceFile;
 
 public class TestBackfillingLoader extends TestCase{
 
+  private String cluster = "chukwa";
+  
   public void testBackfillingLoaderWithCharFileTailingAdaptorUTF8NewLineEscaped() {
     String tmpDir = System.getProperty("test.build.data", "/tmp");
     long ts = System.currentTimeMillis();
@@ -50,7 +52,7 @@ public class TestBackfillingLoader extends TestCase{
     conf.set("chukwaCollector.outputDir", dataDir  + "/log/");
     conf.set("chukwaCollector.rotateInterval", "" + (Integer.MAX_VALUE -1));
     
-    String cluster = "MyCluster_" + ts;
+    String cluster = "chukwa";
     String machine = "machine_" + ts;
     String adaptorName = "org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped";
     String recordType = "MyRecordType_" + ts;
@@ -110,7 +112,6 @@ public class TestBackfillingLoader extends TestCase{
     conf.set("chukwaCollector.outputDir", dataDir  + "/log/");
     conf.set("chukwaCollector.rotateInterval", "" + (Integer.MAX_VALUE -1));
     
-    String cluster = "MyCluster_" + ts;
     String machine = "machine_" + ts;
     String adaptorName = "org.apache.hadoop.chukwa.datacollection.adaptor.FileAdaptor";
     String recordType = "MyRecordType_" + ts;
@@ -173,7 +174,6 @@ public class TestBackfillingLoader extends TestCase{
     conf.set("chukwaCollector.rotateInterval", "" + (Integer.MAX_VALUE -1));
     
     
-    String cluster = "MyCluster_" + ts;
     String machine = "machine_" + ts;
     String adaptorName = "org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped";
     String recordType = "MyRecordType_" + ts;
@@ -237,7 +237,6 @@ public class TestBackfillingLoader extends TestCase{
     conf.set("chukwaCollector.writerClass", "org.apache.hadoop.chukwa.datacollection.writer.localfs.LocalWriter");
     conf.set("chukwaCollector.minPercentFreeDisk", "2");//so unit tests pass on machines with full-ish disks
 
-    String cluster = "MyCluster_" + ts;
     String machine = "machine_" + ts;
     String adaptorName = "org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8NewLineEscaped";
     String recordType = "MyRecordType_" + ts;
@@ -303,6 +302,9 @@ public class TestBackfillingLoader extends TestCase{
 
 
       while (reader.next(key, chunk)) {
+        System.out.println("cluster:" + cluster);
+        System.out.println("cluster:" + RecordUtil.getClusterName(chunk));
+
         Assert.assertTrue(cluster.equals(RecordUtil.getClusterName(chunk)));
         Assert.assertTrue(dataType.equals(chunk.getDataType()));
         Assert.assertTrue(source.equals(chunk.getSource()));

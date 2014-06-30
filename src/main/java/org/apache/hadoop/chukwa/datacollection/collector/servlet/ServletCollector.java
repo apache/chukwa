@@ -46,6 +46,7 @@ import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.apache.log4j.Logger;
 
+@Deprecated
 public class ServletCollector extends HttpServlet {
 
   static final boolean FANCY_DIAGNOSTICS = false;

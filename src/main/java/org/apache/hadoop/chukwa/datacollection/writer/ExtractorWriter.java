@@ -20,7 +20,6 @@ package org.apache.hadoop.chukwa.datacollection.writer;
 import java.util.List;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.collector.servlet.LogDisplayServlet;
-import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter.CommitStatus;
 import org.apache.hadoop.conf.Configuration;
 
 public class ExtractorWriter extends PipelineableWriter {

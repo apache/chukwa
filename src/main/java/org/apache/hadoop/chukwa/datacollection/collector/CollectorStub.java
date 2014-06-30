@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServlet;
 import java.io.File;
 import java.util.*;
 
+@Deprecated
 public class CollectorStub {
 
   static int THREADS = 120;

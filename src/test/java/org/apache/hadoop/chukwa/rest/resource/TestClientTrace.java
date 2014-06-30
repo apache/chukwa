@@ -42,8 +42,8 @@ public class TestClientTrace extends SetupTestEnv {
         SocketTeeWriter.class.getCanonicalName());
     conf.set("chukwaCollector.writerClass", 
         PipelineStageWriter.class.getCanonicalName());    
-    PipelineStageWriter psw = new PipelineStageWriter();
     try {
+      PipelineStageWriter psw = new PipelineStageWriter();
       psw.init(conf);
       // Send a client trace chunk
       ArrayList<Chunk> l = new ArrayList<Chunk>();

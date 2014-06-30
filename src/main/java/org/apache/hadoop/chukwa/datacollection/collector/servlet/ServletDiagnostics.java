@@ -26,6 +26,7 @@ import java.util.*;
 /**
  * One per post
  */
+@Deprecated
 public class ServletDiagnostics {
 
   static Logger log = Logger.getLogger(ServletDiagnostics.class);

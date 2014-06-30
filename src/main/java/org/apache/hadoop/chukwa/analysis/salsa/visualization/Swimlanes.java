@@ -383,7 +383,7 @@ public class Swimlanes {
       VisualItem item = null;
       SwimlanesStatePalette pal = new SwimlanesStatePalette();
       
-      Iterator curr_group_items = this.m_vis.items(this.m_group);
+      Iterator<?> curr_group_items = this.m_vis.items(this.m_group);
           
       while (curr_group_items.hasNext()) {
         item = (VisualItem) curr_group_items.next();

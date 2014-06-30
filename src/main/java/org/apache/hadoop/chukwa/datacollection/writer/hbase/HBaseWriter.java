@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.datacollection.writer.hbase;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -38,8 +39,12 @@ import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.HConnection;
+import org.apache.hadoop.hbase.client.HConnectionManager;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
@@ -55,7 +60,7 @@ public class HBaseWriter extends PipelineableWriter {
   private Reporter reporter;
   private ChukwaConfiguration conf;
   String defaultProcessor;
-  private HTablePool pool;
+  private HConnection connection;
   private Configuration hconf;
   
   private class StatReportingTask extends TimerTask {
@@ -77,20 +82,20 @@ public class HBaseWriter extends PipelineableWriter {
     }
   };
 
-  public HBaseWriter() {
+  public HBaseWriter() throws IOException {
     this(true);
   }
 
-  public HBaseWriter(boolean reportStats) {
+  public HBaseWriter(boolean reportStats) throws IOException {
     /* HBase Version >= 0.89.x */
     this(reportStats, new ChukwaConfiguration(), HBaseConfiguration.create());
   }
 
-  public HBaseWriter(ChukwaConfiguration conf, Configuration hconf) {
+  public HBaseWriter(ChukwaConfiguration conf, Configuration hconf) throws IOException {
     this(true, conf, hconf);
   }
 
-  private HBaseWriter(boolean reportStats, ChukwaConfiguration conf, Configuration hconf) {
+  private HBaseWriter(boolean reportStats, ChukwaConfiguration conf, Configuration hconf) throws IOException {
     this.reportStats = reportStats;
     this.conf = conf;
     this.hconf = hconf;
@@ -99,7 +104,16 @@ public class HBaseWriter extends PipelineableWriter {
       "chukwa.demux.mapper.default.processor",
       "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.DefaultProcessor");
     Demux.jobConf = conf;
-    log.info("hbase.zookeeper.quorum: " + hconf.get("hbase.zookeeper.quorum"));
+    log.info("hbase.zookeeper.quorum: " + hconf.get(HConstants.ZOOKEEPER_QUORUM) + ":" + hconf.get(HConstants.ZOOKEEPER_CLIENT_PORT));
+    if (reportStats) {
+      statTimer.schedule(new StatReportingTask(), 1000, 10 * 1000);
+    }
+    output = new OutputCollector();
+    reporter = new Reporter();
+    if(conf.getBoolean("hbase.writer.verify.schema", false)) {
+      verifyHbaseSchema();      
+    }
+    connection = HConnectionManager.createConnection(hconf);
   }
 
   public void close() {
@@ -109,15 +123,6 @@ public class HBaseWriter extends PipelineableWriter {
   }
 
   public void init(Configuration conf) throws WriterException {
-    if (reportStats) {
-      statTimer.schedule(new StatReportingTask(), 1000, 10 * 1000);
-    }
-    output = new OutputCollector();
-    reporter = new Reporter();
-    if(conf.getBoolean("hbase.writer.verify.schema", false)) {
-      verifyHbaseSchema();      
-    }
-    pool = new HTablePool(hconf, 60);
   }
 
   private boolean verifyHbaseTable(HBaseAdmin admin, Table table) {
@@ -188,12 +193,12 @@ public class HBaseWriter extends PipelineableWriter {
             Table table = findHBaseTable(chunk.getDataType());
 
             if(table!=null) {
-              HTableInterface hbase = pool.getTable(table.name().getBytes());
+              HTableInterface hbase = connection.getTable(table.name());              
               MapProcessor processor = getProcessor(chunk.getDataType());
               processor.process(new ChukwaArchiveKey(), chunk, output, reporter);
-
               hbase.put(output.getKeyValues());
-              pool.putTable(hbase);
+            } else {
+              log.warn("Error finding HBase table for data type:"+chunk.getDataType());
             }
           } catch (Exception e) {
             log.warn(output.getKeyValues());

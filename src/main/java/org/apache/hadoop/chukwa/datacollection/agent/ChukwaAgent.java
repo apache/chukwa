@@ -36,6 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.datacollection.DataFactory;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
@@ -45,6 +46,7 @@ import org.apache.hadoop.chukwa.datacollection.OffsetStatsManager;
 import org.apache.hadoop.chukwa.datacollection.agent.metrics.AgentMetrics;
 import org.apache.hadoop.chukwa.datacollection.connector.Connector;
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
+import org.apache.hadoop.chukwa.datacollection.connector.PipelineConnector;
 import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
 import org.apache.hadoop.chukwa.util.AdaptorNamingUtils;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
@@ -52,13 +54,14 @@ import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
-
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.thread.BoundedThreadPool;
+
 import com.sun.jersey.spi.container.servlet.ServletContainer;
+
 import edu.berkeley.confspell.*;
 
 /**
@@ -79,148 +82,17 @@ public class ChukwaAgent implements AdaptorManager {
   // boolean WRITE_CHECKPOINTS = true;
   static AgentMetrics agentMetrics = new AgentMetrics("ChukwaAgent", "metrics");
 
+  private static Logger log = Logger.getLogger(ChukwaAgent.class);
   private static final int HTTP_SERVER_THREADS = 120;
   private static Server jettyServer = null;
   private OffsetStatsManager adaptorStatsManager = null;
   private Timer statsCollector = null;
-
-  static Logger log = Logger.getLogger(ChukwaAgent.class);
-  static ChukwaAgent agent = null;
-
-  public static ChukwaAgent getAgent() {
-    return agent;
-  }
-
-  static Configuration conf = null;
-  Connector connector = null;
-
-  // doesn't need an equals(), comparator, etc
-  public static class Offset {
-    public Offset(long l, String id) {
-      offset = l;
-      this.id = id;
-    }
-
-    final String id;
-    volatile long offset;
-    public long offset() {
-      return this.offset;
-    }
-    
-    public String adaptorID() {
-      return id;
-    }
-  }
-
-  public static class AlreadyRunningException extends Exception {
-
-    private static final long serialVersionUID = 1L;
-
-    public AlreadyRunningException() {
-      super("Agent already running; aborting");
-    }
-  }
-
-  private final Map<Adaptor, Offset> adaptorPositions;
-
-  // basically only used by the control socket thread.
-  //must be locked before access
-  private final Map<String, Adaptor> adaptorsByName;
-
-  private File checkpointDir; // lock this object to indicate checkpoint in
-  // progress
-  private String CHECKPOINT_BASE_NAME; // base filename for checkpoint files
-  // checkpoints
-  private static String tags = "";
-
-  private Timer checkpointer;
-  private volatile boolean needNewCheckpoint = false; // set to true if any
-  // event has happened
-  // that should cause a new checkpoint to be written
-  private int checkpointNumber; // id number of next checkpoint.
-  // should be protected by grabbing lock on checkpointDir
-
-  private final AgentControlSocketListener controlSock;
-
-  public int getControllerPort() {
-    return controlSock.getPort();
-  }
-
-  public OffsetStatsManager getAdaptorStatsManager() {
-    return adaptorStatsManager;
-  }
-
-  /**
-   * @param args
-   * @throws AdaptorException
-   */
-  public static void main(String[] args) throws AdaptorException {
-
-    DaemonWatcher.createInstance("Agent");
-
-    try {
-      if (args.length > 0 && args[0].equals("-help")) {
-        System.out.println("usage:  LocalAgent [-noCheckPoint]"
-            + "[default collector URL]");
-        System.exit(0);
-      }
-
-      conf = readConfig();
-      agent = new ChukwaAgent(conf);
-      
-      if (agent.anotherAgentIsRunning()) {
-        System.out
-            .println("another agent is running (or port has been usurped). "
-                + "Bailing out now");
-        throw new AlreadyRunningException();
-      }
-
-      int uriArgNumber = 0;
-      if (args.length > 0) {
-        if (args[uriArgNumber].equals("local"))
-          agent.connector = new ConsoleOutConnector(agent);
-        else {
-          if (!args[uriArgNumber].contains("://"))
-            args[uriArgNumber] = "http://" + args[uriArgNumber];
-          agent.connector = new HttpConnector(agent, args[uriArgNumber]);
-        }
-      } else
-        agent.connector = new HttpConnector(agent);
-
-      agent.connector.start();
-
-      log.info("local agent started on port " + agent.getControlSock().portno);
-      System.out.close();
-      System.err.close();
-    } catch (AlreadyRunningException e) {
-      log.error("agent started already on this machine with same portno;"
-          + " bailing out");
-      System.out
-          .println("agent started already on this machine with same portno;"
-              + " bailing out");
-      DaemonWatcher.bailout(-1);
-      System.exit(0); // better safe than sorry
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private boolean anotherAgentIsRunning() {
-    return !controlSock.isBound();
-  }
-
-  /**
-   * @return the number of running adaptors inside this local agent
-   */
-  @Override
-  public int adaptorCount() {
-    synchronized(adaptorsByName) {
-      return adaptorsByName.size();
-    }
-  }
-
-  public ChukwaAgent() throws AlreadyRunningException {
-    this(new Configuration());
+  private static volatile Configuration conf = null;
+  private static volatile ChukwaAgent agent = null;
+  public Connector connector = null;
+  
+  protected ChukwaAgent() throws AlreadyRunningException {
+    this(new ChukwaConfiguration());
   }
 
   public ChukwaAgent(Configuration conf) throws AlreadyRunningException {
@@ -319,6 +191,146 @@ public class ChukwaAgent implements AdaptorManager {
       throw new AlreadyRunningException();
     }
 
+  }
+
+  public static ChukwaAgent getAgent() {
+    if(agent == null) {
+      try {
+        agent = new ChukwaAgent();
+      } catch(AlreadyRunningException e) {
+        log.error("Chukwa Agent is already running", e);
+        agent = null;
+      }
+    } 
+    return agent;
+  }
+
+  // doesn't need an equals(), comparator, etc
+  public static class Offset {
+    public Offset(long l, String id) {
+      offset = l;
+      this.id = id;
+    }
+
+    final String id;
+    volatile long offset;
+    public long offset() {
+      return this.offset;
+    }
+    
+    public String adaptorID() {
+      return id;
+    }
+  }
+
+  public static class AlreadyRunningException extends Exception {
+
+    private static final long serialVersionUID = 1L;
+
+    public AlreadyRunningException() {
+      super("Agent already running; aborting");
+    }
+  }
+
+  private final Map<Adaptor, Offset> adaptorPositions;
+
+  // basically only used by the control socket thread.
+  //must be locked before access
+  private final Map<String, Adaptor> adaptorsByName;
+
+  private File checkpointDir; // lock this object to indicate checkpoint in
+  // progress
+  private String CHECKPOINT_BASE_NAME; // base filename for checkpoint files
+  // checkpoints
+  private static String tags = "";
+
+  private Timer checkpointer;
+  private volatile boolean needNewCheckpoint = false; // set to true if any
+  // event has happened
+  // that should cause a new checkpoint to be written
+  private int checkpointNumber; // id number of next checkpoint.
+  // should be protected by grabbing lock on checkpointDir
+
+  private final AgentControlSocketListener controlSock;
+
+  public int getControllerPort() {
+    return controlSock.getPort();
+  }
+
+  public OffsetStatsManager getAdaptorStatsManager() {
+    return adaptorStatsManager;
+  }
+
+  /**
+   * @param args
+   * @throws AdaptorException
+   */
+  public static void main(String[] args) throws AdaptorException {
+
+    DaemonWatcher.createInstance("Agent");
+
+    try {
+      if (args.length > 0 && args[0].equals("-help")) {
+        System.out.println("usage:  LocalAgent [-noCheckPoint]"
+            + "[default collector URL]");
+        System.exit(0);
+      }
+
+      conf = readConfig();
+      agent = new ChukwaAgent(conf);
+      
+      if (agent.anotherAgentIsRunning()) {
+        System.out
+            .println("another agent is running (or port has been usurped). "
+                + "Bailing out now");
+        throw new AlreadyRunningException();
+      }
+
+      int uriArgNumber = 0;
+      if (args.length > 0) {
+        if (args[uriArgNumber].equals("local")) {
+          agent.connector = new ConsoleOutConnector(agent);
+        } else {
+          if (!args[uriArgNumber].contains("://")) {
+            args[uriArgNumber] = "http://" + args[uriArgNumber];
+          }
+          agent.connector = new HttpConnector(agent, args[uriArgNumber]);
+        }
+      } else {
+        String connectorType = conf.get("chukwa.agent.connector", 
+            "org.apache.hadoop.chukwa.datacollection.connector.PipelineConnector");
+        agent.connector = (Connector) Class.forName(connectorType).newInstance();
+      }
+      agent.connector.start();
+
+      log.info("local agent started on port " + agent.getControlSock().portno);
+      //System.out.close();
+      //System.err.close();
+    } catch (AlreadyRunningException e) {
+      log.error("agent started already on this machine with same portno;"
+          + " bailing out");
+      System.out
+          .println("agent started already on this machine with same portno;"
+              + " bailing out");
+      DaemonWatcher.bailout(-1);
+      System.exit(0); // better safe than sorry
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  private boolean anotherAgentIsRunning() {
+    return !controlSock.isBound();
+  }
+
+  /**
+   * @return the number of running adaptors inside this local agent
+   */
+  @Override
+  public int adaptorCount() {
+    synchronized(adaptorsByName) {
+      return adaptorsByName.size();
+    }
   }
 
   private void startHttpServer(Configuration conf) throws Exception {
@@ -716,7 +728,7 @@ public class ChukwaAgent implements AdaptorManager {
     return o;
   }
   
-  Connector getConnector() {
+  public Connector getConnector() {
     return connector;
   }
 

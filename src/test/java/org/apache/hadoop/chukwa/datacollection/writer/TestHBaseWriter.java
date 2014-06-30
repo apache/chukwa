@@ -18,6 +18,7 @@
 package org.apache.hadoop.chukwa.datacollection.writer;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import junit.framework.Assert;
@@ -28,11 +29,11 @@ import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HBaseTestingUtility;
 import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.LocalHBaseCluster;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
@@ -52,36 +53,33 @@ public class TestHBaseWriter extends TestCase{
   private byte[] table = Bytes.toBytes("Test");
   private byte[] test = Bytes.toBytes("1234567890 Key Value");
   private ChukwaConfiguration cc;
+  private LocalHBaseCluster cluster;
   long timestamp = 1234567890;
   
   public TestHBaseWriter() {
     cc = new ChukwaConfiguration();
-
-    conf = HBaseConfiguration.create();
-    conf.set("hbase.hregion.memstore.flush.size", String.valueOf(128*1024));
+  }
+  
+  public void setUp() {
     try {
-      util = new HBaseTestingUtility(conf);
+      util = new HBaseTestingUtility();
       util.startMiniZKCluster();
-      util.getConfiguration().setBoolean("dfs.support.append", true);
-      util.startMiniCluster(2);
-      HTableDescriptor desc = new HTableDescriptor();
+      util.startMiniCluster();
+      conf = util.getConfiguration();
+      HTableDescriptor desc = new HTableDescriptor(TableName.valueOf("Test"));
       HColumnDescriptor family = new HColumnDescriptor(columnFamily);
-      desc.setName(table);
       desc.addFamily(family);
       util.getHBaseAdmin().createTable(desc);
 
     } catch (Exception e) {
       e.printStackTrace();
       Assert.fail(e.getMessage());
-    }
+    }    
   }
   
-  public void setup() {
-    
-  }
-  
-  public void tearDown() {
-    
+  public void tearDown() throws Exception {
+    util.shutdownMiniCluster();
+    util.shutdownMiniZKCluster();
   }
   
   public void testWriters() {
@@ -90,7 +88,6 @@ public class TestHBaseWriter extends TestCase{
     try {      
       cc.set("hbase.demux.package", "org.apache.chukwa.datacollection.writer.test.demux");
       cc.set("TextParser","org.apache.hadoop.chukwa.datacollection.writer.test.demux.TextParser");
-      conf.set(HConstants.ZOOKEEPER_QUORUM, "127.0.0.1");
       hbw = new HBaseWriter(cc, conf);
       hbw.init(cc);
       if(hbw.add(chunks)!=ChukwaWriter.COMMIT_OK) {
@@ -103,8 +100,8 @@ public class TestHBaseWriter extends TestCase{
       }
       // Cleanup and return
       scanner.close();
+      testTable.close();
       // Compare data in Hbase with generated chunks
-      util.shutdownMiniCluster();
     } catch (Exception e) {
       e.printStackTrace();
       Assert.fail(e.getMessage());

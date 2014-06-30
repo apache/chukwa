@@ -49,7 +49,7 @@ public class TestAdaptorController extends TestCase {
   StringBuilder sb;
 
   protected void setUp() throws Exception {
-    agent = new ChukwaAgent();
+    agent = ChukwaAgent.getAgent();
 
     ServletHolder servletHolder = new ServletHolder(ServletContainer.class);
     servletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass",

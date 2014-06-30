@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
 
 public class SystemMetrics extends AbstractAdaptor {
   static Logger log = Logger.getLogger(SystemMetrics.class);
-  private long period = 60 * 1000;
+  private long period = 5 * 1000;
   private SigarRunner runner;
   private Timer timer;
   
@@ -50,14 +50,17 @@ public class SystemMetrics extends AbstractAdaptor {
     int spOffset = args.indexOf(' ');
     if (spOffset > 0) {
       try {
-        period = Integer.parseInt(args.substring(0, spOffset));
+        period = Long.parseLong(args.substring(0, spOffset));
         period = period * 1000;
+        start(spOffset);
       } catch (NumberFormatException e) {
         StringBuilder buffer = new StringBuilder();
         buffer.append("SystemMetrics: sample interval ");
         buffer.append(args.substring(0, spOffset));
         buffer.append(" can't be parsed.");
         log.warn(buffer.toString());
+      } catch (AdaptorException e) {
+        log.warn("Error parsing parameter for SystemMetrics adaptor.");
       }
     }    
     return args;

@@ -28,7 +28,7 @@
         <package.pid.dir>/var/run/chukwa</package.pid.dir>
         <package.release>1</package.release>
         <package.version>0.6.0</package.version>
-        <final.name>${project.artifactId}-incubating-${package.version}</final.name>
+        <final.name>${project.artifactId}-${package.version}</final.name>
         <test.build.dir>${basedir}/target/test</test.build.dir>
         <test.build.data>${test.build.dir}/data</test.build.data>
         <test.cache.data>${test.build.dir}/cache</test.cache.data>
@@ -118,11 +118,9 @@
             <systemPath>${basedir}/lib/confspellcheck.jar</systemPath>
           </dependency>
           <dependency>
-            <groupId>com.mdimension</groupId>
+            <groupId>com.rubiconproject.oss</groupId>
             <artifactId>jchronic</artifactId>
-            <version>0.2.3</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/jchronic-0.2.3.jar</systemPath>
+            <version>0.2.6</version>
           </dependency>
           <dependency>
             <groupId>org.apache.log4j</groupId>
@@ -132,11 +130,9 @@
             <systemPath>${basedir}/lib/NagiosAppender-1.5.0.jar</systemPath>
           </dependency>
           <dependency>
-            <groupId>org.hyperic</groupId>
+            <groupId>org.fusesource</groupId>
             <artifactId>sigar</artifactId>
             <version>1.6.4</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/sigar.jar</systemPath>
           </dependency>
           <dependency>
             <groupId>org.json</groupId>
@@ -271,7 +267,7 @@
           <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>10.0.1</version>
+            <version>12.0.1</version>
             <exclusions>
               <exclusion>
                 <groupId>com.google.code.findbugs</groupId>
@@ -403,29 +399,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-                <executions>
-                        <execution>
-                        <id>chmod-jmx-file</id>
-                        <phase>process-resources</phase>
-                        <configuration>
-                            <tasks name="setup">
-                                <chmod file="target/conf/jmxremote.password" perm="600" />
-                                <chmod file="target/conf/jmxremote.access" perm="600" />
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.1</version>
                 <executions>
@@ -462,6 +435,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
                 <executions>
                   <execution>
                     <id>default-compile</id>
@@ -470,7 +444,9 @@
                       <goals>
                         <goal>compile</goal>
                       </goals>
-                      <compilerVersion>1.7</compilerVersion>
+                      <!--<compilerArgument>-Xlint:unchecked</compilerArgument>
+                      <compilerArgument>-Xlint:deprecation</compilerArgument>-->
+                      <compilerVersion>1.6</compilerVersion>
                       <source>1.6</source>
                       <target>1.6</target>
                       <excludes>
@@ -485,6 +461,8 @@
                       <goals>
                         <goal>testCompile</goal>
                       </goals>
+                      <!--<compilerArgument>-Xlint:unchecked</compilerArgument>
+                      <compilerArgument>-Xlint:deprecation</compilerArgument>-->
                       <compilerVersion>1.7</compilerVersion>
                       <source>1.6</source>
                       <target>1.6</target>
@@ -514,7 +492,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.10</version>
                 <configuration>
-                    <skip>true</skip>
+                    <skip>false</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -524,7 +502,6 @@
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <skip>false</skip>
                             <argLine>-Xmx1024m -Djava.net.preferIPv4Stack=true -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=true -Dcom.sun.management.jmxremote.password.file=${basedir}/target/conf/jmxremote.password -Dcom.sun.management.jmxremote.access.file=${basedir}/target/conf/jmxremote.access -Dcom.sun.management.jmxremote.port=10100</argLine>
                             <reportsDirectory>${project.build.directory}/test-reports</reportsDirectory>
                             <forkMode>pertest</forkMode>
@@ -606,6 +583,7 @@
                     <phase>package</phase>
                     <warName>hicc</warName>
                     <warSourceDirectory>src/main/web/hicc</warSourceDirectory>
+                    <webappDirectory>${project.build.directory}/hicc</webappDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -645,12 +623,12 @@
                         <id>setup</id>
                         <phase>validate</phase>
                         <configuration>
-                            <tasks name="setup">
+                            <target>
                                 <mkdir dir="${basedir}/target"/>
                                 <echo message="${VERSION}" file="${basedir}/target/VERSION"/>
                                 <mkdir dir="${basedir}/target/clover"/>
                                 <chmod dir="${basedir}/target/clover" perm="a+w" />
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -660,10 +638,10 @@
                         <id>chmod-jmx-file</id>
                         <phase>process-resources</phase>
                         <configuration>
-                            <tasks name="setup">
+                            <target>
                                 <chmod file="target/conf/jmxremote.password" perm="600" />
                                 <chmod file="target/conf/jmxremote.access" perm="600" />
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -673,7 +651,7 @@
                         <id>test-setup</id>
                         <phase>generate-test-resources</phase>
                         <configuration>
-                            <tasks name="test-setup">
+                            <target>
                                 <delete dir="/tmp/chukwa/hicc" />
                                 <mkdir dir="${test.build.dir}/var" />
                                 <mkdir dir="${test.build.dir}/var/log" />
@@ -709,12 +687,11 @@
                                         <expandproperties/>
                                     </filterchain>
                                 </copy>
-                                <copy file="${basedir}/src/test/resources/hbase-site.xml" tofile="${test.build.dir}/classes/hbase-site.xml"></copy>
                                 <copy file="${basedir}/conf/log4j.properties" tofile="${test.build.dir}/conf/log4j.properties"></copy>
                                 <copy file="${basedir}/conf/auth.conf" tofile="${test.build.dir}/conf/auth.conf"></copy>
                                 <chmod file="${test.build.dir}/conf/jmxremote.password" perm="600" />
                                 <chmod file="${test.build.dir}/conf/jmxremote.access" perm="600" />
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -861,7 +838,7 @@
                                     <goal>single</goal>
                                 </goals>
                                 <configuration>
-                                    <finalName>chukwa-incubating-src-${VERSION}</finalName>
+                                    <finalName>chukwa-src-${VERSION}</finalName>
                                     <tarLongFileMode>gnu</tarLongFileMode>
                                     <descriptors>
                                         <descriptor>src/packages/tarball/src.xml</descriptor>
@@ -884,12 +861,11 @@
             <id>hbase-0.96</id>
             <activation>
                 <property>
-                    <name>hbase.profile</name>
-                    <value>0.96</value>
+                    <name>!hbase.profile</name>
                 </property>
             </activation>
             <properties>
-                <hbase.version>0.96.1.1-hadoop1</hbase.version>
+                <hbase.version>0.96.2-hadoop1</hbase.version>
             </properties>
             <dependencies>
                 <dependency>
@@ -982,15 +958,24 @@
                         </exclusion>
                    </exclusions>
                 </dependency>
+                <dependency>
+                    <groupId>org.apache.hbase</groupId>
+                    <artifactId>hbase-hadoop-compat</artifactId>
+                    <classifier>tests</classifier>
+                    <version>${hbase.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.hbase</groupId>
+                    <artifactId>hbase-hadoop1-compat</artifactId>
+                    <classifier>tests</classifier>
+                    <version>${hbase.version}</version>
+                    <scope>test</scope>
+                </dependency>
             </dependencies>
         </profile>
         <profile>
             <id>hbase-0.94</id>
-            <activation>
-            <property>
-                <name>!hbase.profile</name>
-            </property>
-            </activation>
             <properties>
                 <hbase.version>0.94.9</hbase.version>
             </properties>
@@ -1082,19 +1067,8 @@
 
     <repositories>
         <repository>
-            <id>maven2-repository.dev.java.net</id>
-            <name>Java.net Repository for Maven</name>
-            <url>http://download.java.net/maven/2/</url>
-            <layout>default</layout>
-        </repository>
-        <repository>
             <id>codehaus</id>
             <url>http://repository.codehaus.org/</url>
-        </repository>
-        <repository>
-            <id>Sonatype-public</id>
-            <name>SnakeYAML repository</name>
-            <url>http://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
             <id>clojars</id>
@@ -1137,7 +1111,6 @@
             <artifactId>findbugs-maven-plugin</artifactId>
             <version>2.3.3</version>
             <configuration>
-<!--                <onlyAnalyze>org.apache.hadoop.chukwa.datacollection.*</onlyAnalyze> -->
                 <threshold>Normal</threshold>
                 <effort>Max</effort>
             </configuration>

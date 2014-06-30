@@ -43,8 +43,8 @@ public class TestOffsetStatsManager extends TestCase {
 
     // calculate 5 second average
     double rate = statsManager.calcAverageRate(dummyKey, 5);
-    assertTrue("Invalid average, expected about 1 byte/sec, found " + rate,
-                 Math.abs(1000 - rate) < 1.5);
+    assertTrue("Invalid average, expected about 1 kbyte/sec, found " + rate,
+                 Math.abs(rate / 1000) <= 1);
   }
 
   public void testCalcAverageRateStaleData() throws InterruptedException {

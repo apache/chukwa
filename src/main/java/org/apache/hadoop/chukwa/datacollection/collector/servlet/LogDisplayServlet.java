@@ -31,6 +31,7 @@ import org.apache.hadoop.chukwa.*;
 import org.apache.hadoop.chukwa.datacollection.writer.ExtractorWriter;
 import org.apache.hadoop.conf.Configuration;
 
+@Deprecated
 public class LogDisplayServlet extends HttpServlet {
   
   /*

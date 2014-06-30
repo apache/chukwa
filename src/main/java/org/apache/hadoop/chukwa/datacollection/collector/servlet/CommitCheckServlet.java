@@ -33,6 +33,7 @@ import org.apache.hadoop.chukwa.extraction.archive.SinkArchiver;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
 
+@Deprecated
 public class CommitCheckServlet extends HttpServlet {
 
   private static final long serialVersionUID = -4627538252371890849L;

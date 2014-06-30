@@ -72,12 +72,18 @@
 
   <property>
     <name>chukwaAgent.collector.retryInterval</name>
-    <value>20000</value>
+    <value>500</value>
     <description>the number of milliseconds to wait between searches for a collector</description>
+  </property>
+
+  <property>
+    <name>chukwa.pipeline</name>
+    <value>org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter</value>
   </property>
 
   <property>
     <name>syslog.adaptor.port.9095.facility.LOCAL1</name>
     <value>HADOOP</value>
   </property>
+
 </configuration>

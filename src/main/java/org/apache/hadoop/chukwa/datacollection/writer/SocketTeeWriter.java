@@ -20,10 +20,8 @@ package org.apache.hadoop.chukwa.datacollection.writer;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.regex.PatternSyntaxException;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.util.Filter;
-import org.apache.hadoop.chukwa.util.RegexUtil;
 import org.apache.hadoop.chukwa.util.RegexUtil.CheckedPatternSyntaxException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
@@ -80,8 +78,8 @@ public class SocketTeeWriter extends PipelineableWriter {
   class SocketListenThread extends Thread {
     ServerSocket s;
     public SocketListenThread(Configuration conf) throws IOException {
-      int portno = conf.getInt("chukwaCollector.tee.port", DEFAULT_PORT);
-      USE_KEEPALIVE = conf.getBoolean("chukwaCollector.tee.keepalive", true);
+      int portno = conf.getInt("chukwa.tee.port", DEFAULT_PORT);
+      USE_KEEPALIVE = conf.getBoolean("chukwa.tee.keepalive", true);
       s = new ServerSocket(portno);
       setDaemon(true);
     }

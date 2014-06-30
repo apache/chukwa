@@ -32,11 +32,11 @@ public class TestSocketTee  extends TestCase{
     
     Configuration conf = new Configuration();  
     
-    conf.set("chukwaCollector.pipeline",
+    conf.set("chukwa.pipeline",
         SocketTeeWriter.class.getCanonicalName()+","// note comma
         + CaptureWriter.class.getCanonicalName());
     
-    conf.set("chukwaCollector.writerClass", 
+    conf.set("chukwa.writerClass", 
         PipelineStageWriter.class.getCanonicalName());
     
     PipelineStageWriter psw = new PipelineStageWriter();

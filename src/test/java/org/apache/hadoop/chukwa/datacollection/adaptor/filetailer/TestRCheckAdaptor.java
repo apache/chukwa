@@ -21,33 +21,62 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
+
 import org.apache.hadoop.chukwa.Chunk;
+import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
 import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
+import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent.AlreadyRunningException;
 import org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector;
 import org.apache.hadoop.conf.Configuration;
+
 import junit.framework.TestCase;
+
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy;
 import org.apache.hadoop.chukwa.datacollection.adaptor.TestDirTailingAdaptor;
 import org.apache.log4j.Level;
+import org.mortbay.log.Log;
 
 public class TestRCheckAdaptor extends TestCase implements ChunkReceiver {
   
   ChunkCatcherConnector chunks;
+  ChukwaAgent agent;
 
   public TestRCheckAdaptor() {
     chunks = new ChunkCatcherConnector();
     chunks.start();
   }
 
+  @Override
+  protected void setUp() throws InterruptedException {
+    Configuration conf = new ChukwaConfiguration();
+    conf.set("", "org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector");
+    try {
+      agent = new ChukwaAgent(conf);
+      Thread.sleep(2000);
+      Map<String, String> adaptorList = agent.getAdaptorList();
+      for(String id : adaptorList.keySet()) {
+        agent.stopAdaptor(id, false);
+      }
+    } catch (AlreadyRunningException e) {
+      fail("Agent is already running.");
+    }    
+  }
+  
+  @Override
+  protected void tearDown() throws InterruptedException {
+    agent.shutdown();
+    Thread.sleep(2000);
+  }
+  
   public void testBaseCases() throws IOException, InterruptedException,
       ChukwaAgent.AlreadyRunningException {
     Configuration conf = new Configuration();
     conf.set("chukwaAgent.control.port", "0");
     conf.setInt("chukwaAgent.adaptor.context.switch.time", 100);
         
-//    RCheckFTAdaptor.log.setLevel(Level.DEBUG);
     File baseDir = new File(System.getProperty("test.build.data", "/tmp") + "/rcheck");
     TestDirTailingAdaptor.createEmptyDir(baseDir);
     File tmpOutput = new File(baseDir, "rotateTest.1");
@@ -60,16 +89,14 @@ public class TestRCheckAdaptor extends TestCase implements ChunkReceiver {
     pw.println("Second");
     pw.close();
     
-    
-    ChukwaAgent agent = new ChukwaAgent(conf);
     String adaptorID = agent.processAddCommand("add lr = filetailer.RCheckFTAdaptor test " + tmpOutput.getAbsolutePath() + " 0");
     assertNotNull(adaptorID);
     
-    Chunk c = chunks.waitForAChunk(2000);
+    Chunk c = chunks.waitForAChunk();
     assertNotNull(c);
     assertTrue(c.getData().length == 6);
     assertTrue("First\n".equals(new String(c.getData())));
-    c = chunks.waitForAChunk(2000);
+    c = chunks.waitForAChunk();
     assertNotNull(c);
     assertTrue(c.getData().length == 7);    
     assertTrue("Second\n".equals(new String(c.getData())));
@@ -77,7 +104,7 @@ public class TestRCheckAdaptor extends TestCase implements ChunkReceiver {
     pw = new PrintWriter(new FileOutputStream(tmpOutput, true));
     pw.println("Third");
     pw.close();
-    c = chunks.waitForAChunk(2000);
+    c = chunks.waitForAChunk();
     
     assertNotNull(c);
     assertTrue(c.getData().length == 6);    
@@ -88,7 +115,7 @@ public class TestRCheckAdaptor extends TestCase implements ChunkReceiver {
     pw = new PrintWriter(new FileOutputStream(tmpOutput, true));
     pw.println("Fourth");
     pw.close();
-    c = chunks.waitForAChunk(2000);
+    c = chunks.waitForAChunk();
 
     assertNotNull(c);
     System.out.println("got " + new String(c.getData()));
@@ -101,22 +128,19 @@ public class TestRCheckAdaptor extends TestCase implements ChunkReceiver {
     pw = new PrintWriter(new FileOutputStream(tmpOutput, true));
     pw.println("Fifth");
     pw.close();
-    c = chunks.waitForAChunk(2000);
+    c = chunks.waitForAChunk();
     assertNotNull(c);
     System.out.println("got " + new String(c.getData()));
     assertTrue("Fifth\n".equals(new String(c.getData())));
 
-    agent.shutdown();
-    Thread.sleep(2000);
   }
-  
   
   public void testContinuously() throws Exception {
     File baseDir = new File(System.getProperty("test.build.data", "/tmp") + "/rcheck");
     TestDirTailingAdaptor.createEmptyDir(baseDir);
     File tmpOutput = new File(baseDir, "continuousTest");
     PrintWriter pw = new PrintWriter(new FileOutputStream(tmpOutput, true));
-    LWFTAdaptor.tailer.SAMPLE_PERIOD_MS = 2000;
+    //LWFTAdaptor.tailer.SAMPLE_PERIOD_MS = 2000;
 
 //    RCheckFTAdaptor.log.setLevel(Level.DEBUG);
     RCheckFTAdaptor rca = new RCheckFTAdaptor();

@@ -31,7 +31,7 @@ public class TestFailedCollector extends TestCase {
 
   public void testFailedCollector() {
     try {
-      ChukwaAgent agent = new ChukwaAgent();
+      ChukwaAgent agent = ChukwaAgent.getAgent();
       boolean failed = false;
       HttpConnector connector = new HttpConnector(agent,
           "http://localhost:1234/chukwa");

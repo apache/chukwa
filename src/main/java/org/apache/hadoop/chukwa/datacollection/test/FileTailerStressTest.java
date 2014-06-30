@@ -81,7 +81,7 @@ public class FileTailerStressTest {
       server.setStopAtShutdown(false);
 
       Thread.sleep(1000);
-      ChukwaAgent agent = new ChukwaAgent();
+      ChukwaAgent agent = ChukwaAgent.getAgent();
       HttpConnector connector = new HttpConnector(agent,
           "http://localhost:9990/chukwa");
       connector.start();

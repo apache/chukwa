@@ -42,7 +42,7 @@ public class TestSyslogAdaptor extends TestCase implements ChunkReceiver {
     DatagramPacket p = new DatagramPacket(buf, buf.length);
     p.setSocketAddress(new InetSocketAddress("127.0.0.1",u.portno));
     send.send(p);
-    
+    send.close();
     synchronized(this) {
       wait(1000);
     }

@@ -20,7 +20,9 @@ package org.apache.hadoop.chukwa.datacollection.writer;
 
 
 import java.util.List;
+
 import org.apache.hadoop.chukwa.Chunk;
+import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 
@@ -35,6 +37,15 @@ public class PipelineStageWriter implements ChukwaWriter {
 
   ChukwaWriter writer; // head of pipeline
 
+  public PipelineStageWriter() throws WriterException {
+    Configuration conf = new ChukwaConfiguration();
+    init(conf);
+  }
+  
+  public PipelineStageWriter(Configuration conf) throws WriterException {
+    init(conf);
+  }
+  
   @Override
   public CommitStatus add(List<Chunk> chunks) throws WriterException {
     return writer.add(chunks);
@@ -47,8 +58,8 @@ public class PipelineStageWriter implements ChukwaWriter {
 
   @Override
   public void init(Configuration conf) throws WriterException {
-    if (conf.get("chukwaCollector.pipeline") != null) {
-      String pipeline = conf.get("chukwaCollector.pipeline");
+    if (conf.get("chukwa.pipeline") != null) {
+      String pipeline = conf.get("chukwa.pipeline");
       try {
         String[] classes = pipeline.split(",");
         log.info("using pipelined writers, pipe length is " + classes.length);
@@ -65,7 +76,7 @@ public class PipelineStageWriter implements ChukwaWriter {
           Object st = stageClass.newInstance();
           if (!(st instanceof PipelineableWriter))
             log.error("class " + classes[i]
-                + " in processing pipeline isn't a pipeline stage");
+                + " in processing pipeline isn't a PipelineableWriter.");
 
           PipelineableWriter stage = (PipelineableWriter) stageClass
               .newInstance();
@@ -98,7 +109,7 @@ public class PipelineStageWriter implements ChukwaWriter {
         throw new WriterException("bad pipeline");
       }
     } else {
-      throw new WriterException("must set chukwaCollector.pipeline");
+      throw new WriterException("must set chukwa.pipeline");
     }
   }
 

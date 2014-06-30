@@ -18,16 +18,11 @@
  
 package org.apache.hadoop.chukwa.analysis.salsa.visualization;
 
-import prefuse.data.io.sql.*;
-import prefuse.data.expression.parser.*;
-import prefuse.data.expression.*;
-import prefuse.data.column.*;
-import prefuse.data.query.*;
+
 import prefuse.data.*;
 import prefuse.action.*;
 import prefuse.action.layout.*;
 import prefuse.action.assignment.*;
-import prefuse.visual.expression.*;
 import prefuse.visual.*;
 import prefuse.render.*;
 import prefuse.util.*;
