@@ -21,17 +21,20 @@ package org.apache.hadoop.chukwa.datacollection;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.Iterator;
 
 import org.apache.hadoop.conf.*;
+import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.agent.MemLimitQueue;
 import org.apache.hadoop.chukwa.datacollection.sender.RetryListOfCollectors;
 import org.apache.log4j.Logger;
 
 public class DataFactory {
   static Logger log = Logger.getLogger(DataFactory.class);
-  static final int QUEUE_SIZE_KB = 10 * 1024;
   static final String COLLECTORS_FILENAME = "collectors";
+  static final String CHUNK_QUEUE = "chukwaAgent.chunk.queue";
+  
   private static DataFactory dataFactory = null;
   private ChunkQueue chunkQueue = null;
 
@@ -50,9 +53,44 @@ public class DataFactory {
 
   public synchronized ChunkQueue getEventQueue() {
     if (chunkQueue == null) {
-      chunkQueue = new MemLimitQueue(QUEUE_SIZE_KB * 1024);
+      chunkQueue = createEventQueue();
     }
     return chunkQueue;
+  }
+  
+  public synchronized ChunkQueue createEventQueue() {
+    Configuration conf = ChukwaAgent.getStaticConfiguration();
+    if(conf == null){
+    //Must be a unit test, use default queue with default configuration
+      return new MemLimitQueue(null);
+    }
+    String receiver = conf.get(CHUNK_QUEUE);
+    ChunkQueue queue = null;
+    if(receiver == null){
+      log.warn("Empty configuration for " + CHUNK_QUEUE + ". Defaulting to MemLimitQueue");
+      queue = new MemLimitQueue(conf);
+      return queue;
+    }
+    
+    try {
+      Class<?> clazz = Class.forName(receiver);
+      log.info(clazz);
+      if(!ChunkQueue.class.isAssignableFrom(clazz)){
+        throw new Exception(receiver + " is not an instance of ChunkQueue");
+      }
+      try {
+        Constructor<?> ctor = clazz.getConstructor(new Class[]{Configuration.class});
+        queue = (ChunkQueue) ctor.newInstance(conf);
+      } catch(NoSuchMethodException nsme){
+        //Queue implementations which take no configuration parameter
+        queue = (ChunkQueue) clazz.newInstance();
+      }
+    } catch(Exception e) {
+      log.error("Could not instantiate configured ChunkQueue due to: " + e);
+      log.error("Defaulting to MemLimitQueue");
+      queue = new MemLimitQueue(conf);
+    }
+    return queue;
   }
 
   public String getDefaultTags() {

@@ -716,6 +716,10 @@ public class ChukwaAgent implements AdaptorManager {
     return conf;
   }
   
+  public static Configuration getStaticConfiguration() {
+    return conf;
+  }
+  
   @Override
   public Adaptor getAdaptor(String name) {
     synchronized(adaptorsByName) {

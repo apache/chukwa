@@ -18,10 +18,10 @@
 
 package org.apache.hadoop.chukwa.datacollection.agent;
 
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.ChunkQueue;
 import org.apache.hadoop.chukwa.datacollection.agent.metrics.ChunkQueueMetrics;
@@ -29,43 +29,46 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 
 /**
- * An event queue that blocks once a fixed upper limit of data is enqueued.
+ * An event queue that discards incoming chunks once a fixed upper limit of data
+ * is enqueued. The method calling add will not block.
  * 
  * For now, uses the size of the data field. Should really use
  * estimatedSerializedSize()?
  * 
  */
-public class MemLimitQueue implements ChunkQueue {
-  static Logger log = Logger.getLogger(WaitingQueue.class);
-  static final ChunkQueueMetrics metrics = new ChunkQueueMetrics("chukwaAgent", "chunkQueue");;
+public class NonBlockingMemLimitQueue implements ChunkQueue {
+  static Logger log = Logger.getLogger(NonBlockingMemLimitQueue.class);
+  static final ChunkQueueMetrics metrics = new ChunkQueueMetrics("chukwaAgent",
+      "chunkQueue");
+  static final String CHUNK_QUEUE_LIMIT = "chukwaAgent.chunk.queue.limit";
+  static final int QUEUE_SIZE = 10 * 1024 * 1024;
   private Queue<Chunk> queue = new LinkedList<Chunk>();
   private long dataSize = 0;
   private long MAX_MEM_USAGE;
-  static final String CHUNK_QUEUE_LIMIT = "chukwaAgent.chunk.queue.limit";
-  static final int QUEUE_SIZE = 10 * 1024 * 1024;
 
-  public MemLimitQueue(Configuration conf) {
+  public NonBlockingMemLimitQueue(Configuration conf) {
     configure(conf);
   }
-
+  
   /**
    * @see org.apache.hadoop.chukwa.datacollection.ChunkQueue#add(org.apache.hadoop.chukwa.Chunk)
    */
   public void add(Chunk chunk) throws InterruptedException {
     assert chunk != null : "can't enqueue null chunks";
+    int chunkSize = chunk.getData().length;
     synchronized (this) {
-      while (chunk.getData().length + dataSize > MAX_MEM_USAGE) {
-        try {
-          if(dataSize == 0) { //queue is empty, but data is still too big
-            log.error("JUMBO CHUNK SPOTTED: type= " + chunk.getDataType() + 
-                " and source =" +chunk.getStreamName()); 
-            return; //return without sending; otherwise we'd deadlock.
-            //this error should probably be fatal; there's no way to recover.
-          }
+      if (chunkSize + dataSize > MAX_MEM_USAGE) {
+        if (dataSize == 0) { // queue is empty, but data is still too big
+          log.error("JUMBO CHUNK SPOTTED: type= " + chunk.getDataType()
+              + " and source =" + chunk.getStreamName());
+          return; // return without sending; otherwise we'd deadlock.
+          // this error should probably be fatal; there's no way to
+          // recover.
+        } else {
           metrics.fullQueue.set(1);
-          this.wait();
-          log.info("MemLimitQueue is full [" + dataSize + "]");
-        } catch (InterruptedException e) {
+          log.warn("Discarding chunk due to NonBlockingMemLimitQueue full [" + dataSize
+              + "]");
+          return;
         }
       }
       metrics.fullQueue.set(0);
@@ -76,7 +79,6 @@ public class MemLimitQueue implements ChunkQueue {
       metrics.dataSize.set(dataSize);
       this.notifyAll();
     }
-
   }
 
   /**
@@ -114,7 +116,7 @@ public class MemLimitQueue implements ChunkQueue {
   public int size() {
     return queue.size();
   }
-  
+
   private void configure(Configuration conf) {
     MAX_MEM_USAGE = QUEUE_SIZE;
     if(conf == null){
@@ -129,6 +131,6 @@ public class MemLimitQueue implements ChunkQueue {
             + ". Defaulting internal queue size to " + QUEUE_SIZE);
       }
     }
-    log.info("Using MemLimitQueue limit of " + MAX_MEM_USAGE);
+    log.info("Using NonBlockingMemLimitQueue limit of " + MAX_MEM_USAGE);
   }
 }
