@@ -54,8 +54,11 @@ public class SocketAdaptor extends AbstractAdaptor {
     
     public void run() {
       try{
-        listener = new ServerSocket(port);
+        listener = new ServerSocket();
         listener.setReuseAddress(true);
+        bindWithExponentialBackoff(listener, port, 12000);
+        log.info("SocketAdaptor bound successfully to port:" + port);
+        
         Socket server;
 
         while(running){
@@ -66,6 +69,12 @@ public class SocketAdaptor extends AbstractAdaptor {
         }
       } catch (IOException ioe) {
         log.error("SocketAdaptor Dispatcher problem:", ioe);
+      } finally {
+        try {
+          listener.close();
+        } catch (IOException e) {
+          log.warn("IOException closing socket on port:" + port);
+        }
       }
     }
     
@@ -74,6 +83,33 @@ public class SocketAdaptor extends AbstractAdaptor {
         listener.close();
       } catch (IOException e) {
         log.debug(ExceptionUtil.getStackTrace(e));
+      }
+    }
+    
+    protected void bindWithExponentialBackoff(ServerSocket ss, int p,
+        int maxDelay) throws IOException {
+      int backoff = 1000;
+      int waitedTime = 0;
+      while (!ss.isBound()) {
+        try {
+          ss.bind(new InetSocketAddress(p));
+        } catch (IOException bindEx) {
+          backoff *= 2;
+          log.warn("IOException in bind:" + bindEx);
+          log.warn("Retrying bind to port " + p + " in milliseconds:" + backoff);
+          try {
+            Thread.sleep(backoff);
+          } catch (InterruptedException e) {
+            throw new IOException(
+                "Interrupted while trying to connect to port:" + p);
+          }
+        }
+        waitedTime += backoff;
+        if (waitedTime > maxDelay) {
+          throw new IOException("Could not bind to port:" + p
+              + " after waiting " + waitedTime
+              + " milliseconds. Abandoning this SocketAdaptor.");
+        }
       }
     }
   }
