@@ -29,11 +29,6 @@
         <package.release>1</package.release>
         <package.version>0.6.0</package.version>
         <final.name>${project.artifactId}-${package.version}</final.name>
-        <test.build.dir>${basedir}/target/test</test.build.dir>
-        <test.build.data>${test.build.dir}/data</test.build.data>
-        <test.cache.data>${test.build.dir}/cache</test.cache.data>
-        <test.debug.data>${test.build.dir}/debug</test.debug.data>
-        <test.log.dir>${test.build.dir}/logs</test.log.dir>
         <TODO_ALERT_EMAIL>user@example.com</TODO_ALERT_EMAIL>
         <TODO_CLUSTER_NAME>chukwa</TODO_CLUSTER_NAME>
         <TODO_COLLECTORS_LOCAL_OUTPUT_DIR>/tmp/chukwa/dataSink/</TODO_COLLECTORS_LOCAL_OUTPUT_DIR>
@@ -517,21 +512,26 @@
                                 <exclude>**/*$*</exclude>
                             </excludes>
                             <systemPropertyVariables>
+                                <test.build.dir>${project.build.directory}/test</test.build.dir>
+                                <test.build.data>${project.build.directory}/test/var</test.build.data>
+                                <test.cache.data>${project.build.directory}/test/var/cache</test.cache.data>
+                                <test.debug.data>${project.build.directory}/test/var/debug</test.debug.data>
+                                <test.log.dir>${project.build.directory}/test/var/log</test.log.dir>
                                 <test.build.classes>${project.build.directory}/test/classes</test.build.classes>
-                                <CHUKWA_LOG_DIR>${project.build.directory}/logs</CHUKWA_LOG_DIR>
-                                <CHUKWA_CONF_DIR>${test.build.dir}/conf</CHUKWA_CONF_DIR>
-                                <CHUKWA_DATA_DIR>${test.build.dir}/var</CHUKWA_DATA_DIR>
-                                <CHUKWA_PID_DIR>${test.build.dir}/var/run</CHUKWA_PID_DIR>
+                                <CHUKWA_LOG_DIR>${project.build.directory}/test/var/log</CHUKWA_LOG_DIR>
+                                <CHUKWA_CONF_DIR>${project.build.directory}/test/conf</CHUKWA_CONF_DIR>
+                                <CHUKWA_DATA_DIR>${project.build.directory}/test/var</CHUKWA_DATA_DIR>
+                                <CHUKWA_PID_DIR>${project.build.directory}/test/var/pid</CHUKWA_PID_DIR>
                                 <CHUKWA_HDFS>/chukwa</CHUKWA_HDFS>
-                                <CHUKWA_HOME>${basedir}/target</CHUKWA_HOME>
+                                <CHUKWA_HOME>${project.build.directory}/test</CHUKWA_HOME>
                             </systemPropertyVariables>
                             <environmentVariables>
-                                <CHUKWA_LOG_DIR>${project.build.directory}/logs</CHUKWA_LOG_DIR>
-                                <CHUKWA_CONF_DIR>${test.build.dir}/conf</CHUKWA_CONF_DIR>
-                                <CHUKWA_DATA_DIR>${test.build.dir}/var</CHUKWA_DATA_DIR>
-                                <CHUKWA_PID_DIR>${test.build.dir}/var/run</CHUKWA_PID_DIR>
+                                <CHUKWA_LOG_DIR>${project.build.directory}/test/var/log</CHUKWA_LOG_DIR>
+                                <CHUKWA_CONF_DIR>${project.build.directory}/test/conf</CHUKWA_CONF_DIR>
+                                <CHUKWA_DATA_DIR>${project.build.directory}/test/var</CHUKWA_DATA_DIR>
+                                <CHUKWA_PID_DIR>${project.build.directory}/test/var/pid</CHUKWA_PID_DIR>
                                 <CHUKWA_HDFS>/chukwa</CHUKWA_HDFS>
-                                <CHUKWA_HOME>${basedir}/target</CHUKWA_HOME>
+                                <CHUKWA_HOME>${project.build.directory}/test</CHUKWA_HOME>
                             </environmentVariables>
                             <workingDirectory>${project.build.directory}/test/classes</workingDirectory>
                         </configuration>
@@ -556,18 +556,18 @@
                                 <exclude>**/*$*</exclude>
                             </excludes>
                             <systemPropertyVariables>
-                                <CHUKWA_LOG_DIR>${project.build.directory}/logs</CHUKWA_LOG_DIR>
-                                <CHUKWA_CONF_DIR>${test.build.dir}/conf</CHUKWA_CONF_DIR>
-                                <CHUKWA_DATA_DIR>${test.build.dir}/var</CHUKWA_DATA_DIR>
-                                <CHUKWA_PID_DIR>${test.build.dir}/var/run</CHUKWA_PID_DIR>
+                                <CHUKWA_LOG_DIR>${project.build.directory}/test/var/log</CHUKWA_LOG_DIR>
+                                <CHUKWA_CONF_DIR>${project.build.directory}/test/conf</CHUKWA_CONF_DIR>
+                                <CHUKWA_DATA_DIR>${project.build.directory}/test/var</CHUKWA_DATA_DIR>
+                                <CHUKWA_PID_DIR>${project.build.directory}/test/var/pid</CHUKWA_PID_DIR>
                                 <CHUKWA_HDFS>/chukwa</CHUKWA_HDFS>
                                 <CHUKWA_HOME>${basedir}/target</CHUKWA_HOME>
                             </systemPropertyVariables>
                             <environmentVariables>
-                                <CHUKWA_LOG_DIR>${project.build.directory}/logs</CHUKWA_LOG_DIR>
-                                <CHUKWA_CONF_DIR>${test.build.dir}/conf</CHUKWA_CONF_DIR>
-                                <CHUKWA_DATA_DIR>${test.build.dir}/var</CHUKWA_DATA_DIR>
-                                <CHUKWA_PID_DIR>${test.build.dir}/var/run</CHUKWA_PID_DIR>
+                                <CHUKWA_LOG_DIR>${project.build.directory}/test/var/log</CHUKWA_LOG_DIR>
+                                <CHUKWA_CONF_DIR>${project.build.directory}/test/conf</CHUKWA_CONF_DIR>
+                                <CHUKWA_DATA_DIR>${project.build.directory}/test/var</CHUKWA_DATA_DIR>
+                                <CHUKWA_PID_DIR>${project.build.directory}/test/var/pid</CHUKWA_PID_DIR>
                                 <CHUKWA_HDFS>/chukwa</CHUKWA_HDFS>
                                 <CHUKWA_HOME>${basedir}/target</CHUKWA_HOME>
                             </environmentVariables>
@@ -639,8 +639,8 @@
                         <phase>process-resources</phase>
                         <configuration>
                             <target>
-                                <chmod file="target/conf/jmxremote.password" perm="600" />
-                                <chmod file="target/conf/jmxremote.access" perm="600" />
+                                <chmod file="${project.build.directory}/conf/jmxremote.password" perm="600" />
+                                <chmod file="${project.build.directory}/conf/jmxremote.access" perm="600" />
                             </target>
                         </configuration>
                         <goals>
@@ -652,45 +652,46 @@
                         <phase>generate-test-resources</phase>
                         <configuration>
                             <target>
-                                <delete dir="/tmp/chukwa/hicc" />
-                                <mkdir dir="${test.build.dir}/var" />
-                                <mkdir dir="${test.build.dir}/var/log" />
-                                <mkdir dir="${test.build.dir}/var/run" />
-                                <copy todir="${test.build.dir}/var/log">
+                                <delete dir="${project.build.directory}/test" />
+                                <mkdir dir="${project.build.directory}/test/conf" />
+                                <mkdir dir="${project.build.directory}/test/var" />
+                                <mkdir dir="${project.build.directory}/test/var/log" />
+                                <mkdir dir="${project.build.directory}/test/var/run" />
+                                <copy todir="${project.build.directory}/test/var/log">
                                     <fileset dir="${basedir}/test/samples/">
                                         <include name="*.log" />
                                     </fileset>
                                 </copy>
-                                <echo message="localhost" file="${test.build.dir}/conf/collectors"/>
-                                <copy file="${basedir}/conf/chukwa-common.xml" tofile="${test.build.dir}/conf/chukwa-common.xml">
+                                <echo message="localhost" file="${project.build.directory}/test/conf/collectors"/>
+                                <copy file="${basedir}/conf/chukwa-common.xml" tofile="${project.build.directory}/test/conf/chukwa-common.xml">
                                     <filterchain>
                                         <expandproperties/>
                                     </filterchain>
                                 </copy>
-                                <copy file="${basedir}/conf/chukwa-agent-conf.xml" tofile="${test.build.dir}/conf/chukwa-agent-conf.xml">
+                                <copy file="${basedir}/conf/chukwa-agent-conf.xml" tofile="${project.build.directory}/test/conf/chukwa-agent-conf.xml">
                                     <filterchain>
                                         <expandproperties/>
                                     </filterchain>
                                 </copy>
-                                <copy file="${basedir}/conf/chukwa-demux-conf.xml" tofile="${test.build.dir}/conf/chukwa-demux-conf.xml">
+                                <copy file="${basedir}/conf/chukwa-demux-conf.xml" tofile="${project.build.directory}/test/conf/chukwa-demux-conf.xml">
                                     <filterchain>
                                         <expandproperties/>
                                     </filterchain>
                                 </copy>
-                                <copy file="${basedir}/conf/jmxremote.password" tofile="${test.build.dir}/conf/jmxremote.password">
+                                <copy file="${basedir}/conf/jmxremote.password" tofile="${project.build.directory}/test/conf/jmxremote.password">
                                     <filterchain>
                                         <expandproperties/>
                                     </filterchain>
                                 </copy>
-                                <copy file="${basedir}/conf/jmxremote.password" tofile="${test.build.dir}/conf/jmxremote.access">
+                                <copy file="${basedir}/conf/jmxremote.password" tofile="${project.build.directory}/test/conf/jmxremote.access">
                                     <filterchain>
                                         <expandproperties/>
                                     </filterchain>
                                 </copy>
-                                <copy file="${basedir}/conf/log4j.properties" tofile="${test.build.dir}/conf/log4j.properties"></copy>
-                                <copy file="${basedir}/conf/auth.conf" tofile="${test.build.dir}/conf/auth.conf"></copy>
-                                <chmod file="${test.build.dir}/conf/jmxremote.password" perm="600" />
-                                <chmod file="${test.build.dir}/conf/jmxremote.access" perm="600" />
+                                <copy file="${basedir}/conf/log4j.properties" tofile="${project.build.directory}/test/conf/log4j.properties"></copy>
+                                <copy file="${basedir}/conf/auth.conf" tofile="${project.build.directory}/test/conf/auth.conf"></copy>
+                                <chmod file="${project.build.directory}/test/conf/jmxremote.password" perm="600" />
+                                <chmod file="${project.build.directory}/test/conf/jmxremote.access" perm="600" />
                             </target>
                         </configuration>
                         <goals>

@@ -36,7 +36,11 @@ public class TestInputFormat extends TestCase {
   String[] lines = { "the rain", "in spain", "falls mainly", "in the plain" };
 
   public void testInputFormat() {
+    verifyInputFormatForSequenceFile();
+    verifyInputFormatIllegalRegex();
+  }
 
+  private void verifyInputFormatForSequenceFile() {
     try {
       JobConf conf = new JobConf();
       String TMP_DIR = System.getProperty("test.build.data", "/tmp");
@@ -84,7 +88,7 @@ public class TestInputFormat extends TestCase {
     }
   }
 
-  public void testInputFormatIllegalRegex() {
+  private void verifyInputFormatIllegalRegex() {
     try {
       JobConf conf = new JobConf();
       conf.set("chukwa.inputfilter.datatype", "(");
