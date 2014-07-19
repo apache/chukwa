@@ -18,8 +18,11 @@
 package org.apache.hadoop.chukwa.extraction.demux;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.mapred.JobConf;
@@ -29,6 +32,7 @@ import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
+
 import junit.framework.TestCase;
 
 /**
@@ -112,7 +116,9 @@ public class TestDemux extends TestCase {
           + fileSys.getFileStatus(DEMUX_INPUT_PATH).getLen()
           + " bytes of temp test data");
       long ts_start = System.currentTimeMillis();
-      runDemux(mr.createJobConf(), DEMUX_INPUT_PATH, DEMUX_OUTPUT_PATH);
+      Path inputPath = new Path(fileSys.getUri().toString()+DEMUX_INPUT_PATH);
+      Path outputPath = new Path(fileSys.getUri().toString()+DEMUX_OUTPUT_PATH);
+      runDemux(mr.createJobConf(), inputPath, outputPath);
 
       long time = (System.currentTimeMillis() - ts_start);
       long bytes = fileSys.getContentSummary(DEMUX_OUTPUT_PATH).getLength();
@@ -120,6 +126,12 @@ public class TestDemux extends TestCase {
       System.out.println("processing took " + time + " milliseconds");
       System.out.println("aka " + time * 1.0 / LINES + " ms per line or "
           + time * 1000.0 / bytes + " ms per kilobyte of log data");
+      mr.shutdown();
+      dfs.shutdown();
+      String testBuildDir = System.getProperty("test.build.data", "/tmp");
+      String dfsPath = testBuildDir + "/dfs";
+      FileUtils.deleteDirectory(new File(dfsPath));
+      System.out.println(dfsPath);
 
     } catch (Exception e) {
       e.printStackTrace();

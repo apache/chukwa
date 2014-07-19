@@ -28,11 +28,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.*;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.database.TableCreator;
-
 import org.apache.hadoop.chukwa.datacollection.DataFactory;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent.AlreadyRunningException;
@@ -101,6 +101,8 @@ public class TestFSMBuilder extends TestCase {
   private static String cluster = "demo";
   long[] timeWindow = {7, 30, 91, 365, 3650};
   long current = 1244617200000L;  // 2009-06-10
+  private String testBuildDir = System.getProperty("test.build.data", "/tmp");
+  private File dfsDataDir = new File(testBuildDir+"/dfs");
 
   public void setUp() {
     // Startup HDFS cluster - stored collector-ed JobHistory chunks
@@ -119,6 +121,9 @@ public class TestFSMBuilder extends TestCase {
 
     // Startup HDFS cluster - stored collector-ed JobHistory chunks
     try {
+      if(dfsDataDir.exists()) {
+        FileUtils.deleteDirectory(dfsDataDir);        
+      }
       dfs = new MiniDFSCluster(conf, NUM_HADOOP_SLAVES, true, null);
       fileSys = dfs.getFileSystem();
       DEMUX_INPUT_PATH = new Path(fileSys.getUri().toString()+File.separator+dataSink);          
@@ -212,6 +217,9 @@ public class TestFSMBuilder extends TestCase {
       jettyCollector.stop();
       mr.shutdown();
       dfs.shutdown();
+      if(dfsDataDir.exists()) {
+        FileUtils.deleteDirectory(dfsDataDir);        
+      }
       Thread.sleep(2000);
     } catch(Exception e) {
       e.printStackTrace();
