@@ -354,18 +354,6 @@
             </resource>
         </resources>
         <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-site-plugin</artifactId>
-            <version>3.0</version>
-            <dependencies>
-              <dependency><!-- add support for ssh/scp -->
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>1.0</version>
-              </dependency>
-            </dependencies>
-          </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -543,7 +531,7 @@
                         </goals>
                         <configuration>
                             <skip>false</skip>
-                            <argLine>-Xmx1024m -Dtest.build.data=${test.build.data}</argLine>
+                            <argLine>-Xmx1024m</argLine>
                             <reportsDirectory>${project.build.directory}/test-reports</reportsDirectory>
                             <forkMode>pertest</forkMode>
                             <redirectTestOutputToFile>true</redirectTestOutputToFile>
@@ -556,6 +544,7 @@
                                 <exclude>**/*$*</exclude>
                             </excludes>
                             <systemPropertyVariables>
+                                <test.build.data>${project.build.directory}/test/var</test.build.data>
                                 <CHUKWA_LOG_DIR>${project.build.directory}/test/var/log</CHUKWA_LOG_DIR>
                                 <CHUKWA_CONF_DIR>${project.build.directory}/test/conf</CHUKWA_CONF_DIR>
                                 <CHUKWA_DATA_DIR>${project.build.directory}/test/var</CHUKWA_DATA_DIR>
@@ -707,6 +696,7 @@
                         <configuration>
                             <tasks>
                                 <mkdir dir="${project.build.directory}/site" />
+                                <mkdir dir="${basedir}/target/site/apidocs"/>
                                 <exec executable="perl" input="CHANGES.txt" output="${project.build.directory}/site/changes.html" failonerror="true">
                                     <arg value="src/site/resources/scripts/changes2html.pl" />
                                 </exec>
@@ -1064,6 +1054,149 @@
                 </plugins>
             </build>
         </profile> 
+        <profile>
+          <id>docs</id>
+          <activation>
+            <file>
+              <exists>/usr/bin/xsltproc</exists>
+            </file>
+          </activation>
+          <build>
+            <plugins>
+              <!--  Generate HTML version of REST API document  -->
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.0</version>
+                <dependencies>
+                  <dependency><!-- add support for ssh/scp -->
+                    <groupId>org.apache.maven.wagon</groupId>
+                    <artifactId>wagon-ssh</artifactId>
+                    <version>1.0</version>
+                  </dependency>
+                </dependencies>
+              </plugin>
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                  <execution>
+                    <id>agent-public-api</id>
+                    <goals>
+                      <goal>javadoc</goal>
+                    </goals>
+                    <phase>compile</phase>
+                    <configuration>
+                      <encoding>UTF-8</encoding>
+                      <verbose>false</verbose>
+                      <show>public</show>
+                      <subpackages>org.apache.hadoop.chukwa.datacollection.agent.rest</subpackages>
+                      <doclet>com.sun.jersey.wadl.resourcedoc.ResourceDocletJSON</doclet>
+                      <!-- <docletPath>${path.separator}${project.build.outputDirectory}</docletPath> -->
+                      <docletArtifacts>
+                        <docletArtifact>
+                          <groupId>com.atlassian.plugins.rest</groupId>
+                          <artifactId>atlassian-rest-doclet</artifactId>
+                          <version>2.8.0-m3</version>
+                        </docletArtifact>
+                      </docletArtifacts>
+                      <useStandardDocletOptions>false</useStandardDocletOptions>
+                      <additionalparam>-output ${project.build.outputDirectory}/agent-rest.xml</additionalparam>
+                    </configuration>
+                  </execution>
+                </executions>
+              </plugin>
+              <plugin>
+                <groupId>com.sun.jersey.contribs</groupId>
+                <artifactId>maven-wadl-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                  <execution>
+                    <id>generate</id>
+                    <goals>
+                      <goal>generate</goal>
+                    </goals>
+                    <phase>compile</phase>
+                  </execution>
+                </executions>
+                <configuration>
+                  <wadlFile>${project.build.outputDirectory}/application.wadl</wadlFile>
+                  <formatWadlFile>true</formatWadlFile>
+                  <baseUri>http://[host]:[port]/rest/v2</baseUri>
+                  <packagesResourceConfig>
+                    <param>org.apache.hadoop.chukwa.datacollection.agent.rest</param>
+                  </packagesResourceConfig>
+                  <wadlGenerators>
+                    <wadlGeneratorDescription>
+                      <className>com.sun.jersey.server.wadl.generators.WadlGeneratorApplicationDoc</className>
+                      <properties>
+                        <property>
+                          <name>applicationDocsFile</name>
+                          <value>${basedir}/src/main/resources/agent-rest.xml</value>
+                        </property>
+                      </properties>
+                    </wadlGeneratorDescription>
+                    <wadlGeneratorDescription>
+                      <className>com.sun.jersey.server.wadl.generators.WadlGeneratorGrammarsSupport</className>
+                      <properties>
+                        <property>
+                          <name>grammarsFile</name>
+                          <value>${basedir}/src/main/resources/application-grammars.xml</value>
+                        </property>
+                      </properties>
+                    </wadlGeneratorDescription>
+                    <wadlGeneratorDescription>
+                      <className>com.sun.jersey.server.wadl.generators.resourcedoc.WadlGeneratorResourceDocSupport</className>
+                      <properties>
+                        <property>
+                          <name>resourceDocFile</name>
+                          <value>${project.build.outputDirectory}/agent-rest.xml</value>
+                        </property>
+                      </properties>
+                    </wadlGeneratorDescription>
+                  </wadlGenerators>
+                </configuration>
+                <dependencies>
+                  <dependency>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                    <version>2.5</version>
+                  </dependency>
+                </dependencies>
+              </plugin>
+              <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                  <execution>
+                    <id>exec-xsltproc: target/application.html</id>
+                    <goals>
+                      <goal>exec</goal>
+                    </goals>
+                    <phase>package</phase>
+                    <configuration>
+                      <executable>xsltproc</executable>
+                      <commandlineArgs>-o ${project.build.directory}/site/apidocs/agent-rest.html src/main/webapps/wadl.xsl target/classes/application.wadl</commandlineArgs>
+                    </configuration>
+                  </execution>
+                </executions>
+              </plugin>
+            </plugins>
+          </build>
+          <dependencies>
+            <dependency>
+              <groupId>com.sun.jersey.contribs</groupId>
+              <artifactId>maven-wadl-plugin</artifactId>
+              <version>1.8</version>
+            </dependency>
+            <dependency>
+              <groupId>com.sun.jersey.contribs</groupId>
+              <artifactId>wadl-resourcedoc-doclet</artifactId>
+              <version>1.8</version>
+            </dependency>
+          </dependencies>
+        </profile>
     </profiles>
 
     <repositories>
@@ -1078,6 +1211,10 @@
         <repository>
             <id>Apache</id>
             <url>http://repo.maven.apache.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>opencast</id>
+            <url>http://repository.opencastproject.org/nexus/content/repositories/public/</url>
         </repository>
     </repositories>
 
@@ -1146,6 +1283,34 @@
                 <report>javadoc</report>
               </reports>
             </reportSet>
+<!--            <reportSet>
+              <id>restdoc</id>
+              <configuration>
+                <encoding>UTF-8</encoding>
+                <verbose>false</verbose>
+                <show>public</show>
+                <subpackages>org.apache.hadoop.chukwa.datacollection.agent.rest</subpackages>
+                <doclet>com.sun.jersey.wadl.resourcedoc.ResourceDoclet</doclet>
+                <docletPath>${path.separator}${project.build.outputDirectory}</docletPath>
+                <docletArtifacts>
+                  <docletArtifact>
+                    <groupId>com.sun.jersey.contribs</groupId>
+                    <artifactId>wadl-resourcedoc-doclet</artifactId>
+                    <version>1.8</version>
+                  </docletArtifact>
+                  <docletArtifact>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                    <version>2.6.1</version>
+                  </docletArtifact>
+                </docletArtifacts>
+                <useStandardDocletOptions>false</useStandardDocletOptions>
+                <additionalparam>-output ${project.build.outputDirectory}/agent-rest.xml</additionalparam>
+              </configuration>
+              <reports>
+                <report>javadoc</report>
+              </reports>
+            </reportSet> -->
           </reportSets>
         </plugin>
       </plugins>

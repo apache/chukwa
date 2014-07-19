@@ -18,11 +18,14 @@
 package org.apache.hadoop.chukwa.datacollection.agent.rest;
 
 import junit.framework.TestCase;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHandler;
@@ -30,6 +33,8 @@ import org.mortbay.jetty.Server;
 
 import javax.servlet.ServletException;
 import javax.servlet.Servlet;
+import javax.ws.rs.core.MediaType;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
@@ -81,16 +86,13 @@ public class TestAdaptorController extends TestCase {
     jettyServer.stop();
   }
 
-  public void testGetPlainText() throws IOException, ServletException {
+  public void testGetJSON() throws IOException, ServletException {
     request.setServletPath("/adaptor");
     request.setRequestURI(request.getContextPath() + request.getServletPath());
-    request.setQueryString("viewType=text");
+    request.addHeader("Accept", "application/json");
     request.setMethod("GET");
 
     servlet.service(request, response);
-
-    // assert response
-    assertTextResponse(response, 1);
 
     //assert agent
     assertEquals("Incorrect total number of adaptors", 1, agent.adaptorCount());
@@ -108,12 +110,10 @@ public class TestAdaptorController extends TestCase {
   public void testGetXml() throws IOException, ServletException {
     request.setServletPath("/adaptor");
     request.setRequestURI(request.getContextPath() + request.getServletPath());
-    request.setQueryString("viewType=xml");
+    request.addHeader("Accept", "application/xml");
     request.setMethod("GET");
 
     servlet.service(request, response);
-
-    String responseContent = response.getContentAsString();
 
     // assert response
     assertXmlResponse(response, 1);
@@ -125,15 +125,13 @@ public class TestAdaptorController extends TestCase {
   public void testGetInvalidViewType() throws IOException, ServletException {
     request.setServletPath("/adaptor");
     request.setRequestURI(request.getContextPath() + request.getServletPath());
-    request.setQueryString("viewType=unsupportedViewType");
+    request.addHeader("Accept", "unsupportedViewType");
     request.setMethod("GET");
 
     servlet.service(request, response);
 
     // assert response
-    assertEquals("Unexpected response status", 400, response.getStatus());
-    assertEquals("Unexpected response content",
-            "Invalid viewType: unsupportedViewType", response.getContentAsString());
+    assertEquals("Unexpected response status", 406, response.getStatus());
   }
 
   public void testDeleteAdaptor() throws IOException, ServletException {
@@ -158,19 +156,18 @@ public class TestAdaptorController extends TestCase {
   public void testAddAdaptor() throws IOException, ServletException {
     request.setServletPath("/adaptor");
     request.setRequestURI(request.getContextPath() + request.getServletPath());
-    request.setContentType("application/json;charset=UTF-8");
-    request.setContent("{ \"DataType\" : \"SomeDataType\", \"AdaptorClass\" : \"org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor\", \"AdaptorParams\" : \"1000\", \"Offset\" : \"5555\" }".getBytes());
-
+    request.addHeader("Content-Type", MediaType.APPLICATION_JSON);
+    request.addHeader("Accept", MediaType.APPLICATION_JSON);
+    request.setMethod("POST");
+    request.setContent("{ \"dataType\" : \"SomeDataType\", \"adaptorClass\" : \"org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor\", \"adaptorParams\" : \"1000\", \"offset\" : 5555 }".getBytes());
     //assert agent
     assertEquals("Incorrect total number of adaptors", 1, agent.adaptorCount());
     String initialAdaptorId = agent.getAdaptorList().keySet().iterator().next();
 
-    request.setMethod("POST");
-
     servlet.service(request, response);
 
     // assert response
-    String responseContent = assertXmlResponse(response, 1);
+    String responseContent = assertJSONResponse(response, 1);
     String newAdaptorId = null;
     for (String id : agent.getAdaptorList().keySet()) {
       if (id != initialAdaptorId) {
@@ -178,7 +175,7 @@ public class TestAdaptorController extends TestCase {
         break;
       }
     }
-
+    
     //assert agent
     assertEquals("Incorrect total number of adaptors", 2, agent.adaptorCount());
 
@@ -186,36 +183,35 @@ public class TestAdaptorController extends TestCase {
 
     //assert agent
     assertEquals("Incorrect total number of adaptors", 2, agent.adaptorCount());
-
+    
     // fire a doGet to assert that the servlet shows 2 adaptors
-    request.setQueryString("viewType=text");
+    request = new MockHttpServletRequest();
+    response = new MockHttpServletResponse();
+    request.setServletPath("/adaptor");
+    request.setRequestURI(request.getContextPath() + request.getServletPath());
+    request.addHeader("Accept", MediaType.APPLICATION_XML);
+    request.addHeader("Content-Type", MediaType.APPLICATION_XML);
     request.setMethod("GET");
-    request.setContentType(null);
-    request.setContent(null);
 
     servlet.service(request, response);
 
     // assert response
-    assertTextResponse(response, 2);
+    assertXmlResponse(response, 2);
   }
 
-  private String assertTextResponse(MockHttpServletResponse response,
+  private String assertJSONResponse(MockHttpServletResponse response,
                                   int adaptorCount)
                                   throws UnsupportedEncodingException {
     String responseContent = response.getContentAsString();
-
     assertEquals("Unexpected response status", 200, response.getStatus());
-    //Content it correct when executed via an HTTP client, but it doesn't seem
-    //to get set by the servlet
-    //assertEquals("Unexpected content type", "text/plain;charset=UTF-8",
-    //            response.getContentType());
-    assertOccurs("Response text doesn't include correct adaptor_count", 1,
-            responseContent, "adaptor_count: " + adaptorCount);
-    assertOccurs("Response text doesn't include adaptor class",
-            adaptorCount, responseContent,
-            "adaptor_class: org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor");
-    assertOccurs("Response text doesn't include data type",
-            adaptorCount, responseContent, "data_type: SomeDataType");
+
+    JSONObject json = (JSONObject) JSONValue.parse(responseContent);
+    String adaptorClass = (String) json.get("adaptorClass");
+    String dataType = (String) json.get("dataType");
+    assertEquals("Response text doesn't include adaptor class", 
+        "org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor", adaptorClass);
+    assertEquals("Response text doesn't include data type",
+        "SomeDataType", dataType);
 
     return responseContent;
   }
@@ -227,67 +223,17 @@ public class TestAdaptorController extends TestCase {
 
     // assert response
     assertEquals("Unexpected response status", 200, response.getStatus());
+
     //Content it correct when executed via an HTTP client, but it doesn't seem
     //to get set by the servlet
-    //assertEquals("Unexpected content type", "text/xml;charset=UTF-8",
-    //            response.getContentType());
     assertOccurs("Response XML doesn't include correct adaptor_count", adaptorCount,
-            responseContent, "Adaptor>");
-    assertOccurs("Response XML doesn't include AdaptorClass", adaptorCount, responseContent,
-            "<AdaptorClass>org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor</AdaptorClass>");
+            responseContent, "adaptorCount>");
+    assertOccurs("Response XML doesn't include adaptorClass", adaptorCount, responseContent,
+            "<adaptorClass>org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor</adaptorClass>");
     assertOccurs("Response XML doesn't include dataType", adaptorCount, responseContent,
-            "dataType=\"SomeDataType\"");
+            "<dataType>SomeDataType</dataType>");
 
     return responseContent;
   }
 
-  //  ** test utility methods **
-
-  public void testPrintNvp() throws IOException {
-    AdaptorController.appendNvp(sb, "foo", "bar");
-    assertEquals("Unexpected NVP", "foo: bar\n", sb.toString());
-  }
-
-  public void testPrintNvpIndented() throws IOException {
-    AdaptorController.appendNvp(sb, 4, "foo", "bar");
-    assertEquals("Unexpected NVP", "    foo: bar\n", sb.toString());
-  }
-
-  public void testPrintNvpIndentedWithDash() throws IOException {
-    AdaptorController.appendNvp(sb, 4, "- foo", "bar");
-    assertEquals("Unexpected NVP", "  - foo: bar\n", sb.toString());
-  }
-
-  public void testPrintNvpIndentedWithStringLiteral() throws IOException {
-    AdaptorController.appendNvp(sb, 4, "foo", "bar", true);
-    assertEquals("Unexpected NVP",
-            "    foo: |\n      bar\n", sb.toString());
-  }
-
-  public void testPrintStartTag() throws IOException {
-    AdaptorController.appendStartTag(sb, "Foo");
-    assertEquals("Unexpected XML", "<Foo>", sb.toString());
-  }
-
-  public void testPrintStartTagWithAttributes() throws IOException {
-    AdaptorController.appendStartTag(sb, "Foo", "a", "A", "b", "B <");
-    assertEquals("Unexpected XML",
-            "<Foo a=\"A\" b=\"B &lt;\">", sb.toString());
-  }
-
-  public void testPrintElement() throws IOException {
-    AdaptorController.appendElement(sb, "Foo", "Bar");
-    assertEquals("Unexpected XML", "<Foo>Bar</Foo>", sb.toString());
-  }
-
-  public void testPrintElementWithAttributes() throws IOException {
-    AdaptorController.appendElement(sb, "Foo", "Bar < -- />", "a", "A", "b", "B");
-    assertEquals("Unexpected XML",
-            "<Foo a=\"A\" b=\"B\">Bar &lt; -- /&gt;</Foo>", sb.toString());
-  }
-
-  public void testPrintEndTag() throws IOException {
-    AdaptorController.appendEndTag(sb, "Foo");
-    assertEquals("Unexpected XML", "</Foo>", sb.toString());
-  }
 }

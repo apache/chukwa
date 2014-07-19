@@ -365,7 +365,7 @@ public class ChukwaAgent implements AdaptorManager {
             jaxRsPackages.toString());
 
     // Create the server context and add the servlet
-    Context root = new Context(jettyServer, "/rest/v1", Context.SESSIONS);
+    Context root = new Context(jettyServer, "/rest/v2", Context.SESSIONS);
     root.setAttribute("ChukwaAgent", this);
     root.addServlet(servletHolder, "/*");
     root.setAllowNullPathInfo(false);

@@ -49,8 +49,10 @@
       </item>
       <item name="Architecture" href="design.html"/>
       <item name="Chukwa Storage Layout" href="dataflow.html"/>
-      <item name="Programming Guide" href="programming.html"/>
-      <item name="API Docs" href="apidocs/index.html"/>
+      <item name="Programming Guide" href="programming.html">
+        <item name="Agent REST API" href="apidocs/agent-rest.html"/>
+        <item name="Javadocs" href="apidocs/index.html"/>
+      </item>
       <item name="Wiki" href="http://wiki.apache.org/hadoop/Chukwa/"/>
       <item name="FAQ" href="http://wiki.apache.org/hadoop/Chukwa/FAQ"/>
     </menu>
@@ -58,8 +60,8 @@
     <menu name="Miscellaneous">
       <item name="Release Notes" href="releasenotes.html"/>
       <item name="Change Log" href="changes.html"/>
-<!--      <item name="Find Bugs Report" href="findbugs.html"/>
-      <item name="PMD Report" href="pmd.html"/> -->
+      <item name="Find Bugs Report" href="findbugs.html"/>
+      <item name="PMD Report" href="pmd.html"/>
     </menu>
 
   </body>
