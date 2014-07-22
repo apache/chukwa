@@ -14,7 +14,7 @@
 ~~ limitations under the License.
 ~~
 
-Overview
+HICC Operation Manual
 
   HICC stands for Hadoop Infrastructure Care Center.  It is the central dashboard
 for visualize and monitoring of metrics collected by Chukwa.
@@ -87,6 +87,13 @@ make additional choices or provide any necessary information.
   * If an option is dimmed, it is not available.  For example, you can not edit
 name of the dashboard, if you are not the owner of the dashboard.
 
+* Dashboard basics
+
+  Each dashboard can have multiple tabs and each tab is divided into row and columns.
+You can add more widgets by selecting Options > choose a widget > click Add.
+To remove a widgets by clicking on Close button on the top right hand corner of
+the widget.
+
 * Tab basics
 
   Tab provides a way to organize related information together.  As you create widgets,
@@ -114,13 +121,6 @@ information organized.
   [[1]] Double click on the tab to change tab to edit mode.
 
   [[2]] Enter a new name for the tab and press Return.
-
-* Dashboard basics
-
-  Each dashboard can have multiple tabs and each tab is divided into row and columns.
-You can add more widgets by selecting Options > choose a widget > click Add.
-To remove a widgets by clicking on Close button on the top right hand corner of
-the widget.
 
 User accounts
 

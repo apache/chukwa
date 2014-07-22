@@ -14,7 +14,7 @@
 ~~ limitations under the License.
 ~~
 
-Chukwa Storage Layout
+HDFS Storage Layout
 
 Overview
 
@@ -41,11 +41,11 @@ Raw Log Collection and Aggregation Workflow
 
   What data is stored where is best described by stepping through the Chukwa workflow.
 
-  [[1]] Collectors write chunks to <logs/*.chukwa> files until a 64MB chunk size is reached or a given time interval has passed.
+  [[1]] Agents write chunks to <logs/*.chukwa> files until a 64MB chunk size is reached or a given time interval has passed.
 
         * <logs/*.chukwa> 
 
-  [[2]] Collectors close chunks and rename them to <*.done>
+  [[2]] Agents close chunks and rename them to <*.done>
 
         * from <logs/*.chukwa>
 

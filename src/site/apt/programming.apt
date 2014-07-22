@@ -97,7 +97,7 @@ Sink File Format
   As data is collected, Chukwa dumps it into <sink files> in HDFS. By
 default, these are located in <hdfs:///chukwa/logs>.  If the file name 
 ends in .chukwa, that means the file is still being written to. Every few minutes, 
-the collector will close the file, and rename the file to '*.done'.  This 
+the agent will close the file, and rename the file to '*.done'.  This 
 marks the file as available for processing.
 
   Each sink file is a Hadoop sequence file, containing a succession of 
@@ -149,7 +149,7 @@ first job that runs.
   By default, Chukwa will use the default TsProcessor. This parser will try to
 extract the real log statement from the log entry using the ISO8601 date 
 format. If it fails, it will use the time at which the chunk was written to
-disk (collector timestamp).
+disk (agent timestamp).
 
 * Writing a custom demux Mapper
 
@@ -218,10 +218,10 @@ implementation use the following grouping for all records:
 
 * Demux Data To HBase
 
-  Demux parsers can be configured to run in Chukwa Collector.  See 
-{{{./collector.html}Collector configuration guide}}.  HBaseWriter is not a
-real map reduce job.  It is designed to reuse Demux parsers for extraction,
-transformation and load purpose.  There are some limitations to consider before implementing
+  Demux parsers can be configured to run in <${CHUKWA_HOME}/etc/chukwa/chukwa-demux-conf.xml>.  See 
+{{{./pipeline.html} Pipeline configuration guide}}.  HBaseWriter is not a
+real map reduce job.  It is designed to reuse Demux parsers for extraction and transformation purpose.
+There are some limitations to consider before implementing
 Demux parser for loading data to HBase.  In MapReduce job, mutliple values can be merged and 
 group into a key/value pair in shuffle/combine and merge phases.  This kind of aggregation is 
 unsupported by Demux in HBaseWriter because the data are not merged in memory, but send to HBase.

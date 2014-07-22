@@ -14,42 +14,44 @@
 ~~ limitations under the License.
 ~~
 
-Basic Operation
+Pipeline Configuration Guide
 
-  Chukwa Collectors are responsible for accepting incoming data from Agents,
-and storing the data.  Most commonly, collectors simply write all received 
-to HBase or HDFS.  
+Basic Options
+
+  Chukwa pipeline are responsible for accepting incoming data from Agents,
+and extract, transform and load data to destination storage.  Most commonly, 
+pipeline simply write all received to HBase or HDFS.  
 
 * HBase
 
-  For enabling streaming data to HBase, chukwa collector writer class can
-be configured in <chukwa-collector-conf.xml>.
+  For enabling streaming data to HBase, chukwa pipeline can
+be configured in <chukwa-agent-conf.xml>.
 
 ---
 <property>
-  <name>chukwaCollector.writerClass</name>
+  <name>chukwa.pipeline</name>
   <value>org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter</value>
 </property>
 ---
 
   In this mode, HBase configuration is configured in <chukwa-env.sh>.
 HBASE_CONF_DIR should reference to HBae configuration directory to enable
-Chukwa Collector to load <hbase-site.xml> from class path.
+Chukwa agent to load <hbase-site.xml> from class path.
 
 * HDFS
 
-  For enabling streaming data to HDFS, chukwa collector writer class can
-be configured in <chukwa-collector-conf.xml>.
+  For enabling streaming data to HDFS, chukwa pipeline can be configured in 
+<chukwa-agent-conf.xml>.
 
 ---
 <property>
-  <name>chukwaCollector.writerClass</name>
+  <name>chukwa.pipeline</name>
   <value>org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter</value>
 </property>
 ---
 
   In this mode, the filesystem to write to is determined by the option
-<writer.hdfs.filesystem> in <chukwa-collector-conf.xml>.
+<writer.hdfs.filesystem> in <chukwa-agent-conf.xml>.
 
 ---
 <property>
@@ -60,51 +62,29 @@ be configured in <chukwa-collector-conf.xml>.
 ---
 
   This is the only option that you really need to specify to get a working 
-collector.
-
-  By default, collectors listen on port 8080. This can be configured
-in <chukwa-collector.conf.xml>
-  	
-Configuration Knobs
-
-  There's a bunch more "standard" knobs worth knowing about. These
-are mostly documented in <chukwa-collector-conf.xml>
-  	
-  It's also possible to do limited configuration on the command line. This is
-primarily intended for debugging.  You can say 'writer=pretend' to get the 
-collector to print incoming chunks on standard out, or portno=xyz to override
-the default port number.
-
----
-bin/chukwa collector writer=pretend portno=8081
----
+pipeline.
 
 Advanced Options
 
   There are some advanced options, not necessarily documented in the
-collector conf file, that are helpful in using Chukwa in nonstandard ways.
+agent conf file, that are helpful in using Chukwa in nonstandard ways.
 While normally Chukwa writes sequence files to HDFS, it's possible to
-specify an alternate Writer class. The option 
-<chukwaCollector.writerClass> specifies a Java class to instantiate
-and use as a writer. See the <ChukwaWriter> javadoc for details.
+specify an alternate pipe class. The option <chukwa.pipeline> specifies 
+a Java class to instantiate and use as a writer. See the <ChukwaWriter> 
+javadoc for details.
 
-  One particularly useful Writer class is <PipelineStageWriter>, which
+  One particularly useful pipeline class is <PipelineStageWriter>, which
 lets you string together a series of <PipelineableWriters>
 for pre-processing or post-processing incoming data.
 As an example, the SocketTeeWriter class allows other programs to get 
-incoming chunks fed to them over a socket by the collector.
+incoming chunks fed to them over a socket by Chukwa agent.
 	  	
   Stages in the pipeline should be listed, comma-separated, in option 
-<chukwaCollector.pipeline>
+<chukwa.pipeline>
 	  	
 ---
 <property>
-  <name>chukwaCollector.writerClass</name>
-  <value>org.apache.hadoop.chukwa.datacollection.writer.PipelineStageWriter</value>
-</property>
-
-<property>
-  <name>chukwaCollector.pipeline</name>
+  <name>chukwa.pipeline</name>
   <value>org.apache.hadoop.chukwa.datacollection.writer.SocketTeeWriter,org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter</value>
 </property>
 ---
@@ -137,7 +117,7 @@ key value pairs to HBase table.  HBaseWriter has the following configuration:
 ---
 
   * <<hbase.writer.halt.on.schema.mismatch>> If this option is set to true, 
-    and HBase table schema is mismatched with demux parser, collector will 
+    and HBase table schema is mismatched with demux parser, agent will 
     shut down itself.
 
 ---
@@ -167,7 +147,7 @@ SeqFileWriter
   The <SeqFileWriter> streams chunks of data to HDFS, and write data in
 temp filename with <.chukwa> suffix.  When the file is completed writing,
 the filename is renamed with <.done> suffix.  SeqFileWriter has the following
-configuration in <chukwa-collector-conf.xml>.
+configuration in <chukwa-agent-conf.xml>.
 
   * <<writer.hdfs.filesystem>> Location to name node address
 
@@ -200,14 +180,14 @@ configuration in <chukwa-collector-conf.xml>.
 ---
 
   * <<chukwaCollector.isFixedTimeRotatorScheme>> A flag to indicate that the 
-    collector should close at a fixed offset after every rotateInterval. 
+    agent should close at a fixed offset after every rotateInterval. 
     The default value is false which uses the default scheme where 
-    collectors close after regular rotateIntervals.
+    agents close after regular rotateIntervals.
     If set to true then specify chukwaCollector.fixedTimeIntervalOffset value.
     e.g., if isFixedTimeRotatorScheme is true and fixedTimeIntervalOffset is
-    set to 10000 and rotateInterval is set to 300000, then the collector will
+    set to 10000 and rotateInterval is set to 300000, then the agent will
     close its files at 10 seconds past the 5 minute mark, if
-    isFixedTimeRotatorScheme is false, collectors will rotate approximately
+    isFixedTimeRotatorScheme is false, agents will rotate approximately
     once every 5 minutes
 
 ---
@@ -231,7 +211,7 @@ configuration in <chukwa-collector-conf.xml>.
 SocketTeeWriter
 
   The <SocketTeeWriter> allows external processes to watch
-the stream of chunks passing through the collector. This allows certain kinds
+the stream of chunks passing through the agent. This allows certain kinds
 of real-time monitoring to be done on-top of Chukwa.
 	  	
   SocketTeeWriter listens on a port (specified by conf option
@@ -269,77 +249,3 @@ while(true) {
 }
 ---
 	  	
-Acknowledgement mode
-
-  Chukwa supports two different reliability strategies.
-The first, default strategy, is as follows: collectors write data to HDFS, and
-as soon as the HDFS write call returns success, report success to the agent,
-which advances its checkpoint state.
-
-  This is potentially a problem if HDFS (or some other storage tier) has
-non-durable or asynchronous writes. As a result, Chukwa offers a mechanism,
-asynchronous acknowledgement, for coping with this case.
-
-  This mechanism can be enabled by setting option <httpConnector.asyncAcks>.
-This option applies to both agents and collectors. On the collector side, it
-tells the collector to return asynchronous acknowledgements. On the agent side,
-it tells agents to look for and process them correctly. Agents with the option
-set to false should work OK with collectors where it's set to true. The
-reverse is not generally true: agents will expect a collector to be able to
-answer questions about the state of the filesystem.
-
-* Theory
-
-  In this approach, rather than try to build a fault tolerant collector,
-Chukwa agents look <<through>> the collectors to the underlying state of the
-filesystem. This filesystem state is what is used to detect and recover from
-failure. Recovery is handled entirely by the agent, without requiring anything
-at all from the failed collector.
-
-  When an agent sends data to a collector, the collector responds with the name
-of the HDFS file in which the data will be stored and the future location of
-the data within the file. This is very easy to compute -- since each file is
-only written by a single collector, the only requirement is to enqueue the
-data and add up lengths.
-
-  Every few minutes, each agent process polls a collector to find the length of
-each file to which data is being written. The length of the file is then
-compared with the offset at which each chunk was to be written. If the file
-length exceeds this value, then the data has been committed and the agent
-process advances its checkpoint accordingly. (Note that the length returned by
-the filesystem is the amount of data that has been successfully replicated.)
-There is nothing essential about the role of collectors in monitoring the
-written files. Collectors store no per-agent state. The reason to poll
-collectors, rather than the filesystem directly, is to reduce the load on
-the filesystem master and to shield agents from the details of the storage
-system.
-
-  The collector component that handles these requests is
-<datacollection.collector.servlet.CommitCheckServlet>.
-This will be started if <httpConnector.asyncAcks> is true in the
-collector configuration.
-
-  On error, agents resume from their last checkpoint and pick a new collector.
-In the event of a failure, the total volume of data retransmitted is bounded by
-the period between collector file rotations.
-
-  The solution is end-to-end. Authoritative copies of data can only exist in
-two places: the nodes where data was originally produced, and the HDFS file
-system where it will ultimately be stored. Collectors only hold soft state;
-the only ``hard'' state stored by Chukwa is the agent checkpoints. Below is a
-diagram of the flow of messages in this protocol.
-
-* Configuration
-
-  In addition to <httpConnector.asyncAcks> (which enables asynchronous
-acknowledgement) a number of options affect this mode of operation.
-
-  * <chukwaCollector.asyncAcks.scanperiod> affects how often collectors
-will check the filesystem for commits. It defaults to twice the rotation
-interval.
-
-  * <chukwaCollector.asyncAcks.scanpaths> determines where in HDFS
-collectors will look. It defaults to the data sink dir plus the archive dir.
-
-  In the future, Zookeeper could be used instead to track rotations.
-

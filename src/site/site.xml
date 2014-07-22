@@ -39,19 +39,20 @@
       <item name="Zookeeper" href="http://zookeeper.apache.org/"/>
     </links>
 
-    <menu name="Chukwa 0.5">
+    <menu name="Table of Contents">
       <item name="Overview" href="index.html"/>
       <item name="Quick Start Guide" href="Quick_Start_Guide.html"/>
-      <item name="HICC User Guide" href="hicc.html"/>
-      <item name="Administration Guide" href="admin.html">
+      <item name="User Guide" href="user.html">
         <item name="Agent" href="agent.html"/>
-        <item name="Collector" href="collector.html"/>
+        <item name="Pipeline" href="pipeline.html"/>
+        <item name="HICC" href="hicc.html"/>
       </item>
-      <item name="Architecture" href="design.html"/>
-      <item name="Chukwa Storage Layout" href="dataflow.html"/>
       <item name="Programming Guide" href="programming.html">
         <item name="Agent REST API" href="apidocs/agent-rest.html"/>
         <item name="Javadocs" href="apidocs/index.html"/>
+      </item>
+      <item name="Architecture" href="design.html">
+        <item name="HDFS Layout" href="dataflow.html"/>
       </item>
       <item name="Wiki" href="http://wiki.apache.org/hadoop/Chukwa/"/>
       <item name="FAQ" href="http://wiki.apache.org/hadoop/Chukwa/FAQ"/>

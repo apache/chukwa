@@ -24,7 +24,7 @@ Pre-requisites
 
   Chukwa should work on any POSIX platform, but GNU/Linux is the only production platform that has been tested extensively. Chukwa has also been used successfully on Mac OS X, which several members of the Chukwa team use for development.
 
-  The only absolute software requirements are Java 1.6 or better and Hadoop 0.20.205.0+. HICC, the Chukwa visualization interface, requires HBase 0.90.4.
+  The only absolute software requirements are Java 1.6 or better, ZooKeeper 3.4.x, HBase 0.96.x and Hadoop 1.x.
 
   The Chukwa cluster management scripts rely on ssh; these scripts, however, are not required if you have some alternate mechanism for starting and stopping daemons.
 
@@ -35,9 +35,7 @@ Installing Chukwa
 
   * A Hadoop and HBase cluster on which Chukwa will process data (referred to as the Chukwa cluster). 
   
-  * A collector process, that writes collected data to HBase. 
-  
-  * One or more agent processes, that send monitoring data to the collector. The nodes with active agent processes are referred to as the monitored source nodes.
+  * One or more agent processes, that send monitoring data to HBase. The nodes with active agent processes are referred to as the monitored source nodes.
   
   * Data analytics script, summarize Hadoop Cluster Health.
 
@@ -53,9 +51,9 @@ First Steps
 
   * Un-tar the release, via tar xzf.
 
-  * Make sure a copy of Chukwa is available on each node being monitored, and on each node that will run a collector.
+  * Make sure a copy of Chukwa is available on each node being monitored.
 
-  * We refer to the directory containing Chukwa as CHUKWA_HOME. It may be helpful to set CHUKWA_HOME explicitly in your environment, but Chukwa does not require that you do so.
+  * We refer to the directory containing Chukwa as CHUKWA_HOME. It may be useful to set CHUKWA_HOME explicitly in your environment for ease of use.
 
 Setting Up Chukwa Cluster
 
@@ -82,19 +80,9 @@ bin/hbase shell < CHUKWA_HOME/etc/chukwa/hbase.schema
 
   This procedure initializes the default Chukwa HBase schema.
 
-* Configuring And Starting Chukwa Collector
-
- [[1]] Edit CHUKWA_HOME/etc/chukwa/chukwa-env.sh. Make sure that JAVA_HOME, HADOOP_HOME, HADOOP_CONF_DIR, HBASE_HOME, and HBASE_CONF_DIR are set correctly.
-
- [[2]] In CHUKWA_HOME, run:
-
----
-bin/chukwa collector
----
-
 * Configuring And Starting Chukwa Agent
 
- [[1]] Add collector hostnames to CHUKWA_HOME/etc/chukwa/collectors. One host per line.
+ [[1]] Edit CHUKWA_HOME/etc/chukwa/chukwa-env.sh. Make sure that JAVA_HOME, HADOOP_HOME, HADOOP_CONF_DIR, HBASE_HOME, and HBASE_CONF_DIR are set correctly.
 
  [[2]] In CHUKWA_HOME, run:
 
@@ -146,4 +134,4 @@ http://<server>:4080/hicc/
   
   [[2]] The default user name and password is "admin" without quotes.
   
-  [[3]] Metrics data collected by Chukwa collector will be browsable through Graph Explorer widget.
+  [[3]] Metrics data collected by Chukwa Agent will be browsable through Graph Explorer widget.

@@ -14,7 +14,7 @@
 ~~ limitations under the License.
 ~~
 
-Overview
+Agent Configuration Guide
 
   In a normal Chukwa installation, an <Agent> process runs on every 
 machine being monitored. This process is responsible for all the data collection
@@ -38,27 +38,27 @@ Agent Control
 use to inspect and control it.  By default, Agents listen for incoming commands
 on port 9093. Commands are case-insensitive
 
-*--------------------*--------------------------------------*--------------:
-| Command            | Purpose                              | Options      |
-*--------------------*--------------------------------------*--------------:
-| <add>              | Start an adaptor.                    | See below    |
-*--------------------*--------------------------------------*--------------:
-| <close>            | Close socket connection to agent.    | None         |
-*--------------------*--------------------------------------*--------------:
-| <help>             | Display a list of available commands | None         |
-*--------------------*--------------------------------------*--------------:
-| <list>             | List currently running adaptors      | None         |
-*--------------------*--------------------------------------*--------------:
-| <reloadcollectors> | Re-read list of collectors           | None         |
-*--------------------*--------------------------------------*--------------:
-| <stop>             | Stop adaptor, abruptly               | Adaptor name |
-*--------------------*--------------------------------------*--------------:
-| <stopall>          | Stop all adaptors, abruptly          | Adaptor name |
-*--------------------*--------------------------------------*--------------:
-| <shutdown>         | Stop adaptor, gracefully             | Adaptor name |
-*--------------------*--------------------------------------*--------------:
-| <stopagent>        | Stop agent process                   | None         |
-*--------------------*--------------------------------------*--------------:
+*--------------------*-----------------------------------------*--------------:
+| Command            | Purpose                                 | Options      |
+*--------------------*-----------------------------------------*--------------:
+| <add>              | Start an adaptor.                       | See below    |
+*--------------------*-----------------------------------------*--------------:
+| <close>            | Close socket connection to agent.       | None         |
+*--------------------*-----------------------------------------*--------------:
+| <help>             | Display a list of available commands    | None         |
+*--------------------*-----------------------------------------*--------------:
+| <list>             | List currently running adaptors         | None         |
+*--------------------*-----------------------------------------*--------------:
+| <reloadcollectors> | Re-read list of collectors (deprecated) | None         |
+*--------------------*-----------------------------------------*--------------:
+| <stop>             | Stop adaptor, abruptly                  | Adaptor name |
+*--------------------*-----------------------------------------*--------------:
+| <stopall>          | Stop all adaptors, abruptly             | Adaptor name |
+*--------------------*-----------------------------------------*--------------:
+| <shutdown>         | Stop adaptor, gracefully                | Adaptor name |
+*--------------------*-----------------------------------------*--------------:
+| <stopagent>        | Stop agent process                      | None         |
+*--------------------*-----------------------------------------*--------------:
 
 
   The add command is by far the most complex; it takes several mandatory and 
@@ -87,10 +87,8 @@ Command-line options
   Normally, agents are configured via the file <conf/chukwa-agent-conf.xml.>
 However, there are a few command-line options that are sometimes useful in
 troubleshooting. If you specify "local" as an option, then the agent will print
-chunks to standard out, rather than to a collector. If you specify a URI, then
-that will be used as collector, overriding the collectors specified in
-<conf/collectors>.  These options are intended for testing and debugging,
-not for production use.
+chunks to standard out, rather than to pipeline writers.
+This option is intended for testing and debugging, not for production use.
 
 ---
 bin/chukwa agent local

@@ -14,7 +14,7 @@
 ~~ limitations under the License.
 ~~
 
-Chukwa Administration Guide
+Chukwa User Guide
 
   This chapter is the detailed configuration guide to Chukwa configuration.
 
@@ -40,24 +40,20 @@ production platform that has been tested extensively. Chukwa has also been used
 successfully on Mac OS X, which several members of the Chukwa team use for 
 development.
 
-  The only absolute software requirements are {{{http://java.sun.com}Java 1.6}}
-or better and {{{http://hadoop.apache.org/}Hadoop 0.20.205.1+}}.
+  The only absolute software requirements are Java 1.6 or better,
+ZooKeeper 3.4.x, HBase 0.96.x and Hadoop 1.x.
   
-  HICC, the Chukwa visualization interface, requires {{{http://hbase.apache.org}HBase 0.90.4+}}.
-
   The Chukwa cluster management scripts rely on <ssh>; these scripts, however,
 are not required if you have some alternate mechanism for starting and stopping
 daemons.
 
 Installing Chukwa
 
-  A minimal Chukwa deployment has three components:
+  A minimal Chukwa deployment has five components:
 
   * A Hadoop and HBase cluster on which Chukwa will process data (referred to as the Chukwa cluster).
 
-  * A collector process, that writes collected data to HBase.
-
-  * One or more agent processes, that send monitoring data to the collector. 
+  * One or more agent processes, that send monitoring data to HBase.
     The nodes with active agent processes are referred to as the monitored 
     source nodes.
 
@@ -76,17 +72,13 @@ Installing Chukwa
 
   * Un-tar the release, via <tar xzf>.
 
-  * Make sure a copy of Chukwa is available on each node being monitored, and on
-each node that will run a collector.
+  * Make sure a copy of Chukwa is available on each node being monitored.
 
   * We refer to the directory containing Chukwa as <CHUKWA_HOME>. It may
 be helpful to set <CHUKWA_HOME> explicitly in your environment,
 but Chukwa does not require that you do so.
 
 * General Configuration
-
-  Agents and collectors are configured differently, but part of the process
-is common to both.
 
   * Make sure that <JAVA_HOME> is set correctly and points to a Java 1.6 JRE. 
 It's generally best to set this in <etc/chukwa/chukwa-env.sh>.
@@ -103,27 +95,19 @@ Agents
 
   Agents are the Chukwa processes that actually produce data. This section
 describes how to configure and run them. More details are available in the
-{{{./agent.html}Agent configuration guide}}.
+{{{./agent.html} Agent configuration guide}}.
 
 * Configuration
 
-  This section describes how to set up the agent process on the source nodes.
-
-  The one mandatory configuration step is to set up 
-<$CHUKWA_HOME/etc/chukwa/collectors>. This file should contain a list
-of hosts that will run Chukwa collectors. Agents will pick a random collector
-from this list to try sending to, and will fail-over to another listed collector
-on error.  The file should look something like:
-
----
-http://<collector1HostName>:<collector1Port>/
-http://<collector2HostName>:<collector2Port>/
-http://<collector3HostName>:<collector3Port>/
----
+  First, edit <$CHUKWA_HOME/etc/chukwa/chukwa-env.sh> In addition to 
+the general directions given above, you should set <HADOOP_CONF_DIR> and
+<HBASE_CONF_DIR>.  This should be the Hadoop deployment Chukwa will use to 
+store collected data.  You will get a version mismatch error if this is 
+configured incorrectly.
 
   Edit the <CHUKWA_HOME/etc/chukwa/initial_adaptors> configuration file. 
 This is where you tell Chukwa what log files to monitor. See
-{{{./agent.html#Adaptors}the adaptor configuration guide}} for
+{{{./agent.html#Adaptors} the adaptor configuration guide}} for
 a list of available adaptors.
 
   There are a number of optional settings in 
@@ -149,6 +133,30 @@ not NFS-mount, directory.
 
   * Setting the option <chukwaAgent.control.remote> will disallow remote 
 connections to the agent control socket.
+
+** Use HBase For Data Storage
+
+  * Configuring the pipeline: set HBaseWriter as your writer, or add it 
+    to the pipeline if you are using 
+
+---
+  <property>
+    <name>chukwa.agent.connector</name>
+    <value>org.apache.hadoop.chukwa.datacollection.connector.PipelineConnector</value>
+  </property>
+
+  <property>
+    <name>chukwa.pipeline</name>
+    <value>org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter</value>
+  </property>
+---
+
+** Use HDFS For Data Storage
+
+  The one mandatory configuration parameter is <writer.hdfs.filesystem>.
+This should be set to the HDFS root URL on which Chukwa will store data.
+Various optional configuration options are described in 
+{{{./pipeline.html} the pipeline configuration guide}}.
 
 * Starting, Stopping, And Monitoring
 
@@ -191,72 +199,14 @@ Setup HBase Table
 allow real-time charting. This section describes how to configure HBase and 
 HICC to work together.
 
-  * Presently, we support HBase 0.90.4+. If you have HBase 0.89 jars anywhere, 
+  * Presently, we support HBase 0.96+. If you have older HBase jars anywhere, 
 they will cause linkage errors.  Check for and remove them.
 
   * Setting up tables:
 
 ---
-/path/to/hbase-0.90.4/bin/hbase shell < etc/chukwa/hbase.schema
+hbase/bin/hbase shell < etc/chukwa/hbase.schema
 ---
-
-Collectors
-
-  This section describes how to set up the Chukwa collectors.
-For more details, see {{{./collector.html}the collector configuration guide}}.
-
-* Configuration
-
-  First, edit <$CHUKWA_HOME/etc/chukwa/chukwa-env.sh> In addition to 
-the general directions given above, you should set <HADOOP_CONF_DIR> and
-<HBASE_CONF_DIR>.  This should be the Hadoop deployment Chukwa will use to 
-store collected data.  You will get a version mismatch error if this is 
-configured incorrectly.
-
-  Next, edit <$CHUKWA_HOME/etc/chukwa/chukwa-collector-conf.xml>.
-
-** Use HBase For Data Storage
-
-  * Configuring the collector: set HBaseWriter as your writer, or add it 
-    to the pipeline if you are using 
-
----
-  <property>
-    <name>chukwaCollector.writerClass</name>
-    <value>org.apache.hadoop.chukwa.datacollection.writer.PipelineStageWriter</value>
-  </property>
-
-  <property>
-    <name>chukwaCollector.pipeline</name>
-    <value>org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter</value>
-  </property>
----
-
-** Use HDFS For Data Storage
-
-  The one mandatory configuration parameter is <writer.hdfs.filesystem>.
-This should be set to the HDFS root URL on which Chukwa will store data.
-Various optional configuration options are described in 
-{{{./collector.html}the collector configuration guide}}
-and in the collector configuration file itself.
-
-* Starting, Stopping, And Monitoring
-
-  To run a collector process on a single node, use <bin/chukwa collector>.
-
-  Typically, collectors run as daemons. The script <bin/start-collectors.sh> 
-will ssh to each collector listed in <etc/chukwa/collectors> and start a
-collector, running in the background. The script <bin/stop-collectors.sh> 
-does the reverse.
-
-  You can, of course, use any other daemon-management system you like. 
-For instance, <tools/init.d> includes init scripts for running
-Chukwa collectors.
-
-  To check if a collector is working properly, you can simply access
-<http://collectorhost:collectorport/chukwa?ping=true> with a web browser.
-If the collector is running, you should see a status page with a handful of 
-statistics.
 
 ETL Processes (Optional)
 
@@ -335,14 +285,6 @@ org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent
 ps ax | grep org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent
 ---
 
-* UNIX Processes For Chukwa Collectors
-
-  Chukwa Collector name is identified by:
-
----
-org.apache.hadoop.chukwa.datacollection.collector.CollectorStub
----
-
 * UNIX Processes For Chukwa Data Processes
 
   Chukwa Data Processors are identified by:
@@ -358,9 +300,8 @@ visible from the process list.
 
 * Checks For Disk Full 
 
-  If anything is wrong, use /etc/init.d/chukwa-agent and 
-CHUKWA_HOME/tools/init.d/chukwa-system-metrics stop to shutdown Chukwa.  
-Look at agent.log and collector.log file to determine the problems. 
+  If anything is wrong, use /etc/init.d/chukwa-agent stop to shutdown Chukwa.  
+Look at agent.log file to determine the problems. 
 
   The most common problem is the log files are growing unbounded. Set up a 
 cron job to remove old log files:
