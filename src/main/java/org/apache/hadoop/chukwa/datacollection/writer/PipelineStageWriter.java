@@ -19,11 +19,13 @@
 package org.apache.hadoop.chukwa.datacollection.writer;
 
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.security.SecurityUtil;
 import org.apache.log4j.Logger;
 
 /**
@@ -87,6 +89,13 @@ public class PipelineStageWriter implements ChukwaWriter {
           lastWriter.setNextStage(stage);
           lastWriter = stage;
         }
+        // if authentication type is kerberos; login using the specified kerberos principal and keytab file
+        for(int i=0; i<classes.length; i++) {
+          if(classes[i].contains("HBaseWriter")) {
+            loginToKerberos (conf);
+          }
+        }
+        
         Class<?> stageClass = conf.getClassByName(classes[classes.length - 1]);
         Object st = stageClass.newInstance();
 
@@ -110,6 +119,21 @@ public class PipelineStageWriter implements ChukwaWriter {
       }
     } else {
       throw new WriterException("must set chukwa.pipeline");
+    }
+  }
+  
+  /**
+   * If authentication type is "kerberos", this method authenticates the Chukwa agent with Kerberized HBase, using the
+   * Kerberos principal and keytab file specified in chukwa-agent-conf.xml config file.<br>
+   * Does nothing for other authentication type.
+   * 
+   * @throws IOException in event of login failure
+   */
+  private static void loginToKerberos (Configuration config) throws IOException {
+    String agentAuthType = config.get ("chukwaAgent.hadoop.authentication.type");
+    if (null != agentAuthType && "kerberos".equalsIgnoreCase (agentAuthType)) {
+      SecurityUtil.login (config, "chukwaAgent.hadoop.authentication.kerberos.keytab",
+        "chukwaAgent.hadoop.authentication.kerberos.principal");
     }
   }
 

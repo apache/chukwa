@@ -12,6 +12,8 @@ Release 0.6 - Unreleased
 
   NEW FEATURES
 
+    CHUKWA-719. Added Kerberos support for HBaseWriter.  (Sreepathi Prasanna via Eric Yang)
+
     CHUKWA-715. Added Oozie Adaptor for collecting Oozie metrics.  (Sreepathi Prasanna via Eric Yang)
 
     CHUKWA-712. Implemented generic REST Adaptor for fetch data from web service.  (Sreepathi Prasanna via Eric Yang)
