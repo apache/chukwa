@@ -49,6 +49,7 @@ import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
 import org.apache.hadoop.chukwa.datacollection.connector.PipelineConnector;
 import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
 import org.apache.hadoop.chukwa.util.AdaptorNamingUtils;
+import org.apache.hadoop.chukwa.util.ChukwaUtil;
 import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
@@ -276,7 +277,7 @@ public class ChukwaAgent implements AdaptorManager {
         System.exit(0);
       }
 
-      conf = readConfig();
+      conf = ChukwaUtil.readConfiguration();
       agent = new ChukwaAgent(conf);
       
       if (agent.anotherAgentIsRunning()) {
@@ -734,44 +735,6 @@ public class ChukwaAgent implements AdaptorManager {
   
   public Connector getConnector() {
     return connector;
-  }
-
-  private static Configuration readConfig() {
-    Configuration conf = new Configuration();
-
-    String chukwaHomeName = System.getenv("CHUKWA_HOME");
-    if (chukwaHomeName == null) {
-      chukwaHomeName = "";
-    }
-    File chukwaHome = new File(chukwaHomeName).getAbsoluteFile();
-
-    log.info("Config - CHUKWA_HOME: [" + chukwaHome.toString() + "]");
-
-    String chukwaConfName = System.getProperty("CHUKWA_CONF_DIR");
-    File chukwaConf;
-    if (chukwaConfName != null)
-      chukwaConf = new File(chukwaConfName).getAbsoluteFile();
-    else
-      chukwaConf = new File(chukwaHome, "conf");
-
-    log.info("Config - CHUKWA_CONF_DIR: [" + chukwaConf.toString() + "]");
-    File agentConf = new File(chukwaConf, "chukwa-agent-conf.xml");
-    conf.addResource(new Path(agentConf.getAbsolutePath()));
-    conf.addResource(new Path( new File(chukwaConf, "chukwa-common.xml").getAbsolutePath()));
-    if (conf.get("chukwaAgent.checkpoint.dir") == null)
-      conf.set("chukwaAgent.checkpoint.dir", new File(chukwaHome, "var")
-          .getAbsolutePath());
-    conf.set("chukwaAgent.initial_adaptors", new File(chukwaConf,
-        "initial_adaptors").getAbsolutePath());
-    try { 
-      Configuration chukwaAgentConf = new Configuration(false);
-      chukwaAgentConf.addResource(new Path(agentConf.getAbsolutePath()));
-      Checker.checkConf(new OptDictionary(new File(new File(chukwaHome, "share/chukwa/lib"), "agent.dict")),
-          HSlurper.fromHConf(chukwaAgentConf));
-    } catch(Exception e) {
-      e.printStackTrace();
-    }    
-    return conf;
   }
 
   public void shutdown() {

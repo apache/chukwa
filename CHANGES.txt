@@ -12,6 +12,8 @@ Release 0.6 - Unreleased
 
   NEW FEATURES
 
+    CHUKWA-715. Added Oozie Adaptor for collecting Oozie metrics.  (Sreepathi Prasanna via Eric Yang)
+
     CHUKWA-712. Implemented generic REST Adaptor for fetch data from web service.  (Sreepathi Prasanna via Eric Yang)
 
     CHUKWA-674. Integrated Chukwa collector feature to Chukwa Agent.  (Eric Yang)
