@@ -28,6 +28,7 @@ import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
+import org.apache.hadoop.chukwa.extraction.engine.Record;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -49,7 +50,7 @@ public class TestJsonProcessors extends TestCase {
 		ChukwaTestOutputCollector<ChukwaRecordKey, ChukwaRecord> output = new ChukwaTestOutputCollector<ChukwaRecordKey, ChukwaRecord>();
 		p.process(new ChukwaArchiveKey(), chunk, output, null);
 		HashMap<ChukwaRecordKey, ChukwaRecord> outData = output.data;
-
+		
 		// First get all ChukwaRecords and then get all field-data pairs within
 		// each record
 		Iterator<Entry<ChukwaRecordKey, ChukwaRecord>> recordIter = outData
@@ -60,8 +61,10 @@ public class TestJsonProcessors extends TestCase {
 			ChukwaRecord value = recordEntry.getValue();
 			String[] fields = value.getFields();
 			for (String field : fields) {
-				//ignore ctags
-				if(field.equals("ctags")) {
+				//ignore ctags, capps, csource
+				if (field.equals(Record.tagsField)
+						|| field.equals(Record.applicationField)
+						|| field.equals(Record.sourceField)) {
 					continue;
 				}
 				String data = value.getValue(field);
@@ -230,6 +233,108 @@ public class TestJsonProcessors extends TestCase {
 		json.put("packetsSent", "73");
 		failMsg = testProcessor(p, json, ch);
 		assertNull(failMsg, failMsg);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void testSysteMetricsProcessor() {
+		JSONObject system = new JSONObject();
+		JSONObject memory = new JSONObject();
+		JSONObject cpu1 = new JSONObject();
+		JSONObject cpu2 = new JSONObject();
+		JSONObject cpu3 = new JSONObject();
+		JSONObject cpu4 = new JSONObject();
+		JSONObject disk1 = new JSONObject();
+		JSONObject disk2 = new JSONObject();
+		JSONObject network1 = new JSONObject();
+		JSONObject network2 = new JSONObject();
+
+		JSONArray cpu = new JSONArray();
+		JSONArray loadAvg = new JSONArray();
+		JSONArray disk = new JSONArray();
+		JSONArray network = new JSONArray();
+
+		memory.put("Total", "130980773888");
+		memory.put("UsedPercent", "4.493927773730516");
+		memory.put("FreePercent", "95.50607222626948");
+		memory.put("ActualFree", "125094592512");
+		memory.put("ActualUsed", "5886181376");
+		memory.put("Free", "34487599104");
+		memory.put("Used", "96493174784");
+		memory.put("Ram", "124920");
+		system.put("memory", memory);
+
+		system.put("timestamp", 1353981082318L);
+		system.put("uptime", "495307.98");
+
+		cpu1.put("combined", 0.607);
+		cpu1.put("user", 0.49);
+		cpu1.put("idle", 0.35);
+		cpu1.put("sys", 0.116);
+		cpu2.put("combined", 0.898);
+		cpu2.put("user", 0.69);
+		cpu2.put("idle", 0.06);
+		cpu2.put("sys", 0.202);
+		// include chunks which have null values, to simulate sigar issue on
+		// pLinux
+		cpu3.put("combined", null);
+		cpu3.put("user", null);
+		cpu3.put("idle", null);
+		cpu3.put("sys", null);
+		cpu4.put("combined", "null");
+		cpu4.put("user", "null");
+		cpu4.put("idle", "null");
+		cpu4.put("sys", "null");
+		cpu.add(cpu1);
+		cpu.add(cpu2);
+		cpu.add(cpu3);
+		system.put("cpu", cpu);
+
+		loadAvg.add("0.16");
+		loadAvg.add("0.09");
+		loadAvg.add("0.06");
+		system.put("loadavg", loadAvg);
+
+		disk1.put("ReadBytes", 220000000000L);
+		disk1.put("Reads", 12994476L);
+		disk2.put("ReadBytes", 678910987L);
+		disk2.put("Reads", 276L);
+		disk.add(disk1);
+		disk.add(disk2);
+		system.put("disk", disk);
+
+		network1.put("RxBytes", 7234832487L);
+		network2.put("RxBytes", 8123023483L);
+		network.add(network1);
+		network.add(network2);
+		system.put("network", network);
+
+		byte[] data = system.toString().getBytes();
+		// parse with
+		// org.apache.hadoop.chukwa.extraction.demux.processor.mapper.SystemMetrics
+		// and verify cpu usage aggregates
+		SystemMetrics p = new SystemMetrics();
+		ChunkImpl ch = new ChunkImpl("TestType", "Test", data.length, data,
+				null);
+		ChukwaTestOutputCollector<ChukwaRecordKey, ChukwaRecord> output = new ChukwaTestOutputCollector<ChukwaRecordKey, ChukwaRecord>();
+		p.process(new ChukwaArchiveKey(), ch, output, null);
+		HashMap<ChukwaRecordKey, ChukwaRecord> outData = output.data;
+		Iterator<Entry<ChukwaRecordKey, ChukwaRecord>> recordIter = outData
+				.entrySet().iterator();
+		while (recordIter.hasNext()) {
+			Entry<ChukwaRecordKey, ChukwaRecord> recordEntry = recordIter
+					.next();
+			ChukwaRecordKey key = recordEntry.getKey();
+			ChukwaRecord value = recordEntry.getValue();
+			if (value.getValue("combined") != null) {
+				assertEquals(Double.parseDouble(value.getValue("combined")),
+						0.7525);
+				assertEquals(Double.parseDouble(value.getValue("user")), 0.59);
+				assertEquals(Double.parseDouble(value.getValue("sys")), 0.159);
+				assertEquals(Double.parseDouble(value.getValue("idle")), 0.205);
+				System.out.println("CPU metrics verified");
+			}
+		}
+
 	}
 }
 

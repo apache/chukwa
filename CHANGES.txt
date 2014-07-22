@@ -36,6 +36,8 @@ Release 0.6 - Unreleased
 
   IMPROVEMENTS
 
+    CHUKWA-713. Improved error handling and test case for System Metrics.  (Shreyas Subramanya via Eric Yang)
+
     CHUKWA-721. Updated Chukwa document to reflect changes in Chukwa 0.6.  (Eric Yang)
 
     CHUKWA-718. Updated Chukwa Agent REST API document and generation method.  (Eric Yang)

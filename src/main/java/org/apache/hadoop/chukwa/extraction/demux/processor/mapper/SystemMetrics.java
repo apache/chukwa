@@ -61,8 +61,14 @@ public class SystemMetrics extends AbstractProcessor {
     double user = 0.0;
     double sys = 0.0;
     double idle = 0.0;
+    int actualSize = 0;
     for(int i = 0; i< cpuList.size(); i++) {
       JSONObject cpu = (JSONObject) cpuList.get(i);
+      //Work around for sigar returning null sometimes for cpu metrics on pLinux
+      if(cpu.get("combined") == null){
+    	  continue;
+      }
+      actualSize++;
       Iterator<String> keys = cpu.keySet().iterator();
       combined = combined + Double.parseDouble(cpu.get("combined").toString());
       user = user + Double.parseDouble(cpu.get("user").toString());
@@ -73,10 +79,10 @@ public class SystemMetrics extends AbstractProcessor {
         record.add(key + "." + i, cpu.get(key).toString());
       }
     }
-    combined = combined / cpuList.size();
-    user = user / cpuList.size();
-    sys = sys / cpuList.size();
-    idle = idle / cpuList.size();
+    combined = combined / actualSize;
+    user = user / actualSize;
+    sys = sys / actualSize;
+    idle = idle / actualSize;
     record.add("combined", Double.toString(combined));
     record.add("user", Double.toString(user));
     record.add("idle", Double.toString(idle));    
@@ -165,6 +171,8 @@ public class SystemMetrics extends AbstractProcessor {
     double reads = 0;
     double writeBytes = 0;
     double writes = 0;
+    double total = 0;
+    double used = 0;
     record = new ChukwaRecord();
     JSONArray diskList = (JSONArray) json.get("disk");
     for(int i = 0;i < diskList.size(); i++) {
@@ -181,13 +189,21 @@ public class SystemMetrics extends AbstractProcessor {
           writeBytes = writeBytes + (Long) disk.get("WriteBytes");
         } else if(key.equals("Writes")) {
           writes = writes + (Long) disk.get("Writes");
+        }  else if(key.equals("Total")) {
+          total = total + (Long) disk.get("Total");
+        } else if(key.equals("Used")) {
+          used = used + (Long) disk.get("Used");
         }
       }
     }
+    double percentUsed = used/total; 
     record.add("ReadBytes", Double.toString(readBytes));
     record.add("Reads", Double.toString(reads));
     record.add("WriteBytes", Double.toString(writeBytes));
-    record.add("Writes", Double.toString(writes));    
+    record.add("Writes", Double.toString(writes));
+    record.add("Total", Double.toString(total));
+    record.add("Used", Double.toString(used));
+    record.add("PercentUsed", Double.toString(percentUsed));
     buildGenericRecord(record, null, cal.getTimeInMillis(), "disk");
     output.collect(key, record);
     
