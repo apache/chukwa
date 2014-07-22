@@ -12,6 +12,8 @@ Release 0.6 - Unreleased
 
   NEW FEATURES
 
+    CHUKWA-712. Implemented generic REST Adaptor for fetch data from web service.  (Sreepathi Prasanna via Eric Yang)
+
     CHUKWA-674. Integrated Chukwa collector feature to Chukwa Agent.  (Eric Yang)
 
     CHUKWA-705. Updated Chukwa to support JDK7 and updated to Hadoop 1.2.1 and HBase 0.96.1.1.  (Eric Yang)
