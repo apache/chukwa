@@ -36,6 +36,10 @@
       <outputDirectory>etc/chukwa</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>contrib/solr</directory>
+      <outputDirectory>etc/solr</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>bin</directory>
       <includes>
         <include>chukwa</include>

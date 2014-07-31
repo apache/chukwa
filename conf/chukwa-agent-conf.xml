@@ -97,4 +97,13 @@
     <value>HADOOP</value>
   </property>
 
+  <property>
+    <name>solr.cloud.address</name>
+    <value>localhost:2181</value>
+  </property>
+
+  <property>
+    <name>solr.collection</name>
+    <value>logs</value>
+  </property>
 </configuration>
