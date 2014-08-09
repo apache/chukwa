@@ -770,6 +770,7 @@
                         <exclude>src/main/web/hicc/descriptors/**</exclude>
                         <exclude>src/main/web/hicc/views/**</exclude>
                         <exclude>contrib/chukwa-pig/src/java/org/apache/hadoop/chukwa/ChukwaStorage.java</exclude>
+                        <exclude>contrib/solr/logs/**</exclude>
                         <!-- Test samples -->
                         <exclude>src/test/resources/Hadoop18JobHistoryLog.txt</exclude>
                         <exclude>src/test/resources/TestJobLog.txt</exclude>

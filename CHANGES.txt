@@ -74,6 +74,8 @@ Release 0.6 - Unreleased
 
   BUGS
 
+    CHUKWA-725. Remove Solr config file from license scanning.  (Eric Yang)
+
     CHUKWA-716. Fixed undefined System Properties for test cases and test case dependency.  (Eric Yang)
 
     CHUKWA-708. Update website reference to top level project.  (Eric Yang)
