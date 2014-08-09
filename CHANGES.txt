@@ -74,6 +74,8 @@ Release 0.6 - Unreleased
 
   BUGS
 
+    CHUKWA-726. Reduce SocketAdaptor test case timer delay from 120 to 10 seconds.  (Eric Yang)
+
     CHUKWA-725. Remove Solr config file from license scanning.  (Eric Yang)
 
     CHUKWA-716. Fixed undefined System Properties for test cases and test case dependency.  (Eric Yang)

@@ -26,7 +26,7 @@ import junit.framework.TestCase;
 public class TestSocketAdaptor extends TestCase {
   public void testBindRetry() {
     int port = 9181;
-    int delay = 120000;
+    int delay = 10000;
     ServerSocket sock1 = null;
     ServerSocket sock2 = null;
     SocketAdaptor adaptor = new SocketAdaptor();
@@ -42,7 +42,7 @@ public class TestSocketAdaptor extends TestCase {
       fail("IOException binding to " + port);
     }
     // now try binding to the same port through SocketAdaptor
-    // making sure we retry until the specified time of 120s
+    // making sure we retry until the specified time of 10s
     long startTime = System.currentTimeMillis();
     try {
       sock2 = new ServerSocket();
