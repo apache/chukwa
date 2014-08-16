@@ -8,7 +8,7 @@ Trunk (unreleased changes)
 
   BUGS
 
-Release 0.6 - Unreleased
+Release 0.6 - 08/16/2014
 
   NEW FEATURES
 
