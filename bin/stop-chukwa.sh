@@ -23,6 +23,11 @@ bin=`cd "$bin"; pwd`
 
 . "$bin"/../libexec/chukwa-config.sh
 
-"$bin"/stop-data-processors.sh --config $CHUKWA_CONF_DIR
+# stop data processors
+# "$bin"/stop-data-processors.sh --config $CHUKWA_CONF_DIR
+
+# stop hicc
+"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR stop hicc
+
+# stop agents
 "$bin"/stop-agents.sh --config $CHUKWA_CONF_DIR
-"$bin"/stop-collectors.sh --config $CHUKWA_CONF_DIR
