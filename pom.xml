@@ -20,7 +20,7 @@
     <properties>
         <buildtype>test</buildtype>
         <BUILD_NUMBER>${env.BUILD_NUMBER}</BUILD_NUMBER>
-        <VERSION>0.6.0-SNAPSHOT</VERSION>
+        <VERSION>0.6.0</VERSION>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <package.prefix>/usr</package.prefix>
         <package.conf.dir>/etc/chukwa</package.conf.dir>
