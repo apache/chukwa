@@ -13,29 +13,21 @@
 ~~ See the License for the specific language governing permissions and
 ~~ limitations under the License.
 ~~
-Release Notes - Hadoop Chukwa - Version 0.5
+Release Notes - Hadoop Chukwa - Version 0.6
 
 Overall Status
 
-  This is the third public release of Chukwa, a log analysis framework on top of Hadoop 
+  This is the fourth public release of Chukwa, a log analysis framework on top of Hadoop 
 and HBase.  Chukwa has been tested at scale and used in some production settings, and 
 is reasonably robust and well behaved. For instructions on setting up Chukwa, see the 
 administration guide and the rest of the Chukwa documentation.
 
-  The collection components of Chukwa -- adaptors, agents, and collectors have been fairly 
-aggressively tested, and can be counted on to perform properly and recover from failures.
-
-  The demux pipeline has been cleaned up somewhat, and is now documented. See the programming 
-guide for a discussion of how to customize demux for your purposes.
-
-  HICC, the visualization component, is still "beta" quality. It's been used succesfully at 
-multiple sites, but work is ongoing. 
-
 Important Changes Since Last Release
 
-  * Chukwa can store data on HBase for improved random read/write performance.
+  * Chukwa can store data on HBase for improved low latency read performance.
 
-  * New addition of SocketAdaptor for streaming Log4JSocketAppender traffic.
+  * Chukwa collector has been deprecated.  HBase and HDFS can support better reliability
+for data injection.  The original purpose of collector is superseded by both services.
 
   * There have been a number of bug fixes and code cleanups since the last release; 
     check the changelog and JIRA for details.
@@ -43,7 +35,7 @@ Important Changes Since Last Release
 Requirements
 
   Chukwa relies on Java 1.6, and requires maven 3.0.3 to build.
-The back-end processing requires Hadoop 0.20.205.1+, HBase 0.90.4+, and Pig 0.9.1+.
+The back-end processing requires Hadoop 1.2.1+, HBase 0.96+, and Pig 0.9.1+.
 
 Known Limitations
 
