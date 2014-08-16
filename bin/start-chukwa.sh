@@ -23,11 +23,11 @@ bin=`cd "$bin"; pwd`
 
 . "$bin"/../libexec/chukwa-config.sh
 
-# start collectors
-"$bin"/start-collectors.sh --config $CHUKWA_CONF_DIR
-
 # start agents
 "$bin"/start-agents.sh --config $CHUKWA_CONF_DIR
 
 # start data processors
-"$bin"/start-data-processors.sh --config $CHUKWA_CONF_DIR
+# "$bin"/start-data-processors.sh --config $CHUKWA_CONF_DIR
+
+# start hicc
+"$bin"/chukwa-daemon.sh --config $CHUKWA_CONF_DIR start hicc
