@@ -303,13 +303,13 @@
           <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
-            <version>4.9.0</version>
+            <version>4.7.2</version>
             <type>jar</type>
           </dependency>
           <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-test-framework</artifactId>
-            <version>4.9.0</version>
+            <version>4.7.2</version>
             <type>jar</type>
             <scope>test</scope>
             <exclusions>
@@ -473,7 +473,7 @@
                       </goals>
                       <!--<compilerArgument>-Xlint:unchecked</compilerArgument>
                       <compilerArgument>-Xlint:deprecation</compilerArgument>-->
-                      <compilerVersion>1.7</compilerVersion>
+                      <compilerVersion>1.6</compilerVersion>
                       <source>1.6</source>
                       <target>1.6</target>
                       <testExcludes>
