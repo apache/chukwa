@@ -74,6 +74,8 @@ Release 0.6 - 08/16/2014
 
   BUGS
 
+    CHUKWA-729. Downgrade solr version for JDK 6 support.  (Eric Yang)
+
     CHUKWA-728. Update start/stop scripts to essential components.  (Eric Yang)
 
     CHUKWA-726. Reduce SocketAdaptor test case timer delay from 120 to 10 seconds.  (Eric Yang)
