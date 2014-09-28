@@ -66,6 +66,8 @@ Release 0.6 - 08/16/2014
 
   BUGS
 
+    CHUKWA-730. Updated Solr schema to work with Solr 4.7.2.  (Eric Yang)
+
     CHUKWA-729. Downgrade solr version for JDK 6 support.  (Eric Yang)
 
     CHUKWA-728. Update start/stop scripts to essential components.  (Eric Yang)
