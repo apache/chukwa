@@ -53,7 +53,7 @@
        1.0: Generic Hadoop log collection
      -->
 
-
+<fields>
    <!-- Valid attributes for fields:
      name: mandatory - the name for the field
      type: mandatory - the name of a field type from the 
@@ -111,7 +111,6 @@
      installations. See the <uniqueKey> declaration below where <uniqueKey> is set to "id".
    -->   
    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" /> 
-        
    <field name="seqId" type="string" indexed="true" stored="true" omitNorms="true"/>
    <field name="type" type="text_general" indexed="true" stored="true" omitNorms="true"/>
    <field name="stream" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -122,6 +121,8 @@
    <!-- catchall field, containing all other searchable text fields (implemented
         via copyField further on in this schema  -->
    <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
+
+</fields>
 
  <!-- Field to use to determine and enforce document uniqueness. 
       Unless this field is marked with required="false", it will be a required field
@@ -152,6 +153,7 @@
    <copyField source="tags" dest="text"/>
    <copyField source="data" dest="text"/>
 
+   <types>
     <!-- The StrField type is not analyzed, but indexed/stored verbatim.
        It supports doc values but in that case the field needs to be
        single-valued and either required or have a default value.
@@ -365,5 +367,5 @@
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldType>
-
+  </types>
 </schema>
