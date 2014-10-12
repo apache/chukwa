@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+<project default="scan" name="Ant task examples"> 
+  <description> 
+    A few examples of using the Ant task, for more examples see the
+    AntUnit tests
+  </description> 
+ 
+ 
+  <target name="scan" depends="-taskdef"
+    description="runs the task over RAT's source tree"> 
+    <rat:report xmlns:rat="antlib:org.apache.rat.anttasks"> 
+      <fileset dir="."> 
+        <patternset id="exclusions"> 
+            <!-- notice files -->
+            <exclude name="CHANGES.txt"/>
+
+            <!-- generated files -->
+            <exclude name="bin/VERSION"/>
+            <exclude name="**/target/**"/>
+            <exclude name="**/.classpath"/>
+            <exclude name="**/.project"/>
+            <exclude name="**/.settings/**"/>
+
+            <!-- Data files -->
+            <exclude name="conf/agents"/>
+            <exclude name="conf/alert"/>
+            <exclude name="conf/auth.conf"/>
+            <exclude name="conf/collectors"/>
+            <exclude name="conf/hbase.schema"/>
+            <exclude name="conf/initial_adaptors"/>
+            <exclude name="conf/jmxremote.access"/>
+            <exclude name="conf/jmxremote.password"/>
+            <exclude name="contrib/solr/logs/conf/_schema_analysis_stopwords_english.json"/>
+            <exclude name="contrib/solr/logs/conf/_schema_analysis_synonyms_english.json"/>
+            <exclude name="src/main/web/hicc/descriptors/**"/>
+            <exclude name="src/main/web/hicc/views/**"/>
+
+            <!-- Test samples -->
+            <exclude name="src/test/resources/Hadoop18JobHistoryLog.txt"/>
+            <exclude name="src/test/resources/TestJobLog.txt"/>
+            <exclude name="test/samples/ClientTrace.log"/>
+            <exclude name="test/samples/Iostat.log"/>
+            <exclude name="test/samples/JobHistory.log"/>
+
+            <!-- bsd licensed files -->
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_da.txt"/>
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_de.txt"/>
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_es.txt"/>
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_fa.txt"/>
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_fi.txt"/>
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_fr.txt"/>
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_hi.txt"/>
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_hu.txt"/>
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_it.txt"/>
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_nl.txt"/>
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_no.txt"/>
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_pt.txt"/>
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_ru.txt"/>
+            <exclude name="contrib/solr/logs/conf/lang/stopwords_sv.txt"/>
+            <exclude name="src/main/web/hicc/js/jquery-*"/>
+            <exclude name="src/main/web/hicc/css/iui.css"/>
+            <exclude name="src/main/web/hicc/js/behaviour.js"/>
+            <exclude name="src/main/web/hicc/js/heatmap.js"/>
+            <exclude name="src/main/web/hicc/js/iui.js"/>
+            <exclude name="src/main/web/hicc/js/yahoo-dom-event.js"/>
+            <exclude name="src/main/web/hicc/js/treeview-min.js"/>
+
+            <!-- MIT licensed files -->
+            <exclude name="contrib/solr/logs/conf/velocity/jquery.autocomplete.js"/>
+            <exclude name="src/main/web/hicc/css/flexigrid/flexigrid.css"/>
+            <exclude name="src/main/web/hicc/css/timeline.css"/>
+            <exclude name="src/main/web/hicc/lib/timeline/**"/>
+            <exclude name="lib/agent.dict"/>
+            <exclude name="lib/collector.dict"/>
+            <exclude name="lib/confspellcheck-README"/>
+            <exclude name="lib/json-README.txt"/>
+            <exclude name="src/main/web/hicc/js/ajaxtree.js"/>
+            <exclude name="src/main/web/hicc/js/flexigrid.js"/>
+            <exclude name="src/main/web/hicc/js/flexigrid.pack.js"/>
+            <exclude name="src/main/web/hicc/js/workspace/builder.js"/>
+            <exclude name="src/main/web/hicc/js/workspace/controls.js"/>
+            <exclude name="src/main/web/hicc/js/workspace/dragdrop.js"/>
+            <exclude name="src/main/web/hicc/js/workspace/effects.js"/>
+            <exclude name="src/main/web/hicc/js/workspace/scriptaculous.js"/>
+            <exclude name="src/main/web/hicc/js/workspace/slider.js"/>
+            <exclude name="src/main/web/hicc/js/workspace/sound.js"/>
+            <exclude name="src/main/web/hicc/js/org/tool-man/*"/>
+            <exclude name="src/main/web/hicc/js/timeframe.js"/>
+            <exclude name="src/main/web/hicc/js/workspace/prototype.js"/>
+            <exclude name="src/main/web/hicc/js/jquery.flot.pack.js"/>
+            <exclude name="src/main/web/hicc/js/gsv.js"/>
+
+            <!-- Creative Commons licensed files -->
+            <exclude name="src/main/web/hicc/js/autoHeight.js"/>
+
+            <!-- Public Domain -->
+            <exclude name="src/main/web/hicc/js/base64.js"/>
+            <exclude name="src/main/web/hicc/js/canvas2image.js"/>
+            <exclude name="src/main/web/hicc/js/json.js"/>
+        </patternset>
+      </fileset> 
+    </rat:report> 
+  </target>
+
+  <condition property="rat.already.downloaded">
+    <not><available file="${java.io.tmpdir}/rat.zip"/></not>
+  </condition>
+
+  <target name="download-rat" if="rat.already.downloaded">
+    <get src="http://archive.apache.org/dist/incubator/rat/apache-rat-incubating-current-bin.zip" dest="${java.io.tmpdir}/rat.zip"/>
+  </target>
+
+  <target name="-taskdef" depends="download-rat">
+    <unzip src="${java.io.tmpdir}/rat.zip" dest="${java.io.tmpdir}/rat"/>
+
+    <typedef resource="org/apache/rat/anttasks/antlib.xml"
+             uri="antlib:org.apache.rat.anttasks">
+
+      <classpath>
+        <fileset dir="${java.io.tmpdir}/rat/">
+           <include name="**/apache-rat*.jar"/>
+           <include name="**/lib/**/commons-*.jar"/>
+        </fileset> 
+      </classpath> 
+    </typedef> 
+  </target> 
+</project> 
