@@ -1,6 +1,6 @@
 Chukwa Change Log
 
-Release 0.6 - 08/16/2014
+Release 0.6 - 10/12/2014
 
   NEW FEATURES
 
