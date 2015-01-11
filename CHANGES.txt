@@ -6,6 +6,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+  CHUKWA-723. Update Chukwa code to use new HBase HConnection API.  (Sreepathi Prasanna via Eric Yang)
+
   BUGS
 
 Release 0.6 - 09/28/2014
