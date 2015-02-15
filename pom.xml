@@ -118,11 +118,14 @@
             <version>0.2.6</version>
           </dependency>
           <dependency>
-            <groupId>org.apache.log4j</groupId>
-            <artifactId>NagiosAppender</artifactId>
-            <version>1.5.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/NagiosAppender-1.5.0.jar</systemPath>
+            <groupId>com.googlecode.jsendnsca</groupId>
+            <artifactId>jsendnsca</artifactId>
+            <version>2.0.1</version>
+          </dependency>
+          <dependency>
+	    <groupId>de.viaboxx</groupId>
+	    <artifactId>log4j-nagios-appender</artifactId>
+	    <version>1.1</version>
           </dependency>
           <dependency>
             <groupId>org.fusesource</groupId>
@@ -1276,6 +1279,10 @@
         <repository>
             <id>opencast</id>
             <url>http://repository.opencastproject.org/nexus/content/repositories/public/</url>
+        </repository>
+        <repository>
+            <id>pentaho</id>
+            <url>http://repository.pentaho.org/artifactory/repo/</url>
         </repository>
     </repositories>
 

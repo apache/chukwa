@@ -10,6 +10,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+  CHUKWA-735. Updated Nagios support to support basic encryption.  (Eric Yang)
+
 Release 0.6 - 09/28/2014
 
   NEW FEATURES

@@ -261,16 +261,16 @@ public class DemuxManager implements CHUKWA_CONSTANT {
      
      // send Demux status
      if (demuxStatus == true) {
-       NagiosHelper.sendNsca(nagiosHost,nagiosPort,reportingHost,"DemuxProcessing","Demux OK",NagiosHelper.NAGIOS_OK);
+       NagiosHelper.sendNsca("Demux OK",NagiosHelper.NAGIOS_OK);
      } else {
-       NagiosHelper.sendNsca(nagiosHost,nagiosPort,reportingHost,"DemuxProcessing","Demux failed. " + demuxException,NagiosHelper.NAGIOS_CRITICAL);
+       NagiosHelper.sendNsca("Demux failed. " + demuxException,NagiosHelper.NAGIOS_CRITICAL);
      }
      
      // send DemuxInErrorStatus
      if (demuxInErrorStatus == false) {
-       NagiosHelper.sendNsca(nagiosHost,nagiosPort,reportingHost,"DemuxInErrorDirectory","DemuxInError OK",NagiosHelper.NAGIOS_OK);
+       NagiosHelper.sendNsca("DemuxInError OK",NagiosHelper.NAGIOS_OK);
      } else {
-       NagiosHelper.sendNsca(nagiosHost,nagiosPort,reportingHost,"DemuxInErrorDirectory","DemuxInError not empty -" + demuxInErrorMsg,NagiosHelper.NAGIOS_CRITICAL);
+       NagiosHelper.sendNsca("DemuxInError not empty -" + demuxInErrorMsg,NagiosHelper.NAGIOS_CRITICAL);
      }
      
    }
