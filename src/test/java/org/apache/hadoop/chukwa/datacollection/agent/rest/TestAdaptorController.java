@@ -52,6 +52,7 @@ public class TestAdaptorController extends TestCase {
   MockHttpServletRequest request;
   MockHttpServletResponse response;
   StringBuilder sb;
+  String adaptor;
 
   protected void setUp() throws Exception {
     agent = ChukwaAgent.getAgent();
@@ -77,11 +78,12 @@ public class TestAdaptorController extends TestCase {
     request.setContextPath("/foo/bar");
 
     response = new MockHttpServletResponse();
-    agent.processAddCommandE("add org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor SomeDataType 0");
+    adaptor = agent.processAddCommandE("add org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor SomeDataType 0");
     sb = new StringBuilder();
   }
 
   protected void tearDown() throws Exception {
+    agent.getAdaptor(adaptor);
     agent.shutdown();
     jettyServer.stop();
   }

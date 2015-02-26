@@ -5,6 +5,8 @@ Trunk (unreleased changes)
   NEW FEATURES
 
     CHUKWA-736. SSL support for chukwa. (Shreyas Subramanya)
+    
+    CHUKWA-737. Heartbeat adaptor to push status to remote http server (Shreyas Subramanya)
 
   IMPROVEMENTS
 
