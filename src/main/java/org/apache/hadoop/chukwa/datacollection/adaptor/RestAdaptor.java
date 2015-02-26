@@ -18,6 +18,10 @@
 
 package org.apache.hadoop.chukwa.datacollection.adaptor;
 
+import java.io.FileInputStream;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.Timer;
@@ -25,11 +29,21 @@ import java.util.TimerTask;
 
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
+import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.log4j.Logger;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
+import org.apache.hadoop.conf.Configuration;
+import static org.apache.hadoop.chukwa.datacollection.agent.ChukwaConstants.*;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.client.urlconnection.HTTPSProperties;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 
 import javax.ws.rs.core.MediaType;
 
@@ -128,8 +142,53 @@ public class RestAdaptor extends AbstractAdaptor {
       log.warn("bad syntax in RestAdaptor args");
       return null;
     }
-    c = Client.create();
+    try {
+      initClient();
+    } catch (Exception e) {
+      log.error(ExceptionUtil.getStackTrace(e));
+      return null;
+    }    
     return s;
+  }
+  
+  private void initClient() throws Exception {
+    if (uri.contains("https")) {
+      Configuration conf = ChukwaAgent.getAgent().getConfiguration();
+      String trustStoreFile = conf.get(TRUSTSTORE_STORE);
+      String trustStorePw = conf.get(TRUST_PASSWORD);
+      if (trustStoreFile == null || trustStorePw == null) {
+        throw new Exception(
+            "Cannot instantiate RestAdaptor to uri "
+                + uri
+                + " due to missing trust store configurations chukwa.ssl.truststore.store and chukwa.ssl.trust.password");
+      }
+      String trustStoreType = conf.get(TRUSTSTORE_TYPE, DEFAULT_STORE_TYPE);
+      KeyStore trustStore = KeyStore.getInstance(trustStoreType);
+      FileInputStream fis = null;
+      try {
+        fis = new FileInputStream(trustStoreFile);
+        trustStore.load(fis, trustStorePw.toCharArray());
+      } finally {
+        if (fis != null) {
+          fis.close();
+        }
+      }
+      TrustManagerFactory tmf = TrustManagerFactory
+          .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+      tmf.init(trustStore);
+      TrustManager[] trustManagers = tmf.getTrustManagers();
+
+      SSLContext ctx = null;
+      String protocol = conf.get(SSL_PROTOCOL, DEFAULT_SSL_PROTOCOL);
+      ctx = SSLContext.getInstance(protocol);
+      ctx.init(null, trustManagers, new SecureRandom());
+      ClientConfig cc = new DefaultClientConfig();
+      HTTPSProperties props = new HTTPSProperties(null, ctx);
+      cc.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, props);
+      c = Client.create(cc);
+    } else {
+      c = Client.create();
+    }
   }
 
 }
