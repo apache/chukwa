@@ -56,7 +56,8 @@ To build Chukwa from source you require <a href="http://maven.apache.org">Apache
 mvn clean package
 ```
 To check that things are ok, run 
-```ant test
+```
+ant test
 ```
 tests should take and run successfully after roughly fifteen minutes.
 
