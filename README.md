@@ -62,9 +62,9 @@ tests should take and run successfully after roughly fifteen minutes.
 
 ##Running Cukwa
 
-If you are unfamiliar with Chukwa, you should start by reading the 
-<a href="">design overview</a>. This will tell you what each piece of Chukwa
-does.  
+Users should definately begin with the 
+<a href="http://chukwa.apache.org/docs/r0.6.0/Quick_Start_Guide.html">
+Chukwa Quick Start Guide</a>
 
 If you're impatient, the following is the 30-second explanation:
 
@@ -81,6 +81,4 @@ bin/start-collectors.sh that does the same to start collectors, on
 machines listed in conf/collectors.  One hostname per line.
 
 There are stop scripts that do the exact opposite of the start commands. 
-
-Full installation instructions are in docs/admin.html. 
 
