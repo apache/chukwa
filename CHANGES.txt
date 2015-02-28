@@ -12,6 +12,8 @@ Trunk (unreleased changes)
 
   CHUKWA-723. Update Chukwa code to use new HBase HConnection API.  (Sreepathi Prasanna via Eric Yang)
 
+  CHUKWA-738. Updated dragging event handling over iframe.  (Eric Yang)
+
   BUGS
 
   CHUKWA-735. Updated Nagios support to support basic encryption.  (Eric Yang)

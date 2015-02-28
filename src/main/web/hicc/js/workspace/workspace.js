@@ -1791,15 +1791,11 @@ portalPage.prototype = {
       			reverteffect: function(element, top_offset, left_offset) {
         		element._revert = new Effect.Move(element, { x: -left_offset, y: -top_offset, duration: 0.001});
       		    }, onDrag: function(element, draggable, event) { 
-                        if(navigator.userAgent.indexOf('Firefox')!=-1) {
-                            var dh = getDocHeight(document)+500;
-                            document.getElementById('firefox-bug').style.display='block';
-                            document.getElementById('firefox-bug').style.height=dh+'px';
-                        }
+                        var dh = getDocHeight(document)+500;
+                        document.getElementById('firefox-bug').style.display='block';
+                        document.getElementById('firefox-bug').style.height=dh+'px';
                     }, onEnd: function(element, draggable, event) {
-                        if(navigator.userAgent.indexOf('Firefox')!=-1) {
-                            document.getElementById('firefox-bug').style.display='none';
-                        }
+                        document.getElementById('firefox-bug').style.display='none';
                     } });
             	    var div = document.createElement('DIV');
                     columnWidth = 99 - sumWidth;
@@ -1890,15 +1886,11 @@ portalPage.prototype = {
       		    reverteffect: function(element, top_offset, left_offset) {
         	    element._revert = new Effect.Move(element, { x: -left_offset, y: -top_offset, duration: 0.001});
       		    }, onDrag: function(element, draggable, event) { 
-                        if(navigator.userAgent.indexOf('Firefox')!=-1) {
-                            var dh = getDocHeight(document)+500;
-                            document.getElementById('firefox-bug').style.display='block';
-                            document.getElementById('firefox-bug').style.height=dh+'px';
-                        }
+                        var dh = getDocHeight(document)+500;
+                        document.getElementById('firefox-bug').style.display='block';
+                        document.getElementById('firefox-bug').style.height=dh+'px';
                     }, onEnd: function(element, draggable, event) {
-                        if(navigator.userAgent.indexOf('Firefox')!=-1) {
-                            document.getElementById('firefox-bug').style.display='none';
-                        }
+                        document.getElementById('firefox-bug').style.display='none';
                     } });
 	    }
         }
@@ -2000,11 +1992,9 @@ function moveDragableElement(e) {
    if(!okToMove)return;
    okToMove = false;
    
-   if(navigator.userAgent.indexOf('Firefox')!=-1) {
-      var dh = getDocHeight(document)+500;
-      document.getElementById('firefox-bug').style.display='block';
-      document.getElementById('firefox-bug').style.height=dh+'px';
-   }
+   var dh = getDocHeight(document)+500;
+   document.getElementById('firefox-bug').style.display='block';
+   document.getElementById('firefox-bug').style.height=dh+'px';
    destinationObj = false;	
    rectangleDiv.style.display = 'none'; 
    
@@ -2078,9 +2068,7 @@ function stop_dragDropElement() {
       return;
    }
    dragDropCounter = -1;
-   if(navigator.userAgent.indexOf('Firefox')!=-1) {
-      document.getElementById('firefox-bug').style.display='none';
-   }
+   document.getElementById('firefox-bug').style.display='none';
    if(transparencyWhenDragging){
       dragObject.style.filter = null;
       dragObject.style.opacity = null;
