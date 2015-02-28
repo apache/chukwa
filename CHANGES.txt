@@ -10,6 +10,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+  CHUKWA-740. Updated README file to be more current.  (Lewis John McGibbney via Eric Yang)
+
   CHUKWA-739. Update XSS Filter to use ESAPI and Jsoup.  (Eric Yang)
 
   CHUKWA-723. Update Chukwa code to use new HBase HConnection API.  (Sreepathi Prasanna via Eric Yang)
