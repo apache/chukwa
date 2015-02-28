@@ -21,72 +21,95 @@ package org.apache.hadoop.chukwa.util;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.josephoconnell.html.HTMLInputFilter;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+import org.owasp.esapi.ESAPI;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 public class XssFilter {
     private HttpServletRequest request = null;
-    private static Log log = LogFactory.getLog(XssFilter.class);
+    private static Log LOG = LogFactory.getLog(XssFilter.class);
     private HttpSession session = null;
 
     public XssFilter() {
     }
 
     public XssFilter(HttpServletRequest request) {
+      // Return the cleansed request
       this.request = request;
-      try {
-        this.session = request.getSession();
-        for (Enumeration e = request.getParameterNames() ; e.hasMoreElements() ;) {
-          Pattern p = Pattern.compile("_session\\.(.*)");
-          String name = (String) e.nextElement();
-          Matcher matcher = p.matcher(name);
-          if(matcher.find()) {
-            String realName = matcher.group(1);
-            if(session!=null) {
-              session.setAttribute(realName,filter(request.getParameter(name)));
-            }
-          }
-        }
-      } catch(NullPointerException ex) {
-        // Do nothing if session does not exist.
-        log.debug(ExceptionUtil.getStackTrace(ex));
-      }
     }
     
     public String getParameter(String key) {
-	String value=null;
-	try {
-	    value=this.request.getParameter(key);  
-	} catch (Exception e) {
-	    log.info("XssFilter.getParameter: Cannot get parameter for: "+key);
-	}
-	return filter(value);
+      String value=null;
+      try {
+        value=filter(this.request.getParameter(key));
+      } catch (Exception e) {
+        LOG.info("XssFilter.getParameter: Cannot get parameter for: "+key);
+      }
+      return value;
     }
     
     public String[] getParameterValues(String key) {
       String[] values=null;
       try {
 	  values  = this.request.getParameterValues(key);
-	  if(values!=null) {
-	      for(int i=0;i<values.length;i++) {
-		  values[i] = filter(values[i]);
-	      }
-	  }
+          int i = 0;
+          for(String value : values) {
+            values[i] = filter(value);
+            i++;
+          }
       } catch (Exception e) {
-	  log.info("XssFilter.getParameterValues: cannot get parameter for: "+key);
+	  LOG.info("XssFilter.getParameterValues: cannot get parameter for: "+key);
       }
       return values;
     }
-    
-    public static String filter( String input ) {
-        if(input==null) {
-            return null;
+
+    /**
+     * Apply the XSS filter to the parameters
+     * @param parameters
+     * @param type
+     */
+    private void cleanParams( MultivaluedMap<String, String> parameters ) {
+      for( Map.Entry<String, List<String>> params : parameters.entrySet() ) {
+        String key = params.getKey();
+        List<String> values = params.getValue();
+ 
+        List<String> cleanValues = new ArrayList<String>();
+        for( String value : values ) {
+          cleanValues.add( filter( value ) );
         }
-        String clean = new HTMLInputFilter().filter( input.replaceAll("\"", "%22").replaceAll("\'","%27"));
-        return clean.replaceAll("<", "%3C").replaceAll(">", "%3E");
+ 
+        parameters.put( key, cleanValues );
+      }
+    }
+ 
+    /**
+     * Strips any potential XSS threats out of the value
+     * @param value
+     * @return
+     */
+    public String filter( String value ) {
+      if( value == null )
+        return null;
+     
+      // Use the ESAPI library to avoid encoded attacks.
+      value = ESAPI.encoder().canonicalize( value );
+ 
+      // Avoid null characters
+      value = value.replaceAll("\0", "");
+ 
+      // Clean out HTML
+      value = Jsoup.clean( value, Whitelist.none() );
+ 
+      return value;
     }
 }

@@ -10,6 +10,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+  CHUKWA-739. Update XSS Filter to use ESAPI and Jsoup.  (Eric Yang)
+
   CHUKWA-723. Update Chukwa code to use new HBase HConnection API.  (Sreepathi Prasanna via Eric Yang)
 
   CHUKWA-738. Updated dragging event handling over iframe.  (Eric Yang)

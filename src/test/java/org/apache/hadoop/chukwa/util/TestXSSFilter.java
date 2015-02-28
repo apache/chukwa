@@ -29,9 +29,9 @@ public class TestXSSFilter extends TestCase {
     assertEquals(xssFiltered, "");
     xssTest = "\'\';!--\"<XSS>=&{()}";
     xssFiltered = xss.filter(xssTest);
-    assertEquals(xssFiltered, "&amp;{()}");
+    assertEquals(xssFiltered, "\'\';!--\"=&amp;{()}");
     xssTest = "<IMG \"\"\"><SCRIPT>alert(\"XSS\")</SCRIPT>\">";
     xssFiltered = xss.filter(xssTest);
-    assertEquals(xssFiltered, "%3Cimg /%3Ealert(%22XSS%22)");
+    assertEquals(xssFiltered, "\"&gt;");
   }
 }

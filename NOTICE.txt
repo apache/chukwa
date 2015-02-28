@@ -63,3 +63,9 @@ Copyright (c) 2012 Nathan Smith, http://formalize.me/
 
 This product includes heatmap.js
 Copyright (c) 2011-2013 Patrick Wied, http://www.patrick-wied.at/static/heatmapjs/
+
+This product includes jsoup
+Copyright (c) 2009 - 2014 Jonathan Hedley (jonathan@hedley.net)
+
+This product includes esapi
+Copyright (c) 2015 OWASP Project, https://www.owasp.org
