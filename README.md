@@ -57,7 +57,7 @@ mvn clean package
 ```
 To check that things are ok, run 
 ```
-ant test
+mvn test
 ```
 tests should take and run successfully after roughly fifteen minutes.
 
