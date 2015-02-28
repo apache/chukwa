@@ -71,15 +71,12 @@ If you're impatient, the following is the 30-second explanation:
 
 The minimum you need to run Chukwa are agents on each machine you're 
 monitoring, and a collector to write the collected data to HDFS.  The
-basic command to start an agent is bin/chukwa agent.  The base command to
-start a collector is bin/chukwa collector.
+basic command to start an agent is bin/chukwa agent.  
 
 If you want to start a bunch of agents, you can use the
 bin/start-agents.sh script. This just uses ssh to start agents on a
 list of machines, given in conf/agents. It's exactly parallel to
-Hadoop's start-hdfs and start-mapred scripts.  There's also a 
-bin/start-collectors.sh that does the same to start collectors, on 
-machines listed in conf/collectors.  One hostname per line.
+Hadoop's start-hdfs and start-mapred scripts.  
 
 There are stop scripts that do the exact opposite of the start commands. 
 
