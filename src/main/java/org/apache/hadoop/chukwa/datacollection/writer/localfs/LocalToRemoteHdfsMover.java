@@ -72,7 +72,7 @@ public class LocalToRemoteHdfsMover extends Thread {
     fsname = conf.get("writer.hdfs.filesystem");
     if (fsname == null || fsname.equals("")) {
       // otherwise try to get the filesystem from hadoop
-      fsname = conf.get("fs.default.name");
+      fsname = conf.get("fs.defaultFS");
     }
 
     if (fsname == null) {

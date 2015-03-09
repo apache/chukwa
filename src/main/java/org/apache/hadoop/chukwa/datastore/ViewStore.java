@@ -46,7 +46,7 @@ public class ViewStore {
   private static Log log = LogFactory.getLog(ViewStore.class);
   private static Configuration config = new Configuration();
   private static ChukwaConfiguration chukwaConf = new ChukwaConfiguration();
-  private static String viewPath = config.get("fs.default.name")+File.separator+chukwaConf.get("chukwa.data.dir")+File.separator+"hicc"+File.separator+"views";
+  private static String viewPath = config.get("fs.defaultFS")+File.separator+chukwaConf.get("chukwa.data.dir")+File.separator+"hicc"+File.separator+"views";
   private static String publicViewPath = viewPath+File.separator+"public";
   private static String usersViewPath = viewPath+File.separator+"users";
   private static String PUBLIC = "public".intern();

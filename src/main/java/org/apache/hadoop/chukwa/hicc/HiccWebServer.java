@@ -68,7 +68,7 @@ public class HiccWebServer {
 
   public void start() {
     try {
-      chukwaHdfs = config.get("fs.default.name")+File.separator+chukwaConf.get("chukwa.data.dir");
+      chukwaHdfs = config.get("fs.defaultFS")+File.separator+chukwaConf.get("chukwa.data.dir");
       hiccData = chukwaHdfs+File.separator+"hicc";
       DaemonWatcher.createInstance("hicc");
       setupDefaultData();

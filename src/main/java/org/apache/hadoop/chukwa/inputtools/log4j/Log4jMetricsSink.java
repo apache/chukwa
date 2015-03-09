@@ -22,7 +22,7 @@ import org.json.simple.JSONObject;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.commons.configuration.SubsetConfiguration;
-import org.apache.hadoop.metrics2.Metric;
+import org.apache.hadoop.metrics2.AbstractMetric;
 import org.apache.hadoop.metrics2.MetricsRecord;
 import org.apache.hadoop.metrics2.MetricsSink;
 import org.apache.hadoop.metrics2.MetricsTag;
@@ -79,7 +79,7 @@ public class Log4jMetricsSink implements MetricsSink {
       for (MetricsTag tag : record.tags()) {
         json.put(tag.name(), tag.value());
       }
-      for (Metric metric : record.metrics()) {
+      for (AbstractMetric metric : record.metrics()) {
         json.put(metric.name(), metric.value());
       }
       out.info(json);

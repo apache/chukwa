@@ -88,7 +88,7 @@ public class TestArchive extends TestCase {
     MiniDFSCluster dfs = new MiniDFSCluster(conf, NUM_HADOOP_SLAVES, true,
         null);
     fileSys = dfs.getFileSystem();
-    conf.set("fs.default.name", fileSys.getUri().toString());
+    conf.set("fs.defaultFS", fileSys.getUri().toString());
     
     System.out.println("filesystem is " + fileSys.getUri());
 

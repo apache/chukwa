@@ -114,7 +114,7 @@ public class FilePerPostWriter extends SeqFileWriter {
       String fsname = conf.get("writer.hdfs.filesystem");
       if (fsname == null || fsname.equals("")) {
         // otherwise try to get the filesystem from hadoop
-        fsname = conf.get("fs.default.name");
+        fsname = conf.get("fs.defaultFS");
       }
 
       fs = FileSystem.get(new URI(fsname), conf);

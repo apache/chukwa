@@ -115,7 +115,7 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
     String fsname = conf.get("writer.hdfs.filesystem");
     if (fsname == null || fsname.equals("")) {
       // otherwise try to get the filesystem from hadoop
-      fsname = conf.get("fs.default.name");
+      fsname = conf.get("fs.defaultFS");
     }
 
     log.info("rotateInterval is " + rotateInterval);

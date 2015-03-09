@@ -83,7 +83,6 @@
 </div>
 <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.6.0/build/treeview/assets/skins/sam/treeview.css" />
 <link href="css/default.css" rel="stylesheet" type="text/css">
-<style type="text/css">@import url('css/calendar.css');</style>
 <link href="css/menu.css" rel="stylesheet" type="text/css">
 <link href="css/tab.css" rel="stylesheet" type="text/css">
 <link href="css/timeframe.css" rel="stylesheet" type="text/css">
@@ -93,18 +92,13 @@
 <script type="text/javascript" src="./js/treeview-min.js"></script>
 <script type="text/javascript" src="/hicc/js/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="/hicc/js/workspace/prototype.js"></script>
-<script type="text/javascript" src="/hicc/js/calendar.js"></script>
 <script type="text/javascript" src="/hicc/js/timeframe.js"></script>
-<script type="text/javascript" src="/hicc/js/lang/calendar-en.js"></script>
-<script type="text/javascript" src="/hicc/js/calendar-setup.js"></script>
 <script type="text/javascript" src="/hicc/js/workspace/scriptaculous.js"></script>
 <script type="text/javascript" src="/hicc/js/workspace/effects.js"></script>
 <script type="text/javascript" src="/hicc/js/workspace/dragdrop.js"></script>
 <script type="text/javascript" src="/hicc/js/workspace/prototype.js"></script>
 <script type="text/javascript" src="/hicc/js/workspace/custom_edits.js"></script>
 <script type="text/javascript" src="/hicc/js/workspace/workspace.js"></script>
-<script type="text/javascript" src="/hicc/js/slider.js"></script>
-<script type="text/javascript" src="/hicc/js/swfobject.js"></script>
 <script type="text/javascript" src="/hicc/js/time.js"></script>
 <script type="text/javascript" src="/hicc/js/jquery.formalize.js"></script>
 
@@ -229,7 +223,8 @@ Select the widget from the widget tree to see the detail.
 </div>
 
 <!-- page configuration UI -->
-<div id="page_config_menu" style="display:none;">
+<!--
+<div id="page_config_menu" style="display:block;">
 <table width="160" cellpadding=0 cellspacing=0><tr><td width="80" class="ppsPopupHead">&nbsp;</td><td class="ppsPopupTail"><img src="/hicc/css/images/popup_tail.gif"></td><td class="ppsPopupHead">&nbsp;</td><td width="5"></td></tr></table>
 <table width="160" style="border-style:solid; border-top:0; border-left:0; border-width:5px; border-color:#CCCCCC; " cellpadding=0 cellspacing=0>
 <tr><td>
@@ -243,7 +238,7 @@ Select the widget from the widget tree to see the detail.
 </table>
 </td></tr>
 </table>
-</div>
+</div>-->
 <!-- end of page configuration UI -->
 
 <script>

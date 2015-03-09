@@ -44,7 +44,7 @@ public class UserStore {
   private static Log log = LogFactory.getLog(UserStore.class);
   private static Configuration config = new Configuration();
   private static ChukwaConfiguration chukwaConf = new ChukwaConfiguration();
-  private static String hiccPath = config.get("fs.default.name")+File.separator+chukwaConf.get("chukwa.data.dir")+File.separator+"hicc"+File.separator+"users";
+  private static String hiccPath = config.get("fs.defaultFS")+File.separator+chukwaConf.get("chukwa.data.dir")+File.separator+"hicc"+File.separator+"users";
   
   public UserStore() throws IllegalAccessException {
     UserStore.config = HiccWebServer.getConfig();

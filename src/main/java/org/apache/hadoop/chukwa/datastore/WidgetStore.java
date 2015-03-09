@@ -43,7 +43,7 @@ public class WidgetStore {
   private static Log log = LogFactory.getLog(WidgetStore.class);
   private static Configuration config = new Configuration();
   private static ChukwaConfiguration chukwaConf = new ChukwaConfiguration();
-  private static String hiccPath = config.get("fs.default.name")+File.separator+chukwaConf.get("chukwa.data.dir")+File.separator+"hicc"+File.separator+"widgets";
+  private static String hiccPath = config.get("fs.defaultFS")+File.separator+chukwaConf.get("chukwa.data.dir")+File.separator+"hicc"+File.separator+"widgets";
   private static CatalogBean catalog = null;
   private static HashMap<String, WidgetBean> list = new HashMap<String, WidgetBean>();
   

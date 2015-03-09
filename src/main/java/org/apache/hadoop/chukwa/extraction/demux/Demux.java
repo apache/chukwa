@@ -183,7 +183,7 @@ public class Demux extends Configured implements Tool {
       FileSystem fs = FileSystem.get(new Configuration());
       FileStatus[] fstatus = fs.listStatus(new Path(parserPath));
       if (fstatus != null) {
-        String hdfsUrlPrefix = conf.get("fs.default.name");
+        String hdfsUrlPrefix = conf.get("fs.defaultFS");
 
         for (FileStatus parser : fstatus) {
           Path jarPath = new Path(parser.getPath().toString().replace(hdfsUrlPrefix, ""));
