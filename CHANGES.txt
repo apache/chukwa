@@ -22,6 +22,9 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-742. Updated license header for StatusCheckerException.java and exclude 
+                README.md from release audit tool scan.  (Eric Yang)
+
     CHUKWA-735. Updated Nagios support to support basic encryption.  (Eric Yang)
 
 Release 0.6 - 09/28/2014

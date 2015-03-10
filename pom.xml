@@ -744,6 +744,7 @@
                     <excludes>
 			            <!-- notice files -->
 			            <exclude>CHANGES.txt</exclude>
+			            <exclude>README.md</exclude>
 
 			            <!-- generated files -->
 			            <exclude>bin/VERSION</exclude>
@@ -795,6 +796,7 @@
 			            <exclude>src/main/web/hicc/js/iui.js</exclude>
 			            <exclude>src/main/web/hicc/js/yahoo-dom-event.js</exclude>
 			            <exclude>src/main/web/hicc/js/treeview-min.js</exclude>
+                                    <exclude>src/main/resources/ESAPI.properties</exclude>
 
 			            <!-- MIT licensed files -->
 			            <exclude>contrib/solr/logs/conf/velocity/jquery.autocomplete.js</exclude>
