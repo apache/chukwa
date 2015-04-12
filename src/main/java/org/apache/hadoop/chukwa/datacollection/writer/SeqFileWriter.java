@@ -33,7 +33,6 @@ import java.io.IOException;
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.ChunkImpl;
-import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -137,13 +136,11 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
       fs = FileSystem.get(new URI(fsname), conf);
       if (fs == null) {
         log.error("can't connect to HDFS at " + fs.getUri() + " bail out!");
-        DaemonWatcher.bailout(-1);
       }
     } catch (Throwable e) {
       log.error(
           "can't connect to HDFS, trying default file system instead (likely to be local)",
           e);
-      DaemonWatcher.bailout(-1);
     }
 
     // Setup everything by rotating
@@ -365,7 +362,6 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
       catch (Throwable e) {
         // We don't want to loose anything
         log.fatal("IOException when trying to write a chunk, Collector is going to exit!", e);
-        DaemonWatcher.bailout(-1);
         isRunning = false;
       } finally {
         lock.release();

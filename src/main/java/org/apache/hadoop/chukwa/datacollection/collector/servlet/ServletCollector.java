@@ -40,7 +40,6 @@ import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.WriterException;
-import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.util.ReflectionUtils;
@@ -141,7 +140,6 @@ public class ServletCollector extends HttpServlet {
       writer.init(conf);
     } catch (Throwable e) {
       log.warn("Exception trying to initialize SeqFileWriter",e);
-      DaemonWatcher.bailout(-1);
     }
   }
 

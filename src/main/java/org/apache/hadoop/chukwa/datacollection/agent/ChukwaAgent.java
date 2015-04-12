@@ -49,7 +49,6 @@ import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
 import org.apache.hadoop.chukwa.datacollection.test.ConsoleOutConnector;
 import org.apache.hadoop.chukwa.util.AdaptorNamingUtils;
 import org.apache.hadoop.chukwa.util.ChukwaUtil;
-import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
@@ -255,8 +254,6 @@ public class ChukwaAgent implements AdaptorManager {
    */
   public static void main(String[] args) throws AdaptorException {
 
-    DaemonWatcher.createInstance("Agent");
-
     try {
       if (args.length > 0 && args[0].equals("-help")) {
         System.out.println("usage:  LocalAgent [-noCheckPoint]"
@@ -300,7 +297,6 @@ public class ChukwaAgent implements AdaptorManager {
       System.out
           .println("agent started already on this machine with same portno;"
               + " bailing out");
-      DaemonWatcher.bailout(-1);
       System.exit(0); // better safe than sorry
     } catch (Exception e) {
       e.printStackTrace();

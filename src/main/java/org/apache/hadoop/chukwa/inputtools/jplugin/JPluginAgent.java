@@ -24,7 +24,6 @@ import java.util.TimerTask;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 public class JPluginAgent {
@@ -103,7 +102,6 @@ public class JPluginAgent {
     }
 
     try {
-      DaemonWatcher.createInstance(plugin.getRecordType() + "-data-loader");
     } catch (Exception e) {
       e.printStackTrace();
     }

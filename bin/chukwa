@@ -75,55 +75,45 @@ if [ "$HADOOP_CONF_DIR" != "" ]; then
   CLASSPATH=${HADOOP_CONF_DIR}:${CLASSPATH}
 fi
 
-if [ "$CHUKWA_HICC_PORT" != "" ]; then
-  CHUKWA_HICC_PORT=$CHUKWA_HICC_PORT
-fi
-
 if [ "$CHUKWA_HICC_PORT" = "" ]; then
   CHUKWA_HICC_PORT=4080
 fi
 
-BACKGROUND="true"
+if [ "$CHUKWA_STOP_TIMEOUT" = "" ]; then
+  CHUKWA_STOP_TIMEOUT=3
+fi
 
 # configure command parameters
 if [ "$COMMAND" = "agent" ]; then
   APP='agent'
   CLASS='org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent'
-  PID="Agent"
 elif [ "$COMMAND" = "archive" ]; then
   APP='archive'
   CLASS='org.apache.hadoop.chukwa.extraction.archive.ChukwaArchiveManager'
-  PID='ArchiveManager'
 elif [ "$COMMAND" = "collector" ]; then
   APP='collector'
   CLASS='org.apache.hadoop.chukwa.datacollection.collector.CollectorStub'
-  PID="Collector"
 elif [ "$COMMAND" = "dp" ]; then
   APP='postprocess'
   CLASS='org.apache.hadoop.chukwa.extraction.demux.PostProcessorManager'
-  PID='PostProcessorManager'
 elif [ "$COMMAND" = "demux" ]; then
   APP='Demux'
   CLASS='org.apache.hadoop.chukwa.extraction.demux.DemuxManager'
-  PID='DemuxManager'
 elif [ "$COMMAND" = "hicc" ]; then
   WEB_SERVICE_COMMON=`ls ${CHUKWA_HOME}/share/chukwa/webapps/hicc.war`
   APP='hicc'
   CLASS='org.apache.hadoop.chukwa.hicc.HiccWebServer'
   CLASSPATH=${CLASSPATH}:${WEB_SERVICE_COMMON}:${HICC_JAR}
-  PID="hicc"
   HOST=`hostname`
   JAVA_OPT="${JAVA_OPT} -Djetty.host=${HOST} -Djetty.port=${CHUKWA_HICC_PORT} -Djava.net.preferIPv4Stack=true"
 elif [ "$COMMAND" = "hroll" ]; then
   APP='hroll'
   CLASS='org.apache.hadoop.chukwa.extraction.demux.HourlyChukwaRecordRolling'
   OPTS='rollInSequence true deleteRawdata true'
-  PID='HourlyChukwaRecordRolling'
 elif [ "$COMMAND" = "droll" ]; then
   APP='droll'
   CLASS='org.apache.hadoop.chukwa.extraction.demux.DailyChukwaRecordRolling'
   OPTS='rollInSequence true deleteRawdata true'
-  PID='DailyChukwaRecordRolling'
 elif [ "$COMMAND" = "version" ]; then
   echo `cat ${CHUKWA_HOME}/bin/VERSION`
   exit 0
@@ -160,14 +150,30 @@ elif [ "$COMMAND" = "tail" ]; then
   exit 0
 fi
 
-pid="${CHUKWA_PID_DIR}/$PID.pid"
+pid="$CHUKWA_PID_DIR/chukwa-$CHUKWA_IDENT_STRING-$COMMAND.pid"
 
 if [ "$1" = "start" ]; then
-  shift
+  if [ -f $pid ]; then
+    TARGET_PID=`cat $pid`
+    if [ $TARGET_PID == $$ ]; then
+      # run command
+      exec ${JAVA_HOME}/bin/java ${JAVA_OPT} \
+        -Djava.library.path=${JAVA_LIBRARY_PATH} \
+        -DCHUKWA_HOME=${CHUKWA_HOME} \
+        -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} \
+        -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} \
+        -DCHUKWA_DATA_DIR=${CHUKWA_DATA_DIR} \
+        -DAPP=${APP} -Dlog4j.configuration=chukwa-log4j.properties \
+        -classpath ${CHUKWA_CONF_DIR}:${CLASSPATH}:${CHUKWA_CLASSPATH}:${tools} ${CLASS} $OPTS $@
+    elif kill -0 `cat $pid` > /dev/null 2>&1; then
+      echo $COMMAND running as process `cat $pid`.  Stop it first.
+      exit 1
+    fi
+  fi
 fi
 
 if [ "$1" = "stop" ]; then
-  if [ -e $pid ]; then
+  if [ -f $pid ]; then
     TARGET_PID=`cat $pid`
     if kill -0 $TARGET_PID > /dev/null 2>&1; then
       kill -TERM $TARGET_PID
@@ -178,25 +184,8 @@ if [ "$1" = "stop" ]; then
       fi
     fi
   else 
-    echo "Cannot find PID file - $PID.pid; NO $PID to stop";
+    echo "Cannot find PID file - $pid.pid; NO $COMMAND to stop";
   fi
   exit 0
-elif [ -f $pid ]; then
- if kill -0 `cat $pid` > /dev/null 2>&1; then
-    echo $command running as process `cat $pid`.  Stop it first.
-    exit 1
- else
-    # pid file exists, but process is dead.
-    echo $command is not runnning, but pid file existed.
-    rm -f $pid
- fi
-fi
-
-# run command
-if [ "$BACKGROUND" = "false" ]; then
-  ${JAVA_HOME}/bin/java ${JAVA_OPT} -Djava.library.path=${JAVA_LIBRARY_PATH} -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DCHUKWA_DATA_DIR=${CHUKWA_DATA_DIR} -DAPP=${APP} -Dlog4j.configuration=chukwa-log4j.properties -classpath ${CHUKWA_CONF_DIR}:${CLASSPATH}:${CHUKWA_CLASSPATH}:${tools} ${CLASS} $OPTS $@
-else
-  exec ${JAVA_HOME}/bin/java ${JAVA_OPT} -Djava.library.path=${JAVA_LIBRARY_PATH} -DCHUKWA_HOME=${CHUKWA_HOME} -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} -DCHUKWA_DATA_DIR=${CHUKWA_DATA_DIR} -DAPP=${APP} -Dlog4j.configuration=chukwa-log4j.properties -classpath ${CHUKWA_CONF_DIR}:${CLASSPATH}:${CHUKWA_CLASSPATH}:${tools} ${CLASS} $OPTS $@ &
-  sleep 1
 fi
 

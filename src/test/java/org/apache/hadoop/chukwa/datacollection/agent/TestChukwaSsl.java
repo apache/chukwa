@@ -34,7 +34,7 @@ import static org.apache.hadoop.chukwa.datacollection.agent.ChukwaConstants.*;
 import junit.framework.TestCase;
 
 public class TestChukwaSsl extends TestCase{
-  String keyStoreFile = "../../test-classes/chukwa.store";
+  String keyStoreFile = "chukwa.store";
   @Override
   protected void setUp() throws IOException, InterruptedException{
     String[] cmd = new String[]{System.getenv("JAVA_HOME")+"/bin/keytool", "-genkeypair", "-keyalg", "RSA",

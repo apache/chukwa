@@ -28,7 +28,6 @@ import java.util.List;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
-import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.chukwa.util.HierarchyDataType;
 import org.apache.hadoop.conf.Configured;
@@ -209,7 +208,6 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
    */
   public static void main(String[] args) throws Exception {
     
-    DaemonWatcher.createInstance("DailyChukwaRecordRolling");
     
     conf = new ChukwaConfiguration();
     String fsName = conf.get("writer.hdfs.filesystem");

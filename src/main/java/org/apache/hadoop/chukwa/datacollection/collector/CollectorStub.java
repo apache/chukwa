@@ -25,7 +25,6 @@ import org.mortbay.jetty.servlet.*;
 import org.apache.hadoop.chukwa.datacollection.collector.servlet.*;
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
 import org.apache.hadoop.chukwa.datacollection.writer.*;
-import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -44,7 +43,6 @@ public class CollectorStub {
 
   public static void main(String[] args) {
 
-    DaemonWatcher.createInstance("Collector");
     try {
       if (args.length > 0 && (args[0].equalsIgnoreCase("help")|| args[0].equalsIgnoreCase("-help"))) {
         System.out.println("usage: Normally you should just invoke CollectorStub without arguments.");
@@ -142,7 +140,6 @@ public class CollectorStub {
       System.err.close();
     } catch (Exception e) {
       e.printStackTrace();
-      DaemonWatcher.bailout(-1);
     }
 
   }

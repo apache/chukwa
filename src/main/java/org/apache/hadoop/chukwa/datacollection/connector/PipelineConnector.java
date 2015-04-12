@@ -41,7 +41,6 @@ import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter.CommitStatus;
 import org.apache.hadoop.chukwa.datacollection.writer.PipelineStageWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.WriterException;
-import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 
@@ -134,11 +133,11 @@ public class PipelineConnector implements Connector, Runnable {
       log.warn("PipelineStageWriter Exception: ", e);
     } catch (OutOfMemoryError e) {
       log.warn("Bailing out", e);
-      DaemonWatcher.bailout(-1);
+      throw new RuntimeException("Shutdown pipeline connector.");
     } catch (InterruptedException e) {
       // do nothing, let thread die.
       log.warn("Bailing out", e);
-      DaemonWatcher.bailout(-1);
+      throw new RuntimeException("Shutdown pipeline connector.");
     } catch (Throwable e) {
       log.error("connector failed; shutting down agent: ", e);
       throw new RuntimeException("Shutdown pipeline connector.");

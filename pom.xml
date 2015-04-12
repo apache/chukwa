@@ -32,7 +32,7 @@
         <TODO_ALERT_EMAIL>user@example.com</TODO_ALERT_EMAIL>
         <TODO_CLUSTER_NAME>chukwa</TODO_CLUSTER_NAME>
         <TODO_COLLECTORS_LOCAL_OUTPUT_DIR>/tmp/chukwa/dataSink/</TODO_COLLECTORS_LOCAL_OUTPUT_DIR>
-        <TODO_COLLECTORS_NAMENODE>hdfs://localhost:9000</TODO_COLLECTORS_NAMENODE>
+        <TODO_COLLECTORS_NAMENODE>hdfs:///</TODO_COLLECTORS_NAMENODE>
         <TODO_COLLECTORS_ROTATEINTERVAL>300000</TODO_COLLECTORS_ROTATEINTERVAL>
         <TODO_COLLECTORS_PORT>8080</TODO_COLLECTORS_PORT>
         <TODO_COLLECTORS_ISFIXEDTIMEROTATORSCHEME>false</TODO_COLLECTORS_ISFIXEDTIMEROTATORSCHEME>
@@ -372,6 +372,17 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <testResources>
+            <testResource>
+                <directory>src/main/web/hicc</directory>
+                <includes>
+                    <include>/WEB-INF/jetty.xml</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -524,7 +535,7 @@
                                 <test.cache.data>${project.build.directory}/test/var/cache</test.cache.data>
                                 <test.debug.data>${project.build.directory}/test/var/debug</test.debug.data>
                                 <test.log.dir>${project.build.directory}/test/var/log</test.log.dir>
-                                <test.build.classes>${project.build.directory}/test/classes</test.build.classes>
+                                <test.build.classes>${project.build.directory}/test-classes</test.build.classes>
                                 <CHUKWA_LOG_DIR>${project.build.directory}/test/var/log</CHUKWA_LOG_DIR>
                                 <CHUKWA_CONF_DIR>${project.build.directory}/test/conf</CHUKWA_CONF_DIR>
                                 <CHUKWA_DATA_DIR>${project.build.directory}/test/var</CHUKWA_DATA_DIR>
@@ -540,7 +551,7 @@
                                 <CHUKWA_HDFS>/chukwa</CHUKWA_HDFS>
                                 <CHUKWA_HOME>${project.build.directory}/test</CHUKWA_HOME>
                             </environmentVariables>
-                            <workingDirectory>${project.build.directory}/test/classes</workingDirectory>
+                            <workingDirectory>${project.build.directory}/test-classes</workingDirectory>
                         </configuration>
                     </execution>
                     <execution>

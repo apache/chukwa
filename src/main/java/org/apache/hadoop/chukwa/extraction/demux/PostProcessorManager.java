@@ -29,7 +29,6 @@ import java.util.List;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.dataloader.DataLoaderFactory;
 import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
-import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.chukwa.util.HierarchyDataType;
 import org.apache.hadoop.chukwa.datatrigger.TriggerAction;
@@ -76,11 +75,6 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
   }
   
   public static void main(String[] args) throws Exception {
- 
-    DaemonWatcher.createInstance("PostProcessorManager");
-    
-
-    
     PostProcessorManager postProcessorManager = new PostProcessorManager();
     postProcessorManager.start();
   }
@@ -123,7 +117,7 @@ public class PostProcessorManager implements CHUKWA_CONSTANT{
       if (maxPermittedErrorCount != -1 && errorCount >= maxPermittedErrorCount) {
         log.warn("==================\nToo many errors (" + errorCount +
                  "), Bail out!\n==================");
-        DaemonWatcher.bailout(-1);
+        throw new RuntimeException("Bail out!");
       }
 
       try {

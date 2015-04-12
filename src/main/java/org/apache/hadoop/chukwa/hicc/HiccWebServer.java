@@ -31,7 +31,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
-import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -61,7 +60,7 @@ public class HiccWebServer {
     }
     if(serverConf==null) {
       log.error("Unable to locate jetty-web.xml.");
-      DaemonWatcher.bailout(-1);
+      System.exit(-1);
     }
     return instance;
   }
@@ -70,12 +69,11 @@ public class HiccWebServer {
     try {
       chukwaHdfs = config.get("fs.defaultFS")+File.separator+chukwaConf.get("chukwa.data.dir");
       hiccData = chukwaHdfs+File.separator+"hicc";
-      DaemonWatcher.createInstance("hicc");
       setupDefaultData();
       run();
     } catch(Exception e) {
       log.error("HDFS unavailable, check configuration in chukwa-env.sh.");
-      DaemonWatcher.bailout(-1);
+      throw new RuntimeException("Bail out!");
     }
   }
 
@@ -213,7 +211,6 @@ public class HiccWebServer {
   public void shutdown() {
     try {
       server.stop();
-      DaemonWatcher.bailout(0);
     } catch (Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
     }

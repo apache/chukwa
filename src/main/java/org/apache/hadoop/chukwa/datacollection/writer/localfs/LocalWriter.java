@@ -34,7 +34,6 @@ import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.WriterException;
-import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
@@ -149,7 +148,7 @@ public class LocalWriter implements ChukwaWriter {
       }
     } catch (Throwable e) {
       log.fatal("Cannot initialize LocalWriter", e);
-      DaemonWatcher.bailout(-1);
+      System.exit(-1);
     }
 
     
@@ -265,7 +264,7 @@ public class LocalWriter implements ChukwaWriter {
         if (writeChunkRetries < 0) {
           log
               .fatal("Too many IOException when trying to write a chunk, Collector is going to exit!");
-          DaemonWatcher.bailout(-1);
+          System.exit(-1);
         }
         throw new WriterException(e);
       }
@@ -320,7 +319,7 @@ public class LocalWriter implements ChukwaWriter {
         log.fatal("IO Exception in rotate. Exiting!", e);
         // Shutting down the collector
         // Watchdog will re-start it automatically
-        DaemonWatcher.bailout(-1);
+        System.exit(-1);
       }
     }
  
@@ -338,7 +337,7 @@ public class LocalWriter implements ChukwaWriter {
   
     if (freeSpace < minFreeAvailable) {
       log.fatal("No space left on device, Bail out!");
-      DaemonWatcher.bailout(-1);
+      System.exit(-1);
     } 
     
     log.debug("finished rotate()");

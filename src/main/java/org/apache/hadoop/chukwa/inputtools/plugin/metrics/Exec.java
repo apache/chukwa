@@ -23,7 +23,6 @@ import java.util.TimerTask;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.inputtools.plugin.IPlugin;
-import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.json.simple.JSONObject;
 
 public class Exec extends TimerTask {
@@ -62,7 +61,6 @@ public class Exec extends TimerTask {
   }
 
   public static void main(String[] args) {
-    DaemonWatcher.createInstance(System.getProperty("RECORD_TYPE") + "-data-loader");
     int period = 60;
     try {
       if (System.getProperty("PERIOD") != null) {

@@ -114,7 +114,7 @@ case $startStop in
     chukwa_rotate_log $log
     echo starting $command, logging to $log
     cd "$CHUKWA_HOME"
-    nohup nice -n $CHUKWA_NICENESS "$CHUKWA_HOME"/bin/chukwa --config $CHUKWA_CONF_DIR $command "$@" > "$log" 2>&1 < /dev/null &
+    nohup nice -n $CHUKWA_NICENESS "$CHUKWA_HOME"/bin/chukwa --config $CHUKWA_CONF_DIR $command start "$@" > "$log" 2>&1 < /dev/null &
     echo $! > $pid
     sleep 1; head "$log"
     ;;

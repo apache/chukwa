@@ -24,6 +24,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-743. Revised pid locking using standard Hadoop approach.  (Eric Yang)
+
     CHUKWA-742. Updated license header for StatusCheckerException.java and exclude 
                 README.md from release audit tool scan.  (Eric Yang)
 

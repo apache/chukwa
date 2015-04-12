@@ -27,7 +27,6 @@ import java.util.Date;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
 import org.apache.hadoop.chukwa.util.NagiosHelper;
-import org.apache.hadoop.chukwa.util.DaemonWatcher;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -67,7 +66,6 @@ public class DemuxManager implements CHUKWA_CONSTANT {
 
 
   public static void main(String[] args) throws Exception {
-    DaemonWatcher.createInstance("DemuxManager");
     
     DemuxManager manager = new DemuxManager();
     manager.start();
@@ -161,7 +159,7 @@ public class DemuxManager implements CHUKWA_CONSTANT {
          if (maxPermittedErrorCount != -1 && globalErrorcounter >= maxPermittedErrorCount) {
            log.warn("==================\nToo many errors (" + globalErrorcounter +
                     "), Bail out!\n==================");
-           DaemonWatcher.bailout(-1);
+           System.exit(-1);
          }
          
          // Check for anomalies

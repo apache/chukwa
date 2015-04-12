@@ -52,6 +52,13 @@ public class SetupTestEnv extends TestCase {
   public static MiniDFSCluster dfs;
   
   public SetupTestEnv() {
+    try {
+      Configuration conf=new Configuration();
+      conf.setBoolean("dfs.permissions",true);
+      dfs=new MiniDFSCluster(conf,1,true,null);
+    } catch(Exception e) {
+      fail("Fail to start MiniDFSCluster");
+    }
     if(hicc==null) {
       hicc = HiccWebServer.getInstance();
       conf = HiccWebServer.getConfig();
@@ -63,5 +70,6 @@ public class SetupTestEnv extends TestCase {
   }
   
   public void tearDown() {
+    dfs.shutdown();
   }
 }
