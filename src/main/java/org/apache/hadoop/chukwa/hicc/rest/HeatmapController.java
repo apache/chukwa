@@ -40,37 +40,36 @@ public class HeatmapController {
   static Logger log = Logger.getLogger(HeatmapController.class);
 
   @GET
-  @Path("{table}/{family}/{column}")
+  @Path("{metricGroup}/{metric}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Heatmap getHeatmap(@Context HttpServletRequest request, 
-		  @PathParam("table") String table, 
-		  @PathParam("family") String family, 
-		  @PathParam("column") String column, 
-		  @QueryParam("start") String start, 
-		  @QueryParam("end") String end, 
-		  @QueryParam("max") @DefaultValue("1.0") double max,
-		  @QueryParam("scale") @DefaultValue("100") double scale,
-		  @QueryParam("height") @DefaultValue("400") int height) {
-	  SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-	  Heatmap heatmap = null;
-	  long startTime = 0;
-	    long endTime = 0;
-	    TimeHandler time = new TimeHandler(request);
-	    try {
-	      if(start!=null) {
-	        startTime = sdf.parse(start).getTime();
-	      } else {
-	        startTime = time.getStartTime();
-	      }
-	      if(end!=null) {
-	        endTime = sdf.parse(end).getTime();
-	      } else {
-	        endTime = time.getEndTime();
-	      }
-	      heatmap = ChukwaHBaseStore.getHeatmap(table, family, column, startTime, endTime, max, scale, height);
-	    }catch(Throwable e) {
-		    log.error(ExceptionUtil.getStackTrace(e));
-	    }
-	  return heatmap;
+  public Heatmap getHeatmap(@Context HttpServletRequest request,
+      @PathParam("metricGroup") String metricGroup,
+      @PathParam("metric") String metric, @QueryParam("start") String start,
+      @QueryParam("end") String end,
+      @QueryParam("max") @DefaultValue("1.0") double max,
+      @QueryParam("scale") @DefaultValue("100") double scale,
+      @QueryParam("height") @DefaultValue("400") int height) {
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+    Heatmap heatmap = null;
+    long startTime = 0;
+    long endTime = 0;
+    TimeHandler time = new TimeHandler(request);
+    try {
+      if (start != null) {
+        startTime = sdf.parse(start).getTime();
+      } else {
+        startTime = time.getStartTime();
+      }
+      if (end != null) {
+        endTime = sdf.parse(end).getTime();
+      } else {
+        endTime = time.getEndTime();
+      }
+      heatmap = ChukwaHBaseStore.getHeatmap(metricGroup, metric, startTime,
+          endTime, max, scale, height);
+    } catch (Throwable e) {
+      log.error(ExceptionUtil.getStackTrace(e));
+    }
+    return heatmap;
   }
 }

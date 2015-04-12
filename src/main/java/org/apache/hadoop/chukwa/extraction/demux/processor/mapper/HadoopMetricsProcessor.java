@@ -50,22 +50,9 @@ import org.json.simple.JSONValue;
 @Table(name="Hadoop",columnFamily="mapred_tasktracker"),
 @Table(name="Hadoop",columnFamily="rpc_metrics")
 })
-public class HadoopMetricsProcessor extends AbstractProcessor {
-//  public static final String jvm = "jvm_metrics";
-//  public static final String mapred = "mapred_metrics";
-//  public static final String dfs = "dfs_metrics";
-//  public static final String namenode = "dfs_namenode";
-//  public static final String fsdir = "dfs_FSDirectory";
-//  public static final String fsname = "dfs_FSNamesystem";
-//  public static final String datanode = "dfs_datanode";
-//  public static final String jobtracker = "mapred_jobtracker";
-//  public static final String shuffleIn = "mapred_shuffleInput";
-//  public static final String shuffleOut = "mapred_shuffleOutput";
-//  public static final String tasktracker = "mapred_tasktracker";
-//  public static final String mr = "mapred_job";
-  
+public class HadoopMetricsProcessor extends AbstractProcessor {  
   static Logger log = Logger.getLogger(HadoopMetricsProcessor.class);
-  static final String chukwaTimestampField = "chukwa_timestamp";
+  static final String chukwaTimestampField = "timestamp";
   static final String contextNameField = "contextName";
   static final String recordNameField = "recordName";
 

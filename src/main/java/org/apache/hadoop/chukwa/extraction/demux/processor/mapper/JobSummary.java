@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 })
 public class JobSummary extends AbstractProcessor {  
   static Logger log = Logger.getLogger(JobSummary.class);
-  static final String chukwaTimestampField = "chukwa_timestamp";
+  static final String chukwaTimestampField = "timestamp";
   static final String contextNameField = "contextName";
   static final String recordNameField = "recordName";
 

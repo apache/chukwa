@@ -23,7 +23,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -42,9 +41,9 @@ import org.json.simple.JSONArray;
 public class MetricsController {
 
   @GET
-  @Path("series/{table}/{family}/{column}/rowkey/{rkey}")
+  @Path("series/{metric}/{source}")
   @Produces("application/json")
-  public String getSeries(@Context HttpServletRequest request, @PathParam("table") String table, @PathParam("family") String family, @PathParam("column") String column, @PathParam("rkey") String rkey, @QueryParam("start") String start, @QueryParam("end") String end) {
+  public String getSeries(@Context HttpServletRequest request, @PathParam("metric") String metric, @PathParam("source") String source, @QueryParam("start") String start, @QueryParam("end") String end) {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     String buffer = "";
     Series series;
@@ -62,13 +61,8 @@ public class MetricsController {
       } else {
         endTime = time.getEndTime();
       }
-      if(rkey!=null) {
-        series = ChukwaHBaseStore.getSeries(table, rkey, family, column, startTime, endTime, true);
-        buffer = series.toString();
-      } else {
-        throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-            .entity("No row key defined.").build());
-      }
+      series = ChukwaHBaseStore.getSeries(metric, source, startTime, endTime);
+      buffer = series.toString();
     } catch (ParseException e) {
       throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
           .entity("Start/End date parse error.  Format: yyyyMMddHHmmss.").build());
@@ -77,16 +71,14 @@ public class MetricsController {
   }
 
   @GET
-  @Path("series/{table}/{column}/session/{sessionKey}")
+  @Path("series/{metricGroup}/{metric}/session/{sessionKey}")
   @Produces("application/json")
-  public String getSeriesBySessionAttribute(@Context HttpServletRequest request, @PathParam("table") String table, @PathParam("column") String column, @PathParam("sessionKey") String skey, @QueryParam("start") String start, @QueryParam("end") String end) {
+  public String getSeriesBySessionAttribute(@Context HttpServletRequest request, @PathParam("metricGroup") String metricGroup, @PathParam("metric") String metric, @PathParam("sessionKey") String skey, @QueryParam("start") String start, @QueryParam("end") String end) {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     String buffer = "";
     long startTime = 0;
     long endTime = 0;
     TimeHandler time = new TimeHandler(request);
-    String family = column.split(":")[0];
-    String qualifier = column.split(":")[1];
     try {
       if(start!=null) {
         startTime = sdf.parse(start).getTime();
@@ -100,13 +92,13 @@ public class MetricsController {
       }
       if(skey!=null) {
           HttpSession session = request.getSession();
-          String[] rkeys = (session.getAttribute(skey).toString()).split(",");
+          String[] sourcekeys = (session.getAttribute(skey).toString()).split(",");
           JSONArray seriesList = new JSONArray();
-          for(String rowKey : rkeys) {
-        	if (rowKey == null || rowKey.equals("")) {
+          for(String source : sourcekeys) {
+        	if (source == null || source.equals("")) {
         		continue;
         	}
-            Series output = ChukwaHBaseStore.getSeries(table, rowKey, family, qualifier, startTime, endTime, true);
+            Series output = ChukwaHBaseStore.getSeries(metricGroup, metric, source, startTime, endTime);
             seriesList.add(output.toJSONObject());
           }
           buffer = seriesList.toString();
@@ -125,83 +117,33 @@ public class MetricsController {
   @Path("schema")
   @Produces("application/json")
   public String getTables() {
-    Set<String> tableNames = ChukwaHBaseStore.getTableNames();
-    JSONArray tables = new JSONArray();
-    for(String table : tableNames) {
-      tables.add(table);
+    Set<String> metricGroups = ChukwaHBaseStore.getMetricGroups();
+    JSONArray groups = new JSONArray();
+    for(String metric : metricGroups) {
+      groups.add(metric);
     }
-    return tables.toString();
+    return groups.toString();
   }
   
   @GET
-  @Path("schema/{table}")
+  @Path("schema/{metricGroup}")
   @Produces("application/json")
-  public String getFamilies(@PathParam("table") String tableName) {
-    Set<String> familyNames = ChukwaHBaseStore.getFamilyNames(tableName);
-    JSONArray families = new JSONArray();
-    for(String family : familyNames) {
-      families.add(family);
+  public String getFamilies(@PathParam("metricGroup") String metricGroup) {
+    Set<String> metricNames = ChukwaHBaseStore.getMetricNames(metricGroup);
+    JSONArray metrics = new JSONArray();
+    for(String metric : metricNames) {
+      metrics.add(metric);
     }
-    return families.toString();
+    return metrics.toString();
   }
-  
+    
   @GET
-  @Path("schema/{table}/{family}")
+  @Path("source/{metricGroup}")
   @Produces("application/json")
-  public String getColumnNames(@Context HttpServletRequest request, @PathParam("table") String tableName, @PathParam("family") String family, @QueryParam("start") String start, @QueryParam("end") String end, @DefaultValue("false") @QueryParam("fullScan") boolean fullScan) {
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-    long startTime = 0;
-    long endTime = 0;
-    TimeHandler time = new TimeHandler(request);
-    try {
-      if(start!=null) {
-        startTime = sdf.parse(start).getTime();
-      } else {
-        startTime = time.getStartTime();
-      }
-      if(end!=null) {
-        endTime = sdf.parse(end).getTime();
-      } else {
-        endTime = time.getEndTime();
-      }
-    } catch(ParseException e) {
-      throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-          .entity("Start/End date parse error.  Format: yyyyMMddHHmmss.").build());      
-    }
-    Set<String> columnNames = ChukwaHBaseStore.getColumnNames(tableName, family, startTime, endTime, fullScan);
-    JSONArray columns = new JSONArray();
-    for(String column : columnNames) {
-      columns.add(column);
-    }
-    return columns.toString();
-  }
-  
-  @GET
-  @Path("rowkey/{table}/{family}/{column}")
-  @Produces("application/json")
-  public String getRowNames(@Context HttpServletRequest request, @PathParam("table") String tableName, @PathParam("family") String family, @PathParam("column") String column, @QueryParam("start") String start, @QueryParam("end") String end, @QueryParam("fullScan") @DefaultValue("false") boolean fullScan) {
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-    long startTime = 0;
-    long endTime = 0;
-    TimeHandler time = new TimeHandler(request);
-    try {
-      if(start!=null) {
-        startTime = sdf.parse(start).getTime();
-      } else {
-        startTime = time.getStartTime();
-      }
-      if(end!=null) {
-        endTime = sdf.parse(end).getTime();
-      } else {
-        endTime = time.getEndTime();
-      }
-    } catch(ParseException e) {
-      throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-          .entity("Start/End date parse error.  Format: yyyyMMddHHmmss.").build());      
-    }
-    Set<String> columnNames = ChukwaHBaseStore.getRowNames(tableName, family, column, startTime, endTime, fullScan);
+  public String getSourceNames(@Context HttpServletRequest request, @PathParam("metricGroup") String metricGroup) {
+    Set<String> sourceNames = ChukwaHBaseStore.getSourceNames(metricGroup);
     JSONArray rows = new JSONArray();
-    for(String row : columnNames) {
+    for(String row : sourceNames) {
       rows.add(row);
     }
     return rows.toString();

@@ -106,7 +106,7 @@ public class Log4JMetricsContext extends AbstractMetricsContext {
       try {
         json.put("contextName", contextName);
         json.put("recordName", recordName);
-        json.put("chukwa_timestamp", System.currentTimeMillis());
+        json.put("timestamp", System.currentTimeMillis());
         json.put("period", period);
         for (String tagName : outRec.getTagNames()) {
           json.put(tagName, outRec.getTag(tagName));

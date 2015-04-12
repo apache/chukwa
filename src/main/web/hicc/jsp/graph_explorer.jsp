@@ -123,10 +123,9 @@
     function getRows() {
       var size = $('#row option').size();
       $('#row').find('option').remove();
-      var column = $('#column').val();
-      $('#column :selected').each(function(i, selected) {
-        var tfColumn = $(selected).val();
-        var url = encodeURI("/hicc/v1/metrics/rowkey/"+tfColumn);
+      $('#table :selected').each(function(i, selected) {
+        var metricGroup = $(selected).val();
+        var url = encodeURI("/hicc/v1/metrics/source/"+metricGroup);
         $.ajax({ url: url, dataType: "json", success: function(data){
           for(var i in data) {
             var test = $('#row').find('option[value="'+data[i]+'"]').val();
@@ -145,9 +144,9 @@
       }
       var url = [];
       var idx = 0;
-      $('#column :selected').each(function(i, selected) {
+      $('#family :selected').each(function(i, selected) {
         $('#row :selected').each(function(j, rowSelected) {
-          url[idx++] = encodeURI("/hicc/v1/metrics/series/" + $(selected).val() + "/rowkey/" + $(rowSelected).val());
+          url[idx++] = encodeURI("/hicc/v1/metrics/series/" + $(selected).val() + "/" + $(rowSelected).val());
         }); 
       });
       var title = $('#title').val();
@@ -239,7 +238,7 @@
       var family = $("#family").val();
 
       /* loop through series to construct URLs */
-      $('#column :selected').each(function(i, selected) {
+      $('#family :selected').each(function(i, selected) {
         var option = {};
         option.label = $('#table').val() + "." + 
           family + "." + 
@@ -247,7 +246,7 @@
           $('#row').val();
         var values = encodeURI("/hicc/v1/metrics/series/" + 
              $(selected).val() + 
-             "/rowkey/" + $('#row').val());
+             "/" + $('#row').val());
         option.value = values;
         selections.value[idx] = values;
         selections.options[idx++] = option;
@@ -306,22 +305,17 @@
         </tr>
         <tr>
           <td>
-            Table<br>
+            Metric Groups<br>
             <select id="table" size="10" onMouseUp="getFamilies()" style="min-width: 100px;" class="select">
             </select>
           </td>
           <td>
-            Column Family<br>
-            <select id="family" multiple size="10" style="min-width: 110px;" onMouseUp="getColumns()">
+            Metrics<br>
+            <select id="family" multiple size="10" style="min-width: 110px;" onMouseUp="getRows()">
             </select>
           </td>
           <td>
-            Column<br>
-            <select id="column" multiple size="10" style="min-width: 100px;" onMouseUp="getRows()">
-            </select>
-          </td>
-          <td>
-            Row<br>
+            Sources<br>
             <select id="row" size="10" style="min-width: 100px;">
             </select>
           </td>

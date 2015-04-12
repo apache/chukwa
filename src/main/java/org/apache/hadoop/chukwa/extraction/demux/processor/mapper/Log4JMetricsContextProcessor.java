@@ -53,7 +53,7 @@ public class Log4JMetricsContextProcessor extends AbstractProcessor {
       JSONObject json = new JSONObject(log.getBody());
 
       // round timestamp
-      timestamp = json.getLong("chukwa_timestamp");
+      timestamp = json.getLong("timestamp");
       timestamp = (timestamp / 60000) * 60000;
 
       // get record type

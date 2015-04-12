@@ -18,62 +18,91 @@
 
 package org.apache.hadoop.chukwa.datacollection.writer.hbase;
 
-import org.apache.hadoop.mapred.InputSplit;
-import org.apache.hadoop.mapred.Counters.Counter;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Reporter implements org.apache.hadoop.mapred.Reporter {
+import org.apache.hadoop.hbase.client.Put;
+import org.json.simple.JSONObject;
+import org.mortbay.log.Log;
 
-  @Override
-  public Counter getCounter(Enum<?> arg0) {
-    // TODO Auto-generated method stub
-    return null;
+public class Reporter {
+  private ArrayList<Put> meta = new ArrayList<Put>();
+  private MessageDigest md5 = null;
+
+  public Reporter() throws NoSuchAlgorithmException {
+    md5 = MessageDigest.getInstance("md5");
   }
 
-  @Override
-  public Counter getCounter(String arg0, String arg1) {
-    // TODO Auto-generated method stub
-    return null;
+  public void putSource(String type, String source) {
+    byte[] value = getHash(source);
+    JSONObject json = new JSONObject();
+
+    try {
+      json.put("sig", new String(value, "UTF-8"));
+      json.put("type", "source");
+    } catch (UnsupportedEncodingException e) {
+      Log.warn("Error encoding metadata.");
+      Log.warn(e);
+    }
+    put(type.getBytes(), source.getBytes(), json.toString().getBytes());
+
   }
 
-  @Override
-  public InputSplit getInputSplit() throws UnsupportedOperationException {
-    // TODO Auto-generated method stub
-    return null;
+  public void putMetric(String type, String metric) {
+    String buf = new StringBuilder(type).append(".").append(metric).toString();
+    byte[] pk = getHash(buf);
+
+    JSONObject json = new JSONObject();
+    try {
+      json.put("sig", new String(pk, "UTF-8"));
+      json.put("type", "metric");
+    } catch (UnsupportedEncodingException e) {
+      Log.warn("Error encoding metadata.");
+      Log.warn(e);
+    }
+    put(type.getBytes(), metric.getBytes(), json.toString().getBytes());
+
   }
 
-  @Override
-  public void incrCounter(Enum<?> arg0, long arg1) {
-    // TODO Auto-generated method stub
-    
+  public void put(String key, String source, String info) {
+    put(key.getBytes(), source.getBytes(), info.getBytes());
   }
 
-  @Override
-  public void incrCounter(String arg0, String arg1, long arg2) {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public void setStatus(String arg0) {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public void progress() {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public float getProgress() {
-    // TODO Auto-generated method stub
-    return 0.0f;
+  public void put(byte[] key, byte[] source, byte[] info) {
+    Put put = new Put(key);
+    put.add("k".getBytes(), source, info);
+    meta.add(put);
   }
 
   public void clear() {
-    // TODO Auto-generated method stub
-    
+    meta.clear();
+  }
+
+  public List<Put> getInfo() {
+    return meta;
+  }
+
+  private byte[] getHash(String key) {
+    byte[] hash = new byte[3];
+    System.arraycopy(md5.digest(key.getBytes()), 0, hash, 0, 3);
+    return hash;
+  }
+
+  public void putClusterName(String type, String clusterName) {
+    byte[] value = getHash(clusterName);
+    JSONObject json = new JSONObject();
+
+    try {
+      json.put("sig", new String(value, "UTF-8"));
+      json.put("type", "cluster");
+    } catch (UnsupportedEncodingException e) {
+      Log.warn("Error encoding metadata.");
+      Log.warn(e);
+    }
+    put(type.getBytes(), clusterName.getBytes(), json.toString().getBytes());
   }
 
 }

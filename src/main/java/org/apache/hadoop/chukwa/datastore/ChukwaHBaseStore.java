@@ -18,15 +18,18 @@
 package org.apache.hadoop.chukwa.datastore;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.NavigableMap;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,330 +38,293 @@ import org.apache.hadoop.chukwa.hicc.bean.HeatMapPoint;
 import org.apache.hadoop.chukwa.hicc.bean.Heatmap;
 import org.apache.hadoop.chukwa.hicc.bean.Series;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
+import org.apache.hadoop.chukwa.util.HBaseUtil;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HConnection;
-import org.apache.hadoop.hbase.client.HConnectionManager;
-import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.filter.ColumnPrefixFilter;
-import org.apache.hadoop.hbase.filter.RowFilter;
-import org.apache.hadoop.hbase.filter.RegexStringComparator;
-import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 public class ChukwaHBaseStore {
   private static Configuration hconf = HBaseConfiguration.create();
-  private static HConnection connection = null;
-  private static final int POOL_SIZE = 60;
-  static Logger log = Logger.getLogger(ChukwaHBaseStore.class);
-  
-  public static Series getSeries(String tableName, String rkey, String family, String column,
-      long startTime, long endTime, boolean filterByRowKey) {
-    StringBuilder seriesName = new StringBuilder();
-    seriesName.append(rkey);
-    seriesName.append(":");
-    seriesName.append(family);
-    seriesName.append(":");
-    seriesName.append(column);
+  static Logger LOG = Logger.getLogger(ChukwaHBaseStore.class);
+  static byte[] COLUMN_FAMILY = "t".getBytes();
+  static byte[] ANNOTATION_FAMILY = "a".getBytes();
+  static byte[] KEY_NAMES = "k".getBytes();
+  private static final String CHUKWA = "chukwa";
+  private static final String CHUKWA_META = "chukwa_meta";
+  private static long MILLISECONDS_IN_DAY = 86400000L;
 
-    Series series = new Series(seriesName.toString());
+  /**
+   * Scan chukwa table for a particular metric group and metric name based on
+   * time ranges.
+   * 
+   * @param metricGroup
+   * @param metric
+   * @param source
+   * @param startTime
+   * @param endTime
+   * @return
+   */
+  public static Series getSeries(String metricGroup, String metric,
+      String source, long startTime, long endTime) {
+    String fullMetricName = new StringBuilder(metricGroup).append(".")
+        .append(metric).toString();
+    return getSeries(fullMetricName, source, startTime, endTime);
+  }
+
+  /**
+   * Scan chukwa table for a full metric name based on time ranges.
+   * 
+   * @param metric
+   * @param source
+   * @param startTime
+   * @param endTime
+   * @return
+   */
+  public static Series getSeries(String metric, String source, long startTime,
+      long endTime) {
+    String seriesName = new StringBuilder(metric).append(":").append(source).toString();
+    Series series = new Series(seriesName);
     try {
-      HTableInterface table = getHTableConnection().getTable(tableName);
-      Calendar c = Calendar.getInstance();
-      c.setTimeInMillis(startTime);
-      c.set(Calendar.MINUTE, 0);
-      c.set(Calendar.SECOND, 0);
-      c.set(Calendar.MILLISECOND, 0);
-      String startRow = c.getTimeInMillis()+rkey;
+      // Swap start and end if the values are inverted.
+      if (startTime > endTime) {
+        long temp = endTime;
+        startTime = endTime;
+        endTime = temp;
+      }
+      Connection connection = ConnectionFactory.createConnection(hconf);
+      Table table = connection.getTable(TableName.valueOf(CHUKWA));
       Scan scan = new Scan();
-      scan.addColumn(family.getBytes(), column.getBytes());
-      scan.setStartRow(startRow.getBytes());
-      scan.setTimeRange(startTime, endTime);
-      scan.setMaxVersions();
-      if(filterByRowKey) {
-        RowFilter rf = new RowFilter(CompareOp.EQUAL, new 
-            RegexStringComparator("[0-9]+-"+rkey+"$")); 
-        scan.setFilter(rf);
+      Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+      c.setTimeInMillis(startTime);
+      int startDay = c.get(Calendar.DAY_OF_YEAR);
+      c.setTimeInMillis(endTime);
+      int endDay = c.get(Calendar.DAY_OF_YEAR);
+      long currentDay = startTime;
+      for (int i = startDay; i <= endDay; i++) {
+        byte[] rowKey = HBaseUtil.buildKey(currentDay, metric, source);
+        // ColumnRangeFilter crf = new
+        // ColumnRangeFilter(Long.valueOf(startTime).toString().getBytes(),
+        // true, Long.valueOf(endTime).toString().getBytes(), true);
+        // scan.setFilter(crf);
+        scan.addFamily(COLUMN_FAMILY);
+        scan.setStartRow(rowKey);
+        scan.setStopRow(rowKey);
+        scan.setTimeRange(startTime, endTime);
+        scan.setBatch(10000);
+
+        ResultScanner results = table.getScanner(scan);
+        Iterator<Result> it = results.iterator();
+        // TODO: Apply discrete wavelet transformation to limit the output
+        // size to 1000 data points for graphing optimization. (i.e jwave)
+        while (it.hasNext()) {
+          Result result = it.next();
+          for (KeyValue kv : result.raw()) {
+            byte[] key = kv.getQualifier();
+            long timestamp = ByteBuffer.wrap(key).getLong();
+            double value = Double
+                .parseDouble(new String(kv.getValue(), "UTF-8"));
+            series.add(timestamp, value);
+          }
+        }
+        results.close();
+        currentDay = currentDay + (i * MILLISECONDS_IN_DAY);
       }
-      ResultScanner results = table.getScanner(scan);
-      Iterator<Result> it = results.iterator();
-      // TODO: Apply discrete wavelet transformation to limit the output
-      // size to 1000 data points for graphing optimization. (i.e jwave)
-      while(it.hasNext()) {
-        Result result = it.next();
-        String temp = new String(result.getValue(family.getBytes(), column.getBytes()));
-        double value = Double.parseDouble(temp);
-        // TODO: Pig Store function does not honor HBase timestamp, hence need to parse rowKey for timestamp.
-        String buf = new String(result.getRow());
-        Long timestamp = Long.parseLong(buf.split("-")[0]);
-        // If Pig Store function can honor HBase timestamp, use the following line is better.
-        // series.add(result.getCellValue().getTimestamp(), value);
-        series.add(timestamp, value);
-      }
-      results.close();
       table.close();
-    } catch(Exception e) {
-      log.error(ExceptionUtil.getStackTrace(e));
+    } catch (Exception e) {
+      LOG.error(ExceptionUtil.getStackTrace(e));
     }
     return series;
   }
 
-  public static Set<String> getFamilyNames(String tableName) {
+  public static Set<String> getMetricNames(String metricGroup) {
     Set<String> familyNames = new CopyOnWriteArraySet<String>();
     try {
-      HTableInterface table = getHTableConnection().getTable(tableName);
-      Set<byte[]> families = table.getTableDescriptor().getFamiliesKeys();
-      for(byte[] name : families) {
-        familyNames.add(new String(name));
+      Connection connection = ConnectionFactory.createConnection(hconf);
+      Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
+      Get get = new Get(metricGroup.getBytes());
+      Result result = table.get(get);
+      for (KeyValue kv : result.raw()) {
+        JSONObject json = (JSONObject) JSONValue.parse(new String(kv.getValue(), "UTF-8"));
+        if (json.get("type").equals("metric")) {
+          familyNames.add(new String(kv.getQualifier(), "UTF-8"));
+        }
       }
       table.close();
-    } catch(Exception e) {
-      log.error(ExceptionUtil.getStackTrace(e));
+      connection.close();
+    } catch (Exception e) {
+      LOG.error(ExceptionUtil.getStackTrace(e));
     }
     return familyNames;
-    
-  }
-  
-  public static Set<String> getTableNames() {
-    Set<String> tableNames = new CopyOnWriteArraySet<String>();
-    try {
-      HBaseAdmin admin = new HBaseAdmin(hconf);
-      HTableDescriptor[] td = admin.listTables();
-      for(HTableDescriptor table : td) {
-        tableNames.add(new String(table.getName()));
-      }
-    } catch(Exception e) {
-      log.error(ExceptionUtil.getStackTrace(e));
-    }
-    return tableNames;
+
   }
 
-  public static void getColumnNamesHelper(Set<String>columnNames, Iterator<Result> it) {
-    Result result = it.next();
-    if(result!=null) {
-      List<Cell> cList = result.listCells();
-      for(Cell cell : cList) {
-        columnNames.add(new String(CellUtil.cloneQualifier(cell)));
-      }
-    }
-  }
-  
-  public static Set<String> getColumnNames(String tableName, String family, long startTime, long endTime, boolean fullScan) {
-    Set<String> columnNames = new CopyOnWriteArraySet<String>();
+  public static Set<String> getMetricGroups() {
+    Set<String> metricGroups = new CopyOnWriteArraySet<String>();
     try {
-      HTableInterface table = getHTableConnection().getTable(tableName);
+      Connection connection = ConnectionFactory.createConnection(hconf);
+      Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
       Scan scan = new Scan();
-      if(!fullScan) {
-        // Take sample columns of the recent time.
-        StringBuilder temp = new StringBuilder();
-        temp.append(endTime-300000L);
-        scan.setStartRow(temp.toString().getBytes());
-        temp.setLength(0);
-        temp.append(endTime);
-        scan.setStopRow(temp.toString().getBytes());
-      } else {
-        StringBuilder temp = new StringBuilder();
-        temp.append(startTime);
-        scan.setStartRow(temp.toString().getBytes());
-        temp.setLength(0);
-        temp.append(endTime);
-        scan.setStopRow(temp.toString().getBytes());
-      }
-      scan.addFamily(family.getBytes());
-      ResultScanner results = table.getScanner(scan);
-      Iterator<Result> it = results.iterator();
-      if(fullScan) {
-        while(it.hasNext()) {
-          getColumnNamesHelper(columnNames, it);
-        }        
-      } else {
-        getColumnNamesHelper(columnNames, it);        
-      }
-      results.close();
-      table.close();
-    } catch(Exception e) {
-      log.error(ExceptionUtil.getStackTrace(e));
-    }
-    return columnNames;
-  }
-  
-  public static Set<String> getRowNames(String tableName, String family, String qualifier, long startTime, long endTime, boolean fullScan) {
-    Set<String> rows = new HashSet<String>();
-    try {
-      HTableInterface table = getHTableConnection().getTable(tableName);
-      Scan scan = new Scan();
-      scan.addColumn(family.getBytes(), qualifier.getBytes());
-      if(!fullScan) {
-        // Take sample columns of the recent time.
-        StringBuilder temp = new StringBuilder();
-        temp.append(endTime-300000L);
-        scan.setStartRow(temp.toString().getBytes());
-        temp.setLength(0);
-        temp.append(endTime);
-        scan.setStopRow(temp.toString().getBytes());
-      } else {
-        StringBuilder temp = new StringBuilder();
-        temp.append(startTime);
-        scan.setStartRow(temp.toString().getBytes());
-        temp.setLength(0);
-        temp.append(endTime);
-        scan.setStopRow(temp.toString().getBytes());
-      }
-      ResultScanner results = table.getScanner(scan);
-      Iterator<Result> it = results.iterator();
-      while(it.hasNext()) {
+      scan.addFamily(KEY_NAMES);
+      ResultScanner rs = table.getScanner(scan);
+      Iterator<Result> it = rs.iterator();
+      while (it.hasNext()) {
         Result result = it.next();
-        String buffer = new String(result.getRow());
-        String[] parts = buffer.split("-", 2);
-        if(!rows.contains(parts[1])) {
-          rows.add(parts[1]);
-        }    
+        metricGroups.add(new String(result.getRow(), "UTF-8"));
       }
-      results.close();
       table.close();
-    } catch(Exception e) {
-      log.error(ExceptionUtil.getStackTrace(e));
+      connection.close();
+    } catch (Exception e) {
+      LOG.error(ExceptionUtil.getStackTrace(e));
     }
-    return rows;    
+    return metricGroups;
   }
-  
-  public static Set<String> getHostnames(String cluster, long startTime, long endTime, boolean fullScan) {
-    return getRowNames("SystemMetrics","system", "csource", startTime, endTime, fullScan);
-  }
-  
-  public static Set<String> getClusterNames(long startTime, long endTime) {
-    String tableName = "SystemMetrics";
-    String family = "system";
-    String column = "ctags";
-    Set<String> clusters = new HashSet<String>();
-    Pattern p = Pattern.compile("\\s*cluster=\"(.*?)\"");
+
+  public static Set<String> getSourceNames(String dataType) {
+    Set<String> pk = new HashSet<String>();
     try {
-      HTableInterface table = getHTableConnection().getTable(tableName);
+      Connection connection = ConnectionFactory.createConnection(hconf);
+      Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
       Scan scan = new Scan();
-      scan.addColumn(family.getBytes(), column.getBytes());
-      scan.setTimeRange(startTime, endTime);
-      ResultScanner results = table.getScanner(scan);
-      Iterator<Result> it = results.iterator();
-      while(it.hasNext()) {
+      scan.addFamily(KEY_NAMES);
+      ResultScanner rs = table.getScanner(scan);
+      Iterator<Result> it = rs.iterator();
+      while (it.hasNext()) {
         Result result = it.next();
-        String buffer = new String(result.getValue(family.getBytes(), column.getBytes()));
-        Matcher m = p.matcher(buffer);
-        if(m.matches()) {
-          clusters.add(m.group(1));
+        for (Cell cell : result.rawCells()) {
+          JSONObject json = (JSONObject) JSONValue.parse(new String(cell.getValue(), "UTF-8"));
+          if (json.get("type").equals("source")) {
+            pk.add(new String(cell.getQualifier(), "UTF-8"));
+          }
         }
       }
-      results.close();
       table.close();
-    } catch(Exception e) {
-      log.error(ExceptionUtil.getStackTrace(e));
+      connection.close();
+    } catch (Exception e) {
+      LOG.error(ExceptionUtil.getStackTrace(e));
+    }
+    return pk;
+  }
+
+  public static Heatmap getHeatmap(String metricGroup, String metric,
+      long startTime, long endTime, double max, double scale, int height) {
+    final long MINUTE = TimeUnit.MINUTES.toMillis(1);
+    Heatmap heatmap = new Heatmap();
+    Set<String> sources = getSourceNames(metricGroup);
+    Set<String> metrics = getMetricNames(metricGroup);
+    List<Get> series = new ArrayList<Get>();
+    String fullName = new StringBuilder(metricGroup).append(".").append(metric).toString();
+    try {
+      Connection connection = ConnectionFactory.createConnection(hconf);
+      Table table = connection.getTable(TableName.valueOf(CHUKWA));
+      Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+      c.setTimeInMillis(startTime);
+      int startDay = c.get(Calendar.DAY_OF_YEAR);
+      c.setTimeInMillis(endTime);
+      int endDay = c.get(Calendar.DAY_OF_YEAR);
+      long currentDay = startTime;
+      for (int i = startDay; i <= endDay; i++) {
+        for (String m : metrics) {
+          if (m.startsWith(fullName)) {
+            for (String source : sources) {
+              byte[] rowKey = HBaseUtil.buildKey(currentDay, m, source);
+              Get serie = new Get(rowKey);
+              serie.addFamily(COLUMN_FAMILY);
+              serie.setTimeRange(startTime, endTime);
+              series.add(serie);
+            }
+          }
+        }
+        currentDay = currentDay + (i * MILLISECONDS_IN_DAY);
+      }
+      Result[] rs = table.get(series);
+      int index = 0;
+      // Series display in y axis
+      int y = 0;
+      HashMap<String, Integer> keyMap = new HashMap<String, Integer>();
+      for (Result result : rs) {
+        for(Cell cell : result.rawCells()) {
+          byte[] dest = new byte[5];
+          System.arraycopy(cell.getRow(), 3, dest, 0, 5);
+          String source = new String(dest);
+          long time = cell.getTimestamp();
+          // Time display in x axis
+          int x = (int) ((time - startTime) / MINUTE);
+          if (keyMap.containsKey(source)) {
+            y = keyMap.get(source);
+          } else {
+            keyMap.put(source, new Integer(index));
+            y = index;
+            index++;
+          }
+          double v = Double.parseDouble(new String(CellUtil.cloneValue(cell)));
+          heatmap.put(x, y, v);
+          if (v > max) {
+            max = v;
+          }
+        }
+      }
+      table.close();
+      int radius = height / index;
+      // Usually scale max from 0 to 100 for visualization
+      heatmap.putMax(scale);
+      for (HeatMapPoint point : heatmap.getHeatmap()) {
+        double round = point.count / max * scale;
+        round = Math.round(round * 100.0) / 100.0;
+        point.put(point.x, point.y * radius, round);
+      }
+      heatmap.putRadius(radius);
+      heatmap.putSeries(index);
+    } catch (IOException e) {
+      LOG.error(ExceptionUtil.getStackTrace(e));
+    }
+    return heatmap;
+  }
+
+  /**
+   * Scan chukwa table and find cluster tag from annotation column family from a
+   * range of entries.
+   * 
+   * @param startTime
+   * @param endTime
+   * @return
+   */
+  public static Set<String> getClusterNames(long startTime, long endTime) {
+    Set<String> clusters = new HashSet<String>();
+    try {
+      Connection connection = ConnectionFactory.createConnection(hconf);
+      Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
+      Scan scan = new Scan();
+      scan.addFamily(KEY_NAMES);
+      ResultScanner rs = table.getScanner(scan);
+      Iterator<Result> it = rs.iterator();
+      while (it.hasNext()) {
+        Result result = it.next();
+        for (Cell cell : result.rawCells()) {
+          JSONObject json = (JSONObject) JSONValue.parse(new String(cell.getValue(), "UTF-8"));
+          if (json.get("type").equals("cluster")) {
+            clusters.add(new String(cell.getQualifier(), "UTF-8"));
+          }
+        }
+      }
+      table.close();
+      connection.close();
+    } catch (Exception e) {
+      LOG.error(ExceptionUtil.getStackTrace(e));
     }
     return clusters;
-  }
-  
-  public static Heatmap getHeatmap(String tableName, String family, String column, 
-		  long startTime, long endTime, double max, double scale, int height) {
-	final long MINUTE = TimeUnit.MINUTES.toMillis(1);
-	Heatmap heatmap = new Heatmap();
-    
-    try {
-        HTableInterface table = getHTableConnection().getTable(tableName);
-        Scan scan = new Scan();
-        ColumnPrefixFilter cpf = new ColumnPrefixFilter(column.getBytes());
-        scan.addFamily(family.getBytes());
-        scan.setFilter(cpf);
-    	scan.setTimeRange(startTime, endTime);
-    	scan.setBatch(10000);
-        ResultScanner results = table.getScanner(scan);
-	    Iterator<Result> it = results.iterator();
-		int index = 0;
-		// Series display in y axis
-		int y = 0;
-		HashMap<String, Integer> keyMap = new HashMap<String, Integer>();
-	    while(it.hasNext()) {
-		  Result result = it.next();
-		  List<Cell> cList = result.listCells();
-	      for(Cell cell : cList) {
-			String key = parseRowKey(result.getRow());
-			StringBuilder tmp = new StringBuilder();
-			tmp.append(key);
-			tmp.append(":");
-			tmp.append(new String(CellUtil.cloneQualifier(cell)));
-			String seriesName = tmp.toString();
-			long time = parseTime(result.getRow());
-			// Time display in x axis
-			int x = (int) ((time - startTime) / MINUTE);
-			if(keyMap.containsKey(seriesName)) {
-			  y = keyMap.get(seriesName);
-		    } else {
-			  keyMap.put(seriesName, new Integer(index));
-		      y = index;
-		      index++;
-			}
-			double v = Double.parseDouble(new String(CellUtil.cloneValue(cell)));
-			heatmap.put(x, y, v);
-			if(v > max) {
-				max = v;
-			}
-	      }
-	    }
-	    results.close();
-	    table.close();
-	    int radius = height / index;
-	    // Usually scale max from 0 to 100 for visualization
-	    heatmap.putMax(scale);
-	    for(HeatMapPoint point : heatmap.getHeatmap()) {
-	      double round = point.count / max * scale;
-	      round = Math.round(round * 100.0) / 100.0;
-	      point.put(point.x, point.y * radius, round);
-	    }
-	    heatmap.putRadius(radius);
-	    heatmap.putSeries(index);
-	} catch (IOException e) {
-	    log.error(ExceptionUtil.getStackTrace(e));
-	}
-	return heatmap;
-  }
-  
-  private static String parseRowKey(byte[] row) {
-	  String key = new String(row);
-	  String[] parts = key.split("-", 2);
-	  return parts[1];
-  }
-
-  private static long parseTime(byte[] row) {
-	  String key = new String(row);
-	  String[] parts = key.split("-", 2);
-	  long time = Long.parseLong(parts[0]);
-	  return time;
-  }
-  
-  private static HConnection getHTableConnection() {
-    if(connection == null) {
-      synchronized(ChukwaHBaseStore.class) {
-        try {
-          ExecutorService pool = Executors.newFixedThreadPool(POOL_SIZE);
-          /* Set the hbase client properties to unblock immediately in case
-           * hbase goes down. This will ensure we timeout on socket connection to
-           * hbase early.
-           */
-          hconf.setInt("hbase.client.operation.timeout", 60000);
-          hconf.setLong("hbase.client.pause", 1000);
-          hconf.setInt("hbase.client.retries.number", 1);
-          connection = HConnectionManager.createConnection(hconf, pool);
-        }catch(IOException e) {
-          log.error("Unable to obtain connection to HBase " + e.getMessage());
-          e.printStackTrace();
-        }
-      }
-    }
-    return connection;
   }
 
 }

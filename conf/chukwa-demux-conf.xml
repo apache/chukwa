@@ -211,13 +211,13 @@
 
    <property>
     <name>ChukwaMetrics</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.ChukwaMetricsProcessor</value>
+    <value>org.apache.hadoop.chukwa.extraction.hbase.ChukwaMetricsProcessor</value>
     <description></description>
    </property>
 
    <property>
     <name>SystemMetrics</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.SystemMetrics</value>
+    <value>org.apache.hadoop.chukwa.extraction.hbase.SystemMetrics</value>
     <description></description>
    </property>
 
@@ -267,13 +267,6 @@
         <name>MRJobReduceProcessor</name>
         <value>,org.apache.hadoop.chukwa.extraction.demux.processor.reducer.MRJobReduceProcessor</value>
         <description> Reducer class for Reduce Type MRJobReduceProcessor </description>
-    </property>
-
-    <!-- Demux configs for both mapper and reducer -->
-    <property>
-        <name>SystemMetrics</name>
-        <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.SystemMetrics,org.apache.hadoop.chukwa.extraction.demux.processor.reducer.SystemMetrics</value>
-        <description> Reducer class for Reduce Type SystemMetrics </description>
     </property>
 
     <property>
