@@ -155,18 +155,23 @@ pid="$CHUKWA_PID_DIR/chukwa-$CHUKWA_IDENT_STRING-$COMMAND.pid"
 if [ "$1" = "start" ]; then
   if [ -f $pid ]; then
     TARGET_PID=`cat $pid`
-    if [ $TARGET_PID == $$ ]; then
-      # run command
-      exec ${JAVA_HOME}/bin/java ${JAVA_OPT} \
-        -Djava.library.path=${JAVA_LIBRARY_PATH} \
-        -DCHUKWA_HOME=${CHUKWA_HOME} \
-        -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} \
-        -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} \
-        -DCHUKWA_DATA_DIR=${CHUKWA_DATA_DIR} \
-        -DAPP=${APP} -Dlog4j.configuration=chukwa-log4j.properties \
-        -classpath ${CHUKWA_CONF_DIR}:${CLASSPATH}:${CHUKWA_CLASSPATH}:${tools} ${CLASS} $OPTS $@
-    elif kill -0 `cat $pid` > /dev/null 2>&1; then
-      echo $COMMAND running as process `cat $pid`.  Stop it first.
+    if kill -0 `cat $pid` > /dev/null 2>&1; then
+      if [ $TARGET_PID == $$ ]; then
+        # run command
+        exec ${JAVA_HOME}/bin/java ${JAVA_OPT} \
+          -Djava.library.path=${JAVA_LIBRARY_PATH} \
+          -DCHUKWA_HOME=${CHUKWA_HOME} \
+          -DCHUKWA_CONF_DIR=${CHUKWA_CONF_DIR} \
+          -DCHUKWA_LOG_DIR=${CHUKWA_LOG_DIR} \
+          -DCHUKWA_DATA_DIR=${CHUKWA_DATA_DIR} \
+          -DAPP=${APP} -Dlog4j.configuration=chukwa-log4j.properties \
+          -classpath ${CHUKWA_CONF_DIR}:${CLASSPATH}:${CHUKWA_CLASSPATH}:${tools} ${CLASS} $OPTS $@
+      else 
+        echo $COMMAND running as process `cat $pid`.  Stop it first.
+        exit 1
+      fi
+    else
+      echo $COMMAND is not running, but found pid file $pid.
       exit 1
     fi
   fi
