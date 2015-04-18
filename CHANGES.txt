@@ -10,6 +10,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-744. Implemented new parsers for extract and transform data to HBase format.  (Eric Yang)
+
     CHUKWA-667. Optimize HBase metrics schema.  (Eric Yang)
 
     CHUKWA-741. Updated to Hadoop 2.6.0 and HBase 1.0.0.  (Eric Yang)
