@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
+import org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -106,6 +108,7 @@ public class HiccWebServer {
           }
         }
       }
+      jar.close();
       return result;
     } 
       
@@ -187,6 +190,22 @@ public class HiccWebServer {
         fs.mkdirs(viewsPath);
         List<String> views = getResourceListing("views");
         populateDir(views, viewsPath);
+
+        // Populate example chart widgets
+        Chart chart = new Chart("1");
+        chart.setYUnitType("");
+        chart.setTitle("Load Average");
+        ArrayList<Series> series = new ArrayList<Series>();
+
+        Series s = new Series();
+        s.setLabel("SystemMetrics.LoadAverage.1/Erics-MacBook-Pro.local");
+        s.setUrl(new URI("/hicc/v1/metrics/series/SystemMetrics.LoadAverage.1/Erics-MacBook-Pro.local"));
+        LineOptions l = new LineOptions();
+        s.setLineOptions(l);
+        series.add(s);
+
+        chart.SetSeries(series);
+        ChukwaHBaseStore.createChart(chart);
         log.info("HICC Datastore initialization completed.");
       }
     } catch (IOException ex) {

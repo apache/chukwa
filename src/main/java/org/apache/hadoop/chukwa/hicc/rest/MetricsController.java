@@ -37,6 +37,8 @@ import org.apache.hadoop.chukwa.hicc.TimeHandler;
 import org.apache.hadoop.chukwa.hicc.bean.Series;
 import org.json.simple.JSONArray;
 
+import com.google.gson.Gson;
+
 @Path("/metrics")
 public class MetricsController {
 
@@ -128,7 +130,7 @@ public class MetricsController {
   @GET
   @Path("schema/{metricGroup}")
   @Produces("application/json")
-  public String getFamilies(@PathParam("metricGroup") String metricGroup) {
+  public String getMetrics(@PathParam("metricGroup") String metricGroup) {
     Set<String> metricNames = ChukwaHBaseStore.getMetricNames(metricGroup);
     JSONArray metrics = new JSONArray();
     for(String metric : metricNames) {
@@ -136,7 +138,7 @@ public class MetricsController {
     }
     return metrics.toString();
   }
-    
+
   @GET
   @Path("source/{metricGroup}")
   @Produces("application/json")
@@ -148,4 +150,5 @@ public class MetricsController {
     }
     return rows.toString();
   }
+
 }

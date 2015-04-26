@@ -37,10 +37,14 @@ import org.apache.hadoop.chukwa.extraction.hbase.UnknownRecordTypeException;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HConstants;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.HConnection;
 import org.apache.hadoop.hbase.client.HConnectionManager;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.log4j.Logger;
 
 public class HBaseWriter extends PipelineableWriter {
@@ -54,7 +58,7 @@ public class HBaseWriter extends PipelineableWriter {
   private Reporter reporter;
   private ChukwaConfiguration conf;
   String defaultProcessor;
-  private HConnection connection;
+  private static Connection connection;
   
   private class StatReportingTask extends TimerTask {
     private long lastTs = System.currentTimeMillis();
@@ -105,7 +109,9 @@ public class HBaseWriter extends PipelineableWriter {
     } catch (NoSuchAlgorithmException e) {
       throw new IOException("Can not register hashing algorithm.");
     }
-    connection = HConnectionManager.createConnection(hconf);
+    if (connection == null) {
+      connection = ConnectionFactory.createConnection(hconf);
+    }
   }
 
   public void close() {
@@ -121,8 +127,8 @@ public class HBaseWriter extends PipelineableWriter {
   public CommitStatus add(List<Chunk> chunks) throws WriterException {
     CommitStatus rv = ChukwaWriter.COMMIT_OK;
     try {
-      HTableInterface hbase = connection.getTable(CHUKWA_TABLE);              
-      HTableInterface meta = connection.getTable(CHUKWA_META_TABLE);              
+      Table hbase = connection.getTable(TableName.valueOf(CHUKWA_TABLE));
+      Table meta = connection.getTable(TableName.valueOf(CHUKWA_META_TABLE));
       for(Chunk chunk : chunks) {
         synchronized (this) {
           try {
@@ -140,6 +146,7 @@ public class HBaseWriter extends PipelineableWriter {
         }
       }
       hbase.close();
+      meta.close();
     } catch (Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
       throw new WriterException("Failed to store data to HBase.");

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,11 +30,13 @@ import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.hadoop.chukwa.hicc.Chart;
 import org.apache.hadoop.chukwa.hicc.bean.HeatMapPoint;
 import org.apache.hadoop.chukwa.hicc.bean.Heatmap;
 import org.apache.hadoop.chukwa.hicc.bean.Series;
@@ -48,6 +51,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
@@ -56,16 +60,37 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import com.google.gson.Gson;
+
 public class ChukwaHBaseStore {
   private static Configuration hconf = HBaseConfiguration.create();
   static Logger LOG = Logger.getLogger(ChukwaHBaseStore.class);
   static byte[] COLUMN_FAMILY = "t".getBytes();
   static byte[] ANNOTATION_FAMILY = "a".getBytes();
   static byte[] KEY_NAMES = "k".getBytes();
+  static byte[] CHART_TYPE = "chart_meta".getBytes();
+  static byte[] CHART_FAMILY = "c".getBytes();
   private static final String CHUKWA = "chukwa";
   private static final String CHUKWA_META = "chukwa_meta";
   private static long MILLISECONDS_IN_DAY = 86400000L;
+  private static Connection connection = null;
 
+  public static void getHBaseConnection() throws IOException {
+    if (connection == null || connection.isClosed()) {
+      connection = ConnectionFactory.createConnection(hconf);
+    }
+  }
+  
+  public static void closeHBase() {
+    try {
+      if(connection != null) {
+        connection.close();
+      }
+    } catch(IOException e) {
+      LOG.warn("Unable to release HBase connection.");
+    }
+  }
+  
   /**
    * Scan chukwa table for a particular metric group and metric name based on
    * time ranges.
@@ -93,7 +118,7 @@ public class ChukwaHBaseStore {
    * @param endTime
    * @return
    */
-  public static Series getSeries(String metric, String source, long startTime,
+  public static synchronized Series getSeries(String metric, String source, long startTime,
       long endTime) {
     String seriesName = new StringBuilder(metric).append(":").append(source).toString();
     Series series = new Series(seriesName);
@@ -104,7 +129,7 @@ public class ChukwaHBaseStore {
         startTime = endTime;
         endTime = temp;
       }
-      Connection connection = ConnectionFactory.createConnection(hconf);
+      getHBaseConnection();
       Table table = connection.getTable(TableName.valueOf(CHUKWA));
       Scan scan = new Scan();
       Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -144,6 +169,7 @@ public class ChukwaHBaseStore {
       }
       table.close();
     } catch (Exception e) {
+      closeHBase();
       LOG.error(ExceptionUtil.getStackTrace(e));
     }
     return series;
@@ -152,7 +178,7 @@ public class ChukwaHBaseStore {
   public static Set<String> getMetricNames(String metricGroup) {
     Set<String> familyNames = new CopyOnWriteArraySet<String>();
     try {
-      Connection connection = ConnectionFactory.createConnection(hconf);
+      getHBaseConnection();
       Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
       Get get = new Get(metricGroup.getBytes());
       Result result = table.get(get);
@@ -163,8 +189,8 @@ public class ChukwaHBaseStore {
         }
       }
       table.close();
-      connection.close();
     } catch (Exception e) {
+      closeHBase();
       LOG.error(ExceptionUtil.getStackTrace(e));
     }
     return familyNames;
@@ -174,7 +200,7 @@ public class ChukwaHBaseStore {
   public static Set<String> getMetricGroups() {
     Set<String> metricGroups = new CopyOnWriteArraySet<String>();
     try {
-      Connection connection = ConnectionFactory.createConnection(hconf);
+      getHBaseConnection();
       Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
       Scan scan = new Scan();
       scan.addFamily(KEY_NAMES);
@@ -185,8 +211,8 @@ public class ChukwaHBaseStore {
         metricGroups.add(new String(result.getRow(), "UTF-8"));
       }
       table.close();
-      connection.close();
     } catch (Exception e) {
+      closeHBase();
       LOG.error(ExceptionUtil.getStackTrace(e));
     }
     return metricGroups;
@@ -195,7 +221,7 @@ public class ChukwaHBaseStore {
   public static Set<String> getSourceNames(String dataType) {
     Set<String> pk = new HashSet<String>();
     try {
-      Connection connection = ConnectionFactory.createConnection(hconf);
+      getHBaseConnection();
       Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
       Scan scan = new Scan();
       scan.addFamily(KEY_NAMES);
@@ -211,8 +237,8 @@ public class ChukwaHBaseStore {
         }
       }
       table.close();
-      connection.close();
     } catch (Exception e) {
+      closeHBase();
       LOG.error(ExceptionUtil.getStackTrace(e));
     }
     return pk;
@@ -227,7 +253,7 @@ public class ChukwaHBaseStore {
     List<Get> series = new ArrayList<Get>();
     String fullName = new StringBuilder(metricGroup).append(".").append(metric).toString();
     try {
-      Connection connection = ConnectionFactory.createConnection(hconf);
+      getHBaseConnection();
       Table table = connection.getTable(TableName.valueOf(CHUKWA));
       Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
       c.setTimeInMillis(startTime);
@@ -288,6 +314,7 @@ public class ChukwaHBaseStore {
       heatmap.putRadius(radius);
       heatmap.putSeries(index);
     } catch (IOException e) {
+      closeHBase();
       LOG.error(ExceptionUtil.getStackTrace(e));
     }
     return heatmap;
@@ -304,7 +331,7 @@ public class ChukwaHBaseStore {
   public static Set<String> getClusterNames(long startTime, long endTime) {
     Set<String> clusters = new HashSet<String>();
     try {
-      Connection connection = ConnectionFactory.createConnection(hconf);
+      getHBaseConnection();
       Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
       Scan scan = new Scan();
       scan.addFamily(KEY_NAMES);
@@ -320,11 +347,136 @@ public class ChukwaHBaseStore {
         }
       }
       table.close();
-      connection.close();
     } catch (Exception e) {
+      closeHBase();
       LOG.error(ExceptionUtil.getStackTrace(e));
     }
     return clusters;
+  }
+
+  public static Chart getChart(String id) {
+    Chart chart = null;
+    try {
+      getHBaseConnection();
+      Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
+      Get get = new Get(CHART_TYPE);
+      Result r = table.get(get);
+      byte[] value = r.getValue(CHART_FAMILY, id.getBytes());
+      Gson gson = new Gson();
+      if(value!=null) {
+        chart = gson.fromJson(new String(value), Chart.class);
+      }
+      table.close();
+    } catch (Exception e) {
+      closeHBase();
+      LOG.error(ExceptionUtil.getStackTrace(e));
+    }
+    return chart;
+  }
+
+  public static void putChart(String id, Chart chart) {
+    try {
+      getHBaseConnection();
+      Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
+      Put put = new Put(CHART_TYPE);
+      Gson gson = new Gson();
+      String buffer = gson.toJson(chart);
+      put.add(CHART_FAMILY, id.getBytes(), buffer.getBytes());
+      table.put(put);
+      table.close();
+    } catch (Exception e) {
+      closeHBase();
+      LOG.error(ExceptionUtil.getStackTrace(e));
+    }
+    
+  }
+
+  public static String createChart(Chart chart) throws IOException {
+    getHBaseConnection();
+    String id = chart.getId();
+    if(id!=null) {
+      // Check if there is existing chart with same id.
+      Chart test = getChart(id);
+      if(test!=null) {
+        // If id already exists, randomly generate an id.
+        id = String.valueOf(UUID.randomUUID());
+      }
+    } else {
+      // If id is not provided, randomly generate an id.
+      id = String.valueOf(UUID.randomUUID());
+    }
+    chart.setId(id);
+    Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
+    Put put = new Put(CHART_TYPE);
+    Gson gson = new Gson();
+    String buffer = gson.toJson(chart);
+    put.add(CHART_FAMILY, id.getBytes(), buffer.getBytes());
+    table.put(put);
+    table.close();
+    return id;
+  }
+
+  public static synchronized ArrayList<org.apache.hadoop.chukwa.hicc.Series> getChartSeries(ArrayList<org.apache.hadoop.chukwa.hicc.Series> series, long startTime, long endTime) {
+    ArrayList<org.apache.hadoop.chukwa.hicc.Series> list = new ArrayList<org.apache.hadoop.chukwa.hicc.Series>();
+    try {
+      // Swap start and end if the values are inverted.
+      if (startTime > endTime) {
+        long temp = endTime;
+        startTime = endTime;
+        endTime = temp;
+      }
+      getHBaseConnection();
+      Table table = connection.getTable(TableName.valueOf(CHUKWA));
+      Scan scan = new Scan();
+      Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+      c.setTimeInMillis(startTime);
+      int startDay = c.get(Calendar.DAY_OF_YEAR);
+      c.setTimeInMillis(endTime);
+      int endDay = c.get(Calendar.DAY_OF_YEAR);
+      for (org.apache.hadoop.chukwa.hicc.Series s : series) {
+        org.apache.hadoop.chukwa.hicc.Series clone = (org.apache.hadoop.chukwa.hicc.Series) s.clone();
+        long currentDay = startTime;
+        String[] parts = s.getUrl().toString().split("/");
+        String metric = parts[5];
+        String source = parts[6];
+        ArrayList<ArrayList<Number>> data = new ArrayList<ArrayList<Number>>();
+        for (int i = startDay; i <= endDay; i++) {
+          byte[] rowKey = HBaseUtil.buildKey(currentDay, metric, source);
+          scan.addFamily(COLUMN_FAMILY);
+          scan.setStartRow(rowKey);
+          scan.setStopRow(rowKey);
+          scan.setTimeRange(startTime, endTime);
+          scan.setBatch(10000);
+
+          ResultScanner results = table.getScanner(scan);
+          Iterator<Result> it = results.iterator();
+          // TODO: Apply discrete wavelet transformation to limit the output
+          // size to 1000 data points for graphing optimization. (i.e jwave)
+          while (it.hasNext()) {
+            Result result = it.next();
+            for (KeyValue kv : result.raw()) {
+              byte[] key = kv.getQualifier();
+              long timestamp = ByteBuffer.wrap(key).getLong();
+              double value = Double.parseDouble(new String(kv.getValue(),
+                  "UTF-8"));
+              ArrayList<Number> points = new ArrayList<Number>();
+              points.add(timestamp);
+              points.add(value);
+              data.add(points);
+            }
+          }
+          results.close();
+          currentDay = currentDay + (i * MILLISECONDS_IN_DAY);
+        }
+        clone.setData(data);
+        list.add(clone);
+      }
+      table.close();
+    } catch (Exception e) {
+      closeHBase();
+      LOG.error(ExceptionUtil.getStackTrace(e));
+    }
+    return list;
   }
 
 }

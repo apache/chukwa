@@ -64,4 +64,8 @@ public class Series {
   public Object toJSONObject() {
     return series;
   }
+
+  public String getData() {
+    return (String) series.get("data");
+  }
 }

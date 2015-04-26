@@ -10,6 +10,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-745. Improved chart configuration management.  (Eric Yang)
+
     CHUKWA-744. Implemented new parsers for extract and transform data to HBase format.  (Eric Yang)
 
     CHUKWA-667. Optimize HBase metrics schema.  (Eric Yang)

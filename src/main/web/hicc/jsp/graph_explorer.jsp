@@ -89,7 +89,7 @@
         $('#family').children().each(
           function() {
             var family = $(this).text();
-            $.ajax({ url: encodeURI("/hicc/v1/metrics/schema/"+table+"/"+family), 
+            $.ajax({ url: encodeURI("/hicc/v1/metrics/source/"+table), 
                      dataType: "json", 
                      success: checkDataLength($(this))
             });
@@ -123,6 +123,12 @@
     function getRows() {
       var size = $('#row option').size();
       $('#row').find('option').remove();
+      $('#chartType').html("");
+      $('#family :selected').each(function(i, selected) {
+        var metric = $(selected).val();
+        var selection = metric+": <select id='ctype"+i+"'><option>lines</option><option>bars</option><option>points</option><option>area</option></select><br>";
+        $('#chartType').append(selection);
+      });
       $('#table :selected').each(function(i, selected) {
         var metricGroup = $(selected).val();
         var url = encodeURI("/hicc/v1/metrics/source/"+metricGroup);
@@ -137,7 +143,7 @@
       });
     }
 
-    function plot() {
+    function buildChart() {
       var test = $('#row').val();
       if(test == null) {
         $('#row option:eq(0)').attr('selected',true);
@@ -145,124 +151,55 @@
       var url = [];
       var idx = 0;
       $('#family :selected').each(function(i, selected) {
+        var id = '#ctype' + i;
+        var chartType = $(id).val();
+        var chartTypeOption = { show: true };
+        if (chartType=='area') {
+          chartTypeOption = { show: true, fill: true };
+        }
         $('#row :selected').each(function(j, rowSelected) {
-          url[idx++] = encodeURI("/hicc/v1/metrics/series/" + $(selected).val() + "/" + $(rowSelected).val());
+          var s = { 'label' : $(selected).val() + "/" + $(rowSelected).val(), 'url' : encodeURI("/hicc/v1/metrics/series/" + $(selected).val() + "/" + $(rowSelected).val())};
+          if(chartType=='area') {
+            s['lines']=chartTypeOption;
+          } else {
+            s[chartType]=chartTypeOption;
+          }
+          url[idx++] = s;
         }); 
       });
       var title = $('#title').val();
-      var ymin = $('#ymin').val();
+      var ymin = $('#ymin').val() ;
       var ymax = $('#ymax').val();
-      var chart_path = "/hicc/jsp/chart.jsp?title=" + title + "&ymin=" + ymin + "&ymax=" + ymax + "&data=" + url.join("&data=")
-      $('#graph').attr('src', encodeURI(chart_path));
-      $('#graph').load(function() {
-        doIframe();
+      var yunit = $('#yunit').val();
+      var data = { 'title' : title, 'yUnitType' : yunit, 'width' : 300, 'height' : 200, 'series' : url };
+      if(ymin!='') {
+        data['min']=ymin;
+      }
+      if(ymax!='') {
+        data['max']=ymax;
+      }
+      return data;
+    }
+
+    function plot() {
+      var data = buildChart();
+      $.ajax({
+        url: '/hicc/v1/chart/preview',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(result) {
+          $('#graph')[0].src="about:blank";
+          $('#graph')[0].contentWindow.document.open();
+          $('#graph')[0].contentWindow.document.write(result);
+          $('#graph')[0].contentWindow.document.close();
+        }
       });
     }
 
-    function buildWidget() {
-      var json = {};
-      json.id          = randString(10);
-      json.title       = $('#title').val();
-      json.version     = "0.1";
-      json.categories  = $('#table').val()+","+$("#family").val();
-      json.url         = "iframe/jsp/chart.jsp";
-      json.description = "User defined widget.";
-      json.refresh     = "15";
-      json.parameters  = [
-       {
-         "name"  : "title",
-         "type"  : "string",
-         "value" : $('#title').val(),
-         "edit"  : "1",
-         "label" : "Title"
-       },
-       {
-         "name"    : "period",
-         "type"    : "custom",
-         "control" : "period_control",
-         "value"   : "",
-         "label"   : "Period"
-       },
-       {
-         "name"    : "width",
-         "type"    : "select",
-         "value"   : "300",
-         "label"   : "Width",
-         "options" : [
-           {"label":"300","value":"300"},
-           {"label":"400","value":"400"},
-           {"label":"500","value":"500"},
-           {"label":"600","value":"600"},
-           {"label":"800","value":"800"},
-           {"label":"1000","value":"1000"},
-           {"label":"1200","value":"1200"}
-         ]
-       },
-       {
-         "name"    : "height",
-         "type"    : "select",
-         "value"   : "200",
-         "label"   : "Height",
-         "options" : [
-           {"label":"200","value":"200"},
-           {"label":"400","value":"400"},
-           {"label":"600","value":"600"},
-           {"label":"800","value":"800"},
-           {"label":"1000","value":"1000"}
-         ]
-       },
-       {
-         "name"    : "legend",
-         "type"    : "radio",
-         "value"   : "on",
-         "label"   : "Show Legends",
-         "options" : [
-           {"label":"On","value":"on"},
-           {"label":"Off","value":"off"}
-         ]
-       }
-      ];
-
-      var idx = 0;
-      var selections = {};
-      selections.name = "data";
-      selections.type = "select_multiple";
-      selections.label = "Metric";
-      selections.options = [];
-      selections.value = [];
-
-      var test = $('#row').val();
-      if(test == null) {
-        $('#row option:eq(0)').attr('selected',true);
-      }
-      var family = $("#family").val();
-
-      /* loop through series to construct URLs */
-      $('#family :selected').each(function(i, selected) {
-        var option = {};
-        option.label = $('#table').val() + "." + 
-          family + "." + 
-          $(selected).val() + "." + 
-          $('#row').val();
-        var values = encodeURI("/hicc/v1/metrics/series/" + 
-             $(selected).val() + 
-             "/" + $('#row').val());
-        option.value = values;
-        selections.value[idx] = values;
-        selections.options[idx++] = option;
-      });
-      var size = Object.keys(json.parameters).length;
-      json.parameters[size++]=selections;
-      console.log(JSON.stringify(json));
-      if(idx==0) {
-        throw "no series selected.";
-      }
-      return json;
-    }
-
-    function exportWidget() {
-      var json;
-      var url = "/hicc/v1/widget";
+    function publishChart() {
+      var json = buildChart();
+      var url = "/hicc/v1/chart/save";
       try {
         if($('#title').val()=="") {
           $("#title").val("Please provide a title");
@@ -274,21 +211,20 @@
           });
           throw "no title provided.";
         }
-        json = buildWidget();
       } catch(err) {
         console.log(err);
         return false;
       }
       $.ajax({ 
-        type: "PUT",
+        type: "POST",
         url: url, 
         contentType : "application/json",
         data: JSON.stringify(json),
         success: function(data) {
-          alert("Widget exported.");
+          alert("Chart exported.");
         },
         fail: function(data) {
-          alert("Widget export failed.");
+          alert("Chart export failed.");
         }
       });
     }
@@ -299,28 +235,35 @@
       <center>
       <table>
         <tr>
-          <td colspan="3">
-          Title <input type=text id="title">
-          </td>
+          <th>Metric Groups</th>
+          <th>Metrics</th>
+          <th>Sources</th>
+          <th>Options</th>
+          <th>Chart Type</th>
         </tr>
         <tr>
           <td>
-            Metric Groups<br>
             <select id="table" size="10" onMouseUp="getFamilies()" style="min-width: 100px;" class="select">
             </select>
           </td>
           <td>
-            Metrics<br>
             <select id="family" multiple size="10" style="min-width: 110px;" onMouseUp="getRows()">
             </select>
           </td>
           <td>
-            Sources<br>
             <select id="row" size="10" style="min-width: 100px;">
             </select>
           </td>
           <td>
             <table>
+              <tr>
+                <td>
+                  <label>Title</label>
+                </td>
+                <td>
+                  <input type=text id="title">
+                </td>
+              </tr>
               <tr>
                 <td>
                   <label>Y-axis Min</label>
@@ -337,13 +280,30 @@
                   <input type="text" id="ymax" />
                 </td>
               </tr>
+              <tr>
+                <td>
+                  <label>Y-axis Unit</label>
+                </td>
+                <td>
+                  <select id="yunit">
+                    <option>bytes</option>
+                    <option>bytes-decimal</option>
+                    <option value="ops">op/s</option>
+                    <option value="percent">%</option>
+                    <option>generic</option>
+                  </select>
+                </td>
+              </tr>
             </table>
+          </td>
+          <td>
+            <div id="chartType"></div>
           </td>
         </tr>
         <tr>
           <td>
             <input type=button name="action" value="Plot" onClick="plot()">
-            <input type=button name="action" value="Export" onClick="exportWidget()">
+            <input type=button name="action" value="Publish" onClick="publishChart()">
           </td>
           <td>
           </td>
@@ -352,7 +312,7 @@
         </tr>
       </table>
     </form>
-    <iframe id="graph" width="95%" class="autoHeight" frameBorder="0" scrolling="no"></iframe>
+    <iframe id="graph" width="95%" class="autoHeight" height="70%" frameBorder="0" scrolling="no"></iframe>
     </center>
   </body>
 </html>

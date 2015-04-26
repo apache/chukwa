@@ -15,7 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var zoom=false;
+var pause=false;
+var timer;
 var bound=null;
 var _chartSeriesSize=0;
 
@@ -97,7 +98,6 @@ function calculateStatis() {
   }
   dataTable+='</table>';
   $('#statisLegend').html(dataTable);
-  setIframeHeight(document.getElementById('boxId').value);
 }
 
 /*
@@ -112,23 +112,31 @@ function showTooltip(x, y, contents) {
   }
   $('<div id="tooltip">' + contents + '</div>').css( {
     position: 'absolute',
-	display: 'none',
-	top: y + 5,
-	left: x + 5,
-	border: '2px solid #aaa',
-	padding: '2px',
-	'background-color': '#fff',
-        }).appendTo("body").fadeIn(200);
+    display: 'none',
+    top: y + 5,
+    left: x + 5,
+    'border-radius': '5px',
+    border: '2px solid #aaa',
+    padding: '2px',
+    'background-color': '#fff',
+  }).appendTo("body").fadeIn(200);
 }
 
 /*
  * calculate the height of the area and set the correct height for the chart, legend and the statis legend as well.
  */
 function wholePeriod() {
-  var cw = document.body.clientWidth-30;
-  var ch = height-$("#placeholderTitle").height()-10;
-  document.getElementById('placeholder').style.width=cw+'px';
-  document.getElementById('placeholder').style.height=ch+'px';
+  var ch = document.body.clientHeight;
+  if (ch < 200 ) {
+    $('#placeholderLegend').hide();
+    $('#statisLegend').hide();
+  } else if (ch < 320) {
+    $('#placeholderLegend').show();
+    $('#statisLegend').hide();
+  } else {
+    $('#placeholderLegend').show();
+    $('#statisLegend').show();
+  }
   $.plot($("#placeholder"), _series, _options);
   // update statis
   calculateStatis();
@@ -163,29 +171,29 @@ $("#placeholder").bind("plotclick", function (event, pos, item) {
     };
     if (item) {
       if (previousPoint != item.datapoint) {
-	previousPoint = item.datapoint;
-               
-	$("#tooltip").remove();
-	if(xLabels.length==0) {
-	  var x = item.datapoint[0],
-	    y = item.stackValue.toFixed(2);
-	  var dnow=new Date();
-	  dnow.setTime(x);
-	  var dita=leftPad(dnow.getUTCFullYear())+"/"+leftPad(dnow.getUTCMonth()+1)+"/"+dnow.getUTCDate()+" "+leftPad(dnow.getUTCHours())+":"+leftPad(dnow.getUTCMinutes())+":"+leftPad(dnow.getUTCSeconds());
- 
-	  showTooltip(item.pageX, item.pageY,
-		      item.series.label + ": " + y + "<br>Time: " + dita);
-	} else {
-	  var x = item.datapoint[0],
-	    y = item.stackValue.toFixed(2);
-	  xLabel = xLabels[x];
-	  showTooltip(item.pageX, item.pageY,
-		      item.series.label + ": " + y + "<br>" + xLabel);
-	}
+        previousPoint = item.datapoint;
+        pause = true;
+        $("#tooltip").remove();
+        if(xLabels.length==0) {
+          var x = item.datapoint[0],
+            y = item.stackValue.toFixed(2);
+          var dnow=new Date();
+          dnow.setTime(x);
+          var dita=leftPad(dnow.getUTCFullYear())+"/"+leftPad(dnow.getUTCMonth()+1)+"/"+dnow.getUTCDate()+" "+leftPad(dnow.getUTCHours())+":"+leftPad(dnow.getUTCMinutes())+":"+leftPad(dnow.getUTCSeconds());
+          showTooltip(item.pageX, item.pageY,
+            item.series.label + ": " + y + "<br>Time: " + dita);
+        } else {
+          var x = item.datapoint[0],
+          y = item.stackValue.toFixed(2);
+          xLabel = xLabels[x];
+          showTooltip(item.pageX, item.pageY,
+            item.series.label + ": " + y + "<br>" + xLabel);
+        }
       }
     } else {
       $("#tooltip").remove();
-      previousPoint = null;            
+      previousPoint = null;
+      pause = false;
     }
   });
 
@@ -193,9 +201,13 @@ $("#placeholder").bind("plotclick", function (event, pos, item) {
  * bind the function for resizing the area inside the chart.
  */
 $("#placeholder").bind("selected", function (event, area) {
-    zoom = true;
+    if(area.x1 == area.x2 && area.y1 == area.y2) {
+      pause = false;
+    } else {
+      pause = true;
+    }
     extra_options = {};
-    extra_options.xaxis={ min: area.x1, max: area.x2 };	       
+    extra_options.xaxis={ min: area.x1, max: area.x2 };
     extra_options.yaxis={ min: area.y1, max: area.y2 };
     bound = {};
     bound.xmin=area.x1;
@@ -204,15 +216,14 @@ $("#placeholder").bind("selected", function (event, area) {
     bound.ymax=area.y2;
     calculateStatis();
     plot = $.plot(
-		  $("#placeholder"),
-		  _series,
-		  $.extend(
-			   true, 
-			   {}, 
-			   _options, extra_options
-			   )
-		  );
-    setIframeHeight(document.getElementById('boxId').value);
+      $("#placeholder"),
+      _series,
+      $.extend(
+         true, 
+         {}, 
+         _options, extra_options
+         )
+      );
   });
 
 /*
@@ -230,71 +241,30 @@ function getDocHeight(doc) {
 }
 
 /*
- * auto resize the iframe height to match content.
+ * Reload data
  */
-function setIframeHeight(ifrm) {
-  try {
-    objToResize = parent.document.getElementById(window.name);
-    objToResize.height = document.body.scrollHeight;
-  } catch(err) {
-    window.status = err.message;
+function reload() {
+  if (!pause) {
+    loadData();
   }
-}
-
-/*
- * refresh the chart widget.
- */
-function refresh(url, parameters) {
-  bound=null;
-  if(zoom) {
-    wholePeriod();
-    zoom=false;
-  } else {
-    if(parameters.indexOf("render=stack")>0) {
-      return false;
-    }
-    if(parameters.indexOf("_force_refresh")>0) {
-      return false;
-    }
-    var dataURL = url+"?"+parameters;
-    $.get(dataURL,{format: 'json'}, function(data){
-      try {
-        eval(data);
-        wholePeriod();
-        document.getElementById('placeholderTitle').innerHTML=chartTitle;
-      } catch(err) {
-        return false;
-      }
-    });a
-    if(_rest!=null) {
-      loadData(url, parameters);
-    }
-  }
-  return true;
+  timer = setTimeout(reload, 3000);
 }
 
 /*
  * Initialize data from REST API.
  */
 function loadData() {
-  _chartSeriesSize=0;
-  for(var i=0;i<_series.length;i++) {
-    $.getJSON(_rest[i], function(json) {
-      if(json.constructor.toString().indexOf("Array") != -1) {
-        for(var index=0;index<json.length;index++) {
-          _series[_chartSeriesSize].label=json[index].name;
-          _series[_chartSeriesSize].data=json[index].data;
-          _chartSeriesSize++;
-        }
-      } else {
-        var name=json.name;
-        _series[_chartSeriesSize].label=name;
-        _series[_chartSeriesSize].data=json.data;
-        _chartSeriesSize++;
-      }
+  $.ajax({
+    url: '/hicc/v1/chart/preview/series',
+    type: 'PUT',
+    contentType: 'application/json',
+    data: JSON.stringify(_seriesTemplate),
+    dataType: "json",
+    success: function(result) {
+      _series = result;
       wholePeriod();
-    }); 
-  }
+    }
+  });
 }
 
 /*

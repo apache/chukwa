@@ -19,27 +19,13 @@
 package org.apache.hadoop.chukwa.hicc;
 
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
-import java.text.SimpleDateFormat;
-import javax.servlet.http.HttpServletRequest;
-import javax.swing.text.html.HTMLDocument.Iterator;
 
-import org.apache.hadoop.chukwa.util.XssFilter;
-import org.json.JSONArray;
-
-@SuppressWarnings("unused")
 public class Chart {
   private String id;
   private String title;
-  private String graphType;
-  private ArrayList<TreeMap<String, TreeMap<String, Double>>> dataset;
-  private ArrayList<String> chartType;
-  private ArrayList<String> restData;
+  private List<Series> series;
   private boolean xLabelOn;
   private boolean yLabelOn;
   private boolean yRightLabelOn;
@@ -47,45 +33,27 @@ public class Chart {
   private int height;
   private List<String> xLabelRange;
   private HashMap<String, Long> xLabelRangeHash;
-  private HttpServletRequest request = null;
-  private boolean legend;
+  private boolean legend = true;
   private String xLabel = "";
   private String yLabel = "";
   private String yRightLabel = "";
-  private int datasetCounter = 0;
   private double max = 0;
   private double min = 0;
-  private int seriesCounter = 0;
-  private List<String> rightList;
-  private boolean userDefinedMax = false;
-  private boolean userDefinedMin = false;
-  private boolean displayPercentage = false;
-  private String[] seriesOrder = null;
-  private XssFilter xf = null;
-  
-  public Chart(HttpServletRequest request) {
-    xf = new XssFilter(request);
-    if (request != null && xf.getParameter("boxId") != null) {
-      this.id = xf.getParameter("boxId");
-    } else {
-      this.id = "0";
-    }
+  private boolean userDefinedMax = true;
+  private boolean userDefinedMin = true;
+  private String yUnitType = "";
+
+  public Chart(String id) {
+    this.id = id;
     this.title = "Untitled Chart";
-    this.graphType = "image";
     this.xLabelOn = true;
     this.yLabelOn = true;
-    this.width = 400;
-    this.height = 200;
-    this.request = request;
+    this.width = 100;
+    this.height = 100;
     this.legend = true;
     this.max = 0;
-    this.datasetCounter = 0;
-    this.seriesCounter = 0;
-    this.rightList = new ArrayList<String>();
     this.userDefinedMax = false;
     this.userDefinedMin = false;
-    this.displayPercentage = false;
-    this.seriesOrder = null;
   }
 
   public void setYMax(double max) {
@@ -93,13 +61,25 @@ public class Chart {
     this.userDefinedMax = true;
   }
 
+  public double getYMax() {
+    return this.max;
+  }
+
+  public boolean getUserDefinedMax() {
+    return this.userDefinedMax;
+  }
+
   public void setYMin(double min) {
     this.min = min;
     this.userDefinedMin = true;
   }
 
-  public void setDisplayPercentage(boolean percentage) {
-    this.displayPercentage = percentage;
+  public double getYMin() {
+    return this.min;
+  }
+
+  public boolean getUserDefinedMin() {
+    return this.userDefinedMin;
   }
 
   public void setSize(int width, int height) {
@@ -107,69 +87,84 @@ public class Chart {
     this.height = height;
   }
 
-  public void setGraphType(String graphType) {
-    if (graphType != null) {
-      this.graphType = graphType;
-    }
+  public int getWidth() {
+    return this.width;
+  }
+
+  public int getHeight() {
+    return this.height;
   }
 
   public void setTitle(String title) {
     this.title = title;
   }
 
+  public String getTitle() {
+    return this.title;
+  }
+
   public void setId(String id) {
     this.id = id;
   }
 
-  public void setDataSet(String chartType,
-    TreeMap<String, TreeMap<String, Double>> data) {
-    if (this.dataset == null) {
-      this.dataset = new ArrayList<TreeMap<String, TreeMap<String, Double>>>();
-      this.chartType = new ArrayList<String>();
-    }
-    this.dataset.add(data);
-    this.chartType.add(chartType);
+  public String getId() {
+    return this.id;
   }
 
-  public void setDataSet(String chartType, String series, String data) {
-    if (this.dataset == null) {
-      this.restData = new ArrayList<String>();
-      this.dataset = new ArrayList<TreeMap<String, TreeMap<String, Double>>>();
-      this.chartType = new ArrayList<String>();
-    }
-    this.chartType.add(chartType);
-    this.restData.add(data);
-    TreeMap<String, TreeMap<String, Double>> tree = new TreeMap<String, TreeMap<String, Double>>();
-    tree.put(series, new TreeMap<String, Double>()); 
-    this.dataset.add(tree);
+  public void SetSeries(List<Series> series) {
+    this.series = series;
   }
-
-  public void setSeriesOrder(String[] metrics) {
-    this.seriesOrder = (String[]) metrics.clone();
+  
+  public List<Series> getSeries() {
+    return this.series;
   }
-
-  public void setXAxisLabels(boolean toggle) {
+  
+  public void setXAxisLabelsOn(boolean toggle) {
     xLabelOn = toggle;
+  }
+
+  public boolean isXAxisLabelsOn() {
+    return xLabelOn;
   }
 
   public void setYAxisLabels(boolean toggle) {
     yLabelOn = toggle;
   }
 
+  public boolean isYAxisLabelsOn() {
+    return yLabelOn;
+  }
+
   public void setYAxisRightLabels(boolean toggle) {
     yRightLabelOn = toggle;
+  }
+
+  public boolean isYAxisRightLabelsOn() {
+    return yRightLabelOn;
   }
 
   public void setXAxisLabel(String label) {
     xLabel = label;
   }
 
+  public String getXAxisLabel() {
+    return xLabel;
+  }
+
   public void setYAxisLabel(String label) {
     yLabel = label;
   }
 
+  public String getYAxisLabel() {
+    return yLabel;
+  }
+
   public void setYAxisRightLabel(String label) {
     yRightLabel = label;
+  }
+
+  public String getYAxisRightLabel() {
+    return yRightLabel;
   }
 
   public void setXLabelsRange(List<String> range) {
@@ -182,302 +177,23 @@ public class Chart {
     }
   }
 
+  public List<String> getXLabelsRange() {
+    return xLabelRange;
+  }
+  
   public void setLegend(boolean toggle) {
     legend = toggle;
   }
 
-  public String plot() {
-    StringBuilder output = new StringBuilder();
-    if (dataset == null && restData == null) {
-      output.append("No Data available.");
-      return output.toString();
-    }
-    String dateFormat = "%H:%M";
-    if (xLabel.intern() == "Time".intern()) {
-//      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//      try {
-//        long xMin = 0;
-//        long xMax = 0;
-//        if(xLabelRange!=null && xLabelRange.size()>0) {
-//          xMin = Long.parseLong(xLabelRange.get(0));
-//          xMax = Long.parseLong(xLabelRange.get(xLabelRange.size() - 1));
-//        }
-//        if (xMax - xMin > 31536000000L) {
-//          dateFormat = "%y";
-//        } else if (xMax - xMin > 2592000000L) {
-//          dateFormat = "%y-%m";
-//        } else if (xMax - xMin > 604800000L) {
-//          dateFormat = "%m-%d";
-//        } else if (xMax - xMin > 86400000L) {
-//          dateFormat = "%m-%d %H:%M";
-//        }
-//      } catch (NumberFormatException e) {
-//        dateFormat = "%y-%m-%d %H:%M";
-//      }
-    }
-    StringBuilder xAxisOptions = new StringBuilder();
-    if (xLabel.intern() == "Time".intern()) {
-//      if(this.restData==null) {
-//        xAxisOptions.append("timeformat: \"");
-//        xAxisOptions.append(dateFormat);
-//        xAxisOptions.append("\",");
-//      }
-      xAxisOptions.append("mode: \"time\"");
-    } else {
-      xAxisOptions
-          .append("tickFormatter: function (val, axis) { if(val!=0) { return xLabels[Math.round(val)]; } else { return \" \"; }; }, ticks: 5");
-    }
-    if (request != null && xf.getParameter("format") == null) {
-      output
-          .append("<html><link href=\"/hicc/css/default.css\" rel=\"stylesheet\" type=\"text/css\">\n");
-      output
-          .append("<html><link href=\"/hicc/css/iframe.css\" rel=\"stylesheet\" type=\"text/css\">\n");
-      output
-          .append("<html><link href=\"/hicc/css/flexigrid/flexigrid.css\" rel=\"stylesheet\" type=\"text/css\">\n");
-      output
-          .append("<body><script type=\"text/javascript\" src=\"/hicc/js/jquery-1.2.6.min.js\"></script>\n");
-      output
-          .append("<script type=\"text/javascript\" src=\"/hicc/js/jquery.flot.pack.js\"></script>\n");
-      output
-          .append("<script type=\"text/javascript\" src=\"/hicc/js/flexigrid.pack.js\"></script>\n");
-      output
-          .append("<script type=\"text/javascript\" src=\"/hicc/js/excanvas.pack.js\"></script>\n");
-      output
-          .append("<script type=\"text/javascript\" src=\"/hicc/js/base64.js\"></script>\n");
-      output
-          .append("<script type=\"text/javascript\" src=\"/hicc/js/canvas2image.js\"></script>\n");
-      output.append("<div id=\"placeholderTitle\"><center>" + title
-          + "</center></div>\n");
-      output.append("<div id=\"placeholder\" style=\"width:" + this.width
-          + "px;height:" + this.height + "px;\"></div>\n");
-      output.append("<center><div id=\"placeholderLegend\" style=\"display:"+(legend?"block":"none")+";\"></div></center>\n");
-      output.append("<center><div id=\"statisLegend\" style=\"display:"+(legend?"block":"none")+";\"></div></center>\n");
-      output.append("<center><div id=\"statisLegend\" style=\"display:"+(legend?"block":"none")+";\"></div></center>\n");
-      output.append("<input type=\"hidden\" id=\"boxId\" value=\"iframe"
-          + this.id + "\">\n");
-      output
-          .append("<script type=\"text/javascript\" src=\"/hicc/js/flot.extend.js\">\n");
-      output.append("</script>\n");
-      output.append("<script type=\"text/javascript\">\n");
-      output.append("var chartTitle=\"<center>" + title + "</center>\";\n");
-      output.append("var height=" + this.height + ";\n");
-      output.append("var xLabels=new Array();\n");
-      output.append("var cw = document.body.clientWidth-70;\n");
-      output.append("var ch = document.body.clientHeight-50;\n");
-      output
-          .append("document.getElementById('placeholder').style.width=cw+'px';\n");
-      output
-          .append("document.getElementById('placeholder').style.height=ch+'px';\n");
-    }
-    output.append("_options={\n");
-    output.append("        points: { show: false },\n");
-    output.append("        xaxis: { " + xAxisOptions + " },\n");
-    output.append("	  selection: { mode: \"xy\" },\n");
-    output.append("	  grid: {\n");
-    output.append("	           clickable: true,\n");
-    output.append("	           hoverable: true,\n");
-    output.append("	           tickColor: \"#C0C0C0\",\n");
-    output.append("            borderWidth: 0,\n");
-    output.append("	           backgroundColor:\"#F9F9F9\"\n");
-    output.append("	  },\n");
-    output.append("	  legend: { show: " + this.legend
-        + ", noColumns: 3, container: $(\"#placeholderLegend\") },\n");
-    output.append("        yaxis: { ");
-    boolean stack = false;
-    for (String type : this.chartType) {
-      if (type.startsWith("stack")) {
-        stack = true;
-      }
-    }
-    if (stack) {
-      output.append("mode: \"stack\", ");
-    }
-    if (displayPercentage) {
-      output
-          .append("tickFormatter: function(val, axis) { return val.toFixed(axis.tickDecimals) + \" %\"; }");
-    } else {
-      output.append("tickFormatter: function(val, axis) { ");
-      output
-          .append("if (val >= 1000000000000000) return (val / 1000000000000000).toFixed(2) + \"x10<sup>15</sup>\";");
-      output
-          .append("else if (val >= 100000000000000) return (val / 100000000000000).toFixed(2) + \"x10<sup>14</sup>\";");
-      output
-          .append("else if (val >= 10000000000000) return (val / 10000000000000).toFixed(2) + \"x10<sup>13</sup>\";");
-      output
-          .append("else if (val >= 1000000000000) return (val / 1000000000000).toFixed(2) + \"x10<sup>12</sup>\";");
-      output
-          .append("else if (val >= 100000000000) return (val / 100000000000).toFixed(2) + \"x10<sup>11</sup>\";");
-      output
-          .append("else if (val >= 10000000000) return (val / 10000000000).toFixed(2) + \"x10<sup>10</sup>\";");
-      output
-          .append("else if (val >= 1000000000) return (val / 1000000000).toFixed(2) + \"x10<sup>9</sup>\";");
-      output
-          .append("else if (val >= 100000000) return (val / 100000000).toFixed(2) + \"x10<sup>8</sup>\";");
-      output
-          .append("else if (val >= 10000000) return (val / 10000000).toFixed(2) + \"x10<sup>7</sup>\";");
-      output
-          .append("else if (val >= 1000000) return (val / 1000000).toFixed(2) + \"x10<sup>6</sup>\";");
-      output
-          .append("else if (val >= 100000) return (val / 100000).toFixed(2) + \"x10<sup>5</sup>\";");
-      output
-          .append("else if (val >= 10000) return (val / 10000).toFixed(2) + \"x10<sup>4</sup>\";");
-      output
-          .append("else if (val >= 2000) return (val / 1000).toFixed(2) + \"x10<sup>3</sup>\";");
-      output.append("else return val.toFixed(2) + \"\"; }");
-    }
-    if (userDefinedMin) {
-      output.append(", min:");
-      output.append(this.min);
-    }
-    if (userDefinedMax) {
-      output.append(", max:");
-      output.append(this.max);
-    }
-    output.append("}\n");
-    output.append("	};\n");
-    if (!xLabel.equals("Time")) {
-      output.append("xLabels = [\"");
-      for (int i = 0; i < xLabelRange.size(); i++) {
-        if (i > 0) {
-          output.append("\",\"");
-        }
-        output.append(xLabelRange.get(i));
-      }
-      output.append("\"];\n");
-    }
-    output.append("_series=[\n");
-    ColorPicker cp = new ColorPicker();
-    int i = 0;
-    if(this.dataset!=null) {
-      for (TreeMap<String, TreeMap<String, Double>> dataMap : this.dataset) {
-        String[] keyNames;
-        if (this.seriesOrder != null) {
-          keyNames = this.seriesOrder;
-        } else {
-          keyNames = dataMap.keySet().toArray(
-              new String[dataMap.size()]);
-        }
-        int counter = 0;
-        if (i != 0 && !this.userDefinedMax) {
-            this.max = 0;
-        }
-        for (String seriesName : keyNames) {
-          int counter2 = 0;
-          if ((counter != 0) || (i != 0)) {
-            output.append(",");
-          }
-          String param = "fill: false, lineWidth: 1";
-          String type = "lines";
-          if (this.chartType.get(i).intern() == "stack-area".intern()
-              || this.chartType.get(i).intern() == "area".intern()) {
-            param = "fill: true, lineWidth: 0";
-          }
-          if (this.chartType.get(i).intern() == "bar".intern()) {
-            type = "bars";
-            param = "stepByStep: true, lineWidth: 0";
-          }
-          if (this.chartType.get(i).intern() == "point".intern()) {
-            type = "points";
-            param = "fill: false";
-          }
-          output.append("  {");
-          output.append(type);
-          output.append(": { show: true, ");
-          output.append(param);
-          output.append(" }, color: \"");
-          output.append(cp.getNext());
-          output.append("\", label: \"");
-          output.append(seriesName);
-          output.append("\", ");
-          String showYAxis = "false";
-          String shortRow = "false";
-          if (counter == 0 || i > 0) {
-            showYAxis = "true";
-            shortRow = "false";
-          }
-          output.append(" row: { show: ");
-          output.append(showYAxis);
-          output.append(",shortRow:");
-          output.append(shortRow);
-          output.append(", showYAxis:");
-          output.append(showYAxis);
-          output.append("}, data:[");
-          TreeMap<String, Double> data = dataMap.get(seriesName);
-          if(data!=null) {
-            java.util.Iterator<Entry<String, Double>> iter = data.entrySet().iterator();
-            while (iter.hasNext()) {
-              Map.Entry<String, Double> entry = (Map.Entry<String, Double>) iter.next();
-              int rangeLabel = 0;
-              if (counter2 != 0) {
-                output.append(",");
-              }
-              if (xLabel.equals("Time")) {
-                if (Double.isNaN(entry.getValue())) {
-                  output.append("[");
-                  output.append(entry.getKey());
-                  output.append(",NULL]");
-                } else {
-                  output.append("[");
-                  output.append(entry.getKey());
-                  output.append(",");
-                  output.append(entry.getValue());
-                  output.append("]");
-                }
-              } else {
-                long value = xLabelRangeHash.get(entry.getKey());
-                if (Double.isNaN(entry.getValue())) {
-                  output.append("[");
-                  output.append(value);
-                  output.append(",NULL]");
-                } else {
-                  output.append("[");
-                  output.append(value);
-                  output.append(",");
-                  output.append(entry.getValue());
-                  output.append("]");
-                }
-                rangeLabel++;
-              }
-              counter2++;
-            }
-          }
-          output.append("], min:0");
-          if (this.userDefinedMax) {
-            output.append(", max:");
-            output.append(this.max);
-          }
-          output.append("}");
-          counter++;
-        }
-        i++;
-      }
-      }
-    output.append(" ];\n");
-    if(this.restData!=null) {
-      JSONArray arr = new JSONArray();
-      for(String url : restData) {
-        arr.put(url);
-      }
-      output.append("var _rest = ");
-      output.append(arr.toString());
-      output.append(";");
-    }
-    if (request != null && xf.getParameter("format") == null) {
-      output.append("$(document).ready(function() { \n");
-      if(this.restData!=null) {
-        output.append("   loadData();\n");
-      } else {
-        output.append("   wholePeriod();\n");
-      }
-      output.append("   $(window).resize(function() { wholePeriod(); });\n");
-      output.append("});\n");
-      output.append("</script>\n");
-      output.append("<input type=\"button\" value=\"Export\" onclick=\"javascript:saveReport();\">\n");
-      output.append("</body></html>\n");
-    } else {
-      output.append("chartTitle=\"<center>" + this.title + "</center>\";");
-      output.append("height=" + this.height + ";");
-    }
-    return output.toString();
+  public boolean getLegend() {
+    return legend;
+  }
+
+  public void setYUnitType(String yUnitType) {
+    this.yUnitType = yUnitType;
+  }
+  
+  public String getYUnitType() {
+    return this.yUnitType;
   }
 }

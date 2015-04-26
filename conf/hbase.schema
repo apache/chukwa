@@ -1,5 +1,6 @@
 create "chukwa_meta",
-{NAME=>"k"}
+{NAME=>"k"},
+{NAME=>"c"}
 create "chukwa", 
 {NAME=>"t"},
 {NAME=>"a"}

@@ -1,0 +1,106 @@
+#*
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ *#
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="/hicc/css/default.css" rel="stylesheet" type="text/css">
+    <link href="/hicc/css/iframe.css" rel="stylesheet" type="text/css">
+    <link href="/hicc/css/flexigrid/flexigrid.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div id="placeholderTitle"><center>$chart.getTitle()</center></div>
+    <div id="placeholder"></div>
+    <div class="legendHolder">
+      <div class="left"></div>
+      <div class="center" id="placeholderLegend"></div>
+      <div class="right"></div>
+    </div>
+    <div class="legendHolder">
+      <div class="center" id="statisLegend"></div>
+    </div>
+    <script type="text/javascript" src="/hicc/js/jquery-1.2.6.min.js"></script>
+    <script type="text/javascript" src="/hicc/js/jquery.flot.pack.js"></script>
+    <script type="text/javascript" src="/hicc/js/flexigrid.pack.js"></script>
+    <script type="text/javascript" src="/hicc/js/excanvas.pack.js"></script>
+    <script type="text/javascript" src="/hicc/js/base64.js"></script>
+    <script type="text/javascript" src="/hicc/js/canvas2image.js"></script>
+    <script type="text/javascript" src="/hicc/js/flot.extend.js"></script>
+
+    <script type="text/javascript">
+
+var chartTitle="<center>$chart.getTitle()</center>";
+var xLabels=new Array();
+
+var _options={
+    points: { 
+      show: false
+    },
+    xaxis: { 
+      mode: "time"
+    },
+	  selection: { 
+	    mode: "xy",
+	    color: "#999999"
+	  },
+	  grid: {
+	    clickable: true,
+	    hoverable: true,
+	    tickColor: "#C0C0C0",
+      borderWidth: 0,
+	    backgroundColor:"#F9F9F9"
+	  },
+	  legend: { show: true, noColumns: 3, container: $("#placeholderLegend") },
+    yaxis: {
+      #if ( $chart.getYMin()!=0 )
+        min: $chart.getYMin(),
+      #end
+      #if ( $chart.getYMax()!=0 )
+        max: $chart.getYMax(),
+      #end
+      tickFormatter: function(val, axis) {
+        #if ( $chart.getYUnitType().equals('bytes') )
+          #parse("unit-bytes-binary.vm")
+        #elseif ( $chart.getYUnitType().equals('bytes-decimal') )
+          #parse("unit-bytes-decimal.vm")
+        #elseif ( $chart.getYUnitType().equals('ops') )
+          #parse("unit-ops.vm")
+        #elseif ( $chart.getYUnitType().equals('percent') )
+          #parse("unit-percent.vm")
+        #else
+          #parse("unit-generic.vm")
+        #end
+      }
+    }
+};
+
+var _series=$seriesMetaData;
+var _seriesTemplate=$seriesMetaData;
+
+$(document).ready(function() { 
+  reload();
+  $(window).resize(function() { 
+    wholePeriod();
+  });
+});
+
+
+</script>
+<input type="hidden" id="boxId" value="iframe">
+<!-- <input type="button" value="Export" onclick="javascript:saveReport();">  -->
+</body>
+</html>

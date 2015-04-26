@@ -153,6 +153,7 @@ fi
 pid="$CHUKWA_PID_DIR/chukwa-$CHUKWA_IDENT_STRING-$COMMAND.pid"
 
 if [ "$1" = "start" ]; then
+  shift
   if [ -f $pid ]; then
     TARGET_PID=`cat $pid`
     if kill -0 `cat $pid` > /dev/null 2>&1; then

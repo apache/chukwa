@@ -109,6 +109,16 @@
 	    <version>1.8.1</version>
           </dependency>
           <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-tools</artifactId>
+            <version>2.0</version>
+          </dependency>
+          <dependency>
             <groupId>edu.berkeley.confspell</groupId>
             <artifactId>confspellcheck</artifactId>
             <version>1.0</version>
@@ -481,6 +491,7 @@
                         <exclude>**/JobLog.java</exclude>
                         <exclude>**/TestJobLogEntry.java</exclude>
                         <exclude>**/TestDemuxManager.java</exclude>
+                        <exclude>**/TestFSMBuilder.java</exclude>
                       </testExcludes>
                     </configuration>
                   </execution>
