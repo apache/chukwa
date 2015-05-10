@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.chukwa.hicc;
+package org.apache.hadoop.chukwa.hicc.bean;
 
 
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import java.util.List;
 public class Chart {
   private String id;
   private String title;
-  private List<Series> series;
+  private List<SeriesMetaData> series;
   private boolean xLabelOn;
   private boolean yLabelOn;
   private boolean yRightLabelOn;
@@ -111,11 +111,11 @@ public class Chart {
     return this.id;
   }
 
-  public void SetSeries(List<Series> series) {
+  public void SetSeries(List<SeriesMetaData> series) {
     this.series = series;
   }
   
-  public List<Series> getSeries() {
+  public List<SeriesMetaData> getSeries() {
     return this.series;
   }
   

@@ -118,7 +118,9 @@ function showTooltip(x, y, contents) {
     'border-radius': '5px',
     border: '2px solid #aaa',
     padding: '2px',
-    'background-color': '#fff',
+    'color': '#fff',
+    'background-color': '#333',
+    'opacity': '0.5'
   }).appendTo("body").fadeIn(200);
 }
 

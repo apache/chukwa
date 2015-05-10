@@ -15,17 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.chukwa.hicc;
+package org.apache.hadoop.chukwa.hicc.bean;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Series implements Cloneable {
+public class SeriesMetaData implements Cloneable {
 
   @XmlElement
   public URI url;
@@ -53,7 +52,7 @@ public class Series implements Cloneable {
   public int highlightColor;
   public ArrayList<ArrayList<Number>> data = null;
   
-  public Series() {
+  public SeriesMetaData() {
     
   }
 

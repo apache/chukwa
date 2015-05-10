@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.chukwa.hicc;
+package org.apache.hadoop.chukwa.hicc.bean;
 
 public class PointOptions extends SeriesOptions {
   public int radius;

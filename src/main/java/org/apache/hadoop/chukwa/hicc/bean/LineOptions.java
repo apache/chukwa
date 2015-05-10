@@ -15,16 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.chukwa.hicc;
+package org.apache.hadoop.chukwa.hicc.bean;
 
-public class BarOptions extends SeriesOptions {
+public class LineOptions extends SeriesOptions {
   public boolean zero;
-  public boolean stepByStep = true;
-  public int barWidth = 4;
-  public String align;
-  public boolean horizontal;
+  public boolean steps;
   
-  public BarOptions() {
-    fill = true;
-  }
+
 }

@@ -8,6 +8,8 @@ Trunk (unreleased changes)
     
     CHUKWA-737. Heartbeat adaptor to push status to remote http server (Shreyas Subramanya)
 
+    CHUKWA-747.  Update Widget API to store data in HBase.  (Eric Yang)
+
   IMPROVEMENTS
 
     CHUKWA-745. Improved chart configuration management.  (Eric Yang)

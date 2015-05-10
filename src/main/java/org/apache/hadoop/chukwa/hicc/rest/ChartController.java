@@ -17,12 +17,10 @@
  */
 package org.apache.hadoop.chukwa.hicc.rest;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,14 +36,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore;
-import org.apache.hadoop.chukwa.hicc.Chart;
-import org.apache.hadoop.chukwa.hicc.Series;
 import org.apache.hadoop.chukwa.hicc.TimeHandler;
+import org.apache.hadoop.chukwa.hicc.bean.Chart;
+import org.apache.hadoop.chukwa.hicc.bean.SeriesMetaData;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.mortbay.log.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -73,7 +70,7 @@ public class ChartController {
     StringWriter sw = null;
     try {
       Chart chart = ChukwaHBaseStore.getChart(id);
-      List<Series> series = chart.getSeries();
+      List<SeriesMetaData> series = chart.getSeries();
       Gson gson = new Gson();
       String seriesMetaData = gson.toJson(series);
 
@@ -112,15 +109,13 @@ public class ChartController {
   @Path("save")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response create(String buffer) {
-    try {
-      Gson gson = new Gson();
-      Chart chart = gson.fromJson(buffer, Chart.class);
-      String id = ChukwaHBaseStore.createChart(chart);
+    Gson gson = new Gson();
+    Chart chart = gson.fromJson(buffer, Chart.class);
+    String id = ChukwaHBaseStore.createChart(chart);
+    if (id != null) {
       return Response.ok(id).build();
-    } catch (IOException e) {
-      return Responses.notAcceptable().build();
     }
-    
+    return Responses.notAcceptable().build();
   }
 
   /**
@@ -151,7 +146,7 @@ public class ChartController {
     try {
       Gson gson = new Gson();
       Chart chart = gson.fromJson(buffer, Chart.class);
-      List<Series> series = chart.getSeries();
+      List<SeriesMetaData> series = chart.getSeries();
       String seriesMetaData = gson.toJson(series);
 
       context.put("chart", chart);
@@ -170,7 +165,7 @@ public class ChartController {
   @Path("preview/series")
   @Produces("application/json")
   public String previewSeries(@Context HttpServletRequest request, String buffer) {
-    Type listType = new TypeToken<ArrayList<Series>>() {
+    Type listType = new TypeToken<ArrayList<SeriesMetaData>>() {
     }.getType();
     long startTime = 0;
     long endTime = 0;
@@ -178,7 +173,7 @@ public class ChartController {
     startTime = time.getStartTime();
     endTime = time.getEndTime();
     Gson gson = new Gson();
-    ArrayList<Series> series = gson.fromJson(buffer, listType);
+    ArrayList<SeriesMetaData> series = gson.fromJson(buffer, listType);
     series = ChukwaHBaseStore.getChartSeries(series, startTime, endTime);
     String result = gson.toJson(series);
     return result;
