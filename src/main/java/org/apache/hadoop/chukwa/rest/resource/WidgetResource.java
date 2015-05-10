@@ -36,7 +36,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-@Path ("/widget")
+@Path ("/widget1")
 public class WidgetResource {
   private static Log log = LogFactory.getLog(WidgetResource.class);
   
