@@ -81,7 +81,7 @@ function toFixed(value, precision) {
 function calculateStatis() {
   var dataTable='';
   dataTable+='<br/>';
-  dataTable+='<table class="statisTable small_font">';
+  dataTable+='<table class="statisTable">';
   dataTable+='<thead>';
   dataTable+='<tr><th>Series</th><th>Maximum</th><th>Average</th><th>Minimum</th><th>St. Deviation</th><th>Last</th></tr>';  
   dataTable+='</thead>';
@@ -119,8 +119,8 @@ function showTooltip(x, y, contents) {
     border: '2px solid #aaa',
     padding: '2px',
     'color': '#fff',
-    'background-color': '#333',
-    'opacity': '0.5'
+    'background-color': '#496274',
+    'opacity': '0.9'
   }).appendTo("body").fadeIn(200);
 }
 
@@ -181,7 +181,12 @@ $("#placeholder").bind("plotclick", function (event, pos, item) {
             y = item.stackValue.toFixed(2);
           var dnow=new Date();
           dnow.setTime(x);
-          var dita=leftPad(dnow.getUTCFullYear())+"/"+leftPad(dnow.getUTCMonth()+1)+"/"+dnow.getUTCDate()+" "+leftPad(dnow.getUTCHours())+":"+leftPad(dnow.getUTCMinutes())+":"+leftPad(dnow.getUTCSeconds());
+          var dita;
+          if(Cookies.get("tz")=="") {
+            dita=leftPad(dnow.getFullYear())+"/"+leftPad(dnow.getMonth()+1)+"/"+dnow.getDate()+" "+leftPad(dnow.getHours())+":"+leftPad(dnow.getMinutes())+":"+leftPad(dnow.getSeconds());
+          } else {
+            dita=leftPad(dnow.getUTCFullYear())+"/"+leftPad(dnow.getUTCMonth()+1)+"/"+dnow.getUTCDate()+" "+leftPad(dnow.getUTCHours())+":"+leftPad(dnow.getUTCMinutes())+":"+leftPad(dnow.getUTCSeconds());
+          }
           showTooltip(item.pageX, item.pageY,
             item.series.label + ": " + y + "<br>Time: " + dita);
         } else {

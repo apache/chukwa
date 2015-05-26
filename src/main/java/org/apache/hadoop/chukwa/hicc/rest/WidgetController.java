@@ -20,7 +20,6 @@ package org.apache.hadoop.chukwa.hicc.rest;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Scope;
 import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;

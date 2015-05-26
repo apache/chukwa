@@ -48,6 +48,7 @@ public class HeatmapController {
       @QueryParam("end") String end,
       @QueryParam("max") @DefaultValue("1.0") double max,
       @QueryParam("scale") @DefaultValue("100") double scale,
+      @QueryParam("width") @DefaultValue("700") int width,
       @QueryParam("height") @DefaultValue("400") int height) {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     Heatmap heatmap = null;
@@ -66,7 +67,7 @@ public class HeatmapController {
         endTime = time.getEndTime();
       }
       heatmap = ChukwaHBaseStore.getHeatmap(metricGroup, metric, startTime,
-          endTime, max, scale, height);
+          endTime, max, scale, width, height);
     } catch (Throwable e) {
       log.error(ExceptionUtil.getStackTrace(e));
     }

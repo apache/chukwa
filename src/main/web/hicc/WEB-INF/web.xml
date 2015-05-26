@@ -22,9 +22,25 @@
    version="2.5"> 
 
     <description>
-      Workspace
+      Hadoop Infrastructure Care Center
     </description>
-    <display-name>Workspace</display-name>
+    <display-name>hicc</display-name>
+
+    <listener>
+      <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+    </listener>
+    <filter>
+      <filter-name>ShiroFilter</filter-name>
+      <filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+    </filter>
+    <filter-mapping>
+      <filter-name>ShiroFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <welcome-file-list>
+      <welcome-file>index.html</welcome-file>
+      <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
 
     <servlet>
         <servlet-name>Workspace</servlet-name>
@@ -58,7 +74,7 @@
       <url-pattern>/v1/*</url-pattern>
     </servlet-mapping>    
 
-    <security-role>
+<!--    <security-role>
     <role-name>user</role-name>
     </security-role>
 
@@ -75,6 +91,6 @@
     <auth-constraint>
     <role-name>user</role-name>
     </auth-constraint>
-    </security-constraint>
+    </security-constraint> -->
 
 </web-app>

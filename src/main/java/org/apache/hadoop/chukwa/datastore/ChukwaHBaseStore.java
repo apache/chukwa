@@ -34,6 +34,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.chukwa.hicc.bean.Chart;
+import org.apache.hadoop.chukwa.hicc.bean.Dashboard;
 import org.apache.hadoop.chukwa.hicc.bean.HeatMapPoint;
 import org.apache.hadoop.chukwa.hicc.bean.Heatmap;
 import org.apache.hadoop.chukwa.hicc.bean.LineOptions;
@@ -73,6 +74,7 @@ public class ChukwaHBaseStore {
   static byte[] CHART_FAMILY = "c".getBytes();
   static byte[] COMMON_FAMILY = "c".getBytes();
   static byte[] WIDGET_TYPE = "widget_meta".getBytes();
+  static byte[] DASHBOARD_TYPE = "dashboard_meta".getBytes();
   private static final String CHUKWA = "chukwa";
   private static final String CHUKWA_META = "chukwa_meta";
   private static long MILLISECONDS_IN_DAY = 86400000L;
@@ -253,8 +255,8 @@ public class ChukwaHBaseStore {
   }
 
   public static Heatmap getHeatmap(String metricGroup, String metric,
-      long startTime, long endTime, double max, double scale, int height) {
-    final long MINUTE = TimeUnit.MINUTES.toMillis(1);
+      long startTime, long endTime, double max, double scale, int width, int height) {
+    final long SECONDS = TimeUnit.SECONDS.toMillis(1);
     Heatmap heatmap = new Heatmap();
     Set<String> sources = getSourceNames(metricGroup);
     Set<String> metrics = getMetricNames(metricGroup);
@@ -283,8 +285,9 @@ public class ChukwaHBaseStore {
         }
         currentDay = currentDay + (i * MILLISECONDS_IN_DAY);
       }
+      long timeRange = (endTime - startTime);
       Result[] rs = table.get(series);
-      int index = 0;
+      int index = 1;
       // Series display in y axis
       int y = 0;
       HashMap<String, Integer> keyMap = new HashMap<String, Integer>();
@@ -295,7 +298,10 @@ public class ChukwaHBaseStore {
           String source = new String(dest);
           long time = cell.getTimestamp();
           // Time display in x axis
-          int x = (int) ((time - startTime) / MINUTE);
+          long delta = time - startTime;
+          double f = (double) delta / timeRange;
+          f = (double) f * width;
+          int x = (int) Math.round(f);
           if (keyMap.containsKey(source)) {
             y = keyMap.get(source);
           } else {
@@ -320,7 +326,7 @@ public class ChukwaHBaseStore {
         point.put(point.x, point.y * radius, round);
       }
       heatmap.putRadius(radius);
-      heatmap.putSeries(index);
+      heatmap.putSeries(index -1);
     } catch (IOException e) {
       closeHBase();
       LOG.error(ExceptionUtil.getStackTrace(e));
@@ -716,7 +722,21 @@ public class ChukwaHBaseStore {
       // Populate default widgets
       Widget widget = new Widget();
       widget.setTitle("System Load Average");
-      widget.setUrl(new URI("/hicc/v1/chart/draw/1"));
+      widget.setSrc(new URI("/hicc/v1/chart/draw/1"));
+      widget.setCol(1);
+      widget.setRow(1);
+      widget.setSize_x(7);
+      widget.setSize_y(1);
+      createWidget(widget);
+
+      // CPU heatmap
+      widget = new Widget();
+      widget.setTitle("CPU Heatmap");
+      widget.setSrc(new URI("/hicc/jsp/heatmap.jsp"));
+      widget.setCol(1);
+      widget.setRow(1);
+      widget.setSize_x(4);
+      widget.setSize_y(2);
       createWidget(widget);
 
       // Populate example chart widgets
@@ -735,8 +755,67 @@ public class ChukwaHBaseStore {
 
       chart.SetSeries(series);
       createChart(chart);
+      
+      Dashboard dashboard = new Dashboard();
+      dashboard.add(widget);
+      updateDashboard("default", "", dashboard);
     } catch (Throwable ex) {
       LOG.error(ExceptionUtil.getStackTrace(ex));
     }
   }
+
+  public static synchronized Dashboard getDashboard(String id, String user) {
+    Dashboard dash = null;
+    String key = new StringBuilder().append(id).
+        append("|").append(user).toString();
+    try {
+      getHBaseConnection();
+      Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
+      Get dashboard = new Get(DASHBOARD_TYPE);
+      dashboard.addColumn(COMMON_FAMILY, key.getBytes());
+      Result rs = table.get(dashboard);
+      byte[] buffer = rs.getValue(COMMON_FAMILY, key.getBytes());
+      if(buffer == null) {
+        // If user dashboard is not found, use default dashboard.
+        key = new StringBuilder().append(id).append("|").toString();
+        dashboard = new Get(DASHBOARD_TYPE);
+        dashboard.addColumn(COMMON_FAMILY, key.getBytes());
+        rs = table.get(dashboard);
+        buffer = rs.getValue(COMMON_FAMILY, key.getBytes());        
+      }
+      Gson gson = new Gson();
+      dash = gson.fromJson(new String(buffer), Dashboard.class);
+      table.close();
+    } catch (Exception e) {
+      closeHBase();
+      LOG.error(ExceptionUtil.getStackTrace(e));
+      LOG.error("Error retrieving dashboard, id: " + 
+        id + " user:" + user);
+    }
+    return dash;
+  }
+
+  public static boolean updateDashboard(String id, String user, Dashboard dash) {
+    boolean result = false;
+    String key = new StringBuilder().append(id).
+        append("|").append(user).toString();
+    try {
+      getHBaseConnection();
+      Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
+      Put put = new Put(DASHBOARD_TYPE);
+      Gson gson = new Gson();
+      String buffer = gson.toJson(dash);
+      put.add(COMMON_FAMILY, key.getBytes(), buffer.getBytes());
+      table.put(put);
+      table.close();
+      result = true;
+    } catch (Exception e) {
+      closeHBase();
+      LOG.error(ExceptionUtil.getStackTrace(e));
+      LOG.error("Error in updating dashboard, id: " + 
+        id + " user:" + user);
+    }
+    return result;
+  }
+
 }

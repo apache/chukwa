@@ -20,12 +20,32 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-  <link href="/hicc/css/default.css" rel="stylesheet" type="text/css">
-  <link href="/hicc/css/formalize.css" rel="stylesheet" type="text/css">
-  <script src="/hicc/js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="/hicc/js/jquery.formalize.js"></script>
-  <script src="/hicc/js/autoHeight.js" type="text/javascript" charset="utf-8"></script>
+  <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+  <link href="../css/bootstrap-theme.min.css" type="text/css" rel="stylesheet" />
+  <script src="../js/jquery.js" type="text/javascript"></script>
+  <script src="../js/bootstrap.min.js" type="text/javascript"></script>
+  <style>
+    .nowrap td {
+      white-space: nowrap;
+      padding: 5px;
+    }
+
+    body {
+      margin: 5px;
+    }
+
+    #graph {
+      min-height: 400px;
+    }
+  </style>
   <script>
+    function status(type, message) {
+      $('#status').html('<div class="alert alert-'+type+' alert-dismissible" role="alert">'+
+        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'+
+        '<span aria-hidden="true">&times;</span></button>'+
+        message+'</div>');
+    }
+
     function randString(n) {
       if(!n) {
         n = 5;
@@ -116,7 +136,7 @@
       $('#chartType').html("");
       $('#family :selected').each(function(i, selected) {
         var metric = $(selected).val();
-        var selection = metric+": <select id='ctype"+i+"'><option>lines</option><option>bars</option><option>points</option><option>area</option></select><br>";
+        var selection = metric+": <select id='ctype"+i+"' class='form-control'><option>lines</option><option>bars</option><option>points</option><option>area</option></select><br>";
         $('#chartType').append(selection);
       });
       $('#table :selected').each(function(i, selected) {
@@ -190,7 +210,7 @@
     function buildWidget(title, url) {
       var widget = {
         title: title,
-        url: url,
+        src: url
       }
       widget['tokens'] = title.split(" ");
       $.ajax({
@@ -199,10 +219,10 @@
         contentType: "application/json",
         data: JSON.stringify(widget),
         success: function(data) {
-          alert("Widget exported.");
+          status("success", "Widget exported.");
         },
-        fail: function(data) {
-          alert("Widget export failed.");
+        error: function(data) {
+          status("danger", "Widget export failed.");
         }
       });
     }
@@ -233,8 +253,9 @@
         success: function(data) {
           buildWidget(json.title, '/hicc/v1/chart/draw/'+data);
         },
-        fail: function(data) {
-          alert("Chart export failed.");
+        error: function(data) {
+          alert("failed");
+          status("danger", "Chart export failed.");
         }
       });
     }
@@ -243,7 +264,8 @@
   <body>
     <form>
       <center>
-      <table>
+      <div id="status"></div>
+      <table class="nowrap">
         <tr>
           <th>Metric Groups</th>
           <th>Metrics</th>
@@ -253,15 +275,15 @@
         </tr>
         <tr>
           <td>
-            <select id="table" size="10" onMouseUp="getFamilies()" style="min-width: 100px;" class="select">
+            <select id="table" size="10" onMouseUp="getFamilies()" style="min-width: 100px;" class="form-control">
             </select>
           </td>
           <td>
-            <select id="family" multiple size="10" style="min-width: 110px;" onMouseUp="getRows()">
+            <select id="family" multiple size="10" style="min-width: 110px;" onMouseUp="getRows()" class="form-control">
             </select>
           </td>
           <td>
-            <select id="row" size="10" style="min-width: 100px;">
+            <select id="row" size="10" style="min-width: 100px;" class="form-control">
             </select>
           </td>
           <td>
@@ -271,7 +293,7 @@
                   <label>Title</label>
                 </td>
                 <td>
-                  <input type=text id="title">
+                  <input type=text id="title" class="form-control" />
                 </td>
               </tr>
               <tr>
@@ -279,7 +301,7 @@
                   <label>Y-axis Min</label>
                 </td>
                 <td>
-                  <input type="text" id="ymin" />
+                  <input type="text" id="ymin" class="form-control" />
                 </td>
               </tr>
               <tr>
@@ -287,7 +309,7 @@
                   <label>Y-axis Max</label>
                 </td>
                 <td>
-                  <input type="text" id="ymax" />
+                  <input type="text" id="ymax" class="form-control" />
                 </td>
               </tr>
               <tr>
@@ -295,7 +317,7 @@
                   <label>Y-axis Unit</label>
                 </td>
                 <td>
-                  <select id="yunit">
+                  <select id="yunit" class="form-control">
                     <option>bytes</option>
                     <option>bytes-decimal</option>
                     <option value="ops">op/s</option>
@@ -311,18 +333,14 @@
           </td>
         </tr>
         <tr>
-          <td>
-            <input type=button name="action" value="Plot" onClick="plot()">
-            <input type=button name="action" value="Publish" onClick="publishChart()">
-          </td>
-          <td>
-          </td>
-          <td>
+          <td colspan="5">
+            <input type=button name="action" value="Plot" class="btn btn-default" onClick="plot()">
+            <input type=button name="action" value="Publish" class="btn btn-default" onClick="publishChart()">
           </td>
         </tr>
       </table>
     </form>
-    <iframe id="graph" width="95%" class="autoHeight" height="70%" frameBorder="0" scrolling="no"></iframe>
+    <iframe id="graph" width="95%" height="400px" frameBorder="0" scrolling="no"></iframe>
     </center>
   </body>
 </html>

@@ -69,3 +69,21 @@ Copyright (c) 2009 - 2014 Jonathan Hedley (jonathan@hedley.net)
 
 This product includes esapi
 Copyright (c) 2015 OWASP Project, https://www.owasp.org
+
+This product includes js-cookie.js
+Copyright (c) 2006, 2015 Klaus Hartl, https://github.com/js-cookie/js-cookie
+
+This product includes Bootstrap
+Copyright (c) 2011-2015 Twitter, Inc.
+
+This product includes typeahead.js
+Copyright (c) 2011-2015 Twitter, Inc.
+
+This product includes gridster.js
+Copyright (c) 2014 ducksboard, http://gridster.net/
+
+This product includes Modernizr
+Copyright (c) 2009-2015 modernizr.com
+
+This product includes bonzo
+Copyright (c) 2012 Dustin Diaz, https://github.com/ded/bonzo

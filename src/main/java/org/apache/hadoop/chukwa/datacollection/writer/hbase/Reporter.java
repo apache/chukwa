@@ -86,8 +86,8 @@ public class Reporter {
   }
 
   private byte[] getHash(String key) {
-    byte[] hash = new byte[3];
-    System.arraycopy(md5.digest(key.getBytes()), 0, hash, 0, 3);
+    byte[] hash = new byte[5];
+    System.arraycopy(md5.digest(key.getBytes()), 0, hash, 0, 5);
     return hash;
   }
 

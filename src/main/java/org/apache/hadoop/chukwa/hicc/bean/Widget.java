@@ -26,11 +26,51 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Widget {
   @XmlElement
+  public int col;
+  @XmlElement
+  public int row;
+  @XmlElement
+  public int size_x;
+  @XmlElement
+  public int size_y;
+  @XmlElement
   public String title;
   @XmlElement
-  public URI url;
+  public URI src;
   @XmlElement
   public String[] tokens;
+
+  public int getCol() {
+    return col;
+  }
+
+  public void setCol(int col) {
+    this.col = col;
+  }
+
+  public int getRow() {
+    return row;
+  }
+
+  public void setRow(int row) {
+    this.row = row;
+  }
+
+  public int getSize_x() {
+    return size_x;
+  }
+
+  public void setSize_x(int size_x) {
+    this.size_x = size_x;
+  }
+
+  public int getSize_y() {
+    return size_y;
+  }
+
+  public void setSize_y(int size_y) {
+    this.size_y = size_y;
+  }
 
   public String getTitle() {
     return title;
@@ -40,12 +80,12 @@ public class Widget {
     this.title = title;
   }
 
-  public URI getUrl() {
-    return url;
+  public URI getSrc() {
+    return src;
   }
   
-  public void setUrl(URI url) {
-    this.url = url;
+  public void setSrc(URI src) {
+    this.src = src;
   }
 
   public String[] getTokens() {
@@ -58,6 +98,6 @@ public class Widget {
 
   public void tokenize() {
     String[] tokens = title.split(" ");
-    this.tokens = tokens;    
+    this.tokens = tokens;
   }
 }

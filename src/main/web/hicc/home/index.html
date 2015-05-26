@@ -1,0 +1,290 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Chukwa</title>
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="css/jquery.gridster.css" />
+    <link rel="stylesheet" type="text/css" href="css/component.css" />
+    <script src="js/modernizr.custom.js"></script>
+    <script src="js/jquery.js" type="text/javascript"></script>
+    <script src="js/jquery.gridster.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/typeahead.bundle.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <div id="glass" class="glass" onclick="toggleGlass()"></div>
+    <div class="frame">
+      <ul><li><iframe id="frame"></iframe></li></ul>
+    </div>
+
+		<div class="container">
+			<ul id="gn-menu" class="gn-menu-main">
+				<li class="gn-trigger">
+					<a class="gn-icon gn-icon-menu"><span>Menu</span></a>
+					<nav class="gn-menu-wrapper">
+						<div class="gn-scroller">
+							<ul class="gn-menu">
+								<li class="gn-search-item">
+									<input placeholder="Search" id="url" type="search" class="gn-search">
+									<a class="gn-icon gn-icon-search"><span>Search</span></a>
+								</li>
+								<li><a class="gn-icon gn-icon-illustrator" onclick="setDashboard('default')">User Activities</a></li>
+								<li><a class="gn-icon gn-icon-article" onclick="setDashboard('system')">System Activities</a></li>
+								<li><a class="gn-icon gn-icon-pictures" onclick="showFrame('graph-explorer.html')">Graph Explorer</a></li>
+								<li><a class="gn-icon gn-icon-cog" onclick="showFrame('settings')">Settings</a></li>
+								<li><a class="gn-icon gn-icon-help" onclick="showFrame('help')">Help</a></li>
+							</ul>
+						</div><!-- /gn-scroller -->
+					</nav>
+				</li>
+				<li><a href="index.html">Chukwa</a></li>
+				<li>
+                                    <div class="toggle-btn-grp">
+                                      <div><input type="radio" name="period" value="last1hr" onclick="setTime()" /><label class="toggle-btn">H</label></div>
+                                      <div><input type="radio" name="period" value="last24hr" onclick="setTime()" /><label class="toggle-btn">D</label></div>
+                                      <div><input type="radio" name="period" value="last30d" onclick="setTime()" /><label class="toggle-btn">M</label></div>
+                                      <div><input type="radio" name="period" value="lastyear" onclick="setTime()" /><label class="toggle-btn">Y</label></div>
+                                    </div>
+                                </li>
+                                <li><span id="username"></span></li>
+                                <li><a class="gn-icon-poweroff" onclick="logout()"><span> </span></a></li>
+			</ul>
+		</div><!-- /container -->
+  <div class="gridster">
+    <ul/>
+  </div>
+
+		<script src="js/classie.js"></script>
+		<script src="js/gnmenu.js"></script>
+		<script>
+
+var dashboard = 'default';
+var widgets = [];
+var widgetsToUrl = {};
+var grid_data = [];
+
+var substringMatcher = function(strs) {
+  return function findMatches(q, cb) {
+    var matches, substrRegex;
+
+    // an array that will be populated with substring matches
+    matches = [];
+
+    // regex used to determine if a string contains the substring `q`
+    substrRegex = new RegExp(q, 'i');
+
+    // iterate through the pool of strings and for any string that
+    // contains the substring `q`, add it to the `matches` array
+    $.each(strs, function(i, str) {
+      if (substrRegex.test(str)) {
+        // the typeahead jQuery plugin expects suggestions to a
+        // JavaScript object, refer to typeahead docs for more info
+        matches.push({ value: str });
+      }
+    });
+
+    cb(matches);
+  };
+};
+
+function toggleGlass() {
+  $('#glass').toggle();
+}
+
+// Load dashboard
+function load() {
+  $.getJSON('/hicc/v1/dashboard/load/'+dashboard,
+    function(data) {
+      grid_data = data.grid;
+      grid_data = Gridster.sort_by_row_and_col_asc(grid_data);
+      var overlay_fix_start = function() {
+        $('.overlay_fix').show();
+      }
+
+      var overlay_fix_stop = function() {
+        $('.overlay_fix').hide();
+        save();
+      };
+      var gridster = $(".gridster ul").gridster({
+        widget_margins: [10, 10],
+        widget_base_dimensions: [140, 140],
+        autogrow_cols: true,
+	max_cols: 9,
+        limit: true,
+        draggable: {
+          handle: 'header',
+          start: overlay_fix_start,
+          stop: overlay_fix_stop
+        },
+        resize: {
+          enabled: true,
+          start: overlay_fix_start,
+          stop: overlay_fix_stop
+        },
+        header: {
+          enabled: true
+        }
+      });
+
+      $.each(grid_data, function() {
+        var gridster = $(".gridster ul").gridster().data('gridster');
+        gridster.add_widget(this.src,
+          this.size_x,
+          this.size_y,
+          this.col,
+          this.row);
+      });
+    }
+  );
+
+  // Update searchable widget list
+  $.getJSON('/hicc/v1/widget/list',
+    function(data) {
+      widgets.length = 0;
+      widgetsToUrl.length = 0;
+      $.each( data, function( i, kv ) {
+        widgets.push(kv.title); 
+        widgetsToUrl[kv.title] = kv.src;
+      });
+
+      $('#url').typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+      },
+      {
+        name: 'widgets',
+        displayKey: 'value',
+        source: substringMatcher(widgets)
+      });
+    }
+  );
+
+}
+
+// Save Dashboard
+function save() {
+  var gridster = $(".gridster ul").gridster().data('gridster');
+  var s = gridster.serialize();
+  var data = { "grid" : s };
+  $.ajax({
+    url: '/hicc/v1/dashboard/save/'+dashboard,
+    type: 'PUT',
+    contentType: 'application/json',
+    data: JSON.stringify(data),
+  });
+}
+
+function setDashboard(value) {
+  dashboard = value;
+  var data = { dashboard : value };
+  $.ajax({
+    url: '/hicc/v1/session/save',
+    type: 'PUT',
+    contentType: 'application/json',
+    data: JSON.stringify(data)
+  });
+  var gridster = $(".gridster ul").gridster().data('gridster');
+  gridster.remove_all_widgets();
+  load();
+  showGrid();
+}
+
+function showGrid() {
+  $(".frame").hide();
+  $(".gridster ul").show();
+}
+
+function showFrame(target) {
+  $("#frame").attr("src", target);
+  $(".frame").show();
+  $(".gridster ul").hide();
+  gnMenu._closeMenu();
+}
+
+var gnMenu = new gnMenu( document.getElementById( 'gn-menu' ) );
+$(function(){ //DOM Ready
+
+$.getJSON('/hicc/v1/session/key/period',
+  function(data) {
+    var value = (data['period'] == null) ? "last1hr" : data['period'];
+    $("input[name=period][value=" + value + "]").attr('checked', 'checked');
+  }
+);
+
+$( "#url" ).keydown(function( event ) {
+  if ( event.which == 13 ) {
+    event.preventDefault();
+    var title = $('#url').val();
+    if(title in widgetsToUrl) {
+      var url = widgetsToUrl[title];
+      var gridster = $(".gridster ul").gridster().data('gridster');
+      gridster.add_widget(url, 1, 1, 1, 1);
+      setTimeout(function(){ save(); }, 3000);
+    }
+  }
+});
+
+$.ajax({
+    url: '/hicc/v1/dashboard/whoami',
+    cache: false
+  }).done(function( html ) {
+    $('#username').append(html);
+  });
+
+$.getJSON('/hicc/v1/session/key/dashboard',
+  function(data) {
+    var value = (data['dashboard'] == null) ? "default" : data['dashboard'];
+    dashboard = value;
+    load();
+  }
+);
+
+});
+
+function setTime() {
+  var data = {};
+  data['period'] = $('input[name=period]:checked').val();
+  console.log(data);
+  $.ajax({
+    url: '/hicc/v1/session/save',
+    type: 'PUT',
+    contentType: 'application/json',
+    data: JSON.stringify(data)
+  });
+}
+
+function logout() {
+  $.ajax({
+    url: '/hicc/logout',
+    success: function(data) {
+      document.cookie = 'JSESSIONID=;path=/hicc;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      window.location.assign("/hicc/login.jsp");
+    }
+  });
+}
+    </script>
+  </body>
+</html>

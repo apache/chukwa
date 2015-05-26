@@ -18,9 +18,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link href="/hicc/css/default.css" rel="stylesheet" type="text/css">
-    <link href="/hicc/css/iframe.css" rel="stylesheet" type="text/css">
-    <link href="/hicc/css/flexigrid/flexigrid.css" rel="stylesheet" type="text/css">
+    <link type="text/css" rel="stylesheet" href="/hicc/css/default.css" />
+    <link type="text/css" rel="stylesheet" href="/hicc/css/iframe.css" />
+    <link type="text/css" rel="stylesheet" href="/hicc/css/flexigrid/flexigrid.css" />
   </head>
   <body>
     <div id="placeholderTitle"><center>$chart.getTitle()</center></div>
@@ -33,12 +33,13 @@
     <div class="legendHolder">
       <div class="center" id="statisLegend"></div>
     </div>
-    <script type="text/javascript" src="/hicc/js/jquery-1.2.6.min.js"></script>
+    <script type="text/javascript" src="/hicc/js/jquery.js"></script>
     <script type="text/javascript" src="/hicc/js/jquery.flot.pack.js"></script>
     <script type="text/javascript" src="/hicc/js/flexigrid.pack.js"></script>
     <script type="text/javascript" src="/hicc/js/excanvas.pack.js"></script>
     <script type="text/javascript" src="/hicc/js/base64.js"></script>
     <script type="text/javascript" src="/hicc/js/canvas2image.js"></script>
+    <script type="text/javascript" src="/hicc/js/js-cookie.js"></script>
     <script type="text/javascript" src="/hicc/js/flot.extend.js"></script>
 
     <script type="text/javascript">

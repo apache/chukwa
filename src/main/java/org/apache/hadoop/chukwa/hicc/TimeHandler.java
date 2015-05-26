@@ -118,6 +118,8 @@ public class TimeHandler {
 	    start = end - (7 * 24 * 60 * 60 * 1000);
 	} else if (period.equals("last30d")) {
 	    start = end - (30L * 24 * 60 * 60 * 1000);
+  } else if (period.equals("lastyear")) {
+    start = end - (365L * 24 * 60 * 60 * 1000);
 	} else if (period.startsWith("custom;")) {
 	    
 	    // default value is between 2 days ago and now

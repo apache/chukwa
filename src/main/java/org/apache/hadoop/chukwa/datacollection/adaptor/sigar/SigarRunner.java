@@ -80,13 +80,13 @@ public class SigarRunner extends TimerTask {
         for (int i = 0; i < cpuinfo.length; i++) {
           JSONObject cpuMap = new JSONObject();
           cpuMap.putAll(cpuinfo[i].toMap());
-          cpuMap.put("combined", cpuPerc[i].getCombined());
-          cpuMap.put("user", cpuPerc[i].getUser());
-          cpuMap.put("sys", cpuPerc[i].getSys());
-          cpuMap.put("idle", cpuPerc[i].getIdle());
-          cpuMap.put("wait", cpuPerc[i].getWait());
-          cpuMap.put("nice", cpuPerc[i].getNice());
-          cpuMap.put("irq", cpuPerc[i].getIrq());
+          cpuMap.put("combined", cpuPerc[i].getCombined() * 100);
+          cpuMap.put("user", cpuPerc[i].getUser() * 100);
+          cpuMap.put("sys", cpuPerc[i].getSys() * 100);
+          cpuMap.put("idle", cpuPerc[i].getIdle() * 100);
+          cpuMap.put("wait", cpuPerc[i].getWait() * 100);
+          cpuMap.put("nice", cpuPerc[i].getNice() * 100);
+          cpuMap.put("irq", cpuPerc[i].getIrq() * 100);
           cpuList.add(cpuMap);
         }
         sigar.getCpuPerc();

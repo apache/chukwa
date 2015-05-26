@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-746. Redesigned Chukwa dashboard.  (Eric Yang)
+
     CHUKWA-736. SSL support for chukwa. (Shreyas Subramanya)
     
     CHUKWA-737. Heartbeat adaptor to push status to remote http server (Shreyas Subramanya)

@@ -324,14 +324,10 @@
 
             // the canvas
             canvas = $('<canvas width="' + canvasWidth + '" height="' + canvasHeight + '"></canvas>').appendTo(target).get(0);
-            if ($.browser.msie) // excanvas hack
-                canvas = window.G_vmlCanvasManager.initElement(canvas);
             ctx = canvas.getContext("2d");
 
             // overlay canvas for interactive features
             overlay = $('<canvas style="position:absolute;left:0px;top:0px;" width="' + canvasWidth + '" height="' + canvasHeight + '"></canvas>').appendTo(target).get(0);
-            if ($.browser.msie) // excanvas hack
-                overlay = window.G_vmlCanvasManager.initElement(overlay);
             octx = overlay.getContext("2d");
 
             // we include the canvas in the event holder too, because IE 7
@@ -446,15 +442,28 @@
                         var c = fmt.charAt(i);
                         
                         if (escape) {
-                            switch (c) {
-                            case 'h': c = "" + d.getUTCHours(); break;
-                            case 'H': c = leftPad(d.getUTCHours()); break;
-                            case 'M': c = leftPad(d.getUTCMinutes()); break;
-                            case 'S': c = leftPad(d.getUTCSeconds()); break;
-                            case 'd': c = "" + d.getUTCDate(); break;
-                            case 'm': c = "" + (d.getUTCMonth() + 1); break;
-                            case 'y': c = "" + d.getUTCFullYear(); break;
-                            case 'b': c = "" + monthNames[d.getUTCMonth()]; break;
+                            if(Cookies.get("tz")=="UTC") {
+                              switch (c) {
+                                case 'h': c = "" + d.getUTCHours(); break;
+                                case 'H': c = leftPad(d.getUTCHours()); break;
+                                case 'M': c = leftPad(d.getUTCMinutes()); break;
+                                case 'S': c = leftPad(d.getUTCSeconds()); break;
+                                case 'd': c = "" + d.getUTCDate(); break;
+                                case 'm': c = "" + (d.getUTCMonth() + 1); break;
+                                case 'y': c = "" + d.getUTCFullYear(); break;
+                                case 'b': c = "" + monthNames[d.getUTCMonth()]; break;
+                              }
+                            } else {
+                              switch (c) {
+                                case 'h': c = "" + d.getHours(); break;
+                                case 'H': c = leftPad(d.getHours()); break;
+                                case 'M': c = leftPad(d.getMinutes()); break;
+                                case 'S': c = leftPad(d.getSeconds()); break;
+                                case 'd': c = "" + d.getDate(); break;
+                                case 'm': c = "" + (d.getMonth() + 1); break;
+                                case 'y': c = "" + d.getFullYear(); break;
+                                case 'b': c = "" + monthNames[d.getMonth()]; break;
+                              }
                             }
                             r.push(c);
                             escape = false;

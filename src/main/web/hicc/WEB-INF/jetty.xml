@@ -97,7 +97,7 @@
     </Set>
     -->
 
-    <Set name="UserRealms">
+    <!-- <Set name="UserRealms">
     <Array type="org.mortbay.jetty.security.UserRealm">
     <Item>
     <New class="org.mortbay.jetty.security.HashUserRealm">
@@ -107,7 +107,7 @@
     </New>
     </Item>
     </Array>
-    </Set>
+    </Set> -->
 
     <!-- =========================================================== -->
     <!-- Set handler Collection Structure                            --> 

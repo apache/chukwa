@@ -27,10 +27,11 @@
 #statisLegend th {
   padding-left: 5px;
   padding-right: 5px;
-  background: #999999;
+  background: #496274;
   color: #fff;
   text-align: center;
   border-bottom: solid 2px #fff;
+  opacity: 0.9;
 }
 
 #statisLegend tr {

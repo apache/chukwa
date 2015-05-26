@@ -23,7 +23,7 @@
    response.setContentType("text/html; chartset=UTF-8//IGNORE");
    response.setHeader("boxId", xf.getParameter("boxId"));
 
-   String width = "600";
+   String width = "700";
    if(xf.getParameter("width")!=null) {
      width=xf.getParameter("width");
    }
@@ -38,9 +38,14 @@
      yLabel=xf.getParameter("yLabel");
    }
 
-   String url = "/hicc/v1/heatmap/SystemMetrics/cpu/combined.?max=100";
+   String url = "/hicc/v1/heatmap/SystemMetrics/cpu.combined.?max=100";
    if(xf.getParameter("url")!=null) {
      url=xf.getParameter("url");
+   }
+
+   String title = "CPU Utilization";
+   if(xf.getParameter("title")!=null) {
+     title=xf.getParameter("title");
    }
 %>
 <!DOCTYPE html>
@@ -77,9 +82,8 @@
 
       #xaxis {
         width: <%= width %>px;
-        position: absolute;
+        position: relative;
         left: 0px;
-        bottom: 10px;
         height: 20px;
         text-align: center;
         display: block;
@@ -103,7 +107,7 @@
     <script src="/hicc/js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" src="/hicc/js/heatmap.js"></script>
     <script type="text/javascript">
-      window.onload = function() {
+      function load() {
         $.ajax({ 
           url: "<%= url %>", 
           dataType: "json", 
@@ -115,13 +119,17 @@
               opacity: 50,
               legend: {
                 position: 'br',
-                title: '<%= xf.getParameter("title") %> Distribution'
+                title: '<%= title %> Distribution'
               }
             };
             var heatmap = h337.create(config);
             heatmap.store.setDataSet(data);
+            setTimeout(load, 5000);
           }
         });
+      }
+      window.onload = function() {
+        setTimeout(load, 5000);
       };
     </script>
   </body>

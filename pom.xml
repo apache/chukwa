@@ -27,7 +27,7 @@
         <package.log.dir>/var/log/chukwa</package.log.dir>
         <package.pid.dir>/var/run/chukwa</package.pid.dir>
         <package.release>1</package.release>
-        <package.version>0.6.0</package.version>
+        <package.version>0.7.0</package.version>
         <final.name>${project.artifactId}-${package.version}</final.name>
         <TODO_ALERT_EMAIL>user@example.com</TODO_ALERT_EMAIL>
         <TODO_CLUSTER_NAME>chukwa</TODO_CLUSTER_NAME>
@@ -58,7 +58,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.chukwa</groupId>
-    <version>0.6.0</version>
+    <version>0.7.0-SNAPSHOT</version>
     <artifactId>chukwa</artifactId>
     <packaging>jar</packaging>
 
@@ -328,6 +328,16 @@
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jsp-api-2.1</artifactId>
             <version>6.1.14</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+            <version>1.2.3</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+            <version>1.2.3</version>
           </dependency>
     </dependencies>
 
@@ -811,7 +821,8 @@
 			            <exclude>contrib/solr/logs/conf/lang/stopwords_pt.txt</exclude>
 			            <exclude>contrib/solr/logs/conf/lang/stopwords_ru.txt</exclude>
 			            <exclude>contrib/solr/logs/conf/lang/stopwords_sv.txt</exclude>
-			            <exclude>src/main/web/hicc/js/jquery-*</exclude>
+			            <exclude>src/main/web/hicc/js/jquery*</exclude>
+			            <exclude>src/main/web/hicc/home/js/jquery.js</exclude>
 			            <exclude>src/main/web/hicc/css/iui.css</exclude>
 			            <exclude>src/main/web/hicc/js/behaviour.js</exclude>
 			            <exclude>src/main/web/hicc/js/heatmap.js</exclude>
@@ -844,6 +855,20 @@
 			            <exclude>src/main/web/hicc/js/workspace/prototype.js</exclude>
 			            <exclude>src/main/web/hicc/js/jquery.flot.pack.js</exclude>
 			            <exclude>src/main/web/hicc/js/gsv.js</exclude>
+			            <exclude>src/main/web/hicc/js/bootstrap.min.js</exclude>
+			            <exclude>src/main/web/hicc/js/js-cookie.js</exclude>
+			            <exclude>src/main/web/hicc/css/bootstrap-theme.css.map</exclude>
+			            <exclude>src/main/web/hicc/css/bootstrap-theme.min.css</exclude>
+			            <exclude>src/main/web/hicc/css/bootstrap.min.css</exclude>
+			            <exclude>src/main/web/hicc/fonts/glyphicons-halflings-regular.svg</exclude>
+			            <exclude>src/main/web/hicc/home/js/jquery.gridster.min.js</exclude>
+			            <exclude>src/main/web/hicc/home/js/jquery.gridster.with-extras.min.js</exclude>
+			            <exclude>src/main/web/hicc/home/css/jquery.gridster.css</exclude>
+			            <exclude>src/main/web/hicc/home/css/jquery.gridster.min.css</exclude>
+			            <exclude>src/main/web/hicc/home/js/typeahead.bundle.js</exclude>
+			            <exclude>src/main/web/hicc/home/js/classie.js</exclude>
+			            <exclude>src/main/web/hicc/home/js/gnmenu.js</exclude>
+			            <exclude>src/main/web/hicc/home/js/modernizr.custom.js</exclude>
 
 			            <!-- Creative Commons licensed files -->
 			            <exclude>src/main/web/hicc/js/autoHeight.js</exclude>
@@ -852,6 +877,8 @@
 			            <exclude>src/main/web/hicc/js/base64.js</exclude>
 			            <exclude>src/main/web/hicc/js/canvas2image.js</exclude>
 			            <exclude>src/main/web/hicc/js/json.js</exclude>
+			            <exclude>src/main/web/hicc/home/fonts/codropsicons/*</exclude>
+			            <exclude>src/main/web/hicc/home/fonts/ecoicons/*</exclude>
                     </excludes>
                 </configuration>
             </plugin>
