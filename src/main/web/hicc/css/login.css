@@ -21,6 +21,8 @@ body {
     padding: 1px; /*background: #2370cf;*/
     font: 12px 'Lucida Grande', Geneva, Verdana, Arial, sans-serif;
     color: #000;
+    min-height: 100%;
+    width: 100%;
     background-image: url('images/bg.jpg');
     background-size: 100% auto;
 }

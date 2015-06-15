@@ -22,8 +22,10 @@
   <head>
   <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet" />
   <link href="../css/bootstrap-theme.min.css" type="text/css" rel="stylesheet" />
+  <link href="css/select2.min.css" rel="stylesheet" />
   <script src="../js/jquery.js" type="text/javascript"></script>
   <script src="../js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="js/select2.min.js"></script>
   <style>
     .nowrap td {
       white-space: nowrap;
@@ -38,6 +40,34 @@
       min-height: 400px;
     }
   </style>
+  </head>
+  <body>
+    <form>
+      <div id="status"></div>
+      <div class="row">
+        <div class="col-md-4 col-lg-4">
+          <label>Metric Group</label> <select class="groups form-control" multiple="multiple"></select>
+          <label>Metrics</label> <select class="metrics form-control" multiple="multiple"></select>
+          <label>Sources</label> <select class="sources form-control" multiple="multiple"></select>
+          <label>Title</label> <input type=text id="title" class="form-control" />
+          <label>Y-axis Min</label> <input type="text" id="ymin" class="form-control" />
+          <label>Y-axis Max</label> <input type="text" id="ymax" class="form-control" />
+          <label>Y-axis Unit</label>
+          <select id="yunit" class="form-control">
+            <option>generic</option>
+            <option>bytes</option>
+            <option>bytes-decimal</option>
+            <option value="ops">op/s</option>
+            <option value="percent">%</option>
+          </select>
+          <div id="chartType"></div>
+            <input type=button name="action" value="Plot" class="btn btn-default" onClick="plot()">
+            <input type=button name="action" value="Publish" class="btn btn-default" onClick="publishChart()">
+        </div>
+        <div class="col-md-8 col-lg-8">
+          <iframe id="graph" width="100%" height="700px" frameBorder="0" scrolling="no"></iframe>
+        </div>
+    </form>
   <script>
     function status(type, message) {
       $('#status').html('<div class="alert alert-'+type+' alert-dismissible" role="alert">'+
@@ -46,129 +76,111 @@
         message+'</div>');
     }
 
-    function randString(n) {
-      if(!n) {
-        n = 5;
-      }
-
-      var text = '';
-      var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-      for(var i=0; i < n; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-      }
-
-      return text;
-    }
-
-    var checkDataLength = function(curOption) {
-      return function(data) {
-        if (data.length == 0) {
-          curOption.attr('disabled', 'disabled');
-        }
-      }
-    };
-
-    $.ajax({ url: "/hicc/v1/metrics/schema", dataType: "json", success: function(data){
-      for(var i in data) {
-        $('#table').append("<option>"+data[i]+"</option>");
-      }
-      // Look through each table option and see if it has anything in its family?
-      $('#table').children().each(
-        function() {
-          var table = $(this).text();
-          $.ajax({ url: encodeURI("/hicc/v1/metrics/schema/"+table), 
-                   dataType: "json", 
-                   success: checkDataLength($(this))
+    var getGroups = function() {
+      $.ajax({
+        url: "/hicc/v1/metrics/schema", 
+        dataType: "json", 
+        success: function(data) {
+          var array = $.map(data, function(val, i) {
+            return {
+              id : i,
+              text: val
+            };
+          });
+          $('.groups').select2({
+            data: array,
+            tags: true,
+            theme: 'classic'
           });
         }
-      );
-    }});
+      });
+    };
 
-
-    function getFamilies() {
-      var size = $('#family option').size();
-      $('#family').find('option').remove();
-      var table = $('#table').val();
-      $.ajax({ url: encodeURI("/hicc/v1/metrics/schema/"+table), dataType: "json", success: function(data){
-        for(var i in data) {
-          $('#family').append("<option>"+data[i]+"</option>");
+    var getMetrics = function (group) {
+      $.ajax({
+        url: "/hicc/v1/metrics/schema/" + group, 
+        dataType: "json", 
+        success: function(data) {
+          var array = $.map(data, function(val, i) {
+            return {
+              id: i,
+              text: val
+            };
+          });
+          $('.metrics').select2({
+            data: array,
+            tags: true,
+            theme: 'classic'
+          });
         }
-        // Look through each family option and see if it has any columns
-        var table = $('#table').val();
-        $('#family').children().each(
-          function() {
-            var family = $(this).text();
-            $.ajax({ url: encodeURI("/hicc/v1/metrics/source/"+table), 
-                     dataType: "json", 
-                     success: checkDataLength($(this))
-            });
-          }
-        );
-      }});
-    }
+      });
+    };
 
-    function getColumns() {
-      var size = $('#column option').size();
-      $('#column').find('option').remove();
-      var table = $('#table').val();
-      var family = $('#family').val();
-      $('#family :selected').each(function(i, selected) {
-        var family = $(selected).val();
-        var url = encodeURI("/hicc/v1/metrics/schema/"+table+"/"+family);
-        var tableFamily = table+"/"+family;
-        // Look through each column option and see if it has any rows
-        $.ajax({ url: url, dataType: "json", success: function(data){
-          for(var i in data) {
-            $('#column').append(
-              $("<option></option>")
-                .attr("value", tableFamily+"/"+data[i])
-                .text(data[i])
-            );
-          }
-        }});
+    var getSources = function(group) {
+      $.ajax({
+        url: "/hicc/v1/metrics/source/" + group, 
+        dataType: "json", 
+        success: function(data) {
+          var array = $.map(data, function(val, i) {
+            return {
+              id: i,
+              text: val
+            };
+          });
+          $('.sources').select2({
+            data: array,
+            tags: true,
+            theme: 'classic'
+          });
+        }
       });
     }
 
-    function getRows() {
-      var size = $('#row option').size();
-      $('#row').find('option').remove();
+$(function() {
+    var groupData = getGroups();
+    var $eventSelect = $(".groups");
+    $eventSelect.on("select2:select", function(e) {
+      $('.groups :selected').each(function(i, selected) {
+        var group = $(selected).text(); 
+        getMetrics(group);
+        getSources(group);
+      });
+    });
+    $eventSelect.on("select2:unselect", function (e) {
+      $('.metrics').not('.select2-container').empty();
+      $('.sources').not('.select2-container').empty();
+    });
+    var $metricsEventSelect = $(".metrics");
+    $metricsEventSelect.on("select2:select", function(e) {
       $('#chartType').html("");
-      $('#family :selected').each(function(i, selected) {
-        var metric = $(selected).val();
+      $('.metrics :selected').each(function(i, selected) {
+        var metric = $(selected).text();
         var selection = metric+": <select id='ctype"+i+"' class='form-control'><option>lines</option><option>bars</option><option>points</option><option>area</option></select><br>";
         $('#chartType').append(selection);
       });
-      $('#table :selected').each(function(i, selected) {
-        var metricGroup = $(selected).val();
-        var url = encodeURI("/hicc/v1/metrics/source/"+metricGroup);
-        $.ajax({ url: url, dataType: "json", success: function(data){
-          for(var i in data) {
-            var test = $('#row').find('option[value="'+data[i]+'"]').val();
-            if(typeof(test) == "undefined") {
-              $('#row').append('<option value="'+data[i]+'">'+data[i]+'</option>');
-            }
-          }
-        }});
-      });
-    }
+    });
+    $metricsEventSelect.on("select2:unselect", function(e) {
+      $('#chartType').html("");
+    });
+});
+
 
     function buildChart() {
-      var test = $('#row').val();
+      var test = $('.sources').val();
       if(test == null) {
-        $('#row option:eq(0)').attr('selected',true);
+        $('.sources option:eq(0)').attr('selected',true);
       }
       var url = [];
       var idx = 0;
-      $('#family :selected').each(function(i, selected) {
+      $('.metrics :selected').each(function(i, selected) {
         var id = '#ctype' + i;
         var chartType = $(id).val();
         var chartTypeOption = { show: true };
         if (chartType=='area') {
           chartTypeOption = { show: true, fill: true };
         }
-        $('#row :selected').each(function(j, rowSelected) {
-          var s = { 'label' : $(selected).val() + "/" + $(rowSelected).val(), 'url' : encodeURI("/hicc/v1/metrics/series/" + $(selected).val() + "/" + $(rowSelected).val())};
+        $('.sources :selected').each(function(j, rowSelected) {
+          var s = { 'label' : $(selected).text() + "/" + $(rowSelected).text(), 'url' : encodeURI("/hicc/v1/metrics/series/" + $(selected).text() + "/" + $(rowSelected).text())};
           if(chartType=='area') {
             s['lines']=chartTypeOption;
           } else {
@@ -260,87 +272,5 @@
       });
     }
   </script>
-  </head>
-  <body>
-    <form>
-      <center>
-      <div id="status"></div>
-      <table class="nowrap">
-        <tr>
-          <th>Metric Groups</th>
-          <th>Metrics</th>
-          <th>Sources</th>
-          <th>Options</th>
-          <th>Chart Type</th>
-        </tr>
-        <tr>
-          <td>
-            <select id="table" size="10" onMouseUp="getFamilies()" style="min-width: 100px;" class="form-control">
-            </select>
-          </td>
-          <td>
-            <select id="family" multiple size="10" style="min-width: 110px;" onMouseUp="getRows()" class="form-control">
-            </select>
-          </td>
-          <td>
-            <select id="row" size="10" style="min-width: 100px;" class="form-control">
-            </select>
-          </td>
-          <td>
-            <table>
-              <tr>
-                <td>
-                  <label>Title</label>
-                </td>
-                <td>
-                  <input type=text id="title" class="form-control" />
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <label>Y-axis Min</label>
-                </td>
-                <td>
-                  <input type="text" id="ymin" class="form-control" />
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <label>Y-axis Max</label>
-                </td>
-                <td>
-                  <input type="text" id="ymax" class="form-control" />
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <label>Y-axis Unit</label>
-                </td>
-                <td>
-                  <select id="yunit" class="form-control">
-                    <option>bytes</option>
-                    <option>bytes-decimal</option>
-                    <option value="ops">op/s</option>
-                    <option value="percent">%</option>
-                    <option>generic</option>
-                  </select>
-                </td>
-              </tr>
-            </table>
-          </td>
-          <td>
-            <div id="chartType"></div>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="5">
-            <input type=button name="action" value="Plot" class="btn btn-default" onClick="plot()">
-            <input type=button name="action" value="Publish" class="btn btn-default" onClick="publishChart()">
-          </td>
-        </tr>
-      </table>
-    </form>
-    <iframe id="graph" width="95%" height="400px" frameBorder="0" scrolling="no"></iframe>
-    </center>
   </body>
 </html>

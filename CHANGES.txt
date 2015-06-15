@@ -14,6 +14,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-754. Improved graph explorer selection box performance.  (Eric Yang)
+
     CHUKWA-745. Improved chart configuration management.  (Eric Yang)
 
     CHUKWA-744. Implemented new parsers for extract and transform data to HBase format.  (Eric Yang)
