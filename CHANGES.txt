@@ -16,6 +16,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-757. Updated Hadoop configuration to stream data to Chukwa.  (Eric Yang)
+
     CHUKWA-749. Added Chukwa tags to Solr schema for indexing logs.  (Eric Yang)
 
     CHUKWA-754. Improved graph explorer selection box performance.  (Eric Yang)

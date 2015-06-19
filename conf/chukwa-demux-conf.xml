@@ -121,7 +121,7 @@
 
   <property>
     <name>HadoopMetrics</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HadoopMetricsProcessor</value>
+    <value>org.apache.hadoop.chukwa.extraction.hbase.HadoopMetricsProcessor</value>
     <description>Parser class for Hadoop Metrics </description>
   </property>
 
