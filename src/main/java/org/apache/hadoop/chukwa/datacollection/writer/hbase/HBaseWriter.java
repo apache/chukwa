@@ -98,7 +98,7 @@ public class HBaseWriter extends PipelineableWriter {
     this.statTimer = new Timer();
     this.defaultProcessor = conf.get(
       "chukwa.demux.mapper.default.processor",
-      "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.DefaultProcessor");
+      "org.apache.hadoop.chukwa.extraction.hbase.DefaultProcessor");
     log.info("hbase.zookeeper.quorum: " + hconf.get(HConstants.ZOOKEEPER_QUORUM) + ":" + hconf.get(HConstants.ZOOKEEPER_CLIENT_PORT));
     if (reportStats) {
       statTimer.schedule(new StatReportingTask(), 1000, 10 * 1000);

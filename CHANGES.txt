@@ -42,6 +42,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-758.  Updated default dashboard to include system metrics.  (Eric Yang)
+
     CHUKWA-743. Revised pid locking using standard Hadoop approach.  (Eric Yang)
 
     CHUKWA-742. Updated license header for StatusCheckerException.java and exclude 

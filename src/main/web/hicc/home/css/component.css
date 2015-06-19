@@ -602,6 +602,7 @@ input.gn-search:focus {
     left: 0;
     z-index: 99;
     background: transparent;
+    display: none;
 }
 
 .frame {

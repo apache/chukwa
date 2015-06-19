@@ -35,6 +35,8 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
   static final String timestampField = "timestamp";
   static final String contextNameField = "contextName";
   static final String recordNameField = "recordName";
+  static final String hostName = "Hostname";
+  static final String processName = "ProcessName";
   static final byte[] cf = "t".getBytes();
 
   public HadoopMetricsProcessor() throws NoSuchAlgorithmException {
@@ -43,44 +45,46 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
   @Override
   protected void parse(byte[] recordEntry) throws Throwable {
     try {
-    	String body = new String(recordEntry);
-        int start = body.indexOf('{');
-        JSONObject json = (JSONObject) JSONValue.parse(body.substring(start));
+      String body = new String(recordEntry);
+      int start = body.indexOf('{');
+      JSONObject json = (JSONObject) JSONValue.parse(body.substring(start));
 
-        time = ((Long) json.get(timestampField)).longValue();
-        String contextName = (String) json.get(contextNameField);
-        String recordName = (String) json.get(recordNameField);
-        byte[] timeInBytes = ByteBuffer.allocate(8).putLong(time).array();
-
-        @SuppressWarnings("unchecked")
-		Iterator<String> ki = json.keySet().iterator();
-        while (ki.hasNext()) {
-          String keyName = ki.next();
-          if (timestampField.intern() == keyName.intern()) {
-        	  continue;
-          } else if (contextNameField.intern() == keyName.intern()) {
-        	  continue;
-          } else if (recordNameField.intern() == keyName.intern()) {
-        	  continue;
-          } else {
-            if(json.get(keyName)!=null) {
-                byte[] v = json.get(keyName).toString().getBytes();
-                String primaryKey = new StringBuilder(contextName).append(".").
-              		  append(recordName).append(".").
-              		  append(keyName).toString();
-                byte[] rowKey = HBaseUtil.buildKey(time, primaryKey, chunk.getSource());
-                Put r = new Put(rowKey);
-                r.add(cf, timeInBytes, time, v);
-                output.add(r);
-            }
+      time = ((Long) json.get(timestampField)).longValue();
+      String contextName = (String) json.get(contextNameField);
+      String recordName = (String) json.get(recordNameField);
+      String src = (String) json.get(hostName);
+      if(json.get(processName)!=null) {
+        src = new StringBuilder(src).append(":").append(json.get(processName)).toString();
+      }
+      @SuppressWarnings("unchecked")
+      Iterator<String> ki = json.keySet().iterator();
+      while (ki.hasNext()) {
+        String keyName = ki.next();
+        if (timestampField.intern() == keyName.intern()) {
+          continue;
+        } else if (contextNameField.intern() == keyName.intern()) {
+          continue;
+        } else if (recordNameField.intern() == keyName.intern()) {
+          continue;
+        } else if (hostName.intern() == keyName.intern()) {
+          continue;
+        } else if (processName.intern() == keyName.intern()) {
+          continue;
+        } else {
+          if (json.get(keyName) != null) {
+            String v = json.get(keyName).toString();
+            String primaryKey = new StringBuilder(contextName).append(".")
+                .append(recordName).append(".").append(keyName).toString();
+            addRecord(time, primaryKey, src, v.getBytes(), output);
           }
         }
-        
-      } catch (Exception e) {
-        LOG.warn("Wrong format in HadoopMetricsProcessor [" + recordEntry + "]",
-            e);
-        throw e;
-      }	
+      }
+
+    } catch (Exception e) {
+      LOG.warn("Wrong format in HadoopMetricsProcessor [" + recordEntry + "]",
+          e);
+      throw e;
+    }
   }
 
 }

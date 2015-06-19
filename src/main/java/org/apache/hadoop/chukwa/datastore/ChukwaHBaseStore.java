@@ -20,6 +20,7 @@ package org.apache.hadoop.chukwa.datastore;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -240,7 +241,7 @@ public class ChukwaHBaseStore {
         Result result = it.next();
         for (Cell cell : result.rawCells()) {
           JSONObject json = (JSONObject) JSONValue.parse(new String(cell.getValue(), "UTF-8"));
-          if (json.get("type").equals("source")) {
+          if (json!=null && json.get("type")!=null && json.get("type").equals("source")) {
             pk.add(new String(cell.getQualifier(), "UTF-8"));
           }
         }
@@ -414,6 +415,30 @@ public class ChukwaHBaseStore {
       closeHBase();
       LOG.error(ExceptionUtil.getStackTrace(e));
     }
+    
+  }
+
+  /**
+   * Create a chart in HBase by specifying parameters.
+   * @throws URISyntaxException 
+   */
+  public static synchronized String createChart(String id, String yunitType, 
+      String title, String[] metrics, String source) throws URISyntaxException {
+    Chart chart = new Chart(id);
+    chart.setYUnitType(yunitType);
+    chart.setTitle(title);
+    ArrayList<SeriesMetaData> series = new ArrayList<SeriesMetaData>();
+    for(String metric : metrics) {
+      SeriesMetaData s = new SeriesMetaData();
+      s.setLabel(metric + "/" + source);
+      s.setUrl(new URI("/hicc/v1/metrics/series/" + metric + "/"
+        + source));
+      LineOptions l = new LineOptions();
+      s.setLineOptions(l);
+      series.add(s);
+    }
+    chart.SetSeries(series);
+    return createChart(chart);
     
   }
 
@@ -719,13 +744,27 @@ public class ChukwaHBaseStore {
   public static void populateDefaults() {
     try {
       String hostname = InetAddress.getLocalHost().getHostName();
+      // Populate example chart widgets
+      String[] metrics = { "SystemMetrics.LoadAverage.1" };
+      createChart("1", "", "System Load Average", metrics, hostname);
+      String[] cpuMetrics = { "SystemMetrics.cpu.combined", "SystemMetrics.cpu.sys", "SystemMetrics.cpu.user" };
+      createChart("2", "%", "CPU Utilization", cpuMetrics, hostname);
+      String[] memMetrics = { "SystemMetrics.memory.FreePercent", "SystemMetrics.memory.UsedPercent"};
+      createChart("3", "%", "Memory Utilization", memMetrics, hostname);
+      String[] diskMetrics = { "SystemMetrics.disk.ReadBytes", "SystemMetrics.disk.WriteBytes" };
+      createChart("4", "bytes-decimal", "Disk Utilization", diskMetrics, hostname);
+      String[] netMetrics = { "SystemMetrics.network.TxBytes", "SystemMetrics.network.RxBytes" };
+      createChart("5", "bytes", "Network Utilization", netMetrics, hostname);
+      String[] swapMetrics = { "SystemMetrics.swap.Total", "SystemMetrics.swap.Used", "SystemMetrics.swap.Free" };
+      createChart("6", "", "Swap Utilization", swapMetrics, hostname);
+      
       // Populate default widgets
       Widget widget = new Widget();
       widget.setTitle("System Load Average");
       widget.setSrc(new URI("/hicc/v1/chart/draw/1"));
       widget.setCol(1);
       widget.setRow(1);
-      widget.setSize_x(7);
+      widget.setSize_x(2);
       widget.setSize_y(1);
       createWidget(widget);
 
@@ -733,32 +772,89 @@ public class ChukwaHBaseStore {
       widget = new Widget();
       widget.setTitle("CPU Heatmap");
       widget.setSrc(new URI("/hicc/jsp/heatmap.jsp"));
-      widget.setCol(1);
+      widget.setCol(3);
       widget.setRow(1);
-      widget.setSize_x(4);
-      widget.setSize_y(2);
+      widget.setSize_x(5);
+      widget.setSize_y(1);
       createWidget(widget);
 
-      // Populate example chart widgets
-      Chart chart = new Chart("1");
-      chart.setYUnitType("");
-      chart.setTitle("Load Average");
-      ArrayList<SeriesMetaData> series = new ArrayList<SeriesMetaData>();
-
-      SeriesMetaData s = new SeriesMetaData();
-      s.setLabel("SystemMetrics.LoadAverage.1/" + hostname);
-      s.setUrl(new URI("/hicc/v1/metrics/series/SystemMetrics.LoadAverage.1/"
-          + hostname));
-      LineOptions l = new LineOptions();
-      s.setLineOptions(l);
-      series.add(s);
-
-      chart.SetSeries(series);
-      createChart(chart);
-      
       Dashboard dashboard = new Dashboard();
+      // Log Search widget
+      widget = new Widget();
+      widget.setTitle("Log Search");
+      widget.setSrc(new URI("/hicc/ajax-solr/chukwa"));
+      widget.setCol(1);
+      widget.setRow(4);
+      widget.setSize_x(7);
+      widget.setSize_y(4);
+      createWidget(widget);
       dashboard.add(widget);
       updateDashboard("default", "", dashboard);
+
+      // Populate system dashboards
+      dashboard = new Dashboard();
+      widget = new Widget();
+      widget.setTitle("CPU Utilization");
+      widget.setSrc(new URI("/hicc/v1/chart/draw/2"));
+      widget.setCol(1);
+      widget.setRow(1);
+      widget.setSize_x(3);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Memory Utilization");
+      widget.setSrc(new URI("/hicc/v1/chart/draw/3"));
+      widget.setCol(4);
+      widget.setRow(1);
+      widget.setSize_x(3);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Disk Utilization");
+      widget.setSrc(new URI("/hicc/v1/chart/draw/4"));
+      widget.setCol(1);
+      widget.setRow(2);
+      widget.setSize_x(3);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Network Utilization");
+      widget.setSrc(new URI("/hicc/v1/chart/draw/5"));
+      widget.setCol(4);
+      widget.setRow(2);
+      widget.setSize_x(3);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Swap Utilization");
+      widget.setSrc(new URI("/hicc/v1/chart/draw/6"));
+      widget.setCol(1);
+      widget.setRow(3);
+      widget.setSize_x(3);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("System Load Average");
+      widget.setSrc(new URI("/hicc/v1/chart/draw/1"));
+      widget.setCol(4);
+      widget.setRow(3);
+      widget.setSize_x(3);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      updateDashboard("system", "", dashboard);
+      
     } catch (Throwable ex) {
       LOG.error(ExceptionUtil.getStackTrace(ex));
     }
