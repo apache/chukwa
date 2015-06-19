@@ -33,6 +33,12 @@
     <description>Location of Chukwa data on HDFS</description>
   </property>
 
+  <property>
+    <name>chukwa.solr.url</name>
+    <value>http://localhost:7574/solr</value>
+    <description>Solr cloud URL</description>
+  </property>
+
   <!-- uncomment to enable network compression
   <property>
     <name>chukwaAgent.output.compress</name>

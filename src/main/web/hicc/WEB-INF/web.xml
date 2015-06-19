@@ -47,16 +47,16 @@
         <servlet-class>org.apache.hadoop.chukwa.hicc.Workspace</servlet-class>
     </servlet>
     <servlet> 
-        <servlet-name>Iframe</servlet-name> 
-        <servlet-class>org.apache.hadoop.chukwa.hicc.Iframe</servlet-class> 
+        <servlet-name>SolrProxy</servlet-name> 
+        <servlet-class>org.apache.hadoop.chukwa.hicc.proxy.HttpProxy</servlet-class> 
     </servlet>
     <servlet-mapping>
         <servlet-name>Workspace</servlet-name>
         <url-pattern>/Workspace</url-pattern>
     </servlet-mapping>
     <servlet-mapping> 
-        <servlet-name>Iframe</servlet-name> 
-        <url-pattern>/iframe/*</url-pattern> 
+        <servlet-name>SolrProxy</servlet-name> 
+        <url-pattern>/solr/*</url-pattern> 
     </servlet-mapping>
 
     <servlet>

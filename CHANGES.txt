@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-755. Added a reverse proxy to Solr for HICC.  (Eric Yang)
+
     CHUKWA-746. Redesigned Chukwa dashboard.  (Eric Yang)
 
     CHUKWA-736. SSL support for chukwa. (Shreyas Subramanya)
