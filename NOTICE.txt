@@ -90,3 +90,9 @@ Copyright (c) 2012 Dustin Diaz, https://github.com/ded/bonzo
 
 This product includes select2
 Copyright (c) 2012-2015, https://github.com/select2/select2/
+
+This product includes ajax-solr
+Copyright (c) 2011-2015, https://github.com/evolvingweb/ajax-solr
+
+This product includes jquery-ui
+Copyright (c) 2008-2015, https://jqueryui.com

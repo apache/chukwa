@@ -1,0 +1,90 @@
+<!--
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AJAX Solr</title>
+  <link href="../../css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+  <link href="../../css/bootstrap-theme.min.css" type="text/css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/logsearch.css">
+  <script src="../../js/jquery.js" type="text/javascript"></script>
+  <script src="../../js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="../../js/jquery.js"></script>
+
+  <script src="js/jquery-ui.min.js"></script>
+
+  <link rel="stylesheet" href="css/jquery-ui.min.css">
+<!--  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js"></script>
+
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/themes/smoothness/jquery-ui.css">-->
+  <script data-main="js/logsearch" src="js/require.min.js"></script>
+  <style>
+p {
+  word-wrap: break-word;
+}
+  </style>
+</head>
+<body>
+  <div id="wrap" class="container-fluid">
+    <h1>Log Search</h1>
+    <div class="row">
+      <div class="col-md-5 col-lg-5">
+        <h2>Current Selection</h2>
+        <ul id="selection"></ul>
+
+        <h2>Search</h2>
+        <span id="search_help">(press ESC to close suggestions)</span>
+        <ul id="search">
+          <input type="text" id="query" name="query" autocomplete="off" class="form-control">
+        </ul>
+        <h2>Top Topics</h2>
+        <div class="tagcloud" id="type"></div>
+
+        <h2>Top Services</h2>
+        <div class="tagcloud" id="service"></div>
+
+        <h2>Top Sources</h2>
+        <div class="tagcloud" id="source"></div>
+
+        <h2>Top Users</h2>
+        <div class="tagcloud" id="user"></div>
+
+<!--        <h2>By Country</h2>
+        <div id="countries"></div>
+        <div id="preview"></div>
+
+        <h2>By Date</h2>
+        <div id="calendar"></div> -->
+
+      </div>
+      <div class="col-md-7 col-lg-7">
+        <div id="result">
+          <div id="navigation">
+            <ul id="pager"></ul>
+            <div id="pager-header"></div>
+          </div>
+          <div id="docs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
