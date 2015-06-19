@@ -111,12 +111,15 @@
      installations. See the <uniqueKey> declaration below where <uniqueKey> is set to "id".
    -->   
    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" /> 
-   <field name="seqId" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="type" type="text_general" indexed="true" stored="true" omitNorms="true"/>
+   <field name="seqId" type="long" indexed="true" stored="true" required="true" multiValued="false" />
+   <field name="type" type="string" indexed="true" stored="true" omitNorms="true"/>
    <field name="stream" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="tags" type="text_en_splitting" indexed="true" stored="true" multiValued="true"/>
    <field name="source" type="string" indexed="true" stored="true"/>
    <field name="data" type="text_general" indexed="true" stored="true" termVectors="true" termPositions="true" termOffsets="true" />
+   <field name="service" type="string" indexed="true" stored="true" multiValued="true" omitNorms="true" />
+   <field name="user" type="string" indexed="true" stored="true" multiValued="false" omitNorms="true" />
+   <field name="date" type="pdate" indexed="true" stored="true" multiValued="false" omitNorms="true" termVectors="true" />
 
    <!-- catchall field, containing all other searchable text fields (implemented
         via copyField further on in this schema  -->
@@ -204,6 +207,7 @@
     <fieldType name="tfloat" class="solr.TrieFloatField" precisionStep="8" positionIncrementGap="0"/>
     <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" positionIncrementGap="0"/>
     <fieldType name="tdouble" class="solr.TrieDoubleField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="pdate" class="solr.DateField" sortMissingLast="true" />
 
     <!-- The format for this date field is of the form 1995-12-31T23:59:59Z, and
          is a more restricted form of the canonical representation of dateTime

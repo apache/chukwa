@@ -17,7 +17,14 @@
  */
 package org.apache.hadoop.chukwa.datacollection.writer.solr;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
@@ -33,13 +40,18 @@ import org.apache.solr.common.SolrInputDocument;
 public class SolrWriter extends PipelineableWriter {
   private static Logger log = Logger.getLogger(SolrWriter.class);
   private static CloudSolrServer server;
-  private static String ID = "id";
-  private static String SEQ_ID = "seqId";
-  private static String DATA_TYPE = "type";
-  private static String STREAM_NAME = "stream";
-  private static String TAGS = "tags";
-  private static String SOURCE = "source";
-  private static String DATA = "data";
+  private final static String ID = "id";
+  private final static String SEQ_ID = "seqId";
+  private final static String DATA_TYPE = "type";
+  private final static String STREAM_NAME = "stream";
+  private final static String TAGS = "tags";
+  private final static String SOURCE = "source";
+  private final static String DATA = "data";
+  private final static String USER = "user";
+  private final static String SERVICE = "service";
+  private final static String DATE = "date";
+  private final static Pattern userPattern = Pattern.compile("user=(.+?)[, ]");
+  private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
 
   public SolrWriter() throws WriterException {
     init(ChukwaAgent.getStaticConfiguration());
@@ -73,11 +85,33 @@ public class SolrWriter extends PipelineableWriter {
         doc.addField(SEQ_ID, chunk.getSeqID());
         doc.addField(DATA_TYPE, chunk.getDataType());
         doc.addField(DATA, new String(chunk.getData()));
+        
+        // TODO: improve parsing logic for more sophisticated tagging
+        String data = new String(chunk.getData());
+        Matcher m = userPattern.matcher(data);
+        if(m.find()) {
+          doc.addField(USER, m.group(1));
+        }
+        if(data.contains("hdfs")) {
+          doc.addField(SERVICE, "hdfs");
+        }
+        if(data.contains("yarn")) {
+          doc.addField(SERVICE, "yarn");
+        }
+        if(data.contains("mapredice")) {
+          doc.addField(SERVICE, "mapreduce");
+        }
+        try {
+          Date d = sdf.parse(data);
+          doc.addField(DATE, d, 1.0f);
+        } catch(ParseException e) {
+          
+        }
         server.add(doc);
         server.commit();
       } catch (Exception e) {
-        log.error(ExceptionUtil.getStackTrace(e));
-        throw new WriterException("Failed to store data to Solr Cloud.");
+        log.warn("Failed to store data to Solr Cloud.");
+        log.warn(ExceptionUtil.getStackTrace(e));
       }
     }
     if (next != null) {
