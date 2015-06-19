@@ -14,9 +14,11 @@ Trunk (unreleased changes)
     
     CHUKWA-737. Heartbeat adaptor to push status to remote http server (Shreyas Subramanya)
 
-    CHUKWA-747.  Update Widget API to store data in HBase.  (Eric Yang)
+    CHUKWA-747. Update Widget API to store data in HBase.  (Eric Yang)
 
   IMPROVEMENTS
+
+    CHUKWA-759. Configuration for Chukwa to monitor HBase.  (Eric Yang)
 
     CHUKWA-757. Updated Hadoop configuration to stream data to Chukwa.  (Eric Yang)
 
@@ -42,7 +44,7 @@ Trunk (unreleased changes)
 
   BUGS
 
-    CHUKWA-758.  Updated default dashboard to include system metrics.  (Eric Yang)
+    CHUKWA-758. Updated default dashboard to include system metrics.  (Eric Yang)
 
     CHUKWA-743. Revised pid locking using standard Hadoop approach.  (Eric Yang)
 

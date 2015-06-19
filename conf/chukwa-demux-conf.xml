@@ -126,6 +126,12 @@
   </property>
 
   <property>
+    <name>HBaseMetrics</name>
+    <value>org.apache.hadoop.chukwa.extraction.hbase.HadoopMetricsProcessor</value>
+    <description>Parser class for HBase Metrics </description>
+  </property>
+
+  <property>
     <name>SysLog</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.SysLog</value>
     <description>Parser class for SysLog</description>
@@ -246,6 +252,7 @@
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.ZookeeperProcessor</value>
    </property>
 
+<!--
    <property>
     <name>HBaseMasterProcessor</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HBaseMasterProcessor</value>
@@ -254,7 +261,7 @@
    <property>
     <name>HBaseRegionServerProcessor</name>
     <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.HBaseRegionServerProcessor</value>
-   </property>
+   </property> -->
 
     <!-- Demux configs for reducer -->
     <property>

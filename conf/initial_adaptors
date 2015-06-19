@@ -8,3 +8,10 @@ add SocketAdaptor HadoopNMLog 9100 0
 add SocketAdaptor HadoopHSLog 9101 0
 add SocketAdaptor HadoopRMSUMMARY 9102 0
 add SocketAdaptor HadoopTLA 9103 0
+add SocketAdaptor HBaseMetrics 9104 0
+add SocketAdaptor HBaseSecurityLog 9105 0
+add SocketAdaptor HBaseMSLog 9106 0
+add SocketAdaptor HBaseRSLog 9107 0
+add SocketAdaptor HBaseTFLog 9108 0
+add SocketAdaptor HBaseZKLog 9109 0
+add SocketAdaptor HBaseRESTLog 9110 0
