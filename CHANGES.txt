@@ -44,9 +44,11 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-760. Added error message for missing configuration.  (Eric Yang)
+
     CHUKWA-762. Fixed stale test cases.  (Eric Yang)
 
-    CHUKWA-761.  Removed confspell from Chukwa.  (Eric Yang)
+    CHUKWA-761. Removed confspell from Chukwa.  (Eric Yang)
 
     CHUKWA-758. Updated default dashboard to include system metrics.  (Eric Yang)
 

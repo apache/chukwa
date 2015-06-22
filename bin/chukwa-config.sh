@@ -79,7 +79,17 @@ CHUKWA_CLASSPATH="${CHUKWA_HOME}/share/chukwa/*:${CHUKWA_HOME}/share/chukwa/lib/
 export CURRENT_DATE=`date +%Y%m%d%H%M`
 
 if [ -z "$JAVA_HOME" ] ; then
-  echo ERROR! You forgot to set JAVA_HOME in CHUKWA_CONF_DIR/chukwa-env.sh   
+  echo ERROR: Cannot find JAVA_HOME in CHUKWA_CONF_DIR/chukwa-env.sh   
+fi
+
+if [ -z "$HADOOP_CONF_DIR" ] ; then
+  echo "ERROR: Cannot find Hadoop configuration in HADOOP_CONF_DIR."
+  exit 1
+fi
+
+if [ -z "$HBASE_CONF_DIR" ] ; then
+  echo "ERROR: Cannot find HBase configuration in HBASE_CONF_DIR."
+  exit 1
 fi
 
 CHUKWA_STOP_TIMEOUT=${CHUKWA_STOP_TIMEOUT:-3}
