@@ -45,8 +45,7 @@ public class TestSocketDataLoader  extends TestCase{
     conf.set("chukwa.writerClass", 
         PipelineStageWriter.class.getCanonicalName());
     
-    PipelineStageWriter psw = new PipelineStageWriter();
-    psw.init(conf);
+    PipelineStageWriter psw = new PipelineStageWriter(conf);
 
     SocketDataLoader sdl = new SocketDataLoader("all");
     

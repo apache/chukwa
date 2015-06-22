@@ -39,8 +39,7 @@ public class TestSocketTee  extends TestCase{
     conf.set("chukwa.writerClass", 
         PipelineStageWriter.class.getCanonicalName());
     
-    PipelineStageWriter psw = new PipelineStageWriter();
-    psw.init(conf);
+    PipelineStageWriter psw = new PipelineStageWriter(conf);
 
     System.out.println("pipeline established; now pushing a chunk");
     ArrayList<Chunk> l = new ArrayList<Chunk>();
