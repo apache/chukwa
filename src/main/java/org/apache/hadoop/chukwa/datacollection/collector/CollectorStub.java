@@ -28,9 +28,6 @@ import org.apache.hadoop.chukwa.datacollection.writer.*;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import edu.berkeley.confspell.Checker;
-import edu.berkeley.confspell.HSlurper;
-import edu.berkeley.confspell.OptDictionary;
 import javax.servlet.http.HttpServlet;
 import java.io.File;
 import java.util.*;
@@ -59,8 +56,6 @@ public class CollectorStub {
         Configuration collectorConf = new Configuration(false);
         collectorConf.addResource(new Path(conf.getChukwaConf() + "/chukwa-common.xml"));
         collectorConf.addResource(new Path(conf.getChukwaConf() + "/chukwa-collector-conf.xml"));
-        Checker.checkConf(new OptDictionary(new File(new File(conf.getChukwaHome(), "share/chukwa/lib"), "collector.dict")),
-            HSlurper.fromHConf(collectorConf));
       } catch(Exception e) {e.printStackTrace();}
       
       int portNum = conf.getInt("chukwaCollector.http.port", 9999);

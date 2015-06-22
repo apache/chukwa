@@ -119,13 +119,6 @@
             <version>2.0</version>
           </dependency>
           <dependency>
-            <groupId>edu.berkeley.confspell</groupId>
-            <artifactId>confspellcheck</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/confspellcheck.jar</systemPath>
-          </dependency>
-          <dependency>
             <groupId>com.rubiconproject.oss</groupId>
             <artifactId>jchronic</artifactId>
             <version>0.2.6</version>
@@ -482,7 +475,6 @@
                       <target>1.6</target>
                       <excludes>
                         <exclude>**/ChukwaJobTrackerInstrumentation.java</exclude>
-                        <exclude>**/JobLog.java</exclude>
                       </excludes>
                     </configuration>
                   </execution>
@@ -498,8 +490,6 @@
                       <target>1.6</target>
                       <testExcludes>
                         <exclude>**/ChukwaJobTrackerInstrumentation.java</exclude>
-                        <exclude>**/JobLog.java</exclude>
-                        <exclude>**/TestJobLogEntry.java</exclude>
                         <exclude>**/TestDemuxManager.java</exclude>
                         <exclude>**/TestFSMBuilder.java</exclude>
                       </testExcludes>

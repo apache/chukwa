@@ -24,10 +24,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 
-import edu.berkeley.confspell.Checker;
-import edu.berkeley.confspell.HSlurper;
-import edu.berkeley.confspell.OptDictionary;
-
 /*
  * Create a common set of utility classes for code reuse
  */
@@ -65,9 +61,6 @@ public class ChukwaUtil {
     try {
       Configuration chukwaAgentConf = new Configuration(false);
       chukwaAgentConf.addResource(new Path(agentConf.getAbsolutePath()));
-      Checker.checkConf(new OptDictionary(new File(new File(chukwaHome,
-          "share/chukwa/lib"), "agent.dict")), HSlurper
-          .fromHConf(chukwaAgentConf));
     } catch (Exception e) {
       e.printStackTrace();
     }

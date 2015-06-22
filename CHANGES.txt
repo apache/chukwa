@@ -44,6 +44,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-761.  Removed confspell from Chukwa.  (Eric Yang)
+
     CHUKWA-758. Updated default dashboard to include system metrics.  (Eric Yang)
 
     CHUKWA-743. Revised pid locking using standard Hadoop approach.  (Eric Yang)
