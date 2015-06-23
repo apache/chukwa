@@ -44,6 +44,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-764. Clean up multiple flavor of JSON usage.  (Eric Yang)
+
     CHUKWA-763. Removed unused old libraries. (Eric Yang)
 
     CHUKWA-760. Added error message for missing configuration.  (Eric Yang)

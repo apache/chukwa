@@ -21,13 +21,20 @@ package org.apache.hadoop.chukwa.hicc;
 
 import java.io.*;
 import java.util.*;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
+
 import java.sql.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.util.XssFilter;
-import org.json.*;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 public class Workspace extends HttpServlet {
@@ -186,10 +193,10 @@ public class Workspace extends HttpServlet {
     String id = xf.getParameter("name");
     String config = request.getParameter("config");
     try {
-      JSONObject jt = new JSONObject(config);
+      JSONObject jt = (JSONObject) JSONValue.parse(config);
       File aFile = new File(path + "/views/" + id + ".view");
       String original = getContents(aFile);
-      JSONObject updateObject = new JSONObject(original);
+      JSONObject updateObject = (JSONObject) JSONValue.parse(original);
       updateObject.put("description", jt.get("description"));
       setContents(path + "/views/" + id + ".view", updateObject.toString());
       if (!rename(id, jt.get("description").toString())) {
@@ -237,7 +244,7 @@ public class Workspace extends HttpServlet {
       for (int i = 0; i < filesWanted.length; i++) {
         String buffer = getContents(filesWanted[i]);
         try {
-          JSONObject jt = new JSONObject(buffer);
+          JSONObject jt = (JSONObject) JSONValue.parse(buffer);
           String fn = filesWanted[i].getName();
           jt.put("key", fn.substring(0, (fn.length() - 5)));
           cacheGroup[i] = jt;
@@ -268,7 +275,7 @@ public class Workspace extends HttpServlet {
         jsonObj.put("description", objArray[i].get("description"));
         jsonObj.put("owner", "");
         jsonObj.put("permission", user);
-        jsonArr.put(jsonObj);
+        jsonArr.add(jsonObj);
       } catch (Exception e) {
         System.err.println("JSON Exception: " + e.getMessage());
       }
@@ -291,7 +298,7 @@ public class Workspace extends HttpServlet {
       for (int i = 0; i < filesWanted.length; i++) {
         String buffer = getContents(filesWanted[i]);
         try {
-          JSONObject jt = new JSONObject(buffer);
+          JSONObject jt = (JSONObject) JSONValue.parse(buffer);
           cacheGroup[i] = jt;
         } catch (Exception e) {
           log.debug(ExceptionUtil.getStackTrace(e));
@@ -306,7 +313,7 @@ public class Workspace extends HttpServlet {
     JSONObject jsonObj = new JSONObject();
     JSONArray jsonArr = new JSONArray();
     for (int i = 0; i < objArray.length; i++) {
-      jsonArr.put(objArray[i]);
+      jsonArr.add(objArray[i]);
     }
     try {
       jsonObj.put("detail", jsonArr);
@@ -318,7 +325,7 @@ public class Workspace extends HttpServlet {
         String[] categoriesArray = objArray[i].get("categories").toString()
             .split(",");
         hash = addToHash(hash, categoriesArray, objArray[i]);
-      } catch (JSONException e) {
+      } catch (Exception e) {
         System.err.println("JSON Exception: " + e.getMessage());
       }
     }
@@ -343,13 +350,13 @@ public class Workspace extends HttpServlet {
         }
       } else {
         try {
-          subHash = subHash.getJSONObject("node:" + id);
-        } catch (JSONException e) {
+          subHash = (JSONObject) subHash.get("node:" + id);
+        } catch (Exception e) {
           try {
             JSONObject tmpHash = new JSONObject();
             subHash.put("node:" + id, tmpHash);
             subHash = tmpHash;
-          } catch (JSONException ex) {
+          } catch (Exception ex) {
             log.debug(ExceptionUtil.getStackTrace(e));
           }
         }

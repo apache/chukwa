@@ -21,7 +21,11 @@ package org.apache.hadoop.chukwa.hicc;
 
 import java.io.*;
 import java.util.*;
-import org.json.*;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
@@ -65,8 +69,8 @@ public class Views {
     File aFile = new File(path);
     String buffer = getContents(aFile);
     try {
-      viewsData = new JSONArray(buffer);
-    } catch (JSONException e) {
+      viewsData = (JSONArray) JSONValue.parse(buffer);
+    } catch (Exception e) {
       log.debug(ExceptionUtil.getStackTrace(e));
     }
   }
@@ -76,7 +80,7 @@ public class Views {
     try {
       owner = ((JSONObject) viewsData.get(i)).get("owner")
           .toString();
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.debug(ExceptionUtil.getStackTrace(e));
     }
     return owner;
@@ -86,8 +90,8 @@ public class Views {
     Iterator permission = null;
     try {
       permission = ((JSONObject) ((JSONObject) viewsData.get(i))
-          .get("permission")).keys();
-    } catch (JSONException e) {
+          .get("permission")).keySet().iterator();
+    } catch (Exception e) {
       log.debug(ExceptionUtil.getStackTrace(e));
     }
     return permission;
@@ -100,7 +104,7 @@ public class Views {
       JSONObject permission = (JSONObject) view.get("permission");
       JSONObject user = (JSONObject) permission.get(who);
       read = user.get("read").toString();
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.debug(ExceptionUtil.getStackTrace(e));
     }
     return read;
@@ -110,7 +114,7 @@ public class Views {
     String write = null;
     try {
       write = ((JSONObject) ((JSONObject) ((JSONObject) viewsData.get(i)).get("permission")).get(who)).get("write").toString();
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.debug(ExceptionUtil.getStackTrace(e));
     }
     return write;
@@ -121,7 +125,7 @@ public class Views {
     try {
       description = ((JSONObject) viewsData.get(i)).get(
           "description").toString();
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.debug(ExceptionUtil.getStackTrace(e));
     }
     return description;
@@ -131,13 +135,13 @@ public class Views {
     String key = null;
     try {
       key = ((JSONObject) viewsData.get(i)).get("key").toString();
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.debug(ExceptionUtil.getStackTrace(e));
     }
     return key;
   }
 
   public int length() {
-    return viewsData.length();
+    return viewsData.size();
   }
 }

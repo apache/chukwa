@@ -20,8 +20,13 @@ package org.apache.hadoop.chukwa.hicc;
 
 
 import java.net.*;
+import java.text.ParseException;
 import java.io.*;
-import org.json.*;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
 import org.apache.log4j.Logger;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
@@ -57,9 +62,9 @@ public class JSONLoader {
   public JSONLoader(String source) {
     String buffer = getContents(source);
     try {
-      JSONObject rows = new JSONObject(buffer);
-      jsonData = new JSONArray(rows.get("rows").toString());
-    } catch (JSONException e) {
+      JSONObject rows = (JSONObject) JSONValue.parse(buffer);
+      jsonData = (JSONArray) JSONValue.parse(rows.get("rows").toString());
+    } catch (Exception e) {
       log.debug(ExceptionUtil.getStackTrace(e)); 
     }
   }
@@ -68,7 +73,7 @@ public class JSONLoader {
     String ts = null;
     try {
       ts = ((JSONObject) jsonData.get(i)).get("ts").toString();
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.debug(ExceptionUtil.getStackTrace(e)); 
     }
     return ts;
@@ -79,7 +84,7 @@ public class JSONLoader {
     try {
       tags = ((JSONObject) jsonData.get(i)).get("tags")
           .toString();
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.debug(ExceptionUtil.getStackTrace(e)); 
     }
     return tags;
@@ -90,13 +95,13 @@ public class JSONLoader {
     try {
       value = ((JSONObject) jsonData.get(i)).get("value")
           .toString();
-    } catch (JSONException e) {
+    } catch (Exception e) {
       log.debug(ExceptionUtil.getStackTrace(e)); 
     }
     return value;
   }
 
   public int length() {
-    return jsonData.length();
+    return jsonData.size();
   }
 }

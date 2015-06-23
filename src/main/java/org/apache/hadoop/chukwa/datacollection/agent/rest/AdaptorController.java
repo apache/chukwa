@@ -23,8 +23,7 @@ import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.OffsetStatsManager;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.json.JSONObject;
-import org.json.JSONException;
+import org.json.simple.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

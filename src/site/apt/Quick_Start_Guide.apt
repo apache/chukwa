@@ -24,7 +24,7 @@ Pre-requisites
 
   Chukwa should work on any POSIX platform, but GNU/Linux is the only production platform that has been tested extensively. Chukwa has also been used successfully on Mac OS X, which several members of the Chukwa team use for development.
 
-  The only absolute software requirements are Java 1.6 or better, ZooKeeper 3.4.x, HBase 0.96.x and Hadoop 1.x.
+  The only absolute software requirements are Java 1.6 or better, ZooKeeper 3.4.5, HBase 1.0.0 and Hadoop 2.6.0.
 
   The Chukwa cluster management scripts rely on ssh; these scripts, however, are not required if you have some alternate mechanism for starting and stopping daemons.
 
@@ -37,6 +37,8 @@ Installing Chukwa
   
   * One or more agent processes, that send monitoring data to HBase. The nodes with active agent processes are referred to as the monitored source nodes.
   
+  * Solr Cloud cluster which Chukwa will store indexed log files.
+
   * Data analytics script, summarize Hadoop Cluster Health.
 
   * HICC, the Chukwa visualization tool.
@@ -57,15 +59,19 @@ First Steps
 
 Setting Up Chukwa Cluster
 
-* Configure Hadoop
+* Configure Hadoop and HBase
 
-  [[1]] Copy Chukwa files to Hadoop directory:
+  [[1]] Copy Chukwa files to Hadoop and HBase directories:
 
 ---
 cp $CHUKWA_CONF_DIR/hadoop-log4j.properties $HADOOP_CONF_DIR/log4j.properties
 cp $CHUKWA_HOME/etc/chukwa/hadoop-metrics2.properties $HADOOP_CONF_DIR/hadoop-metrics2.properties
-cp $CHUKWA_HOME/share/chukwa/chukwa-0.6.0-client.jar $HADOOP_HOME/share/hadoop/lib
-cp $CHUKWA_HOME/share/chukwa/lib/json-simple-1.1.jar $HADOOP_HOME/share/hadoop/lib
+cp $CHUKWA_HOME/share/chukwa/chukwa-0.7.0-client.jar $HADOOP_HOME/share/hadoop/common/lib
+cp $CHUKWA_HOME/share/chukwa/lib/json-simple-1.1.jar $HADOOP_HOME/share/hadoop/common/lib
+cp $CHUKWA_CONF_DIR/hbase-log4j.properties $HBASE_CONF_DIR/log4j.properties
+cp $CHUKWA_HOME/etc/chukwa/hadoop-metrics2-hbase.properties $HBASE_CONF_DIR/hadoop-metrics2-hbase.properties
+cp $CHUKWA_HOME/share/chukwa/chukwa-0.7.0-client.jar $HBASE_HOME/lib
+cp $CHUKWA_HOME/share/chukwa/lib/json-simple-1.1.jar $HBASE_HOME/lib
 ---  
 
   [[2]] Restart your Hadoop Cluster. General Hadoop configuration is available at: {{{http://hadoop.apache.org/common/docs/current/cluster_setup.html}Hadoop Configuration}}
@@ -82,12 +88,22 @@ bin/hbase shell < CHUKWA_HOME/etc/chukwa/hbase.schema
 
 * Configuring And Starting Chukwa Agent
 
- [[1]] Edit CHUKWA_HOME/etc/chukwa/chukwa-env.sh. Make sure that JAVA_HOME, HADOOP_HOME, HADOOP_CONF_DIR, HBASE_HOME, and HBASE_CONF_DIR are set correctly.
+  [[1]] Edit CHUKWA_HOME/etc/chukwa/chukwa-env.sh. Make sure that JAVA_HOME, HADOOP_CONF_DIR, and HBASE_CONF_DIR are set correctly.
 
- [[2]] In CHUKWA_HOME, run:
+  [[2]] Edit CHUKWA_HOME/etc/chukwa/chukwa-agent-conf.xml. Make sure that solr.cloud.address are set correctly.
+
+  [[3]] In CHUKWA_HOME, run:
 
 ---
-bin/chukwa agent
+sbin/chukwa-daemon.sh start agent
+---
+
+* Setup Solr to index Service log files
+
+  [[1]] Start Solr with Chukwa Solr configuration:
+
+---
+java -Dbootstrap_confdir=$CHUKWA_HOME/etc/solr/logs/conf -Dcollection.configName=myconf -Djetty.port=7574 -DzkHost=localhost:2181 -jar start
 ---
 
 * Setup Cluster Aggregation Script
@@ -121,7 +137,7 @@ pig -Dpig.additional.jars=${HBASE_HOME}/hbase-0.90.4.jar:${HBASE_HOME}/lib/zooke
   [[1]] To start HICC, do the following:
 
 ---
-bin/chukwa hicc
+sbin/chukwa-daemon.sh start hicc
 ---
 
 * Data Visualization

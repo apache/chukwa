@@ -19,12 +19,15 @@
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
 import java.util.Iterator;
+
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
+
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 public class Log4JMetricsContextProcessor extends AbstractProcessor {
 
@@ -50,24 +53,24 @@ public class Log4JMetricsContextProcessor extends AbstractProcessor {
     @SuppressWarnings("unchecked")
     public Log4JMetricsContextChukwaRecord(String recordEntry) throws Throwable {
       LogEntry log = new LogEntry(recordEntry);
-      JSONObject json = new JSONObject(log.getBody());
+      JSONObject json = (JSONObject) JSONValue.parse(log.getBody());
 
       // round timestamp
-      timestamp = json.getLong("timestamp");
+      timestamp = (Long) json.get("timestamp");
       timestamp = (timestamp / 60000) * 60000;
 
       // get record type
-      String contextName = json.getString("contextName");
-      String recordName = json.getString("recordName");
+      String contextName = (String) json.get("contextName");
+      String recordName = (String) json.get("recordName");
       recordType = contextName;
       if (!contextName.equals(recordName)) {
         recordType += "_" + recordName;
       }
 
-      Iterator<String> ki = json.keys();
+      Iterator<String> ki = json.keySet().iterator();
       while (ki.hasNext()) {
         String key = ki.next();
-        String value = json.getString(key);
+        String value = String.valueOf(json.get(key));
         if(value != null) {
           chukwaRecord.add(key, value);
         }

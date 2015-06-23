@@ -70,9 +70,9 @@ public class SystemMetrics extends AbstractProcessor {
       user = user + Double.parseDouble(cpu.get("user").toString());
       sys = sys + Double.parseDouble(cpu.get("sys").toString());
       idle = idle + Double.parseDouble(cpu.get("idle").toString());
-      for (@SuppressWarnings("unchecked")
-      Iterator<String> iterator = (Iterator<String>) cpu.keySet().iterator(); iterator
-          .hasNext();) {
+      @SuppressWarnings("unchecked")
+      Iterator<String> iterator = (Iterator<String>) cpu.keySet().iterator();
+      while(iterator.hasNext()) {
         String key = iterator.next();
         addRecord("cpu." + key + "." + i, cpu.get(key).toString());
       }

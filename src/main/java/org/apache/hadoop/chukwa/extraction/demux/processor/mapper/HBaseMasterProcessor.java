@@ -38,69 +38,66 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-@Tables(annotations={
-@Table(name="HBase",columnFamily="master")
-})
-public class HBaseMasterProcessor extends AbstractProcessor{
-	static Map<String, Long> rateMap = new ConcurrentHashMap<String,Long>();
-	static {
-		long zero = 0L;	
-		rateMap.put("splitSizeNumOps", zero);
-		rateMap.put("splitTimeNumOps", zero);
-	}
-	
-	@Override
-	protected void parse(String recordEntry,
-			OutputCollector<ChukwaRecordKey, ChukwaRecord> output,
-			Reporter reporter) throws Throwable {
-		
-		Logger log = Logger.getLogger(HBaseMasterProcessor.class); 
-		long timeStamp = Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis();
-		ChukwaRecord record = new ChukwaRecord();
-		
-		Map<String, Buffer> metricsMap = new HashMap<String,Buffer>();
+@Tables(annotations = { @Table(name = "HBase", columnFamily = "master") })
+public class HBaseMasterProcessor extends AbstractProcessor {
+  static Map<String, Long> rateMap = new ConcurrentHashMap<String, Long>();
+  static {
+    long zero = 0L;
+    rateMap.put("splitSizeNumOps", zero);
+    rateMap.put("splitTimeNumOps", zero);
+  }
 
-		try{
-			JSONObject obj = (JSONObject) JSONValue.parse(recordEntry);	
-			String ttTag = chunk.getTag("timeStamp");
-			if(ttTag == null){
-				log.warn("timeStamp tag not set in JMX adaptor for hbase master");
-			}
-			else{
-				timeStamp = Long.parseLong(ttTag);
-			}
-			Iterator<JSONObject> iter = obj.entrySet().iterator();
-			
-			while(iter.hasNext()){
-				Map.Entry entry = (Map.Entry)iter.next();
-				String key = (String) entry.getKey();
-				Object value = entry.getValue();
-				String valueString = value == null?"":value.toString();	
-				
-				//Calculate rate for some of the metrics
-				if(rateMap.containsKey(key)){
-					long oldValue = rateMap.get(key);
-					long curValue = Long.parseLong(valueString);
-					rateMap.put(key, curValue);
-					long newValue = curValue - oldValue;
-					if(newValue < 0){
-						log.warn("HBaseMaster rateMap might be reset or corrupted for metric "+key);						
-						newValue = 0L;
-					}					
-					valueString = Long.toString(newValue);
-				}
-				
-				Buffer b = new Buffer(valueString.getBytes());
-				metricsMap.put(key,b);				
-			}			
-			
-			TreeMap<String, Buffer> t = new TreeMap<String, Buffer>(metricsMap);
-			record.setMapFields(t);			
-			buildGenericRecord(record, null, timeStamp, "master");
-			output.collect(key, record);
-		}
-		catch(Exception e){
-			log.error(ExceptionUtil.getStackTrace(e));
-		}		
-	}	
+  @Override
+  protected void parse(String recordEntry,
+      OutputCollector<ChukwaRecordKey, ChukwaRecord> output, Reporter reporter)
+      throws Throwable {
+
+    Logger log = Logger.getLogger(HBaseMasterProcessor.class);
+    long timeStamp = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        .getTimeInMillis();
+    ChukwaRecord record = new ChukwaRecord();
+
+    Map<String, Buffer> metricsMap = new HashMap<String, Buffer>();
+
+    try {
+      JSONObject obj = (JSONObject) JSONValue.parse(recordEntry);
+      String ttTag = chunk.getTag("timeStamp");
+      if (ttTag == null) {
+        log.warn("timeStamp tag not set in JMX adaptor for hbase master");
+      } else {
+        timeStamp = Long.parseLong(ttTag);
+      }
+      Iterator<String> keys = obj.keySet().iterator();
+
+      while (keys.hasNext()) {
+        String key = keys.next();
+        Object value = obj.get(key);
+        String valueString = value == null ? "" : value.toString();
+
+        // Calculate rate for some of the metrics
+        if (rateMap.containsKey(key)) {
+          long oldValue = rateMap.get(key);
+          long curValue = Long.parseLong(valueString);
+          rateMap.put(key, curValue);
+          long newValue = curValue - oldValue;
+          if (newValue < 0) {
+            log.warn("HBaseMaster rateMap might be reset or corrupted for metric "
+                + key);
+            newValue = 0L;
+          }
+          valueString = Long.toString(newValue);
+        }
+
+        Buffer b = new Buffer(valueString.getBytes());
+        metricsMap.put(key, b);
+      }
+
+      TreeMap<String, Buffer> t = new TreeMap<String, Buffer>(metricsMap);
+      record.setMapFields(t);
+      buildGenericRecord(record, null, timeStamp, "master");
+      output.collect(key, record);
+    } catch (Exception e) {
+      log.error(ExceptionUtil.getStackTrace(e));
+    }
+  }
 }
