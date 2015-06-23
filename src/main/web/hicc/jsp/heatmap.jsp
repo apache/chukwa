@@ -115,7 +115,7 @@
             $('#yLabel').html(data.series + " <%= yLabel %>(s)");
             var config = {
               element: document.getElementById("heatmapArea"),
-              radius: data.radius/2,
+              radius: data.radius/6,
               opacity: 50,
               legend: {
                 position: 'br',

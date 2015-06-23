@@ -772,7 +772,7 @@ public class ChukwaHBaseStore {
       widget = new Widget();
       widget.setTitle("CPU Heatmap");
       widget.setSrc(new URI("/hicc/jsp/heatmap.jsp"));
-      widget.setCol(3);
+      widget.setCol(1);
       widget.setRow(1);
       widget.setSize_x(5);
       widget.setSize_y(1);
@@ -784,7 +784,7 @@ public class ChukwaHBaseStore {
       widget.setTitle("Log Search");
       widget.setSrc(new URI("/hicc/ajax-solr/chukwa"));
       widget.setCol(1);
-      widget.setRow(4);
+      widget.setRow(1);
       widget.setSize_x(7);
       widget.setSize_y(4);
       createWidget(widget);

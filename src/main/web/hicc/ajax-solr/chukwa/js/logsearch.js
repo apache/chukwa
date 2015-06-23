@@ -22,7 +22,7 @@ require.config({
     core: '../../core',
     managers: '../../managers',
     widgets: '../../widgets',
-    reuters: '../widgets'
+    logsearch: '../widgets'
   },
   urlArgs: "bust=" +  (new Date()).getTime()
 });
@@ -32,12 +32,12 @@ require.config({
 define([
   'managers/Manager.jquery',
   'core/ParameterStore',
-  'reuters/ResultWidget',
-  'reuters/TagcloudWidget',
-  'reuters/CurrentSearchWidget.9',
-  'reuters/AutocompleteWidget',
-  'reuters/CountryCodeWidget',
-  'reuters/CalendarWidget',
+  'logsearch/ResultWidget',
+  'logsearch/TagcloudWidget',
+  'logsearch/CurrentSearchWidget.9',
+  'logsearch/AutocompleteWidget',
+  'logsearch/CountryCodeWidget',
+  'logsearch/CalendarWidget',
   'widgets/jquery/PagerWidget'
 ], function () { 
 

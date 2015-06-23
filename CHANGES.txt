@@ -18,6 +18,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-765. Minor stylesheets clean up.  (Eric Yang)
+
     CHUKWA-759. Configuration for Chukwa to monitor HBase.  (Eric Yang)
 
     CHUKWA-757. Updated Hadoop configuration to stream data to Chukwa.  (Eric Yang)

@@ -65,6 +65,8 @@ body {
     box-shadow: 0 0 5px rgba(0,0,0,0.3);
     z-index: 2;
     position: absolute;
+    min-width: 140px;
+    min-height: 140px;
 }
 
 .ready .gs-w:not(.preview-holder) {

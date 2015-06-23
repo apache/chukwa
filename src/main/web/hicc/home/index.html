@@ -17,9 +17,10 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
   <head>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
@@ -39,46 +40,46 @@
       <ul><li><iframe id="frame"></iframe></li></ul>
     </div>
 
-		<div class="container">
-			<ul id="gn-menu" class="gn-menu-main">
-				<li class="gn-trigger">
-					<a class="gn-icon gn-icon-menu"><span>Menu</span></a>
-					<nav class="gn-menu-wrapper">
-						<div class="gn-scroller">
-							<ul class="gn-menu">
-								<li class="gn-search-item">
-									<input placeholder="Search" id="url" type="search" class="gn-search">
-									<a class="gn-icon gn-icon-search"><span>Search</span></a>
-								</li>
-								<li><a class="gn-icon gn-icon-illustrator" onclick="setDashboard('default')">User Activities</a></li>
-								<li><a class="gn-icon gn-icon-article" onclick="setDashboard('system')">System Activities</a></li>
-								<li><a class="gn-icon gn-icon-pictures" onclick="showFrame('graph-explorer.html')">Graph Explorer</a></li>
-								<li><a class="gn-icon gn-icon-cog" onclick="showFrame('settings')">Settings</a></li>
-								<li><a class="gn-icon gn-icon-help" onclick="showFrame('help')">Help</a></li>
-							</ul>
-						</div><!-- /gn-scroller -->
-					</nav>
-				</li>
-				<li><a href="index.html">Chukwa</a></li>
-				<li>
-                                    <div class="toggle-btn-grp">
-                                      <div><input type="radio" name="period" value="last1hr" onclick="setTime()" /><label class="toggle-btn">H</label></div>
-                                      <div><input type="radio" name="period" value="last24hr" onclick="setTime()" /><label class="toggle-btn">D</label></div>
-                                      <div><input type="radio" name="period" value="last30d" onclick="setTime()" /><label class="toggle-btn">M</label></div>
-                                      <div><input type="radio" name="period" value="lastyear" onclick="setTime()" /><label class="toggle-btn">Y</label></div>
-                                    </div>
-                                </li>
-                                <li><span id="username"></span></li>
-                                <li><a class="gn-icon-poweroff" onclick="logout()"><span> </span></a></li>
-			</ul>
-		</div><!-- /container -->
-  <div class="gridster">
-    <ul/>
-  </div>
+    <div class="container">
+      <ul id="gn-menu" class="gn-menu-main">
+        <li class="gn-trigger">
+          <a class="gn-icon gn-icon-menu"><span>Menu</span></a>
+          <nav class="gn-menu-wrapper">
+            <div class="gn-scroller">
+              <ul class="gn-menu">
+                <li class="gn-search-item">
+                  <input placeholder="Search" id="url" type="search" class="gn-search">
+                  <a class="gn-icon gn-icon-search"><span>Search</span></a>
+                </li>
+                <li><a class="gn-icon gn-icon-illustrator" onclick="setDashboard('default')">User Activities</a></li>
+                <li><a class="gn-icon gn-icon-article" onclick="setDashboard('system')">System Activities</a></li>
+                <li><a class="gn-icon gn-icon-pictures" onclick="showFrame('graph-explorer.html')">Graph Explorer</a></li>
+                <li><a class="gn-icon gn-icon-cog" onclick="showFrame('settings')">Settings</a></li>
+                <li><a class="gn-icon gn-icon-help" onclick="showFrame('help')">Help</a></li>
+              </ul>
+            </div><!-- /gn-scroller -->
+          </nav>
+        </li>
+        <li><a href="index.html">Chukwa</a></li>
+        <li>
+          <div class="toggle-btn-grp">
+            <div><input type="radio" name="period" value="last1hr" onclick="setTime()" /><label class="toggle-btn">H</label></div>
+            <div><input type="radio" name="period" value="last24hr" onclick="setTime()" /><label class="toggle-btn">D</label></div>
+            <div><input type="radio" name="period" value="last30d" onclick="setTime()" /><label class="toggle-btn">M</label></div>
+            <div><input type="radio" name="period" value="lastyear" onclick="setTime()" /><label class="toggle-btn">Y</label></div>
+          </div>
+        </li>
+        <li><span id="username"></span></li>
+        <li><a class="gn-icon-poweroff" onclick="logout()"><span> </span></a></li>
+      </ul>
+    </div><!-- /container -->
+    <div class="gridster">
+      <ul/>
+    </div>
 
-		<script src="js/classie.js"></script>
-		<script src="js/gnmenu.js"></script>
-		<script>
+    <script src="js/classie.js"></script>
+    <script src="js/gnmenu.js"></script>
+    <script>
 
 var dashboard = 'default';
 var widgets = [];
@@ -181,7 +182,6 @@ function load() {
       });
     }
   );
-
 }
 
 // Save Dashboard
@@ -227,40 +227,40 @@ function showFrame(target) {
 var gnMenu = new gnMenu( document.getElementById( 'gn-menu' ) );
 $(function(){ //DOM Ready
 
-$.getJSON('/hicc/v1/session/key/period',
-  function(data) {
-    var value = (data['period'] == null) ? "last1hr" : data['period'];
-    $("input[name=period][value=" + value + "]").attr('checked', 'checked');
-  }
-);
-
-$( "#url" ).keydown(function( event ) {
-  if ( event.which == 13 ) {
-    event.preventDefault();
-    var title = $('#url').val();
-    if(title in widgetsToUrl) {
-      var url = widgetsToUrl[title];
-      var gridster = $(".gridster ul").gridster().data('gridster');
-      gridster.add_widget(url, 1, 1, 1, 1);
-      setTimeout(function(){ save(); }, 3000);
+  $.getJSON('/hicc/v1/session/key/period',
+    function(data) {
+      var value = (data['period'] == null) ? "last1hr" : data['period'];
+      $("input[name=period][value=" + value + "]").attr('checked', 'checked');
     }
-  }
-});
+  );
 
-$.ajax({
+  $( "#url" ).keydown(function( event ) {
+    if ( event.which == 13 ) {
+      event.preventDefault();
+      var title = $('#url').val();
+      if(title in widgetsToUrl) {
+        var url = widgetsToUrl[title];
+        var gridster = $(".gridster ul").gridster().data('gridster');
+        gridster.add_widget(url, 1, 1, 1, 1);
+        setTimeout(function(){ save(); }, 3000);
+      }
+    }
+  });
+
+  $.ajax({
     url: '/hicc/v1/dashboard/whoami',
     cache: false
   }).done(function( html ) {
     $('#username').append(html);
   });
 
-$.getJSON('/hicc/v1/session/key/dashboard',
-  function(data) {
-    var value = (data['dashboard'] == null) ? "default" : data['dashboard'];
-    dashboard = value;
-    load();
-  }
-);
+  $.getJSON('/hicc/v1/session/key/dashboard',
+    function(data) {
+      var value = (data['dashboard'] == null) ? "default" : data['dashboard'];
+      dashboard = value;
+      load();
+    }
+  );
 
 });
 

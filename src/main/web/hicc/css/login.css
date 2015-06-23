@@ -17,14 +17,18 @@
  * under the License.
  */
 body {
-    margin: 15px 0 0 15px;
-    padding: 1px; /*background: #2370cf;*/
-    font: 12px 'Lucida Grande', Geneva, Verdana, Arial, sans-serif;
-    color: #000;
-    min-height: 100%;
-    width: 100%;
-    background-image: url('images/bg.jpg');
-    background-size: 100% auto;
+  margin: 15px 0 0 15px;
+  padding: 1px; /*background: #2370cf;*/
+  font: 12px 'Lucida Grande', Geneva, Verdana, Arial, sans-serif;
+  color: #000;
+  min-height: 100%;
+  width: 100%;
+  background-image: url('images/bg.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+@media (min-width: 1120px), (min-height: 630px) {
+  body { background-size: auto; }
 }
 
 .form-signin {
