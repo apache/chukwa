@@ -46,6 +46,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-766. Updated license on source files.  (Eric Yang)
+
     CHUKWA-764. Clean up multiple flavor of JSON usage.  (Eric Yang)
 
     CHUKWA-763. Removed unused old libraries. (Eric Yang)
