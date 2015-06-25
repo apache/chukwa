@@ -18,6 +18,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-769. Updated Chukwa to current HBase API. (Eric Yang)
+
     CHUKWA-767. Implemented low pass filter for Charting REST API.  (Eric Yang)
 
     CHUKWA-765. Minor stylesheets clean up.  (Eric Yang)

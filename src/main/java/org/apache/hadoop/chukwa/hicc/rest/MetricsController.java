@@ -17,8 +17,11 @@
  */
 package org.apache.hadoop.chukwa.hicc.rest;
 
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,9 +38,9 @@ import javax.ws.rs.core.Response;
 import org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore;
 import org.apache.hadoop.chukwa.hicc.TimeHandler;
 import org.apache.hadoop.chukwa.hicc.bean.Series;
-import org.json.simple.JSONArray;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 @Path("/metrics")
 public class MetricsController {
@@ -95,15 +98,16 @@ public class MetricsController {
       if(skey!=null) {
           HttpSession session = request.getSession();
           String[] sourcekeys = (session.getAttribute(skey).toString()).split(",");
-          JSONArray seriesList = new JSONArray();
+          Type seriesListType =new TypeToken<ArrayList<Series>>(){}.getType();
+          ArrayList<Series> seriesList = new ArrayList<Series>();
           for(String source : sourcekeys) {
-        	if (source == null || source.equals("")) {
-        		continue;
-        	}
+            if (source == null || source.equals("")) {
+              continue;
+            }
             Series output = ChukwaHBaseStore.getSeries(metricGroup, metric, source, startTime, endTime);
-            seriesList.add(output.toJSONObject());
+            seriesList.add(output);
           }
-          buffer = seriesList.toString();
+          buffer = new Gson().toJson(seriesList, seriesListType);
       } else {
         throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
             .entity("No session attribute key defined.").build());
@@ -120,11 +124,9 @@ public class MetricsController {
   @Produces("application/json")
   public String getTables() {
     Set<String> metricGroups = ChukwaHBaseStore.getMetricGroups();
-    JSONArray groups = new JSONArray();
-    for(String metric : metricGroups) {
-      groups.add(metric);
-    }
-    return groups.toString();
+    Type metricGroupsType = new TypeToken<List<String>>(){}.getType();
+    String groups = new Gson().toJson(metricGroups, metricGroupsType);
+    return groups;
   }
   
   @GET
@@ -132,11 +134,9 @@ public class MetricsController {
   @Produces("application/json")
   public String getMetrics(@PathParam("metricGroup") String metricGroup) {
     Set<String> metricNames = ChukwaHBaseStore.getMetricNames(metricGroup);
-    JSONArray metrics = new JSONArray();
-    for(String metric : metricNames) {
-      metrics.add(metric);
-    }
-    return metrics.toString();
+    Type metricsType = new TypeToken<List<String>>(){}.getType();
+    String metrics = new Gson().toJson(metricNames, metricsType);
+    return metrics;
   }
 
   @GET
@@ -144,11 +144,9 @@ public class MetricsController {
   @Produces("application/json")
   public String getSourceNames(@Context HttpServletRequest request, @PathParam("metricGroup") String metricGroup) {
     Set<String> sourceNames = ChukwaHBaseStore.getSourceNames(metricGroup);
-    JSONArray rows = new JSONArray();
-    for(String row : sourceNames) {
-      rows.add(row);
-    }
-    return rows.toString();
+    Type rowsType = new TypeToken<List<String>>(){}.getType();
+    String rows = new Gson().toJson(sourceNames, rowsType);
+    return rows;
   }
 
 }

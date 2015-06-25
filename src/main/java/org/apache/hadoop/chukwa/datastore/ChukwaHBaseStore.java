@@ -46,7 +46,6 @@ import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.chukwa.util.HBaseUtil;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
@@ -63,7 +62,6 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.mortbay.log.Log;
 
 import com.google.gson.Gson;
 
@@ -72,7 +70,7 @@ public class ChukwaHBaseStore {
   static int MINUTES_IN_HOUR = 60;
   static double RESOLUTION = 360;
   static int MINUTE = 60000; //60 milliseconds
-  static int SECOND = 1000;
+  final static int SECOND = (int) TimeUnit.SECONDS.toMillis(1);
 
   static byte[] COLUMN_FAMILY = "t".getBytes();
   static byte[] ANNOTATION_FAMILY = "a".getBytes();
@@ -169,11 +167,11 @@ public class ChukwaHBaseStore {
 
         while (it.hasNext()) {
           Result result = it.next();
-          for (KeyValue kv : result.raw()) {
-            byte[] key = kv.getQualifier();
+          for (Cell kv : result.rawCells()) {
+            byte[] key = CellUtil.cloneQualifier(kv);
             long timestamp = ByteBuffer.wrap(key).getLong();
             double value = Double
-                .parseDouble(new String(kv.getValue(), "UTF-8"));
+                .parseDouble(new String(CellUtil.cloneValue(kv), "UTF-8"));
             series.add(timestamp, value);
           }
         }
@@ -195,10 +193,10 @@ public class ChukwaHBaseStore {
       Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
       Get get = new Get(metricGroup.getBytes());
       Result result = table.get(get);
-      for (KeyValue kv : result.raw()) {
-        JSONObject json = (JSONObject) JSONValue.parse(new String(kv.getValue(), "UTF-8"));
+      for (Cell kv : result.rawCells()) {
+        JSONObject json = (JSONObject) JSONValue.parse(new String(CellUtil.cloneValue(kv), "UTF-8"));
         if (json.get("type").equals("metric")) {
-          familyNames.add(new String(kv.getQualifier(), "UTF-8"));
+          familyNames.add(new String(CellUtil.cloneQualifier(kv), "UTF-8"));
         }
       }
       table.close();
@@ -243,9 +241,9 @@ public class ChukwaHBaseStore {
       while (it.hasNext()) {
         Result result = it.next();
         for (Cell cell : result.rawCells()) {
-          JSONObject json = (JSONObject) JSONValue.parse(new String(cell.getValue(), "UTF-8"));
+          JSONObject json = (JSONObject) JSONValue.parse(new String(CellUtil.cloneValue(cell), "UTF-8"));
           if (json!=null && json.get("type")!=null && json.get("type").equals("source")) {
-            pk.add(new String(cell.getQualifier(), "UTF-8"));
+            pk.add(new String(CellUtil.cloneQualifier(cell), "UTF-8"));
           }
         }
       }
@@ -260,7 +258,6 @@ public class ChukwaHBaseStore {
 
   public static Heatmap getHeatmap(String metricGroup, String metric,
       long startTime, long endTime, double max, double scale, int width, int height) {
-    final long SECONDS = TimeUnit.SECONDS.toMillis(1);
     Heatmap heatmap = new Heatmap();
     Set<String> sources = getSourceNames(metricGroup);
     Set<String> metrics = getMetricNames(metricGroup);
@@ -298,7 +295,7 @@ public class ChukwaHBaseStore {
       for (Result result : rs) {
         for(Cell cell : result.rawCells()) {
           byte[] dest = new byte[5];
-          System.arraycopy(cell.getRow(), 3, dest, 0, 5);
+          System.arraycopy(CellUtil.cloneRow(cell), 3, dest, 0, 5);
           String source = new String(dest);
           long time = cell.getTimestamp();
           // Time display in x axis
@@ -358,9 +355,9 @@ public class ChukwaHBaseStore {
       while (it.hasNext()) {
         Result result = it.next();
         for (Cell cell : result.rawCells()) {
-          JSONObject json = (JSONObject) JSONValue.parse(new String(cell.getValue(), "UTF-8"));
+          JSONObject json = (JSONObject) JSONValue.parse(new String(CellUtil.cloneValue(cell), "UTF-8"));
           if (json.get("type").equals("cluster")) {
-            clusters.add(new String(cell.getQualifier(), "UTF-8"));
+            clusters.add(new String(CellUtil.cloneQualifier(cell), "UTF-8"));
           }
         }
       }
@@ -411,7 +408,7 @@ public class ChukwaHBaseStore {
       Put put = new Put(CHART_TYPE);
       Gson gson = new Gson();
       String buffer = gson.toJson(chart);
-      put.add(CHART_FAMILY, id.getBytes(), buffer.getBytes());
+      put.addColumn(CHART_FAMILY, id.getBytes(), buffer.getBytes());
       table.put(put);
       table.close();
     } catch (Exception e) {
@@ -472,7 +469,7 @@ public class ChukwaHBaseStore {
       Put put = new Put(CHART_TYPE);
       Gson gson = new Gson();
       String buffer = gson.toJson(chart);
-      put.add(CHART_FAMILY, id.getBytes(), buffer.getBytes());
+      put.addColumn(CHART_FAMILY, id.getBytes(), buffer.getBytes());
       table.put(put);
       table.close();
     } catch (Exception e) {
@@ -549,10 +546,10 @@ public class ChukwaHBaseStore {
           
           while (it.hasNext()) {
             Result result = it.next();
-            for (KeyValue kv : result.raw()) {
-              byte[] key = kv.getQualifier();
+            for (Cell kv : result.rawCells()) {
+              byte[] key = CellUtil.cloneQualifier(kv);
               long timestamp = ByteBuffer.wrap(key).getLong();
-              double value = Double.parseDouble(new String(kv.getValue(),
+              double value = Double.parseDouble(new String(CellUtil.cloneValue(kv),
                   "UTF-8"));
               if(initial==0) {
                 filteredValue = value;
@@ -617,7 +614,7 @@ public class ChukwaHBaseStore {
       int c = 0;
       while(it.hasNext()) {
         Result result = it.next();
-        for(KeyValue kv : result.raw()) {
+        for(Cell kv : result.rawCells()) {
           if(c > limit) {
             break;
           }
@@ -625,7 +622,7 @@ public class ChukwaHBaseStore {
             continue;
           }
           Gson gson = new Gson();
-          Widget widget = gson.fromJson(new String(kv.getValue(), "UTF-8"), Widget.class);
+          Widget widget = gson.fromJson(new String(CellUtil.cloneValue(kv), "UTF-8"), Widget.class);
           list.add(widget);
           c++;
         }
@@ -659,9 +656,9 @@ public class ChukwaHBaseStore {
       Iterator<Result> it = rs.iterator();
       while(it.hasNext()) {
         Result result = it.next();
-        for(KeyValue kv : result.raw()) {
+        for(Cell kv : result.rawCells()) {
           Gson gson = new Gson();
-          Widget widget = gson.fromJson(new String(kv.getValue(), "UTF-8"), Widget.class);
+          Widget widget = gson.fromJson(new String(CellUtil.cloneValue(kv), "UTF-8"), Widget.class);
           list.add(widget);
         }
       }
@@ -719,7 +716,7 @@ public class ChukwaHBaseStore {
         Put put = new Put(WIDGET_TYPE);
         Gson gson = new Gson();
         String buffer = gson.toJson(widget);
-        put.add(COMMON_FAMILY, widget.getTitle().getBytes(), buffer.getBytes());
+        put.addColumn(COMMON_FAMILY, widget.getTitle().getBytes(), buffer.getBytes());
         table.put(put);
         created = true;
       }
@@ -749,7 +746,7 @@ public class ChukwaHBaseStore {
       Put put = new Put(WIDGET_TYPE);
       Gson gson = new Gson();
       String buffer = gson.toJson(widget);
-      put.add(COMMON_FAMILY, title.getBytes(), buffer.getBytes());
+      put.addColumn(COMMON_FAMILY, title.getBytes(), buffer.getBytes());
       table.put(put);
       table.close();
       result = true;
@@ -947,7 +944,7 @@ public class ChukwaHBaseStore {
       Put put = new Put(DASHBOARD_TYPE);
       Gson gson = new Gson();
       String buffer = gson.toJson(dash);
-      put.add(COMMON_FAMILY, key.getBytes(), buffer.getBytes());
+      put.addColumn(COMMON_FAMILY, key.getBytes(), buffer.getBytes());
       table.put(put);
       table.close();
       result = true;
