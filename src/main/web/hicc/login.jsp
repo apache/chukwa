@@ -16,6 +16,10 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   --%>
+<%@ page import = "org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore" %>
+<%
+  ChukwaHBaseStore.populateDefaults();
+%>
 <html>
 <head>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />

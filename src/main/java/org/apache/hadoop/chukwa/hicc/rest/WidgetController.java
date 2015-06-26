@@ -53,7 +53,6 @@ public class WidgetController {
   @PostConstruct
   @Singleton
   public void init() {
-    ChukwaHBaseStore.populateDefaults();
   }
 
   @GET

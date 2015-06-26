@@ -784,8 +784,28 @@ public class ChukwaHBaseStore {
     return result;
   }
 
-  public static void populateDefaults() {
+  public static boolean isDefaultExists() {
+    boolean exists = false;
     try {
+      getHBaseConnection();
+      Table table = connection.getTable(TableName.valueOf(CHUKWA_META));
+      Get dashboardTest = new Get(DASHBOARD_TYPE);
+      dashboardTest.addColumn(COMMON_FAMILY, "default".getBytes());
+      exists = table.exists(dashboardTest);
+      table.close();
+    } catch (Exception e) {
+      closeHBase();
+      LOG.error(ExceptionUtil.getStackTrace(e));
+    }
+    return exists;
+  }
+
+  public static void populateDefaults() {
+    boolean defaultExists = isDefaultExists();
+    try {
+      if(defaultExists) {
+        return;
+      }
       String hostname = InetAddress.getLocalHost().getHostName();
       // Populate example chart widgets
       String[] metrics = { "SystemMetrics.LoadAverage.1" };
