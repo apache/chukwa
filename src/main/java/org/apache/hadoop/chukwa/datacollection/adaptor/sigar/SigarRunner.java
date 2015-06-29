@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.datacollection.adaptor.sigar;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.TimerTask;
 
@@ -203,13 +204,13 @@ public class SigarRunner extends TimerTask {
         json.put("disk", fsList);
       }
       json.put("timestamp", System.currentTimeMillis());
-      byte[] data = json.toString().getBytes();
+      byte[] data = json.toString().getBytes(Charset.forName("UTF-8"));
       sendOffset += data.length;
       ChunkImpl c = new ChunkImpl("SystemMetrics", "Sigar", sendOffset, data, systemMetrics);
       if(!skip) {
         receiver.add(c);
       }
-    } catch (Exception se) {
+    } catch (InterruptedException se) {
       log.error(ExceptionUtil.getStackTrace(se));
     }
   }

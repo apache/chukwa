@@ -25,9 +25,9 @@ public class HDFSState {
 	public static final int WRITE_LOCAL = 3;
 	public static final int WRITE_REMOTE = 4;
 	public static final int WRITE_REPLICATED = 5;
-	public static final String [] NAMES = { "NONE", "READ_LOCAL", "READ_REMOTE", "WRITE_LOCAL", "WRITE_REMOTE", "WRITE_REPLICATED"};
+	static final String [] NAMES = { "NONE", "READ_LOCAL", "READ_REMOTE", "WRITE_LOCAL", "WRITE_REMOTE", "WRITE_REPLICATED"};
 	public HDFSState() { this.val = 1; }
 	public HDFSState(int newval) { this.val = newval; }
 	public int val;
-	public String toString() { assert(this.val < NAMES.length && this.val >= 0); return new String(NAMES[this.val]); }		
+	public String toString() { assert(this.val < NAMES.length && this.val >= 0); return String.valueOf(NAMES[this.val]); }		
 }

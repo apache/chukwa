@@ -56,7 +56,8 @@ public class TestDirTailingAdaptor extends TestCase {
     conf.setInt("chukwaAgent.control.port", 0);
     conf.setBoolean("chukwaAgent.checkpoint.enabled", false);
     
-    agent = new ChukwaAgent(conf);
+    agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     File emptyDir = new File(baseDir, "emptyDir2");
     createEmptyDir(emptyDir);
     
@@ -90,7 +91,8 @@ public class TestDirTailingAdaptor extends TestCase {
     anOldFile.deleteOnExit();
     aNewFile.deleteOnExit();
     anOldFile.setLastModified(10);//just after epoch
-    agent = new ChukwaAgent(conf); //restart agent.
+    agent = ChukwaAgent.getAgent(conf); //restart agent.
+    agent.start();
     
    Thread.sleep(3 * SCAN_INTERVAL); //wait a bit for the new file to be detected.
    assertTrue(aNewFile.exists());
@@ -135,7 +137,8 @@ public class TestDirTailingAdaptor extends TestCase {
     while(retry) {
       try {
         retry = false;
-        agent = new ChukwaAgent(conf);
+        agent = ChukwaAgent.getAgent(conf);
+        agent.start();
       } catch(Exception e) {
         retry = true;
       }
@@ -167,11 +170,12 @@ public class TestDirTailingAdaptor extends TestCase {
     anOldFile.deleteOnExit();
     aNewFile.deleteOnExit();
     anOldFile.setLastModified(10);//just after epoch
-    agent = new ChukwaAgent(conf); //restart agent.
-    
+    agent = ChukwaAgent.getAgent(conf); //restart agent.
+    agent.start();
+
    Thread.sleep(3 * SCAN_INTERVAL); //wait a bit for the new file to be detected.
    assertTrue(aNewFile.exists());
-   
+
     //make sure we started tailing the new, not the old, file.
     for(Map.Entry<String, String> adaptors : agent.getAdaptorList().entrySet()) {
       System.out.println(adaptors.getKey() +": " + adaptors.getValue());
@@ -182,7 +186,7 @@ public class TestDirTailingAdaptor extends TestCase {
     Thread.sleep(3 * SCAN_INTERVAL); //wait a bit for the new file to be detected.
     assertEquals(4, agent.adaptorCount());
     agent.shutdown();
-    
+
     nukeDirContents(checkpointDir);//nuke dir
     checkpointDir.delete();
     emptyDir.delete();

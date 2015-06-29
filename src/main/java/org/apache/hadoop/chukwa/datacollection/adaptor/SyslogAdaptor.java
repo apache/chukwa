@@ -19,6 +19,7 @@ package org.apache.hadoop.chukwa.datacollection.adaptor;
 
 import java.io.IOException;
 import java.net.*;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -63,7 +64,7 @@ public class SyslogAdaptor extends UDPAdaptor {
     source.append(dp.getAddress());
     String dataType = type;
     byte[] trimmedBuf =  Arrays.copyOf(buf, dp.getLength());
-    String rawPRI = new String(trimmedBuf, 1, 4);
+    String rawPRI = new String(trimmedBuf, 1, 4, Charset.forName("UTF-8"));
     int i = rawPRI.indexOf(">");
     if (i <= 3 && i > -1) {
       String priorityStr = rawPRI.substring(0,i);

@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -71,59 +72,79 @@ public class ChukwaAgent implements AdaptorManager {
   // boolean WRITE_CHECKPOINTS = true;
   static AgentMetrics agentMetrics = new AgentMetrics("ChukwaAgent", "metrics");
 
-  private static Logger log = Logger.getLogger(ChukwaAgent.class);  
-  private OffsetStatsManager adaptorStatsManager = null;
+  private final static Logger log = Logger.getLogger(ChukwaAgent.class);  
+  private OffsetStatsManager<Adaptor> adaptorStatsManager = null;
   private Timer statsCollector = null;
-  private static volatile Configuration conf = null;
-  private static volatile ChukwaAgent agent = null;
+  private static Configuration conf = null;
+  private volatile static ChukwaAgent agent = null;
   public Connector connector = null;
+  private boolean stopped = false;
   
-  protected ChukwaAgent() throws AlreadyRunningException {
-    this(new ChukwaConfiguration());
+  private ChukwaAgent() {
+    agent = new ChukwaAgent(new ChukwaConfiguration());
   }
 
-  public ChukwaAgent(Configuration conf) throws AlreadyRunningException {
-    ChukwaAgent.agent = this;
+  private ChukwaAgent(Configuration conf) {
+    agent = this;
     ChukwaAgent.conf = conf;
-    
     // almost always just reading this; so use a ConcurrentHM.
     // since we wrapped the offset, it's not a structural mod.
     adaptorPositions = new ConcurrentHashMap<Adaptor, Offset>();
     adaptorsByName = new HashMap<String, Adaptor>();
     checkpointNumber = 0;
+    stopped = false;
+  }
 
-    boolean DO_CHECKPOINT_RESTORE = conf.getBoolean(
+  public static ChukwaAgent getAgent() {
+    if(agent == null || agent.isStopped()) {
+        agent = new ChukwaAgent();
+    } 
+    return agent;
+  }
+
+  public static ChukwaAgent getAgent(Configuration conf) {
+    if(agent == null || agent.isStopped()) {
+      agent = new ChukwaAgent(conf);
+    }
+    return agent;
+  }
+
+  public void start() throws AlreadyRunningException {
+    boolean checkPointRestore = conf.getBoolean(
         "chukwaAgent.checkpoint.enabled", true);
-    CHECKPOINT_BASE_NAME = conf.get("chukwaAgent.checkpoint.name",
+    checkPointBaseName = conf.get("chukwaAgent.checkpoint.name",
         "chukwa_checkpoint_");
-    final int CHECKPOINT_INTERVAL_MS = conf.getInt(
+    final int checkPointIntervalMs = conf.getInt(
         "chukwaAgent.checkpoint.interval", 5000);
-    final int STATS_INTERVAL_MS = conf.getInt(
+    final int statsIntervalMs = conf.getInt(
         "chukwaAgent.stats.collection.interval", 10000);
-    final int STATS_DATA_TTL_MS = conf.getInt(
+    int statsDataTTLMs = conf.getInt(
         "chukwaAgent.stats.data.ttl", 1200000);
 
     if (conf.get("chukwaAgent.checkpoint.dir") != null)
       checkpointDir = new File(conf.get("chukwaAgent.checkpoint.dir", null));
     else
-      DO_CHECKPOINT_RESTORE = false;
+      checkPointRestore = false;
 
     if (checkpointDir != null && !checkpointDir.exists()) {
-      checkpointDir.mkdirs();
+      boolean result = checkpointDir.mkdirs();
+      if(!result) {
+        log.error("Failed to create check point directory.");
+      }
     }
-    tags = conf.get("chukwaAgent.tags", "cluster=\"unknown\"");
+    String tags = conf.get("chukwaAgent.tags", "cluster=\"unknown\"");
     DataFactory.getInstance().addDefaultTag(conf.get("chukwaAgent.tags", "cluster=\"unknown_cluster\""));
 
-    log.info("Config - CHECKPOINT_BASE_NAME: [" + CHECKPOINT_BASE_NAME + "]");
+    log.info("Config - CHECKPOINT_BASE_NAME: [" + checkPointBaseName + "]");
     log.info("Config - checkpointDir: [" + checkpointDir + "]");
-    log.info("Config - CHECKPOINT_INTERVAL_MS: [" + CHECKPOINT_INTERVAL_MS
+    log.info("Config - CHECKPOINT_INTERVAL_MS: [" + checkPointIntervalMs
         + "]");
-    log.info("Config - DO_CHECKPOINT_RESTORE: [" + DO_CHECKPOINT_RESTORE + "]");
-    log.info("Config - STATS_INTERVAL_MS: [" + STATS_INTERVAL_MS + "]");
+    log.info("Config - DO_CHECKPOINT_RESTORE: [" + checkPointRestore + "]");
+    log.info("Config - STATS_INTERVAL_MS: [" + statsIntervalMs + "]");
     log.info("Config - tags: [" + tags + "]");
 
-    if (DO_CHECKPOINT_RESTORE) {
-      log.info("checkpoints are enabled, period is " + CHECKPOINT_INTERVAL_MS);
+    if (checkPointRestore) {
+      log.info("checkpoints are enabled, period is " + checkPointIntervalMs);
     }
 
     File initialAdaptors = null;
@@ -131,7 +152,7 @@ public class ChukwaAgent implements AdaptorManager {
       initialAdaptors = new File(conf.get("chukwaAgent.initial_adaptors"));
 
     try {
-      if (DO_CHECKPOINT_RESTORE) {
+      if (checkPointRestore) {
         restoreFromCheckpoint();
       }
     } catch (IOException e) {
@@ -152,44 +173,31 @@ public class ChukwaAgent implements AdaptorManager {
       // another agent is running.
       controlSock.start(); // this sets us up as a daemon
       log.info("control socket started on port " + controlSock.portno);
-
-      // start the HTTP server with stats collection
-      try {
-        this.adaptorStatsManager = new OffsetStatsManager(STATS_DATA_TTL_MS);
-        this.statsCollector = new Timer("ChukwaAgent Stats Collector");
-
-        startHttpServer(conf);
-
-        statsCollector.scheduleAtFixedRate(new StatsCollectorTask(),
-                STATS_INTERVAL_MS, STATS_INTERVAL_MS);
-      } catch (Exception e) {
-        log.error("Couldn't start HTTP server", e);
-        throw new RuntimeException(e);
-      }
-
-      // shouldn't start checkpointing until we're finishing launching
-      // adaptors on boot
-      if (CHECKPOINT_INTERVAL_MS > 0 && checkpointDir != null) {
-        checkpointer = new Timer();
-        checkpointer.schedule(new CheckpointTask(), 0, CHECKPOINT_INTERVAL_MS);
-      }
     } catch (IOException e) {
       log.info("failed to bind to socket; aborting agent launch", e);
       throw new AlreadyRunningException();
     }
 
-  }
+    // start the HTTP server with stats collection
+    try {
+      adaptorStatsManager = new OffsetStatsManager<Adaptor>(statsDataTTLMs);
+      statsCollector = new Timer("ChukwaAgent Stats Collector");
 
-  public static ChukwaAgent getAgent() {
-    if(agent == null) {
-      try {
-        agent = new ChukwaAgent();
-      } catch(AlreadyRunningException e) {
-        log.error("Chukwa Agent is already running", e);
-        agent = null;
-      }
-    } 
-    return agent;
+      startHttpServer(conf);
+
+      statsCollector.scheduleAtFixedRate(new StatsCollectorTask(),
+          statsIntervalMs, statsIntervalMs);
+    } catch (Exception e) {
+      log.error("Couldn't start HTTP server", e);
+      throw new RuntimeException(e);
+    }
+
+    // shouldn't start check pointing until we're finishing launching
+    // adaptors on boot
+    if (checkPointIntervalMs > 0 && checkpointDir != null) {
+      checkpointer = new Timer();
+      checkpointer.schedule(new CheckpointTask(), 0, checkPointIntervalMs);
+    }
   }
 
   // doesn't need an equals(), comparator, etc
@@ -219,17 +227,16 @@ public class ChukwaAgent implements AdaptorManager {
     }
   }
 
-  private final Map<Adaptor, Offset> adaptorPositions;
+  private static Map<Adaptor, Offset> adaptorPositions;
 
   // basically only used by the control socket thread.
   //must be locked before access
-  private final Map<String, Adaptor> adaptorsByName;
+  private static Map<String, Adaptor> adaptorsByName;
 
   private File checkpointDir; // lock this object to indicate checkpoint in
   // progress
-  private String CHECKPOINT_BASE_NAME; // base filename for checkpoint files
+  private String checkPointBaseName; // base filename for checkpoint files
   // checkpoints
-  private static String tags = "";
 
   private Timer checkpointer;
   private volatile boolean needNewCheckpoint = false; // set to true if any
@@ -238,13 +245,13 @@ public class ChukwaAgent implements AdaptorManager {
   private int checkpointNumber; // id number of next checkpoint.
   // should be protected by grabbing lock on checkpointDir
 
-  private final AgentControlSocketListener controlSock;
+  private AgentControlSocketListener controlSock;
 
   public int getControllerPort() {
     return controlSock.getPort();
   }
 
-  public OffsetStatsManager getAdaptorStatsManager() {
+  public OffsetStatsManager<Adaptor> getAdaptorStatsManager() {
     return adaptorStatsManager;
   }
 
@@ -261,12 +268,10 @@ public class ChukwaAgent implements AdaptorManager {
         System.exit(0);
       }
 
-      conf = ChukwaUtil.readConfiguration();
-      agent = new ChukwaAgent(conf);
-      
+      Configuration conf = ChukwaUtil.readConfiguration();
+      agent = ChukwaAgent.getAgent(conf);
       if (agent.anotherAgentIsRunning()) {
-        System.out
-            .println("another agent is running (or port has been usurped). "
+        log.error("another agent is running (or port has been usurped). "
                 + "Bailing out now");
         throw new AlreadyRunningException();
       }
@@ -286,11 +291,12 @@ public class ChukwaAgent implements AdaptorManager {
             "org.apache.hadoop.chukwa.datacollection.connector.PipelineConnector");
         agent.connector = (Connector) Class.forName(connectorType).newInstance();
       }
+      agent.start();
       agent.connector.start();
 
       log.info("local agent started on port " + agent.getControlSock().portno);
-      //System.out.close();
-      //System.err.close();
+      System.out.close();
+      System.err.close();
     } catch (AlreadyRunningException e) {
       log.error("agent started already on this machine with same portno;"
           + " bailing out");
@@ -304,7 +310,11 @@ public class ChukwaAgent implements AdaptorManager {
   }
 
   private boolean anotherAgentIsRunning() {
-    return !controlSock.isBound();
+    boolean result = false;
+    if(controlSock!=null) {
+      result = !controlSock.isBound();
+    }
+    return result;
   }
 
   /**
@@ -475,30 +485,26 @@ public class ChukwaAgent implements AdaptorManager {
     synchronized (checkpointDir) {
       String[] checkpointNames = checkpointDir.list(new FilenameFilter() {
         public boolean accept(File dir, String name) {
-          return name.startsWith(CHECKPOINT_BASE_NAME);
+          return name.startsWith(checkPointBaseName);
         }
       });
 
       if (checkpointNames == null) {
         log.error("Unable to list files in checkpoint dir");
         return false;
-      }
-      if (checkpointNames.length == 0) {
+      } else if (checkpointNames.length == 0) {
         log.info("No checkpoints found in " + checkpointDir);
         return false;
-      }
-
-      if (checkpointNames.length > 2)
+      } else if (checkpointNames.length > 2) {
         log.warn("expected at most two checkpoint files in " + checkpointDir
             + "; saw " + checkpointNames.length);
-      else if (checkpointNames.length == 0)
-        return false;
+      }
 
       String lowestName = null;
       int lowestIndex = Integer.MAX_VALUE;
       for (String n : checkpointNames) {
         int index = Integer
-            .parseInt(n.substring(CHECKPOINT_BASE_NAME.length()));
+            .parseInt(n.substring(checkPointBaseName.length()));
         if (index < lowestIndex) {
           lowestName = n;
           lowestIndex = index;
@@ -516,7 +522,7 @@ public class ChukwaAgent implements AdaptorManager {
       IOException {
     log.info("starting adaptors listed in " + checkpoint.getAbsolutePath());
     BufferedReader br = new BufferedReader(new InputStreamReader(
-        new FileInputStream(checkpoint)));
+        new FileInputStream(checkpoint), Charset.forName("UTF-8")));
     String cmd = null;
     while ((cmd = br.readLine()) != null)
       processAddCommand(cmd);
@@ -534,20 +540,23 @@ public class ChukwaAgent implements AdaptorManager {
       log.info("writing checkpoint " + checkpointNumber);
 
       FileOutputStream fos = new FileOutputStream(new File(checkpointDir,
-          CHECKPOINT_BASE_NAME + checkpointNumber));
+          checkPointBaseName + checkpointNumber));
       PrintWriter out = new PrintWriter(new BufferedWriter(
-          new OutputStreamWriter(fos)));
+          new OutputStreamWriter(fos, Charset.forName("UTF-8"))));
 
       for (Map.Entry<String, String> stat : getAdaptorList().entrySet()) {
         out.println("ADD "+ stat.getKey()+ " = " + stat.getValue());
       }
 
       out.close();
-      File lastCheckpoint = new File(checkpointDir, CHECKPOINT_BASE_NAME
+      File lastCheckpoint = new File(checkpointDir, checkPointBaseName
           + (checkpointNumber - 1));
       log.debug("hopefully removing old checkpoint file "
           + lastCheckpoint.getAbsolutePath());
-      lastCheckpoint.delete();
+      boolean result = lastCheckpoint.delete();
+      if(!result) {
+        log.warn("Unable to delete lastCheckpoint file: "+lastCheckpoint.getAbsolutePath());
+      }
       checkpointNumber++;
     }
   }
@@ -729,8 +738,24 @@ public class ChukwaAgent implements AdaptorManager {
     adaptorsByName.clear();
     adaptorPositions.clear();
     adaptorStatsManager.clear();
+    agent.stop();
     if (exit)
       System.exit(0);
+  }
+
+  /**
+   * Set agent into stop state.
+   */
+  private void stop() {
+    stopped = true;
+  }
+
+  /**
+   * Check if agent is in stop state.
+   * @return true if agent is in stop state.
+   */
+  private boolean isStopped() {
+    return stopped;
   }
 
   /**

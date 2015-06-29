@@ -38,7 +38,8 @@ public class TestAgentClient extends TestCase {
 
   protected void setUp() throws ChukwaAgent.AlreadyRunningException {
     config = new Configuration();
-    agent = new ChukwaAgent(config);
+    agent = ChukwaAgent.getAgent(config);
+    agent.start();
     c = new ChukwaAgentController();
     connector = new ChunkCatcherConnector();
     connector.start();

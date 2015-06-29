@@ -41,33 +41,24 @@ public class ChukwaRestServer {
   
   private static ChukwaRestServer instance = null;
   
-  public static void startInstance(Configuration conf) throws Exception{
+  public static synchronized void startInstance(Configuration conf) throws Exception{
     if(instance == null){
-      synchronized(ChukwaRestServer.class) {
-        if(instance == null){
-          instance = new ChukwaRestServer(conf);
-          instance.start();
-        }        
-      }
+      instance = new ChukwaRestServer(conf);
+      instance.start();
     }
   }
-  
-  public static void stopInstance() throws Exception {
+
+  public static synchronized void stopInstance() throws Exception {
     if(instance != null) {
-      synchronized(ChukwaRestServer.class) {
-        if(instance != null){
-          instance.stop();
-          instance = null;
-        }
-      }
+      instance.stop();
+      instance = null;
     }
-    
   }
-  
+
   private ChukwaRestServer(Configuration conf){
     this.conf = conf;
   }
-  
+
   private void start() throws Exception{
     int portNum = conf.getInt(AGENT_HTTP_PORT, 9090);
     String jaxRsAddlPackages = conf.get(AGENT_REST_CONTROLLER_PACKAGES);
@@ -127,7 +118,7 @@ public class ChukwaRestServer {
   
     log.info("started Chukwa http agent interface on port " + portNum);
   }
-  
+
   private void stop() throws Exception{
     jettyServer.stop();
     log.info("Successfully stopped Chukwa http agent interface");

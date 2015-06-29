@@ -36,7 +36,8 @@ public class TestCmd extends TestCase {
     try {
       Configuration conf = new Configuration();
       conf.set("chukwaAgent.control.port", "0");
-      agent = new ChukwaAgent(conf);
+      agent = ChukwaAgent.getAgent(conf);
+      agent.start();
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
       String l = agent
@@ -68,7 +69,8 @@ public class TestCmd extends TestCase {
     try {
       Configuration conf = new Configuration();
       conf.set("chukwaAgent.control.port", "0");
-      agent = new ChukwaAgent(conf);
+      agent = ChukwaAgent.getAgent(conf);
+      agent.start();
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
       String name = agent
@@ -99,7 +101,8 @@ public class TestCmd extends TestCase {
     try {
       Configuration conf = new Configuration();
       conf.set("chukwaAgent.control.port", "0");
-      agent = new ChukwaAgent(conf);
+      agent = ChukwaAgent.getAgent(conf);
+      agent.start();
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
       String n = agent
@@ -129,7 +132,8 @@ public class TestCmd extends TestCase {
   public void testStopAll() throws Exception{
     Configuration conf = new Configuration();
     conf.set("chukwaAgent.control.port", "0");
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     ChunkCatcherConnector chunks = new ChunkCatcherConnector();
     chunks.start();
     agent.processAddCommand(

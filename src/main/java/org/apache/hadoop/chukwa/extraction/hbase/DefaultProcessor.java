@@ -17,34 +17,46 @@
  */
 package org.apache.hadoop.chukwa.extraction.hbase;
 
+import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.hadoop.chukwa.util.HBaseUtil;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class DefaultProcessor extends AbstractProcessor {
-	
+
   public DefaultProcessor() throws NoSuchAlgorithmException {
-	super();
-	// TODO Auto-generated constructor stub
+    super();
+    // TODO Auto-generated constructor stub
   }
 
-static Logger LOG = Logger.getLogger(DefaultProcessor.class);
+  static Logger LOG = Logger.getLogger(DefaultProcessor.class);
 
   @Override
   protected void parse(byte[] recordEntry) throws Throwable {
-	  byte[] key = HBaseUtil.buildKey(time, chunk.getDataType(), chunk.getSource());
-	  Put put = new Put(key);
-	  byte[] timeInBytes = ByteBuffer.allocate(8).putLong(time).array();
-	  put.add("t".getBytes(), timeInBytes, chunk.getData());
-	  output.add(put);
-	  JSONObject json = new JSONObject();
-	  json.put("sig", key);
-	  json.put("type", "unknown");
-	  reporter.put(chunk.getDataType(), chunk.getSource(), json.toString());
+    byte[] key = HBaseUtil.buildKey(time, chunk.getDataType(),
+        chunk.getSource());
+    Put put = new Put(key);
+    byte[] timeInBytes = ByteBuffer.allocate(8).putLong(time).array();
+    put.addColumn("t".getBytes(Charset.forName("UTF-8")), timeInBytes,
+        chunk.getData());
+    output.add(put);
+    Type defaultType = new TypeToken<Map<String, String>>() {
+    }.getType();
+    Gson gson = new Gson();
+    Map<String, String> meta = new HashMap<String, String>();
+    meta.put("sig", new String(key, Charset.forName("UTF-8")));
+    meta.put("type", "unknown");
+    String buffer = gson.toJson(meta, defaultType);
+    reporter.put(chunk.getDataType(), chunk.getSource(), buffer);
   }
 
 }

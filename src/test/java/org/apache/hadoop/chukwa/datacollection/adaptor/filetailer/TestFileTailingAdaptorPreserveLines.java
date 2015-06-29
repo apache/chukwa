@@ -59,7 +59,8 @@ public class TestFileTailingAdaptorPreserveLines {
    */
   @Before
   public void setUp() throws Exception {
-    agent = new ChukwaAgent(conf);
+    agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     chunks = new ChunkCatcherConnector();
     chunks.start();
 

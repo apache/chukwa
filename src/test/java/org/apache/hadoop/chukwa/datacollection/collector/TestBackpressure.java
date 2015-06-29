@@ -56,7 +56,8 @@ public class TestBackpressure extends TestCase {
     conf.setInt("constAdaptor.minSleep", 50);
     
     conf.setInt("chukwaAgent.control.port", 0);
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     RetryListOfCollectors clist = new RetryListOfCollectors(conf);
     clist.add("http://localhost:"+PORTNO+"/chukwa");
     HttpConnector conn = new HttpConnector(agent);

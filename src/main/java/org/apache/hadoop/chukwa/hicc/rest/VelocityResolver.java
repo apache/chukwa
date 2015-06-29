@@ -39,7 +39,7 @@ public class VelocityResolver implements InjectableProvider<Context, Type> {
 
   private VelocityEngine ve;
   private static Logger LOG = Logger.getLogger(VelocityResolver.class);
-  public static String LOGGER_NAME = VelocityResolver.class.getName();
+  public final static String LOGGER_NAME = VelocityResolver.class.getName();
   
   /**
    * Jersey configuration for setting up Velocity configuration.

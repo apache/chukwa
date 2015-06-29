@@ -20,6 +20,7 @@ package org.apache.hadoop.chukwa.datacollection.adaptor;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -72,7 +73,7 @@ public class HeartbeatAdaptor extends AbstractAdaptor {
       status.put("components", array);
       if(_shouldUseConnector){
         ChunkImpl chunk = new ChunkImpl(type, STREAM_NAME, seqId, status.toString()
-            .getBytes(), HeartbeatAdaptor.this);
+            .getBytes(Charset.forName("UTF-8")), HeartbeatAdaptor.this);
         dest.add(chunk);
       } else {
         sendDirectly(status.toString());
@@ -83,7 +84,7 @@ public class HeartbeatAdaptor extends AbstractAdaptor {
     private void sendDirectly(String data) {
       DataOutputStream dos = null;
       Socket sock = null;
-      byte[] bdata = data.getBytes();
+      byte[] bdata = data.getBytes(Charset.forName("UTF-8"));
       try {
         sock = new Socket(_host, _port);
         dos = new DataOutputStream(sock.getOutputStream());

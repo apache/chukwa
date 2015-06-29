@@ -23,9 +23,9 @@ public class StateType {
 	public static final int STATE_START = 1;
 	public static final int STATE_END = 2;
 	public static final int STATE_INSTANT = 3;
-	public static final String [] NAMES = {"STATE_NOOP", "STATE_START", "STATE_END", "STATE_INSTANT"};
+	static final String [] NAMES = {"STATE_NOOP", "STATE_START", "STATE_END", "STATE_INSTANT"};
 	public StateType() { this.val = 0; }
 	public StateType(int newval) { this.val = newval; }
 	public int val;
-	public String toString() { assert(this.val < NAMES.length && this.val >= 0); return new String(NAMES[this.val]); }
+	public String toString() { assert(this.val < NAMES.length && this.val >= 0); return String.valueOf(NAMES[this.val]); }
 }

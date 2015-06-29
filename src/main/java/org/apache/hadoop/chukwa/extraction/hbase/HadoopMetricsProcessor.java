@@ -18,13 +18,13 @@
 
 package org.apache.hadoop.chukwa.extraction.hbase;
 
-
-import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
-import org.apache.hadoop.chukwa.util.HBaseUtil;
-import org.apache.hadoop.hbase.client.Put;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -37,15 +37,14 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
   static final String recordNameField = "recordName";
   static final String hostName = "Hostname";
   static final String processName = "ProcessName";
-  static final byte[] cf = "t".getBytes();
+  static final byte[] cf = "t".getBytes(Charset.forName("UTF-8"));
 
   public HadoopMetricsProcessor() throws NoSuchAlgorithmException {
   }
 
   @Override
   protected void parse(byte[] recordEntry) throws Throwable {
-    try {
-      String body = new String(recordEntry);
+      String body = new String(recordEntry, Charset.forName("UTF-8"));
       int start = body.indexOf('{');
       JSONObject json = (JSONObject) JSONValue.parse(body.substring(start));
 
@@ -56,10 +55,8 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
       if(json.get(processName)!=null) {
         src = new StringBuilder(src).append(":").append(json.get(processName)).toString();
       }
-      @SuppressWarnings("unchecked")
-      Iterator<String> ki = json.keySet().iterator();
-      while (ki.hasNext()) {
-        String keyName = ki.next();
+      for(Entry<String, Object> entry : (Set<Map.Entry>) json.entrySet()) {
+        String keyName = entry.getKey();
         if (timestampField.intern() == keyName.intern()) {
           continue;
         } else if (contextNameField.intern() == keyName.intern()) {
@@ -71,20 +68,14 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
         } else if (processName.intern() == keyName.intern()) {
           continue;
         } else {
-          if (json.get(keyName) != null) {
-            String v = json.get(keyName).toString();
+          if(json.get(keyName)!=null) {
+            String v = entry.getValue().toString();
             String primaryKey = new StringBuilder(contextName).append(".")
                 .append(recordName).append(".").append(keyName).toString();
-            addRecord(time, primaryKey, src, v.getBytes(), output);
+            addRecord(time, primaryKey, src, v.getBytes(Charset.forName("UTF-8")), output);
           }
         }
       }
-
-    } catch (Exception e) {
-      LOG.warn("Wrong format in HadoopMetricsProcessor [" + recordEntry + "]",
-          e);
-      throw e;
-    }
   }
 
 }

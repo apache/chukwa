@@ -55,7 +55,8 @@ public class TestFileAdaptor extends TestCase {
   public void testOnce()  throws IOException,
   ChukwaAgent.AlreadyRunningException, InterruptedException {
     
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     
     assertEquals(0, agent.adaptorCount());
 
@@ -75,7 +76,8 @@ public class TestFileAdaptor extends TestCase {
   ChukwaAgent.AlreadyRunningException, InterruptedException {
     int tests = 10; //SHOULD SET HIGHER AND WATCH WITH lsof to find leaks
 
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     for(int i=0; i < tests; ++i) {
       if(i % 100 == 0)
         System.out.println("buzzed " + i + " times");

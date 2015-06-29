@@ -22,6 +22,8 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.jms.Message;
 import javax.jms.JMSException;
+
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 /**
@@ -141,7 +143,7 @@ public class JMSMessagePropertyTransformer implements JMSMessageTransformer {
       return null;
     }
 
-    return sb.toString().getBytes();
+    return sb.toString().getBytes(Charset.forName("UTF-8"));
   }
 
   /**

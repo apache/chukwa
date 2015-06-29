@@ -56,6 +56,7 @@ public class TestAdaptorController extends TestCase {
 
   protected void setUp() throws Exception {
     agent = ChukwaAgent.getAgent();
+    agent.start();
 
     ServletHolder servletHolder = new ServletHolder(ServletContainer.class);
     servletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass",

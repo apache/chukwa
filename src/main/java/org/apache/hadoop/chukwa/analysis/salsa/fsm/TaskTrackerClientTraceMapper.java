@@ -46,7 +46,7 @@ public class TaskTrackerClientTraceMapper
 {
   private static Log log = LogFactory.getLog(FSMBuilder.class);
 	protected static final String SEP = "/";
-	protected static String FSM_CRK_ReduceType = FSMType.NAMES[FSMType.MAPREDUCE_FSM];
+	protected final static String FSM_CRK_ReduceType = FSMType.NAMES[FSMType.MAPREDUCE_FSM];
 	private final Pattern ipPattern =
     Pattern.compile("([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)[a-zA-Z\\-_:\\/].*");
   
@@ -149,8 +149,8 @@ public class TaskTrackerClientTraceMapper
     String [] k = key.getKey().split("/");    
 
     start_rec.time_orig_epoch = k[0];
-    start_rec.time_orig = (new Long(actual_time_ms)).toString(); // not actually used
-    start_rec.timestamp = (new Long(actual_time_ms)).toString();
+    start_rec.time_orig = (Long.valueOf(actual_time_ms)).toString(); // not actually used
+    start_rec.timestamp = (Long.valueOf(actual_time_ms)).toString();
     start_rec.time_end = new String("");
     start_rec.time_start = new String(start_rec.timestamp);
     

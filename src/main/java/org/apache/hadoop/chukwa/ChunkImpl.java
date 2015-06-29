@@ -24,6 +24,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +32,7 @@ import org.apache.hadoop.chukwa.datacollection.DataFactory;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 
 public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
-  public static int PROTOCOL_VERSION = 1;
+  public final static int PROTOCOL_VERSION = 1;
 
   protected DataFactory dataFactory = DataFactory.getInstance();
   private String source = "";
@@ -249,9 +250,15 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
     return w;
   }
 
-  // FIXME: should do something better here, but this is OK for debugging
   public String toString() {
-    return source + ":" + streamName + ":" + new String(data) + "/" + seqID;
+    StringBuilder buffer = new StringBuilder();
+    buffer.append(source);
+    buffer.append(":");
+    buffer.append(streamName);
+    buffer.append(new String(data, Charset.forName("UTF-8")));
+    buffer.append("/");
+    buffer.append(seqID);
+    return buffer.toString();
   }
 
 

@@ -75,13 +75,13 @@ public class FSMBuilder extends Configured implements Tool {
 		 * These are used for the add_info TreeMap; keys not listed here are automatically
 		 * prepended with "COUNTER_"
 		 */
-    protected static String NON_COUNTER_KEYS [] = {"csource","ctags","STATE_STRING"};
+    final static String NON_COUNTER_KEYS [] = {"csource","ctags","STATE_STRING"};
 
-    protected static String JCDF_ID1 = "JCDF_ID1";
-    protected static String JCDF_ID2 = "JCDF_ID2";
-    protected static String JCDF_EDGE_TIME = "JCDF_E_TIME";
-    protected static String JCDF_EDGE_VOL = "JCDF_E_VOL";
-    protected static String JCDF_SEP = "@";
+    protected final static String JCDF_ID1 = "JCDF_ID1";
+    protected final static String JCDF_ID2 = "JCDF_ID2";
+    protected final static String JCDF_EDGE_TIME = "JCDF_E_TIME";
+    protected final static String JCDF_EDGE_VOL = "JCDF_E_VOL";
+    protected final static String JCDF_SEP = "@";
 
 
     /**

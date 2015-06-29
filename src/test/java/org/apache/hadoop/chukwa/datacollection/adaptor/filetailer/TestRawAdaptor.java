@@ -64,7 +64,8 @@ public class TestRawAdaptor extends TestCase {
     Configuration conf = new Configuration();
     conf.set("chukwaAgent.control.port", "0");
     conf.setInt("chukwaAgent.adaptor.context.switch.time", 100);
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
 
     File testFile = makeTestFile("chukwaRawTest", 80, 
         new File(System.getProperty("test.build.data", "/tmp")));

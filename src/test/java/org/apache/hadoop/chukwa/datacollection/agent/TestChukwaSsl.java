@@ -86,7 +86,8 @@ public class TestChukwaSsl extends TestCase{
     conf.set(SSL_PROTOCOL, sslProtocol);
     */
     //start agent, which starts chukwa rest server
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     System.out.println("Started ChukwaRestServer");
     testSecureRestAdaptor(agent);
     agent.shutdown();

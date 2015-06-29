@@ -63,7 +63,8 @@ public class TestBufferingWrappers extends TestCase {
   public void resendAfterStop(String adaptor)  throws IOException,
   ChukwaAgent.AlreadyRunningException, InterruptedException {
     
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     String ADAPTORID = "adaptor_test" + System.currentTimeMillis(); 
     String STR = "test data";
     int PORTNO = 9878;

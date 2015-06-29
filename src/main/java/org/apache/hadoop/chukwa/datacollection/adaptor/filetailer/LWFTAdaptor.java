@@ -51,10 +51,10 @@ public class LWFTAdaptor extends AbstractAdaptor {
   public static final String MAX_READ_SIZE_OPT = 
       "chukwaAgent.fileTailingAdaptor.maxReadSize";
 
-  public static int MAX_READ_SIZE = DEFAULT_MAX_READ_SIZE;
+  static int MAX_READ_SIZE = DEFAULT_MAX_READ_SIZE;
   
   static Logger log;
-  protected static FileTailer tailer;
+  static FileTailer tailer;
   
   static {
     tailer = null;

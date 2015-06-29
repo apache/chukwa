@@ -67,7 +67,7 @@ public class LogDisplayServlet extends HttpServlet {
   long totalStoredSize = 0;
 
   private static final long serialVersionUID = -4602082382919009285L;
-  protected static Logger log = Logger.getLogger(LogDisplayServlet.class);
+  protected final static Logger log = Logger.getLogger(LogDisplayServlet.class);
   
   public LogDisplayServlet() {
     conf = new Configuration();

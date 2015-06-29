@@ -26,6 +26,7 @@ import org.apache.log4j.helpers.ISO8601DateFormat;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import java.nio.charset.Charset;
 import java.util.*;
 
 /**
@@ -87,7 +88,7 @@ public class ExecAdaptor extends AbstractAdaptor {
           result.append(o.get("exitValue"));
           result.append(": ");
           result.append((String) o.get("stdout"));
-          data = result.toString().getBytes();
+          data = result.toString().getBytes(Charset.forName("UTF-8"));
         } else {
           String stdout = (String) o.get("stdout");
           data = stdout.getBytes();

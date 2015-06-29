@@ -19,9 +19,9 @@
 package org.apache.hadoop.chukwa.datacollection.adaptor;
 
 import java.io.FileInputStream;
+import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.security.SecureRandom;
-
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.Timer;
@@ -33,6 +33,7 @@ import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.log4j.Logger;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
+
 import static org.apache.hadoop.chukwa.datacollection.agent.ChukwaConstants.*;
 
 import com.sun.jersey.api.client.Client;
@@ -44,7 +45,6 @@ import com.sun.jersey.client.urlconnection.HTTPSProperties;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-
 import javax.ws.rs.core.MediaType;
 
 public class RestAdaptor extends AbstractAdaptor {
@@ -75,7 +75,7 @@ public class RestAdaptor extends AbstractAdaptor {
         resource = c.resource(uri);
         bean = resource.accept(MediaType.APPLICATION_JSON_TYPE).get(
             String.class);
-        byte[] data = bean.getBytes();
+        byte[] data = bean.getBytes(Charset.forName("UTF-8"));
         sendOffset += data.length;
         ChunkImpl c = new ChunkImpl(type, "REST", sendOffset, data, adaptor);
         long rightNow = Calendar.getInstance(TimeZone.getTimeZone("UTC"))

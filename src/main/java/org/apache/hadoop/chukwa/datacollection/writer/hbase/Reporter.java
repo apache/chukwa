@@ -18,8 +18,8 @@
 
 package org.apache.hadoop.chukwa.datacollection.writer.hbase;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -36,6 +36,7 @@ import com.google.gson.reflect.TypeToken;
 public class Reporter {
   private ArrayList<Put> meta = new ArrayList<Put>();
   private MessageDigest md5 = null;
+  private final static Charset UTF8 = Charset.forName("UTF-8");
 
   public Reporter() throws NoSuchAlgorithmException {
     md5 = MessageDigest.getInstance("md5");
@@ -48,11 +49,11 @@ public class Reporter {
     try {
       Type metaType = new TypeToken<Map<String, String>>(){}.getType();
       Map<String, String> meta = new HashMap<String, String>();
-      meta.put("sig", new String(value, "UTF-8"));
+      meta.put("sig", new String(value, UTF8));
       meta.put("type", "source");
       Gson gson = new Gson();
       buffer = gson.toJson(meta, metaType);
-      put(type.getBytes(), source.getBytes(), buffer.toString().getBytes());
+      put(type.getBytes(UTF8), source.getBytes(UTF8), buffer.toString().getBytes(UTF8));
     } catch (Exception e) {
       Log.warn("Error encoding metadata.");
       Log.warn(e);
@@ -70,7 +71,7 @@ public class Reporter {
       meta.put("type", "metric");
       Gson gson = new Gson();
       buffer = gson.toJson(meta, metaType);
-      put(type.getBytes(), metric.getBytes(), buffer.toString().getBytes());
+      put(type.getBytes(UTF8), metric.getBytes(UTF8), buffer.toString().getBytes(UTF8));
     } catch (Exception e) {
       Log.warn("Error encoding metadata.");
       Log.warn(e);
@@ -78,12 +79,12 @@ public class Reporter {
   }
 
   public void put(String key, String source, String info) {
-    put(key.getBytes(), source.getBytes(), info.getBytes());
+    put(key.getBytes(UTF8), source.getBytes(UTF8), info.getBytes(UTF8));
   }
 
   public void put(byte[] key, byte[] source, byte[] info) {
     Put put = new Put(key);
-    put.addColumn("k".getBytes(), source, info);
+    put.addColumn("k".getBytes(UTF8), source, info);
     meta.add(put);
   }
 
@@ -97,25 +98,20 @@ public class Reporter {
 
   private byte[] getHash(String key) {
     byte[] hash = new byte[5];
-    System.arraycopy(md5.digest(key.getBytes()), 0, hash, 0, 5);
+    System.arraycopy(md5.digest(key.getBytes(UTF8)), 0, hash, 0, 5);
     return hash;
   }
 
   public void putClusterName(String type, String clusterName) {
     byte[] value = getHash(clusterName);
     String buffer;
-    try {
-      Type metaType = new TypeToken<Map<String, String>>(){}.getType();
-      Map<String, String> meta = new HashMap<String, String>();
-      meta.put("sig", new String(value, "UTF-8"));
-      meta.put("type", "cluster");
-      Gson gson = new Gson();
-      buffer = gson.toJson(meta, metaType);
-      put(type.getBytes(), clusterName.getBytes(), buffer.toString().getBytes());
-    } catch (UnsupportedEncodingException e) {
-      Log.warn("Error encoding metadata.");
-      Log.warn(e);
-    }
+    Type metaType = new TypeToken<Map<String, String>>(){}.getType();
+    Map<String, String> meta = new HashMap<String, String>();
+    meta.put("sig", new String(value, UTF8));
+    meta.put("type", "cluster");
+    Gson gson = new Gson();
+    buffer = gson.toJson(meta, metaType);
+    put(type.getBytes(UTF8), clusterName.getBytes(UTF8), buffer.toString().getBytes(UTF8));
   }
 
 }

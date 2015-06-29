@@ -44,7 +44,8 @@ public class TestCharFileTailingAdaptorUTF8 extends TestCase {
     
     Configuration conf = new Configuration();
     conf.set("chukwaAgent.control.port", "0");
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     File testFile = makeTestFile("chukwaTest", 80,baseDir);
     String adaptorId = agent
         .processAddCommand("add adaptor_test = org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.CharFileTailingAdaptorUTF8"

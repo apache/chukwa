@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -44,11 +45,11 @@ public class HttpProxy extends HttpServlet {
   private final String USER_AGENT = "Mozilla/5.0";
   private final static String SOLR_URL = "chukwa.solr.url";
   private final static Logger LOG = Logger.getLogger(HttpProxy.class);
-  private ChukwaConfiguration conf = new ChukwaConfiguration();
   private String solrUrl = null;
 
   public HttpProxy() {
     super();
+    ChukwaConfiguration conf = new ChukwaConfiguration();
     solrUrl = conf.get(SOLR_URL);
   }
 
@@ -72,7 +73,7 @@ public class HttpProxy extends HttpServlet {
     LOG.info("Response Code : " + responseCode);
 
     BufferedReader in = new BufferedReader(new InputStreamReader(
-        con.getInputStream()));
+        con.getInputStream(), Charset.forName("UTF-8")));
     String inputLine;
     StringBuffer response1 = new StringBuffer();
 
@@ -80,7 +81,7 @@ public class HttpProxy extends HttpServlet {
 
     while ((inputLine = in.readLine()) != null) {
       response1.append(inputLine);
-      sout.write(inputLine.getBytes());
+      sout.write(inputLine.getBytes(Charset.forName("UTF-8")));
     }
     in.close();
 
@@ -131,7 +132,7 @@ public class HttpProxy extends HttpServlet {
     LOG.debug("Response Code : " + responseCode);
 
     BufferedReader in = new BufferedReader(new InputStreamReader(
-        con.getInputStream()));
+        con.getInputStream(), Charset.forName("UTF-8")));
     String inputLine;
     StringBuffer response1 = new StringBuffer();
 
@@ -139,7 +140,7 @@ public class HttpProxy extends HttpServlet {
 
     while ((inputLine = in.readLine()) != null) {
       response1.append(inputLine);
-      sout.write(inputLine.getBytes());
+      sout.write(inputLine.getBytes(Charset.forName("UTF-8")));
     }
     in.close();
 

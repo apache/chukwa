@@ -17,6 +17,8 @@
  */
 package org.apache.hadoop.chukwa.datacollection.writer.solr;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,12 +36,13 @@ import org.apache.hadoop.chukwa.datacollection.writer.WriterException;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrServer;
 import org.apache.solr.common.SolrInputDocument;
 
 public class SolrWriter extends PipelineableWriter {
   private static Logger log = Logger.getLogger(SolrWriter.class);
-  private static CloudSolrServer server;
+  private CloudSolrServer server;
   private final static String ID = "id";
   private final static String SEQ_ID = "seqId";
   private final static String DATA_TYPE = "type";
@@ -64,8 +67,10 @@ public class SolrWriter extends PipelineableWriter {
       throw new WriterException("Solr server address is not defined.");
     }
     String collection = c.get("solr.collection", "logs");
-    server = new CloudSolrServer(serverName);
-    server.setDefaultCollection(collection);
+    if(server == null) {
+      server = new CloudSolrServer(serverName);
+      server.setDefaultCollection(collection);
+    }
   }
 
   @Override
@@ -84,10 +89,10 @@ public class SolrWriter extends PipelineableWriter {
         doc.addField(SOURCE, chunk.getSource());
         doc.addField(SEQ_ID, chunk.getSeqID());
         doc.addField(DATA_TYPE, chunk.getDataType());
-        doc.addField(DATA, new String(chunk.getData()));
+        doc.addField(DATA, new String(chunk.getData(), Charset.forName("UTF-8")));
         
         // TODO: improve parsing logic for more sophisticated tagging
-        String data = new String(chunk.getData());
+        String data = new String(chunk.getData(), Charset.forName("UTF-8"));
         Matcher m = userPattern.matcher(data);
         if(m.find()) {
           doc.addField(USER, m.group(1));
@@ -109,7 +114,7 @@ public class SolrWriter extends PipelineableWriter {
         }
         server.add(doc);
         server.commit();
-      } catch (Exception e) {
+      } catch (SolrServerException | IOException e) {
         log.warn("Failed to store data to Solr Cloud.");
         log.warn(ExceptionUtil.getStackTrace(e));
       }

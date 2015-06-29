@@ -45,7 +45,7 @@ public class DataNodeClientTraceMapper
 {
   private static Log log = LogFactory.getLog(FSMBuilder.class);
 	protected static final String SEP = "/";
-	protected static String FSM_CRK_ReduceType = FSMType.NAMES[FSMType.FILESYSTEM_FSM];
+	protected final static String FSM_CRK_ReduceType = FSMType.NAMES[FSMType.FILESYSTEM_FSM];
 	private final Pattern ipPattern =
     Pattern.compile(".*[a-zA-Z\\-_:\\/]([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)[a-zA-Z0-9\\-_:\\/].*");
 

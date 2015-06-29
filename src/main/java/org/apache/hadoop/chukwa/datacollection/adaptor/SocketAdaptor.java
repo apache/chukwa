@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.ObjectInputStream;
 import java.net.*;
+import java.nio.charset.Charset;
 
 import org.apache.hadoop.chukwa.*;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
@@ -132,7 +133,7 @@ public class SocketAdaptor extends AbstractAdaptor {
           while(running) {
             // read an event from the wire
             event = (LoggingEvent) ois.readObject();
-            byte[] bytes = layout.format(event).getBytes();
+            byte[] bytes = layout.format(event).getBytes(Charset.forName("UTF-8"));
             bytesReceived=bytes.length;
             Chunk c = new ChunkImpl(type, java.net.InetAddress.getLocalHost().getHostName(), bytesReceived, bytes, SocketAdaptor.this);
             dest.add(c);

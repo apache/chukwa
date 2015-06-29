@@ -111,7 +111,7 @@ public class Chart {
     return this.id;
   }
 
-  public void SetSeries(List<SeriesMetaData> series) {
+  public void setSeries(List<SeriesMetaData> series) {
     this.series = series;
   }
   

@@ -27,10 +27,10 @@ public class MapRedState {
 	public static final int REDUCE_REDUCER = 5;
 	public static final int SHUFFLE_LOCAL = 6;
 	public static final int SHUFFLE_REMOTE = 7;
-	public static final String [] NAMES = { "NONE", "MAP", "REDUCE", "REDUCE_SHUFFLEWAIT", 
+	static final String [] NAMES = { "NONE", "MAP", "REDUCE", "REDUCE_SHUFFLEWAIT", 
 	  "REDUCE_SORT", "REDUCE_REDUCER", "SHUFFLE_LOCAL", "SHUFFLE_REMOTE"};
 	public MapRedState() { this.val = 0; }
 	public MapRedState(int newval) { this.val = newval; }
 	public int val;
-	public String toString() { assert(this.val < NAMES.length && this.val >= 0); return new String(NAMES[this.val]);	}		
+	public String toString() { assert(this.val < NAMES.length && this.val >= 0); return String.valueOf(NAMES[this.val]);	}		
 }

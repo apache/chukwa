@@ -66,7 +66,8 @@ public class TestFailedCollectorAck extends TestCase {
     Server collector2_s = TestDelayedAcks.startCollectorOnPort(conf, PORTNO+2, collector2);
     Thread.sleep(2000); //for collectors to start
     
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     HttpConnector conn = new HttpConnector(agent);
     RetryListOfCollectors clist = new RetryListOfCollectors(conf);
     clist.add("http://localhost:"+(PORTNO+1)+"/");

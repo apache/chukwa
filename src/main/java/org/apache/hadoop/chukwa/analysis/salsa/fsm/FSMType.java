@@ -23,9 +23,9 @@ public class FSMType {
 	public static final int FILESYSTEM_FSM = 1;
 	public static final int MAPREDUCE_FSM_INCOMPLETE = 2;
 	public static final int FILESYSTEM_FSM_INCOMPLETE = 3;
-	public static final String [] NAMES = { "MAPREDUCE_FSM", "FILESYSTEM_FSM", "MAPREDUCE_FSM_INCOMPLETE", "FILESYSTEM_FSM_INCOMPLETE" };
+	static final String [] NAMES = { "MAPREDUCE_FSM", "FILESYSTEM_FSM", "MAPREDUCE_FSM_INCOMPLETE", "FILESYSTEM_FSM_INCOMPLETE" };
 	public FSMType() { this.val = 0; }
 	public FSMType(int newval) { this.val = newval; }
 	public int val;
-	public String toString() { assert(this.val < NAMES.length && this.val >= 0); return new String(NAMES[this.val]); }		
+	public String toString() { assert(this.val < NAMES.length && this.val >= 0); return String.valueOf(NAMES[this.val]); }		
 }

@@ -24,6 +24,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
+import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent.AlreadyRunningException;
 import org.apache.hadoop.chukwa.datacollection.connector.PipelineConnector;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
@@ -34,8 +35,9 @@ import junit.framework.TestCase;
 public class TestHeartbeatAdaptor extends TestCase {
   private volatile boolean shutdown = false;
   private final int port = 4321;
-  public void testPingAdaptor() throws IOException, InterruptedException{
+  public void testPingAdaptor() throws IOException, InterruptedException, AlreadyRunningException{
     ChukwaAgent agent = ChukwaAgent.getAgent();
+    agent.start();
     Configuration conf = agent.getConfiguration();
     conf.set("chukwa.http.writer.host", "localhost");
     conf.set("chukwa.http.writer.port", String.valueOf(port));

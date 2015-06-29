@@ -20,6 +20,8 @@ package org.apache.hadoop.chukwa.hicc.rest;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -63,8 +65,8 @@ public class SessionController {
     Gson gson = new Gson();
     Type stringStringMap = new TypeToken<Map<String, String>>(){}.getType();
     Map<String,String> map = gson.fromJson(buffer, stringStringMap);
-    for(String key : map.keySet()) {
-      request.getSession().setAttribute(key, map.get(key));
+    for(Entry<String, String> entry : (Set<Map.Entry<String, String>>) map.entrySet()) {
+      request.getSession().setAttribute(entry.getKey(), entry.getValue());
     }
     return Response.ok().build();
   }

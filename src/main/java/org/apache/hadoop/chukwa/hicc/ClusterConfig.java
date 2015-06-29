@@ -20,21 +20,20 @@ package org.apache.hadoop.chukwa.hicc;
 
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore;
 
 public class ClusterConfig {
-  private static Set<String> clusterMap = null;
+  private Set<String> clusterMap = null;
 
   static public String getContents(File aFile) {
     // ...checks on aFile are elided
     StringBuffer contents = new StringBuffer();
 
     try {
-      // use buffering, reading one line at a time
-      // FileReader always assumes default encoding is OK!
-      BufferedReader input = new BufferedReader(new FileReader(aFile));
+      BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(aFile.getAbsolutePath()), Charset.forName("UTF-8")));
       try {
         String line = null; // not declared within while loop
         /*

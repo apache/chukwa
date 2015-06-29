@@ -17,6 +17,7 @@
  */
 package org.apache.hadoop.chukwa.util;
 
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
@@ -29,7 +30,6 @@ import org.mortbay.log.Log;
 public class HBaseUtil {
   private static Logger LOG = Logger.getLogger(HBaseUtil.class);
   
-  static Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
   static MessageDigest md5 = null;
   static {
     try {
@@ -50,8 +50,9 @@ public class HBaseUtil {
   }
 
   public static byte[] buildKey(long time, String primaryKey) {
+    Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     c.setTimeInMillis(time);
-    byte[] day = Integer.toString(c.get(Calendar.DAY_OF_YEAR)).getBytes();
+    byte[] day = Integer.toString(c.get(Calendar.DAY_OF_YEAR)).getBytes(Charset.forName("UTF-8"));
     byte[] pk = getHash(primaryKey);
     byte[] key = new byte[12];
     System.arraycopy(day, 0, key, 0, day.length);
@@ -60,8 +61,9 @@ public class HBaseUtil {
   }
   
   public static byte[] buildKey(long time, String primaryKey, String source) {
+    Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     c.setTimeInMillis(time);
-    byte[] day = Integer.toString(c.get(Calendar.DAY_OF_YEAR)).getBytes();
+    byte[] day = Integer.toString(c.get(Calendar.DAY_OF_YEAR)).getBytes(Charset.forName("UTF-8"));
     byte[] pk = getHash(primaryKey);
     byte[] src = getHash(source);
     byte[] key = new byte[12];
@@ -73,7 +75,7 @@ public class HBaseUtil {
   
   private static byte[] getHash(String key) {
     byte[] hash = new byte[5];
-    System.arraycopy(md5.digest(key.getBytes()), 0, hash, 0, 5);
+    System.arraycopy(md5.digest(key.getBytes(Charset.forName("UTF-8"))), 0, hash, 0, 5);
     return hash;
   }
 }

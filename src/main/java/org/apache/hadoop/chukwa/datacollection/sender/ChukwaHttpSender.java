@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -354,7 +355,7 @@ public class ChukwaHttpSender implements ChukwaSender {
           }
         });
 
-    pars.setParameter(HttpMethodParams.SO_TIMEOUT, new Integer(COLLECTOR_TIMEOUT));
+    pars.setParameter(HttpMethodParams.SO_TIMEOUT, Integer.valueOf(COLLECTOR_TIMEOUT));
 
     method.setParams(pars);
     method.setPath(dest);
@@ -385,7 +386,7 @@ public class ChukwaHttpSender implements ChukwaSender {
     // Get the response body
     byte[] resp_buf = method.getResponseBody();
     rstream = new ByteArrayInputStream(resp_buf);
-    BufferedReader br = new BufferedReader(new InputStreamReader(rstream));
+    BufferedReader br = new BufferedReader(new InputStreamReader(rstream, Charset.forName("UTF-8")));
     String line;
     List<String> resp = new ArrayList<String>();
     while ((line = br.readLine()) != null) {

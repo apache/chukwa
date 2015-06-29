@@ -17,7 +17,6 @@
  */
 package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 
-
 import java.io.*;
 
 import junit.framework.TestCase;
@@ -36,7 +35,7 @@ public class TestFileTailingAdaptors extends TestCase {
   ChunkCatcherConnector chunks;
   Configuration conf = new Configuration();
   File baseDir, testFile;
-  
+
   public TestFileTailingAdaptors() throws IOException {
     chunks = new ChunkCatcherConnector();
     chunks.start();
@@ -46,13 +45,14 @@ public class TestFileTailingAdaptors extends TestCase {
     conf.setInt("chukwaAgent.adaptor.context.switch.time", 100);
     conf.set("chukwaAgent.control.port", "0");
 
-    testFile = makeTestFile("chukwaCrSepTest", 80,baseDir);
+    testFile = makeTestFile("chukwaCrSepTest", 80, baseDir);
 
   }
 
   public void testCrSepAdaptor() throws IOException, InterruptedException,
       ChukwaAgent.AlreadyRunningException {
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     // Remove any adaptor left over from previous run
 
     // sleep for some time to make sure we don't get chunk from existing streams
@@ -84,81 +84,90 @@ public class TestFileTailingAdaptors extends TestCase {
     agent.shutdown();
     Thread.sleep(2000);
   }
-  
-  public void testRepeatedlyOnBigFile() throws IOException,
-  ChukwaAgent.AlreadyRunningException, InterruptedException {
-    int tests = 10; //SHOULD SET HIGHER AND WATCH WITH lsof to find leaks
 
-    ChukwaAgent agent = new ChukwaAgent(conf);
-    for(int i=0; i < tests; ++i) {
-      if(i % 100 == 0)
+  public void testRepeatedlyOnBigFile() throws IOException,
+      ChukwaAgent.AlreadyRunningException, InterruptedException {
+    int tests = 10; // SHOULD SET HIGHER AND WATCH WITH lsof to find leaks
+
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
+    for (int i = 0; i < tests; ++i) {
+      if (i % 100 == 0)
         System.out.println("buzzed " + i + " times");
-      
+
       assertEquals(0, agent.adaptorCount());
-      agent.processAddCommand("add adaptor_test = filetailer.FileTailingAdaptor raw " +testFile.getCanonicalPath() + " 0");
+      agent
+          .processAddCommand("add adaptor_test = filetailer.FileTailingAdaptor raw "
+              + testFile.getCanonicalPath() + " 0");
       assertEquals(1, agent.adaptorCount());
       Chunk c = chunks.waitForAChunk();
       String dat = new String(c.getData());
       assertTrue(dat.startsWith("0 abcdefghijklmnopqrstuvwxyz"));
       assertTrue(dat.endsWith("9 abcdefghijklmnopqrstuvwxyz\n"));
       assertTrue(c.getDataType().equals("raw"));
-      if(agent.adaptorCount() > 0)
+      if (agent.adaptorCount() > 0)
         agent.stopAdaptor("adaptor_test", false);
     }
     agent.shutdown();
   }
 
-  
-  public void testOffsetInAdaptorName() throws IOException, ChukwaAgent.AlreadyRunningException,
-  InterruptedException{
-    File testFile = makeTestFile("foo", 120,baseDir);
-    ChukwaAgent agent = new ChukwaAgent(conf);
+  public void testOffsetInAdaptorName() throws IOException,
+      ChukwaAgent.AlreadyRunningException, InterruptedException {
+    File testFile = makeTestFile("foo", 120, baseDir);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     assertEquals(0, agent.adaptorCount());
-    agent.processAddCommand("add test = filetailer.FileTailingAdaptor raw " +testFile.getCanonicalPath() + " 0");
+    agent.processAddCommand("add test = filetailer.FileTailingAdaptor raw "
+        + testFile.getCanonicalPath() + " 0");
     assertEquals(1, agent.adaptorCount());
     Thread.sleep(2000);
-    agent.processAddCommand("add test = filetailer.FileTailingAdaptor raw " +testFile.getCanonicalPath() + " 0");
+    agent.processAddCommand("add test = filetailer.FileTailingAdaptor raw "
+        + testFile.getCanonicalPath() + " 0");
     assertEquals(1, agent.adaptorCount());
     chunks.clear();
     agent.shutdown();
   }
-  
+
   /**
-   * Test that LWFTAdaptor updates lastSlurpTime so that FileTailingAdaptor
-   * does not trigger an infinite loop and that slurp() is not called by
+   * Test that LWFTAdaptor updates lastSlurpTime so that FileTailingAdaptor does
+   * not trigger an infinite loop and that slurp() is not called by
    * FileTailingAdaptor if file is not updated (see CHUKWA-668)
+   * 
    * @throws IOException
    * @throws ChukwaAgent.AlreadyRunningException
    * @throws InterruptedException
    */
-  public void testSlurpTimeUpdated() throws IOException, ChukwaAgent.AlreadyRunningException,
-  InterruptedException{
-	  ChukwaAgent agent = new ChukwaAgent(conf);
-	  File testFile = makeTestFile("fooSlurp", 0,baseDir);
-	  long startTime = System.currentTimeMillis();
-	  String adaptorId = agent.processAddCommand("add adaptor_test =" +
-	  		"filetailer.FileTailingAdaptor slurp " +testFile.getCanonicalPath() + " 0");
-	  FileTailingAdaptor fta = (FileTailingAdaptor)agent.getAdaptor( adaptorId);
-	  Thread.sleep(500);
-	  long initializedSlurpTimeValue = fta.lastSlurpTime; 
-	  assertTrue( initializedSlurpTimeValue > startTime); // initialized to current time
-	  
-	  makeTestFile("fooSlurp", 2,baseDir);
-	  Chunk c = chunks.waitForAChunk();
+  public void testSlurpTimeUpdated() throws IOException,
+      ChukwaAgent.AlreadyRunningException, InterruptedException {
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
+    File testFile = makeTestFile("fooSlurp", 0, baseDir);
+    long startTime = System.currentTimeMillis();
+    String adaptorId = agent.processAddCommand("add adaptor_test ="
+        + "filetailer.FileTailingAdaptor slurp " + testFile.getCanonicalPath()
+        + " 0");
+    FileTailingAdaptor fta = (FileTailingAdaptor) agent.getAdaptor(adaptorId);
+    Thread.sleep(500);
+    long initializedSlurpTimeValue = fta.lastSlurpTime;
+    assertTrue(initializedSlurpTimeValue > startTime); // initialized to current
+                                                       // time
 
-	  Thread.sleep(2000);
-	  // lastSlurpTime has been updated because a slurp was done
-	  long secondSlurpTimeValue = fta.lastSlurpTime;
-	  assertTrue( secondSlurpTimeValue > initializedSlurpTimeValue);
-	  assertEquals( fta.fileReadOffset, c.getData().length);
-	  assertEquals( fta.fileReadOffset, fta.reader.length());
-	  
-	  Thread.sleep(2000);
-	  // ensure we don't try to slurp if file is not updated
-	  assertEquals( fta.lastSlurpTime, secondSlurpTimeValue);
-	  
-	  if(agent.adaptorCount() > 0)
-	        agent.stopAdaptor("adaptor_test", false);
-	    agent.shutdown();
+    makeTestFile("fooSlurp", 2, baseDir);
+    Chunk c = chunks.waitForAChunk();
+
+    Thread.sleep(2000);
+    // lastSlurpTime has been updated because a slurp was done
+    long secondSlurpTimeValue = fta.lastSlurpTime;
+    assertTrue(secondSlurpTimeValue > initializedSlurpTimeValue);
+    assertEquals(fta.fileReadOffset, c.getData().length);
+    assertEquals(fta.fileReadOffset, fta.reader.length());
+
+    Thread.sleep(2000);
+    // ensure we don't try to slurp if file is not updated
+    assertEquals(fta.lastSlurpTime, secondSlurpTimeValue);
+
+    if (agent.adaptorCount() > 0)
+      agent.stopAdaptor("adaptor_test", false);
+    agent.shutdown();
   }
 }

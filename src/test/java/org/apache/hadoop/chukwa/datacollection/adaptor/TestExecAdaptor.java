@@ -35,7 +35,8 @@ public class TestExecAdaptor extends TestCase {
     Configuration conf = new Configuration();
     conf.set("chukwaAgent.control.port", "0");
     conf.setBoolean("chukwaAgent.checkpoint.enabled", false);
-    agent = new ChukwaAgent(conf);
+    agent = ChukwaAgent.getAgent(conf);
+    agent.start();
   }
 
   @Override

@@ -20,10 +20,11 @@ package org.apache.hadoop.chukwa.util;
 
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 public class ClusterConfig {
-  public static final HashMap<String, String> clusterMap = new HashMap<String, String>();
+  private HashMap<String, String> clusterMap = new HashMap<String, String>();
   private String path = System.getenv("CHUKWA_CONF_DIR") + File.separator;
 
   static public String getContents(File aFile) {
@@ -31,9 +32,7 @@ public class ClusterConfig {
     StringBuffer contents = new StringBuffer();
 
     try {
-      // use buffering, reading one line at a time
-      // FileReader always assumes default encoding is OK!
-      BufferedReader input = new BufferedReader(new FileReader(aFile));
+      BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(aFile.getAbsolutePath()), Charset.forName("UTF-8")));
       try {
         String line = null; // not declared within while loop
         /*

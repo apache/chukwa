@@ -46,7 +46,8 @@ public class TestStartAtOffset extends TestCase {
     Configuration conf = new Configuration();
     conf.set("chukwaAgent.control.port", "0");
     conf.setInt("chukwaAgent.adaptor.context.switch.time", 100);
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     File testFile = makeTestFile();
     int startOffset = 0; // skip first line
     String adaptorId = agent
@@ -81,7 +82,8 @@ public class TestStartAtOffset extends TestCase {
     Configuration conf = new Configuration();
     conf.set("chukwaAgent.control.port", "0");
     conf.setInt("chukwaAgent.adaptor.context.switch.time", 100);
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     File testFile = makeTestFile();
     int startOffset = 0;
     String adaptorId = agent

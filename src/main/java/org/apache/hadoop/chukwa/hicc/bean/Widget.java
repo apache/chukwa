@@ -89,11 +89,11 @@ public class Widget {
   }
 
   public String[] getTokens() {
-    return tokens;
+    return tokens.clone();
   }
 
   public void setTokens(String[] tokens) {
-    this.tokens = tokens;
+    this.tokens = tokens.clone();
   }
 
   public void tokenize() {

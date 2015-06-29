@@ -23,13 +23,13 @@ import java.util.List;
 public class Examples {
   public static final AdaptorConfig CREATE_ADAPTOR_SAMPLE = new AdaptorConfig();
   public static final AdaptorInfo ADAPTOR_STATUS_SAMPLE = new AdaptorInfo();
-  public static final List<AdaptorAveragedRate> ADAPTOR_RATES = new ArrayList<AdaptorAveragedRate>();
+  final static List<AdaptorAveragedRate> ADAPTOR_RATES = new ArrayList<AdaptorAveragedRate>();
   public static final AdaptorAveragedRate ADAPTOR_RATE_SAMPLE_PER_MINUTE = new AdaptorAveragedRate();
   public static final AdaptorAveragedRate ADAPTOR_RATE_SAMPLE_PER_FIVE_MINUTE = new AdaptorAveragedRate();
   public static final AdaptorAveragedRate ADAPTOR_RATE_SAMPLE_PER_TEN_MINUTE = new AdaptorAveragedRate();
   
   public static final AdaptorInfo SYS_ADAPTOR_STATUS_SAMPLE = new AdaptorInfo();
-  public static final List<AdaptorAveragedRate> SYS_ADAPTOR_RATES = new ArrayList<AdaptorAveragedRate>();
+  final static List<AdaptorAveragedRate> SYS_ADAPTOR_RATES = new ArrayList<AdaptorAveragedRate>();
   public static final AdaptorAveragedRate SYS_ADAPTOR_RATE_SAMPLE_PER_MINUTE = new AdaptorAveragedRate();
   public static final AdaptorAveragedRate SYS_ADAPTOR_RATE_SAMPLE_PER_FIVE_MINUTE = new AdaptorAveragedRate();
   public static final AdaptorAveragedRate SYS_ADAPTOR_RATE_SAMPLE_PER_TEN_MINUTE = new AdaptorAveragedRate();

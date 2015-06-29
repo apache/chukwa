@@ -27,6 +27,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.log4j.Logger;
 
@@ -128,14 +130,14 @@ public class ChukwaAgentController {
         e.printStackTrace();
       }
       PrintWriter bw = new PrintWriter(new OutputStreamWriter(s
-          .getOutputStream()));
+          .getOutputStream(), Charset.forName("UTF-8")));
       if(id != null)
         bw.println("ADD " + id + " = " + className + " " + appType + " " + params + " " + offset);
       else
         bw.println("ADD " + className + " " + appType + " " + params + " " + offset);
       bw.flush();
       BufferedReader br = new BufferedReader(new InputStreamReader(s
-          .getInputStream()));
+          .getInputStream(), Charset.forName("UTF-8")));
       String resp = br.readLine();
       if (resp != null) {
         String[] fields = resp.split(" ");
@@ -153,15 +155,14 @@ public class ChukwaAgentController {
         s.setSoTimeout(60000);
       } catch (SocketException e) {
         log.warn("Error while settin soTimeout to 60000");
-        e.printStackTrace();
       }
       PrintWriter bw = new PrintWriter(new OutputStreamWriter(s
-          .getOutputStream()));
+          .getOutputStream(), Charset.forName("UTF-8")));
       bw.println("SHUTDOWN " + id);
       bw.flush();
 
       BufferedReader br = new BufferedReader(new InputStreamReader(s
-          .getInputStream()));
+          .getInputStream(), Charset.forName("UTF-8")));
       String resp = br.readLine();
       if (resp == null || !resp.startsWith("OK")) {
         log.error("adaptor unregister error, id: " + id);
@@ -348,12 +349,12 @@ public class ChukwaAgentController {
       e.printStackTrace();
     }
     PrintWriter bw = new PrintWriter(
-        new OutputStreamWriter(s.getOutputStream()));
+        new OutputStreamWriter(s.getOutputStream(), Charset.forName("UTF-8")));
 
     bw.println("LIST");
     bw.flush();
     BufferedReader br = new BufferedReader(new InputStreamReader(s
-        .getInputStream()));
+        .getInputStream(), Charset.forName("UTF-8")));
     String ln;
     Map<String, Adaptor> listResult = new HashMap<String, Adaptor>();
     while ((ln = br.readLine()) != null) {
@@ -370,11 +371,13 @@ public class ChukwaAgentController {
                                                                         // -
                                                                         // paren
           long offset = Long.parseLong(parts[parts.length - 1]);
-          String tmpParams = parts[3];
+          StringBuilder tmpParams = new StringBuilder();
+          tmpParams.append(parts[3]);
           for (int i = 4; i < parts.length - 1; i++) {
-            tmpParams += " " + parts[i];
+            tmpParams.append(" ");
+            tmpParams.append(parts[i]);
           }
-          listResult.put(id, new Adaptor(id, parts[1], parts[2], tmpParams,
+          listResult.put(id, new Adaptor(id, parts[1], parts[2], tmpParams.toString(),
               offset));
         }
       }
@@ -563,8 +566,7 @@ public class ChukwaAgentController {
     if (adaptorID != null) {
       log.info("Successfully added adaptor, id is:" + adaptorID);
     } else {
-      System.err.println("Agent reported failure to add adaptor, adaptor id returned was:"
-              + adaptorID);
+      log.error("Agent reported failure to add adaptor.");
     }
     return adaptorID;
   }

@@ -172,7 +172,8 @@ public class TestFSMBuilder extends TestCase {
       conf.set("chukwaAgent.checkpoint.dir", System.getenv("CHUKWA_DATA_DIR")+File.separator+"tmp");
       conf.set("chukwaAgent.checkpoint.interval", "10000");
       int portno = conf.getInt("chukwaAgent.control.port", agentPort);
-      agent = new ChukwaAgent(conf);
+      agent = ChukwaAgent.getAgent();
+      agent.start();
       conn = new HttpConnector(agent, "http://localhost:"+collectorPort+"/chukwa");
       conn.start();      
       sender = new ChukwaHttpSender(conf);

@@ -317,7 +317,7 @@ public class Swimlanes {
       return this.states.length;
     }
     public String [] getStates() {
-      return this.states;
+      return this.states.clone();
     }
   }
 

@@ -34,7 +34,7 @@ public class FileTailingAdaptor extends LWFTAdaptor {
 
 
   public static int MAX_RETRIES = 300;
-  public static int GRACEFUL_PERIOD = 3 * 60 * 1000; // 3 minutes
+  static int GRACEFUL_PERIOD = 3 * 60 * 1000; // 3 minutes
 
   private int attempts = 0;
   private long gracefulPeriodExpired = 0l;

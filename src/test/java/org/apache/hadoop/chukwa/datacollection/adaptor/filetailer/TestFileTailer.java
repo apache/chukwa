@@ -49,7 +49,8 @@ public class TestFileTailer {
 		ChukwaConfiguration cc = new ChukwaConfiguration();
 		cc.setInt("chukwaAgent.fileTailingAdaptor.maxReadSize", 18); // small in order to have hasMoreData=true
 																	 // (with 26 letters we should have 2 chunks)
-		agent = new ChukwaAgent(cc);
+		agent = ChukwaAgent.getAgent(cc);
+		agent.start();
 		
 		ChunkCatcherConnector chunks = new ChunkCatcherConnector();
 	    chunks.start();

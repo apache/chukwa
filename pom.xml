@@ -465,9 +465,9 @@
                       <goals>
                         <goal>compile</goal>
                       </goals>
-                      <compilerVersion>1.6</compilerVersion>
-                      <source>1.6</source>
-                      <target>1.6</target>
+                      <compilerVersion>1.7</compilerVersion>
+                      <source>1.7</source>
+                      <target>1.7</target>
                       <excludes>
                         <exclude>**/ChukwaJobTrackerInstrumentation.java</exclude>
                       </excludes>
@@ -1360,7 +1360,7 @@
         </plugin>
         <plugin>
             <artifactId>maven-pmd-plugin</artifactId>
-            <version>2.6</version>
+            <version>3.4</version>
             <reportSets>
                 <reportSet>
                     <reports>
@@ -1370,13 +1370,13 @@
                 </reportSet>
             </reportSets>
             <configuration>
-                <targetJdk>1.6</targetJdk>
+                <targetJdk>1.7</targetJdk>
             </configuration>
         </plugin>
         <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>findbugs-maven-plugin</artifactId>
-            <version>2.3.3</version>
+            <version>3.0.1</version>
             <configuration>
                 <threshold>Normal</threshold>
                 <effort>Max</effort>

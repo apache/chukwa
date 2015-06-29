@@ -47,7 +47,7 @@ public class JobHistoryTaskDataMapper
   private static Log log = LogFactory.getLog(FSMBuilder.class);
 	protected static final String SEP = "/";
 	
-	protected static String FSM_CRK_ReduceType = FSMType.NAMES[FSMType.MAPREDUCE_FSM];
+	protected final static String FSM_CRK_ReduceType = FSMType.NAMES[FSMType.MAPREDUCE_FSM];
 
 	/*
 	 * Helper function for mapper to populate TreeMap of FSMIntermedEntr

@@ -46,7 +46,8 @@ public class TestAdaptorTimeout extends TestCase {
     Server collectorServ = TestDelayedAcks.startCollectorOnPort(conf, PORTNO, collector);
     Thread.sleep(1000);
     
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     HttpConnector conn = new HttpConnector(agent, "http://localhost:"+PORTNO+"/");
     conn.start();
     String resp = agent.processAddCommand("add constSend = " + ConstRateAdaptor.class.getCanonicalName() + 

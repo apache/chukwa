@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -124,12 +125,12 @@ public class HiccWebServer {
         StringBuilder sb = new StringBuilder();
         String line = null;
         try {
-          BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+          BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
           while ((line = reader.readLine()) != null) {
             sb.append(line + "\n");
           }
           FSDataOutputStream out = fs.create(dest);
-          out.write(sb.toString().getBytes());
+          out.write(sb.toString().getBytes(Charset.forName("UTF-8")));
           out.close();
           reader.close();
         } catch(IOException e) {

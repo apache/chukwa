@@ -50,7 +50,8 @@ public class TestFileTailingAdaptorBigRecord extends TestCase {
       ChukwaConfiguration cc = new ChukwaConfiguration();
       cc.set("chukwaAgent.control.port", "0");
       cc.setInt("chukwaAgent.fileTailingAdaptor.maxReadSize", 55);
-      ChukwaAgent agent = new ChukwaAgent(cc);
+      ChukwaAgent agent = ChukwaAgent.getAgent(cc);
+      agent.start();
       int portno = agent.getControllerPort();
       while (portno == -1) {
         Thread.sleep(1000);

@@ -73,7 +73,8 @@ public class TestDelayedAcks extends TestCase {
     conf.setInt("chukwaAgent.adaptor.context.switch.time", 500);
     conf.setInt(AdaptorResetThread.TIMEOUT_OPT, ACK_TIMEOUT);
 
-    ChukwaAgent agent = new ChukwaAgent(conf);
+    ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+    agent.start();
     ChunkCatcherConnector chunks = new ChunkCatcherConnector();
     chunks.start();
     assertEquals(0, agent.adaptorCount());
@@ -207,7 +208,8 @@ public class TestDelayedAcks extends TestCase {
       Server collectorServ = startCollectorOnPort(conf, PORTNO, collector);
       Thread.sleep(1000);
       
-      ChukwaAgent agent = new ChukwaAgent(conf);
+      ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+      agent.start();
       HttpConnector conn = new HttpConnector(agent, "http://localhost:"+PORTNO+"/");
       conn.start();
       String resp = agent.processAddCommand("add constSend = " + ConstRateAdaptor.class.getCanonicalName() + 

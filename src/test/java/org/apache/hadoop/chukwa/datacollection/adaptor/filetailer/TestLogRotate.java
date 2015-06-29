@@ -41,6 +41,7 @@ public class TestLogRotate extends TestCase {
   public void testLogRotate() throws IOException, InterruptedException,
       ChukwaAgent.AlreadyRunningException {
     ChukwaAgent agent = ChukwaAgent.getAgent();
+    agent.start();
     // Remove any adaptor left over from previous run
     ChukwaConfiguration cc = new ChukwaConfiguration();
     int portno = cc.getInt("chukwaAgent.control.port", 9093);

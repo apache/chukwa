@@ -26,7 +26,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.*;
+import java.nio.charset.Charset;
 import java.util.Map;
+
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy;
 import org.apache.log4j.Logger;
@@ -70,7 +72,7 @@ public class AgentControlSocketListener extends Thread {
     public void run() {
       try {
         InputStream in = connection.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
         PrintStream out = new PrintStream(new BufferedOutputStream(connection
             .getOutputStream()));
         String cmd = null;

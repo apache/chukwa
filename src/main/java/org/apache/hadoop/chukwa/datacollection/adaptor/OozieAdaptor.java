@@ -19,6 +19,7 @@
 package org.apache.hadoop.chukwa.datacollection.adaptor;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.security.PrivilegedExceptionAction;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -164,7 +165,7 @@ public class OozieAdaptor extends AbstractAdaptor {
   }
 
   private int processMetrics() {
-    return addChunkToReceiver(getOozieMetrics().getBytes());
+    return addChunkToReceiver(getOozieMetrics().getBytes(Charset.forName("UTF-8")));
   }
 
   private String getOozieMetrics() {

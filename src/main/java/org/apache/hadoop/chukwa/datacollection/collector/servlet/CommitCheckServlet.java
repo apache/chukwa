@@ -38,7 +38,7 @@ public class CommitCheckServlet extends HttpServlet {
 
   private static final long serialVersionUID = -4627538252371890849L;
   
-  protected static Logger log = Logger.getLogger(CommitCheckServlet.class);
+  protected final static Logger log = Logger.getLogger(CommitCheckServlet.class);
   CommitCheckThread commitCheck;
   Configuration conf;
     //interval at which to scan the filesystem, ms

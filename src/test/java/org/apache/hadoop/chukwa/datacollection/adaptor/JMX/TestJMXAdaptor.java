@@ -59,7 +59,8 @@ public class TestJMXAdaptor extends TestCase{
 	    conf.setInt("chukwaAgent.http.port", 9090);
 	    conf.setBoolean("chukwaAgent.checkpoint.enabled", false);	    
 	    
-	    agent = new ChukwaAgent(conf);
+	    agent = ChukwaAgent.getAgent(conf);
+	    agent.start();
 	}
 	
 	public void testJMXAdaptor() {

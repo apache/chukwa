@@ -22,20 +22,14 @@
  */
 package org.apache.hadoop.chukwa.extraction.hbase;
 
+import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Iterator;
-import java.util.TimeZone;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import org.apache.hadoop.chukwa.Chunk;
-import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
-import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Tables;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
-import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.mapred.OutputCollector;
-import org.apache.hadoop.mapred.Reporter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -48,7 +42,7 @@ public class SystemMetrics extends AbstractProcessor {
 
   @Override
   protected void parse(byte[] recordEntry) throws Throwable {
-    String buffer = new String(recordEntry);
+    String buffer = new String(recordEntry, Charset.forName("UTF-8"));
     JSONObject json = (JSONObject) JSONValue.parse(buffer);
     time = ((Long) json.get("timestamp")).longValue();
     ChukwaRecord record = new ChukwaRecord();
@@ -70,11 +64,9 @@ public class SystemMetrics extends AbstractProcessor {
       user = user + Double.parseDouble(cpu.get("user").toString());
       sys = sys + Double.parseDouble(cpu.get("sys").toString());
       idle = idle + Double.parseDouble(cpu.get("idle").toString());
-      @SuppressWarnings("unchecked")
-      Iterator<String> iterator = (Iterator<String>) cpu.keySet().iterator();
-      while(iterator.hasNext()) {
-        String key = iterator.next();
-        addRecord("cpu." + key + "." + i, cpu.get(key).toString());
+      for(Entry<String, Object> entry : (Set<Map.Entry>) cpu.entrySet()) {
+        String key = entry.getKey();
+        addRecord("cpu." + key + "." + i, String.valueOf(entry.getValue()));
       }
     }
     combined = combined / actualSize;
@@ -94,20 +86,15 @@ public class SystemMetrics extends AbstractProcessor {
 
     record = new ChukwaRecord();
     JSONObject memory = (JSONObject) json.get("memory");
-    @SuppressWarnings("unchecked")
-    Iterator<String> memKeys = memory.keySet().iterator();
-    while (memKeys.hasNext()) {
-      String key = memKeys.next();
-      addRecord("memory." + key, memory.get(key).toString());
+    for(Entry<String, Object> entry : (Set<Map.Entry>) memory.entrySet()) {
+      String key = entry.getKey();
+      addRecord("memory." + key, String.valueOf(entry.getValue()));
     }
 
     record = new ChukwaRecord();
     JSONObject swap = (JSONObject) json.get("swap");
-    @SuppressWarnings("unchecked")
-    Iterator<String> swapKeys = swap.keySet().iterator();
-    while (swapKeys.hasNext()) {
-      String key = swapKeys.next();
-      addRecord("swap." + key, swap.get(key).toString());
+    for(Map.Entry<String, Object> entry : (Set<Map.Entry>) swap.entrySet()) {
+      addRecord("swap." + entry.getKey(), String.valueOf(entry.getValue()));
     }
 
     double rxBytes = 0;
@@ -122,28 +109,30 @@ public class SystemMetrics extends AbstractProcessor {
     JSONArray netList = (JSONArray) json.get("network");
     for (int i = 0; i < netList.size(); i++) {
       JSONObject netIf = (JSONObject) netList.get(i);
-      @SuppressWarnings("unchecked")
-      Iterator<String> keys = netIf.keySet().iterator();
-      while (keys.hasNext()) {
-        String key = keys.next();
-        record.add(key + "." + i, netIf.get(key).toString());
+      for(Map.Entry<String, Object> entry : (Set<Map.Entry>) netIf.entrySet()) {
+        String key = entry.getKey();
+        long value = 0;
+        if(entry.getValue() instanceof Long) {
+          value = (Long) entry.getValue();
+        }
+        record.add(key + "." + i, String.valueOf(entry.getValue()));
         if (i != 0) {
           if (key.equals("RxBytes")) {
-            rxBytes = rxBytes + (Long) netIf.get(key);
+            rxBytes = rxBytes + value;
           } else if (key.equals("RxDropped")) {
-            rxDropped = rxDropped + (Long) netIf.get(key);
+            rxDropped = rxDropped + value;
           } else if (key.equals("RxErrors")) {
-            rxErrors = rxErrors + (Long) netIf.get(key);
+            rxErrors = rxErrors + value;
           } else if (key.equals("RxPackets")) {
-            rxPackets = rxPackets + (Long) netIf.get(key);
+            rxPackets = rxPackets + value;
           } else if (key.equals("TxBytes")) {
-            txBytes = txBytes + (Long) netIf.get(key);
+            txBytes = txBytes + value;
           } else if (key.equals("TxCollisions")) {
-            txCollisions = txCollisions + (Long) netIf.get(key);
+            txCollisions = txCollisions + value;
           } else if (key.equals("TxErrors")) {
-            txErrors = txErrors + (Long) netIf.get(key);
+            txErrors = txErrors + value;
           } else if (key.equals("TxPackets")) {
-            txPackets = txPackets + (Long) netIf.get(key);
+            txPackets = txPackets + value;
           }
         }
       }
@@ -168,22 +157,25 @@ public class SystemMetrics extends AbstractProcessor {
     JSONArray diskList = (JSONArray) json.get("disk");
     for (int i = 0; i < diskList.size(); i++) {
       JSONObject disk = (JSONObject) diskList.get(i);
-      Iterator<String> keys = disk.keySet().iterator();
-      while (keys.hasNext()) {
-        String key = keys.next();
-        record.add(key + "." + i, disk.get(key).toString());
+      for(Entry<String, Object> entry : (Set<Map.Entry>) disk.entrySet()) {
+        String key = entry.getKey();
+        long value = 0;
+        if(entry.getValue() instanceof Long) {
+          value = (Long) entry.getValue();
+        }
+        record.add(key + "." + i, String.valueOf(entry.getValue()));
         if (key.equals("ReadBytes")) {
-          readBytes = readBytes + (Long) disk.get("ReadBytes");
+          readBytes = readBytes + value;
         } else if (key.equals("Reads")) {
-          reads = reads + (Long) disk.get("Reads");
+          reads = reads + Long.valueOf(value);;
         } else if (key.equals("WriteBytes")) {
-          writeBytes = writeBytes + (Long) disk.get("WriteBytes");
+          writeBytes = writeBytes + value;
         } else if (key.equals("Writes")) {
-          writes = writes + (Long) disk.get("Writes");
+          writes = writes + value;
         } else if (key.equals("Total")) {
-          total = total + (Long) disk.get("Total");
+          total = total + value;
         } else if (key.equals("Used")) {
-          used = used + (Long) disk.get("Used");
+          used = used + value;
         }
       }
     }

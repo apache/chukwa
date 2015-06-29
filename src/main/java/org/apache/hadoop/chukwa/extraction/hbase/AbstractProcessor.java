@@ -19,6 +19,7 @@
 package org.apache.hadoop.chukwa.extraction.hbase;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public abstract class AbstractProcessor {
   protected String sourceHelper;
 
   protected byte[] key = null;
-  byte[] CF = "t".getBytes();
+  byte[] CF = "t".getBytes(Charset.forName("UTF-8"));
 
   boolean chunkInErrorSaved = false;
   ArrayList<Put> output = null;
@@ -70,14 +71,14 @@ public abstract class AbstractProcessor {
     byte[] key = HBaseUtil.buildKey(time, primaryKey, source);
     Put put = new Put(key);
     byte[] timeInBytes = ByteBuffer.allocate(8).putLong(time).array();
-    put.add(CF, timeInBytes, time, value);
+    put.addColumn(CF, timeInBytes, time, value);
     output.add(put);
     reporter.putMetric(chunk.getDataType(), primaryKey);
     reporter.putSource(chunk.getDataType(), source);
   }
 
   public void addRecord(String primaryKey, String value) {
-    addRecord(primaryKey, value.getBytes());
+    addRecord(primaryKey, value.getBytes(Charset.forName("UTF-8")));
   }
 
   /**
@@ -96,7 +97,7 @@ public abstract class AbstractProcessor {
     byte[] key = HBaseUtil.buildKey(time, primaryKey, sourceHelper);
     Put put = new Put(key);
     byte[] timeInBytes = ByteBuffer.allocate(8).putLong(time).array();
-    put.add(CF, timeInBytes, time, value);
+    put.addColumn(CF, timeInBytes, time, value);
     output.add(put);
     reporter.putMetric(chunk.getDataType(), primaryKey);
   }
@@ -126,7 +127,7 @@ public abstract class AbstractProcessor {
     Put put = new Put(key);
     String family = "a";
     byte[] timeInBytes = ByteBuffer.allocate(8).putLong(time).array();
-    put.add(family.getBytes(), timeInBytes, time, chunk.getTags().getBytes());
+    put.addColumn(family.getBytes(Charset.forName("UTF-8")), timeInBytes, time, chunk.getTags().getBytes(Charset.forName("UTF-8")));
     output.add(put);
   }
 

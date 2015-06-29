@@ -45,9 +45,9 @@ public class TestChunkQueue extends TestCase {
   
   @Override
   protected void setUp() throws AlreadyRunningException {
-    agent = ChukwaAgent.getAgent();
     if(agent == null){
-      agent = new ChukwaAgent();
+      agent = ChukwaAgent.getAgent();
+      agent.start();
     }
     conf = agent.getConfiguration();
     conf.set(CHUNK_QUEUE_LIMIT, Integer.toString(QUEUE_LIMIT));

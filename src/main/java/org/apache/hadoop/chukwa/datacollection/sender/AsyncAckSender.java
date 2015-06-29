@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
  */
 public class AsyncAckSender extends ChukwaHttpSender{
   
-  protected static Logger log = Logger.getLogger(AsyncAckSender.class);
+  protected final static Logger log = Logger.getLogger(AsyncAckSender.class);
   /*
    * Represents the state required for an asynchronous ack.
    * 

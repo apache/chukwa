@@ -57,7 +57,8 @@ public class TestAgentConfig extends TestCase {
       checkpointDir.deleteOnExit();
       conf.set("chukwaAgent.checkpoint.dir", checkpointDir.getAbsolutePath());
 
-      ChukwaAgent agent = new ChukwaAgent(conf);
+      ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+      agent.start();
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
       assertEquals(1, agent.adaptorCount());// check that we processed initial
@@ -80,7 +81,8 @@ public class TestAgentConfig extends TestCase {
       ps.close();
 
       System.out.println("---------------------restarting");
-      agent = new ChukwaAgent(conf);
+      agent = ChukwaAgent.getAgent(conf);
+      agent.start();
       conn = new ConsoleOutConnector(agent, true);
       conn.start();
       assertEquals(2, agent.adaptorCount());// check that we processed initial
@@ -113,7 +115,8 @@ public class TestAgentConfig extends TestCase {
       conf.setInt("chukwaAgent.control.port", 0);
 
       System.out.println("\n\n===checkpoints enabled, dir does not exist:");
-      ChukwaAgent agent = new ChukwaAgent(conf);
+      ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+      agent.start();
       assertEquals(0, agent.getAdaptorList().size());
       agent.shutdown();
       Thread.sleep(2000);
@@ -123,7 +126,8 @@ public class TestAgentConfig extends TestCase {
 
       System.out
           .println("\n\n===checkpoints enabled, dir exists but is empty:");
-      agent = new ChukwaAgent(conf);
+      agent = ChukwaAgent.getAgent(conf);
+      agent.start();
       assertEquals(0, agent.getAdaptorList().size());
       agent.shutdown();
       Thread.sleep(2000);
@@ -133,7 +137,8 @@ public class TestAgentConfig extends TestCase {
       System.out
           .println("\n\n===checkpoints enabled, dir exists with zero-length file:");
       (new File(NONCE_DIR, "chukwa_checkpoint_0")).createNewFile();
-      agent = new ChukwaAgent(conf);
+      agent = ChukwaAgent.getAgent(conf);
+      agent.start();
       assertEquals(0, agent.getAdaptorList().size());
       agent.processAddCommand("ADD org.apache.hadoop.chukwa.datacollection.adaptor.ChukwaTestAdaptor testdata  0");
       agent.shutdown();
@@ -142,7 +147,8 @@ public class TestAgentConfig extends TestCase {
 
       System.out
           .println("\n\n===checkpoints enabled, dir exists with valid checkpoint");
-      agent = new ChukwaAgent(conf);
+      agent = ChukwaAgent.getAgent(conf);
+      agent.start();
       assertEquals(1, agent.getAdaptorList().size());
       agent.shutdown();
       Thread.sleep(2000);

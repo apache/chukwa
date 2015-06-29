@@ -34,7 +34,8 @@ public class TestAgent extends TestCase {
     try {
       Configuration conf = new Configuration();
       conf.setInt("chukwaAgent.control.port", 0);
-      ChukwaAgent agent = new ChukwaAgent(conf);
+      ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+      agent.start();
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
 
@@ -63,7 +64,8 @@ public class TestAgent extends TestCase {
     try {
       Configuration conf = new Configuration();
       conf.setInt("chukwaAgent.control.port", 0);
-      ChukwaAgent agent = new ChukwaAgent(conf);
+      ChukwaAgent agent = ChukwaAgent.getAgent(conf);
+      agent.start();
       ConsoleOutConnector conn = new ConsoleOutConnector(agent, true);
       conn.start();
       int count = agent.adaptorCount();

@@ -54,7 +54,8 @@ public class TestRCheckAdaptor extends TestCase implements ChunkReceiver {
     Configuration conf = new ChukwaConfiguration();
     conf.set("", "org.apache.hadoop.chukwa.datacollection.connector.ChunkCatcherConnector");
     try {
-      agent = new ChukwaAgent(conf);
+      agent = ChukwaAgent.getAgent(conf);
+      agent.start();
       Thread.sleep(2000);
       Map<String, String> adaptorList = agent.getAdaptorList();
       for(String id : adaptorList.keySet()) {

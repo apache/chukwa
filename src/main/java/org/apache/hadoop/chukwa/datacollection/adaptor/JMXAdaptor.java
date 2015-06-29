@@ -20,8 +20,11 @@ package org.apache.hadoop.chukwa.datacollection.adaptor;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.rmi.ConnectException;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -97,11 +100,11 @@ public class JMXAdaptor extends AbstractAdaptor{
 				sb.append(File.separator);
 			}
 			sb.append("jmxremote.password");
-			String jmx_pw_file = sb.toString();
+			File jmx_pw_file = new File(sb.toString());
 			shutdown = false;
 			while(!shutdown){
 				try{					
-					BufferedReader br = new BufferedReader(new FileReader(jmx_pw_file));
+					BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(jmx_pw_file.getAbsolutePath()), Charset.forName("UTF-8")));
 					String[] creds = br.readLine().split(" ");
 					Map<String, String[]> env = new HashMap<String, String[]>();			
 					env.put(JMXConnector.CREDENTIALS, creds);
@@ -202,7 +205,7 @@ public class JMXAdaptor extends AbstractAdaptor{
 					}
 				}
 				
-				byte[] data = json.toString().getBytes();		
+				byte[] data = json.toString().getBytes(Charset.forName("UTF-8"));		
 				sendOffset+=data.length;				
 				ChunkImpl c = new ChunkImpl(type, "JMX", sendOffset, data, adaptor);
 				long rightNow = Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis();
