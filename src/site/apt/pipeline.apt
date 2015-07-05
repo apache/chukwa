@@ -46,20 +46,12 @@ Chukwa agent to load <hbase-site.xml> from class path.
 ---
 <property>
   <name>chukwa.pipeline</name>
-  <value>org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter</value>
+  <value>org.apache.hadoop.chukwa.datacollection.writer.parquet.ChukwaParquetWriter</value>
 </property>
 ---
 
-  In this mode, the filesystem to write to is determined by the option
-<writer.hdfs.filesystem> in <chukwa-agent-conf.xml>.
-
----
-<property>
-    <name>writer.hdfs.filesystem</name>
-    <value>hdfs://localhost:8020/</value>
-    <description>HDFS to dump to</description>
-</property>
----
+  In this mode, data will write to HDFS which has been defined by HADOOP_CONF_DIR environment
+variable.
 
   This is the only option that you really need to specify to get a working 
 pipeline.
@@ -85,7 +77,7 @@ incoming chunks fed to them over a socket by Chukwa agent.
 ---
 <property>
   <name>chukwa.pipeline</name>
-  <value>org.apache.hadoop.chukwa.datacollection.writer.SocketTeeWriter,org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter</value>
+  <value>org.apache.hadoop.chukwa.datacollection.writer.SocketTeeWriter,org.apache.hadoop.chukwa.datacollection.writer.parquet.ChukwaParquetWriter</value>
 </property>
 ---
 
@@ -142,22 +134,11 @@ as a whole file.  This writer is designed for high throughput environment.
 </property>
 ---
 
-SeqFileWriter
+ChukwaParquetWriter
 
-  The <SeqFileWriter> streams chunks of data to HDFS, and write data in
-temp filename with <.chukwa> suffix.  When the file is completed writing,
-the filename is renamed with <.done> suffix.  SeqFileWriter has the following
+  The <ChukwaParquetWriter> streams chunks of data to HDFS.  When the file is completed writing,
+the filename is renamed with <.done> suffix.  ChukwaParquetWriter has the following
 configuration in <chukwa-agent-conf.xml>.
-
-  * <<writer.hdfs.filesystem>> Location to name node address
-
----
-<property>
-    <name>writer.hdfs.filesystem</name>
-    <value>hdfs://localhost:8020/</value>
-    <description>HDFS to dump to</description>
-</property>
----
 
   * <<chukwaCollector.outputDir>> Location of collect data sink directory
 
@@ -176,35 +157,6 @@ configuration in <chukwa-agent-conf.xml>.
     <name>chukwaCollector.rotateInterval</name>
     <value>300000</value>
     <description>Chukwa rotate interval (ms)</description>
-</property>
----
-
-  * <<chukwaCollector.isFixedTimeRotatorScheme>> A flag to indicate that the 
-    agent should close at a fixed offset after every rotateInterval. 
-    The default value is false which uses the default scheme where 
-    agents close after regular rotateIntervals.
-    If set to true then specify chukwaCollector.fixedTimeIntervalOffset value.
-    e.g., if isFixedTimeRotatorScheme is true and fixedTimeIntervalOffset is
-    set to 10000 and rotateInterval is set to 300000, then the agent will
-    close its files at 10 seconds past the 5 minute mark, if
-    isFixedTimeRotatorScheme is false, agents will rotate approximately
-    once every 5 minutes
-
----
-  <property>
-    <name>chukwaCollector.isFixedTimeRotatorScheme</name>
-    <value>false</value>
-  </property>
----
-
-  * <<chukwaCollector.fixedTimeIntervalOffset>> Chukwa fixed time interval 
-    offset value (ms)
-
----
-<property>
-    <name>chukwaCollector.fixedTimeIntervalOffset</name>
-    <value>30000</value>
-    <description>Chukwa fixed time interval offset value (ms)</description>
 </property>
 ---
 

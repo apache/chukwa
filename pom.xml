@@ -327,6 +327,11 @@
             <artifactId>shiro-web</artifactId>
             <version>1.2.3</version>
           </dependency>
+          <dependency>
+            <groupId>org.apache.parquet</groupId>
+            <artifactId>parquet-avro</artifactId>
+            <version>1.7.0</version>
+          </dependency>
     </dependencies>
 
     <developers>
@@ -1325,10 +1330,6 @@
     </profiles>
 
     <repositories>
-        <repository>
-            <id>codehaus</id>
-            <url>http://repository.codehaus.org/</url>
-        </repository>
         <repository>
             <id>clojars</id>
             <url>http://clojars.org/repo/</url>

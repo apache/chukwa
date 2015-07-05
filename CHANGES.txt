@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-772. Added ChukwaParquetWriter.  (Eric Yang)
+
     CHUKWA-756. Added ajax-solr UI for log search.  (Eric Yang)
 
     CHUKWA-755. Added a reverse proxy to Solr for HICC.  (Eric Yang)
