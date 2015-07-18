@@ -18,12 +18,14 @@
 
 package org.apache.hadoop.chukwa.database;
 
-
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map.Entry;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
@@ -39,6 +41,9 @@ public class DataExpiration {
     }
   }
 
+  @edu.umd.cs.findbugs.annotations.SuppressWarnings(value =
+      "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE", 
+      justification = "Dynamic based upon tables in the database")
   public void dropTables(long start, long end) {
     String cluster = System.getProperty("CLUSTER");
     if (cluster == null) {
@@ -47,10 +52,8 @@ public class DataExpiration {
     DatabaseWriter dbw = new DatabaseWriter(cluster);
     try {
       HashMap<String, String> dbNames = dbc.startWith("report.db.name.");
-      Iterator<String> ki = dbNames.keySet().iterator();
-      while (ki.hasNext()) {
-        String name = ki.next();
-        String tableName = dbNames.get(name);
+      for(Entry<String, String> entry : dbNames.entrySet()) {
+        String tableName = entry.getValue();
         if (!RegexUtil.isRegex(tableName)) {
           log.warn("Skipping tableName: '" + tableName
               + "' because there was an error parsing it as a regex: "
@@ -63,22 +66,24 @@ public class DataExpiration {
           try {
             String[] parts = tl.split("_");
             int partition = Integer.parseInt(parts[parts.length - 2]);
-            String table = "";
+            StringBuilder table = new StringBuilder();
             for (int i = 0; i < parts.length - 2; i++) {
               if (i != 0) {
-                table = table + "_";
+                table.append("_");
               }
-              table = table + parts[i];
+              table.append(parts[i]);
             }
             partition = partition - 3;
-            String dropPartition = "drop table if exists " + table + "_"
-                + partition + "_" + parts[parts.length - 1];
-            dbw.execute(dropPartition);
-            partition--;
             if(partition>=0) {
-              dropPartition = "drop table if exists " + table + "_" + partition
-                  + "_" + parts[parts.length - 1];
-              dbw.execute(dropPartition);
+              StringBuilder dropPartition = new StringBuilder();
+              dropPartition.append("drop table if exists ");
+              dropPartition.append(table);
+              dropPartition.append("_");
+              dropPartition.append(partition);
+              dropPartition.append("_");
+              dropPartition.append(parts[parts.length - 1]);
+              final String query = dropPartition.toString();
+              dbw.execute(query);
             }
           } catch (NumberFormatException e) {
             log
@@ -91,7 +96,7 @@ public class DataExpiration {
         }
       }
       dbw.close();
-    } catch (Exception e) {
+    } catch (SQLException e) {
       e.printStackTrace();
     }
   }
@@ -118,7 +123,7 @@ public class DataExpiration {
         de.dropTables(start, end);
         long dataExpEnd = Calendar.getInstance().getTimeInMillis();
         log.info("DataExpiration for: "+args[0]+" "+args[1]+" finished: ("+(double) (dataExpEnd-dataExpStart)/1000+" seconds)");
-      } catch (Exception e) {
+      } catch (ParseException e) {
         usage();
       }
     } else {

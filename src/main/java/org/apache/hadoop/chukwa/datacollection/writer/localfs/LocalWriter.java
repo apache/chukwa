@@ -34,6 +34,7 @@ import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.WriterException;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
@@ -148,7 +149,7 @@ public class LocalWriter implements ChukwaWriter {
       }
     } catch (Throwable e) {
       log.fatal("Cannot initialize LocalWriter", e);
-      System.exit(-1);
+      throw new WriterException(e);
     }
 
     
@@ -184,7 +185,11 @@ public class LocalWriter implements ChukwaWriter {
 
   private class RotateTask extends TimerTask {
         public void run() {
-          rotate();
+          try {
+            rotate();
+          } catch(WriterException e) {
+            log.error(ExceptionUtil.getStackTrace(e));
+          }
       };
   }
   
@@ -245,11 +250,9 @@ public class LocalWriter implements ChukwaWriter {
                 + "/" + chunk.getStreamName());
             archiveKey.setSeqId(chunk.getSeqID());
 
-            if (chunk != null) {
-              seqFileWriter.append(archiveKey, chunk);
-              // compute size for stats
-              dataSize += chunk.getData().length;
-            }
+            seqFileWriter.append(archiveKey, chunk);
+            // compute size for stats
+            dataSize += chunk.getData().length;
           }
         }// End synchro
         long end = System.currentTimeMillis();
@@ -264,7 +267,6 @@ public class LocalWriter implements ChukwaWriter {
         if (writeChunkRetries < 0) {
           log
               .fatal("Too many IOException when trying to write a chunk, Collector is going to exit!");
-          System.exit(-1);
         }
         throw new WriterException(e);
       }
@@ -272,7 +274,7 @@ public class LocalWriter implements ChukwaWriter {
     return COMMIT_OK;
   }
 
-  protected void rotate() {
+  protected void rotate() throws WriterException {
     isRunning = true;
     calendar.setTimeInMillis(System.currentTimeMillis());
     log.info("start Date [" + calendar.getTime() + "]");
@@ -316,10 +318,7 @@ public class LocalWriter implements ChukwaWriter {
             SequenceFile.CompressionType.NONE, null);
 
       } catch (IOException e) {
-        log.fatal("IO Exception in rotate. Exiting!", e);
-        // Shutting down the collector
-        // Watchdog will re-start it automatically
-        System.exit(-1);
+        log.fatal("IO Exception in rotate: ", e);
       }
     }
  
@@ -336,8 +335,8 @@ public class LocalWriter implements ChukwaWriter {
     }
   
     if (freeSpace < minFreeAvailable) {
-      log.fatal("No space left on device, Bail out!");
-      System.exit(-1);
+      log.fatal("No space left on device.");
+      throw new WriterException("No space left on device.");
     } 
     
     log.debug("finished rotate()");

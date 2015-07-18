@@ -28,4 +28,44 @@ public class BarOptions extends SeriesOptions {
   public BarOptions() {
     fill = true;
   }
+  
+  public boolean getZero() {
+    return zero;
+  }
+  
+  public void setZero(boolean zero) {
+    this.zero = zero;
+  }
+  
+  public boolean getStepByStep() {
+    return stepByStep;
+  }
+  
+  public void setStepByStep(boolean stepByStep) {
+    this.stepByStep = stepByStep;
+  }
+  
+  public int getBarWidth() {
+    return barWidth;
+  }
+  
+  public void setBarWidth(int barWidth) {
+    this.barWidth = barWidth;
+  }
+  
+  public String getAlign() {
+    return align;
+  }
+  
+  public void setAlign(String align) {
+    this.align = align;
+  }
+  
+  public boolean getHorizontal() {
+    return this.horizontal;
+  }
+  
+  public void setHorizontal(boolean horizontal) {
+    this.horizontal = horizontal;
+  }
 }

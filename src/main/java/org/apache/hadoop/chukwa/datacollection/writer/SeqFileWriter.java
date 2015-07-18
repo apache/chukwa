@@ -47,7 +47,7 @@ import org.apache.log4j.Logger;
  */
 public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
   static Logger log = Logger.getLogger(SeqFileWriter.class);
-  public static boolean ENABLE_ROTATION_ON_CLOSE = true;
+  private static boolean ENABLE_ROTATION_ON_CLOSE = true;
 
   protected int STAT_INTERVAL_SECONDS = 30;
   private int rotateInterval = 1000 * 60 * 5;
@@ -60,7 +60,7 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
   public static final String IF_FIXED_INTERVAL_OPT = "chukwaCollector.isFixedTimeRotatorScheme";
   public static final String FIXED_INTERVAL_OFFSET_OPT = "chukwaCollector.fixedTimeIntervalOffset";
   public static final String OUTPUT_DIR_OPT= "chukwaCollector.outputDir";
-  protected static String localHostAddr = null;
+  public String localHostAddr = null;
   
   protected final Semaphore lock = new Semaphore(1, true);
   
@@ -85,15 +85,13 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
   protected volatile long bytesThisRotate = 0;
   protected volatile boolean isRunning = false;
 
-  static {
+  public SeqFileWriter() {
     try {
       localHostAddr = "_" + InetAddress.getLocalHost().getHostName() + "_";
     } catch (UnknownHostException e) {
       localHostAddr = "-NA-";
     }
   }
-  
-  public SeqFileWriter() {}
   
   public long getBytesWritten() {
     return dataSize;
@@ -135,7 +133,7 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
     try {
       fs = FileSystem.get(new URI(fsname), conf);
       if (fs == null) {
-        log.error("can't connect to HDFS at " + fs.getUri() + " bail out!");
+        log.error("can't connect to HDFS.");
       }
     } catch (Throwable e) {
       log.error(
@@ -324,48 +322,44 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
       throw new WriterException("Collector not ready");
     }
 
-    if (chunks != null) {
-      ChukwaArchiveKey archiveKey = new ChukwaArchiveKey();
-      
-      if (System.currentTimeMillis() >= nextTimePeriodComputation) {
-        computeTimePeriod();
-      }
-      try {
-        lock.acquire();
-        for (Chunk chunk : chunks) {
-          archiveKey.setTimePartition(timePeriod);
-          archiveKey.setDataType(chunk.getDataType());
-          archiveKey.setStreamName(chunk.getTags() + "/" + chunk.getSource()
-              + "/" + chunk.getStreamName());
-          archiveKey.setSeqId(chunk.getSeqID());
+    ChukwaArchiveKey archiveKey = new ChukwaArchiveKey();
+    
+    if (System.currentTimeMillis() >= nextTimePeriodComputation) {
+      computeTimePeriod();
+    }
+    try {
+      lock.acquire();
+      for (Chunk chunk : chunks) {
+        archiveKey.setTimePartition(timePeriod);
+        archiveKey.setDataType(chunk.getDataType());
+        archiveKey.setStreamName(chunk.getTags() + "/" + chunk.getSource()
+            + "/" + chunk.getStreamName());
+        archiveKey.setSeqId(chunk.getSeqID());
 
-          if (chunk != null) {
-            seqFileWriter.append(archiveKey, chunk);
+        seqFileWriter.append(archiveKey, chunk);
 
-            // compute size for stats only if append succeeded. Note though that
-            // seqFileWriter.append can continue taking data for quite some time
-            // after HDFS goes down while the client is trying to reconnect. Hence
-            // these stats might not reflect reality during an HDFS outage.
-            dataSize += chunk.getData().length;
-            bytesThisRotate += chunk.getData().length;
+        // compute size for stats only if append succeeded. Note though that
+        // seqFileWriter.append can continue taking data for quite some time
+        // after HDFS goes down while the client is trying to reconnect. Hence
+        // these stats might not reflect reality during an HDFS outage.
+        dataSize += chunk.getData().length;
+        bytesThisRotate += chunk.getData().length;
 
-            String futureName = currentPath.getName().replace(".chukwa", ".done");
-            result.addPend(futureName, currentOutputStr.getPos());
-          }
+        String futureName = currentPath.getName().replace(".chukwa", ".done");
+        result.addPend(futureName, currentOutputStr.getPos());
 
-        }
       }
-      catch (IOException e) {
-        log.error("IOException when trying to write a chunk, Collector will return error and keep running.", e);
-        return COMMIT_FAIL;
-      }
-      catch (Throwable e) {
-        // We don't want to loose anything
-        log.fatal("IOException when trying to write a chunk, Collector is going to exit!", e);
-        isRunning = false;
-      } finally {
-        lock.release();
-      }
+    }
+    catch (IOException e) {
+      log.error("IOException when trying to write a chunk, Collector will return error and keep running.", e);
+      return COMMIT_FAIL;
+    }
+    catch (Throwable e) {
+      // We don't want to loose anything
+      log.fatal("IOException when trying to write a chunk, Collector is going to exit!", e);
+      isRunning = false;
+    } finally {
+      lock.release();
     }
     return result;
   }
@@ -404,6 +398,10 @@ public class SeqFileWriter extends PipelineableWriter implements ChukwaWriter {
       if(gotLock)
         lock.release();
     }
+  }
+  
+  public static void setEnableRotationOnClose(boolean b) {
+    ENABLE_ROTATION_ON_CLOSE = b;
   }
 
 }

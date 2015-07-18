@@ -145,7 +145,7 @@ public class HierarchyDataType {
       results = datasource.replaceFirst("/", "");
     }
     if (results.endsWith("/")) {
-      results = results.substring(0, -1);
+      results = results.substring(0, results.length()-1);
     }
     return results;
   }

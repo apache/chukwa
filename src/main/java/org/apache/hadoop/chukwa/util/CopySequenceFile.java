@@ -19,6 +19,8 @@
 
 package org.apache.hadoop.chukwa.util;
 
+import java.io.IOException;
+
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.conf.Configuration;
@@ -93,7 +95,7 @@ public class CopySequenceFile {
     	   e.printStackTrace();
        }
 
-	} catch(Exception e) {
+	} catch(IOException e) {
 	    log.warn("Error during .chukwa file recovery",e);	 
 	    e.printStackTrace();
 	}	

@@ -103,35 +103,35 @@ public class TaskTrackerClientTraceMapper
       src_add = src_regex.group(1);
     } else {
       log.warn("Failed to match src IP:"+val.getValue("src")+"");
-      src_add = new String("");
+      src_add = "";
     }
     Matcher dest_regex = ipPattern.matcher(val.getValue("dest"));
     if (dest_regex.matches()) {
       dest_add = dest_regex.group(1);
     } else {
       log.warn("Failed to match dest IP:"+val.getValue("dest")+"");
-      dest_add = new String("");
+      dest_add = "";
     }
     if (fieldNamesList.contains("reduceID")) {
-      reduce_id = new String(val.getValue("reduceID"));
+      reduce_id = val.getValue("reduceID");
     } else {
       // add a random number so we get unique keys or the CRK will break
       Random r = new Random(); 
-      reduce_id = new String("noreduce" + r.nextInt());
+      reduce_id = "noreduce" + r.nextInt();
     }
     
     if (fieldNamesList.contains("cliID")) {
-      map_id = new String(val.getValue("cliID").trim());
+      map_id = val.getValue("cliID").trim();
     } else {
-      map_id = new String("nomap");
+      map_id = "nomap";
     }
     
     current_op = val.getValue("op");
     
-    start_rec.host_exec = new String(src_add);
-    end_rec.host_exec = new String(src_add);
-    start_rec.host_other = new String(dest_add);
-    end_rec.host_other = new String(dest_add);
+    start_rec.host_exec = src_add;
+    end_rec.host_exec = src_add;
+    start_rec.host_other = dest_add;
+    end_rec.host_other = dest_add;
             
     // timestamp of the log entry is the end time; 
     // subtract duration to get start time
@@ -149,21 +149,21 @@ public class TaskTrackerClientTraceMapper
     String [] k = key.getKey().split("/");    
 
     start_rec.time_orig_epoch = k[0];
-    start_rec.time_orig = (Long.valueOf(actual_time_ms)).toString(); // not actually used
-    start_rec.timestamp = (Long.valueOf(actual_time_ms)).toString();
-    start_rec.time_end = new String("");
-    start_rec.time_start = new String(start_rec.timestamp);
+    start_rec.time_orig = Long.toString(actual_time_ms); // not actually used
+    start_rec.timestamp = Long.toString(actual_time_ms);
+    start_rec.time_end = "";
+    start_rec.time_start = start_rec.timestamp;
     
     end_rec.time_orig_epoch = k[0];
-    end_rec.time_orig = val.getValue("actual_time");    
-    end_rec.timestamp = new String(val.getValue("actual_time"));
-    end_rec.time_end = new String(val.getValue("actual_time"));
-    end_rec.time_start = new String("");
+    end_rec.time_orig = val.getValue("actual_time");
+    end_rec.timestamp = val.getValue("actual_time");
+    end_rec.time_end = val.getValue("actual_time");
+    end_rec.time_start = "";
 
     log.debug("Duration: " + (Long.parseLong(end_rec.time_end) - Long.parseLong(start_rec.time_start)));
 
-    start_rec.job_id = new String(reduce_id); // use job id = block id
-    end_rec.job_id = new String(reduce_id); 
+    start_rec.job_id = reduce_id; // use job id = block id
+    end_rec.job_id = reduce_id; 
           
     if (current_op.equals("MAPRED_SHUFFLE")) {
       if (src_add != null && src_add.equals(dest_add)) {
@@ -177,8 +177,8 @@ public class TaskTrackerClientTraceMapper
     end_rec.state_mapred = start_rec.state_mapred;
     start_rec.state_name = start_rec.state_mapred.toString();
     end_rec.state_name = end_rec.state_mapred.toString();
-    start_rec.identifier = new String(reduce_id + "@" + map_id);
-    end_rec.identifier = new String(reduce_id + "@" + map_id);
+    start_rec.identifier = new StringBuilder().append(reduce_id).append("@").append(map_id).toString();
+    end_rec.identifier = new StringBuilder().append(reduce_id).append("@").append(map_id).toString();
     
     start_rec.generateUniqueID();
     end_rec.generateUniqueID();
@@ -187,13 +187,13 @@ public class TaskTrackerClientTraceMapper
 		start_rec.add_info.put("csource",val.getValue("csource"));
     end_rec.add_info.put(Record.tagsField,val.getValue(Record.tagsField));
 		end_rec.add_info.put("csource",val.getValue("csource"));
-		end_rec.add_info.put("STATE_STRING",new String("SUCCESS")); // by default
+		end_rec.add_info.put("STATE_STRING","SUCCESS"); // by default
 		
 		// add counter value
 		end_rec.add_info.put("BYTES",val.getValue("bytes"));
 		    
-    String crk_mid_string_start = new String(start_rec.getUniqueID() + "_" + start_rec.timestamp);
-    String crk_mid_string_end = new String(end_rec.getUniqueID() + "_" + start_rec.timestamp);
+    String crk_mid_string_start = new StringBuilder().append(start_rec.getUniqueID()).append("_").append(start_rec.timestamp).toString();
+    String crk_mid_string_end = new StringBuilder().append(end_rec.getUniqueID()).append("_").append(start_rec.timestamp).toString();
     output.collect(new ChukwaRecordKey(FSM_CRK_ReduceType, crk_mid_string_start), start_rec);
     output.collect(new ChukwaRecordKey(FSM_CRK_ReduceType, crk_mid_string_end), end_rec);
     

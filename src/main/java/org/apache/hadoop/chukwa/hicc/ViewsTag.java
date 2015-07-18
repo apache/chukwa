@@ -36,13 +36,13 @@ public class ViewsTag extends SimpleTagSupport {
       for (Iterator perm = permission; perm.hasNext();) {
         String who = perm.next().toString();
         authUsers[j] = who;
-        // getJspContext().setAttribute( "permission."+who+".read",
-        // views.getReadPermission(i,who) );
-        // getJspContext().setAttribute( "permission."+who+".write",
-        // views.getWritePermission(i,who) );
+        getJspContext().setAttribute( "permission."+who+".read",
+        views.getReadPermission(i,who) );
+        getJspContext().setAttribute( "permission."+who+".write",
+        views.getWritePermission(i,who) );
         j = j + 1;
       }
-      // getJspContext().setAttribute( "permission", authUsers );
+      getJspContext().setAttribute( "permission", authUsers );
       getJspContext().setAttribute("owner", views.getOwner(i));
       getJspContext().setAttribute("description", views.getDescription(i));
       getJspBody().invoke(null);

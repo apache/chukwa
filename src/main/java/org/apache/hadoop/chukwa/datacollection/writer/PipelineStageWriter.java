@@ -111,7 +111,11 @@ public class PipelineStageWriter implements ChukwaWriter {
             writer = (ChukwaWriter) st; // one stage pipeline
         }
         return;
-      } catch (Exception e) {
+      } catch (IOException | 
+          WriterException | 
+          ClassNotFoundException | 
+          IllegalAccessException | 
+          InstantiationException e) {
         // if anything went wrong (missing class, etc) we wind up here.
         log.error("failed to set up pipeline, defaulting to SeqFileWriter", e);
         // fall through to default case

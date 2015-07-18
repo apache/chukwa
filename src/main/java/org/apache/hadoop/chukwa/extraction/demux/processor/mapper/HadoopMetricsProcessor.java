@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Tables;
 import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
@@ -91,24 +92,26 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
       String contextName = null;
       String recordName = null;
 
-      Iterator<String> ki = json.keySet().iterator();
+      Iterator<Map.Entry<String, ?>> ki = json.entrySet().iterator();
       while (ki.hasNext()) {
-        String keyName = ki.next();
+        Map.Entry<String, ?> entry = ki.next();
+        String keyName = entry.getKey();
+        Object value = entry.getValue();
         if (chukwaTimestampField.intern() == keyName.intern()) {
-          d = new Date((Long) json.get(keyName));
+          d = new Date((Long) value);
           Calendar cal = Calendar.getInstance();
           cal.setTimeInMillis(d.getTime());
           cal.set(Calendar.SECOND, 0);
           cal.set(Calendar.MILLISECOND, 0);
           d.setTime(cal.getTimeInMillis());
         } else if (contextNameField.intern() == keyName.intern()) {
-          contextName = (String) json.get(keyName);
+          contextName = (String) value;
         } else if (recordNameField.intern() == keyName.intern()) {
-          recordName = (String) json.get(keyName);
-          record.add(keyName, json.get(keyName).toString());
+          recordName = (String) value;
+          record.add(keyName, value.toString());
         } else {
           if(json.get(keyName)!=null) {
-            record.add(keyName, json.get(keyName).toString());
+            record.add(keyName, value.toString());
           }
         }
       }

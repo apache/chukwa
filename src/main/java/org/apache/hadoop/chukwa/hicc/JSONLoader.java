@@ -20,13 +20,13 @@ package org.apache.hadoop.chukwa.hicc;
 
 
 import java.net.*;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.io.*;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-
 import org.apache.log4j.Logger;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
@@ -43,7 +43,7 @@ public class JSONLoader {
       // FileReader always assumes default encoding is OK!
       URL yahoo = new URL(source);
       BufferedReader in = new BufferedReader(new InputStreamReader(yahoo
-          .openStream()));
+          .openStream(), Charset.forName("UTF-8")));
 
       String inputLine;
 

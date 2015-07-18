@@ -77,11 +77,13 @@ public class ZookeeperProcessor extends AbstractProcessor {
       } else {
         timeStamp = Long.parseLong(ttTag);
       }
-      Iterator<String> keys = ((JSONObject) obj).keySet().iterator();
+      @SuppressWarnings("unchecked")
+      Iterator<Map.Entry<String, ?>> keys = ((JSONObject) obj).entrySet().iterator();
 
       while (keys.hasNext()) {
-        String key = keys.next();
-        Object value = obj.get(key);
+        Map.Entry<String, ?> entry = keys.next();
+        String key = entry.getKey();
+        Object value = entry.getValue();
         String valueString = value == null ? "" : value.toString();
 
         if (metricsMap.containsKey(key)) {

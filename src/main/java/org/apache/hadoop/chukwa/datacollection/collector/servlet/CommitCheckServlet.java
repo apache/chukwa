@@ -20,13 +20,18 @@ package org.apache.hadoop.chukwa.datacollection.collector.servlet;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
+
 import java.util.*;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter;
 import org.apache.hadoop.chukwa.extraction.CHUKWA_CONSTANT;
 import org.apache.hadoop.chukwa.extraction.archive.SinkArchiver;
@@ -39,8 +44,8 @@ public class CommitCheckServlet extends HttpServlet {
   private static final long serialVersionUID = -4627538252371890849L;
   
   protected final static Logger log = Logger.getLogger(CommitCheckServlet.class);
-  CommitCheckThread commitCheck;
-  Configuration conf;
+  transient CommitCheckThread commitCheck;
+  transient Configuration conf;
     //interval at which to scan the filesystem, ms
   public static final String SCANPERIOD_OPT = "chukwaCollector.asyncAcks.scanperiod";
   
@@ -78,7 +83,7 @@ public class CommitCheckServlet extends HttpServlet {
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException  {
   
-    PrintStream out = new PrintStream(resp.getOutputStream());
+    PrintStream out = new PrintStream(resp.getOutputStream(), true, "UTF-8");
     resp.setStatus(200);
 
     out.println("<html><body><h2>Commit status</h2><ul>");
@@ -98,6 +103,7 @@ public class CommitCheckServlet extends HttpServlet {
    * For now, instead, we'll just do an ls in a bunch of places.
    */
   private static class CommitCheckThread extends Thread implements CHUKWA_CONSTANT {
+
     int checkInterval = 1000 * 30;
     volatile boolean running = true;
     final Collection<Path> pathsToSearch;
@@ -116,14 +122,29 @@ public class CommitCheckServlet extends HttpServlet {
         this.purgeTime = time;
         this.len = len;
       }
-      
+
+      @Override
+      public boolean equals (Object o) {
+        if(o == null || !(o instanceof PurgeTask)) {
+          return false;
+        }
+        PurgeTask other = (PurgeTask) o;
+        return this.hashCode() == other.hashCode();
+      }
+
+      @Override
       public int compareTo(PurgeTask p) {
         if(purgeTime < p.purgeTime)
           return -1;
-        else if (purgeTime == p.purgeTime)
+        else if (this.equals(p))
           return 0;
         else
           return 1;
+      }
+
+      @Override
+      public int hashCode() {
+        return new HashCodeBuilder(3221, 4271).append(purgeTime).toHashCode();
       }
     }
     

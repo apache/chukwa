@@ -24,11 +24,8 @@ import java.util.ArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.hadoop.chukwa.extraction.demux.*;
 import org.apache.hadoop.chukwa.extraction.engine.*;
-import org.apache.hadoop.conf.*;
 import org.apache.hadoop.mapred.*;
-import org.apache.hadoop.util.*;
 
 /**
  * Pluggable mapper for FSMBuilder
@@ -84,8 +81,8 @@ public class JobHistoryTaskDataMapper
 				this_rec.add_info.put(mapCounterDestNames[i], val.getValue(mapCounterNames[i]));				
 			}
 		}
-		this_rec.add_info.put("FILE_BYTES_READ",new String("0")); // to have same fields as reduce
-		this_rec.add_info.put("INPUT_GROUPS",new String("0")); // to have same fields as reduce
+		this_rec.add_info.put("FILE_BYTES_READ","0"); // to have same fields as reduce
+		this_rec.add_info.put("INPUT_GROUPS","0"); // to have same fields as reduce
 		
 		return this_rec;
 	}
@@ -128,7 +125,7 @@ public class JobHistoryTaskDataMapper
 			}
 		}
 		
-		this_rec.add_info.put("OUTPUT_BYTES",new String("0")); // to have same fields as map		
+		this_rec.add_info.put("OUTPUT_BYTES","0"); // to have same fields as map		
 		
 		return this_rec;		
 	}
@@ -162,17 +159,17 @@ public class JobHistoryTaskDataMapper
 		/* Check if this is a start or end entry, set state type, extract start/end times */
 		if (fieldNamesList.contains("START_TIME")) {
 			this_rec.state_type.val = StateType.STATE_START;
-			this_rec.timestamp = new String(val.getValue("START_TIME"));
-			this_rec.time_start = new String(val.getValue("START_TIME"));
-			this_rec.time_end = new String("");
+			this_rec.timestamp = val.getValue("START_TIME");
+			this_rec.time_start = val.getValue("START_TIME");
+			this_rec.time_end = "";
 			if (val.getValue("START_TIME").length() < 4+2) { // needs to at least have milliseconds
 			  add_record = add_record & false;
 			} 
 		} else if (fieldNamesList.contains("FINISH_TIME")) {
 			this_rec.state_type.val = StateType.STATE_END;
-			this_rec.timestamp = new String(val.getValue("FINISH_TIME"));
-			this_rec.time_start = new String("");
-			this_rec.time_end = new String(val.getValue("FINISH_TIME"));
+			this_rec.timestamp = val.getValue("FINISH_TIME");
+			this_rec.time_start = "";
+			this_rec.time_end = val.getValue("FINISH_TIME");
 			if (val.getValue("FINISH_TIME").length() < 4+2) { // needs to at least have milliseconds
 			  add_record = add_record & false;
 			} 		
@@ -201,31 +198,31 @@ public class JobHistoryTaskDataMapper
 		}
 		
 		// Fill state name, unique ID
-		this_rec.state_name = new String(this_rec.state_mapred.toString());
-		this_rec.identifier = new String(val.getValue("TASK_ATTEMPT_ID"));
+		this_rec.state_name = this_rec.state_mapred.toString();
+		this_rec.identifier = val.getValue("TASK_ATTEMPT_ID");
 		this_rec.generateUniqueID();
 		
 		// Extract hostname from tracker name (if present), or directly fill from hostname (<= 0.18)
 		if (fieldNamesList.contains("HOSTNAME")) {
-			this_rec.host_exec = new String(val.getValue("HOSTNAME"));
+			this_rec.host_exec = val.getValue("HOSTNAME");
 			this_rec.host_exec = ParseUtilities.removeRackFromHostname(this_rec.host_exec);
 		} else if (fieldNamesList.contains("TRACKER_NAME")) {
 			this_rec.host_exec = ParseUtilities.extractHostnameFromTrackerName(val.getValue("TRACKER_NAME"));
 		} else {
-			this_rec.host_exec = new String("");
+			this_rec.host_exec = "";
 		}
 		
 		if (this_rec.state_type.val == StateType.STATE_END) {
 			assert(fieldNamesList.contains("TASK_STATUS"));
 			String tmpstring = null;
 			tmpstring = val.getValue("TASK_STATUS");
-			if (tmpstring.equals("KILLED") || tmpstring.equals("FAILED")) {
+			if (tmpstring != null && (tmpstring.equals("KILLED") || tmpstring.equals("FAILED"))) {
 			  add_record = add_record & false;
 			}
 			if (tmpstring != null && tmpstring.length() > 0) {
 				this_rec.add_info.put("STATE_STRING",tmpstring);
 			} else {
-				this_rec.add_info.put("STATE_STRING",new String(""));
+				this_rec.add_info.put("STATE_STRING","");
 			}
 			
 			switch(this_rec.state_mapred.val) {
@@ -281,9 +278,9 @@ public class JobHistoryTaskDataMapper
 		redshuf_start_rec.state_type 		= new StateType(StateType.STATE_START);
 		redshuf_start_rec.state_mapred 	= new MapRedState(MapRedState.REDUCE_SHUFFLEWAIT);
 	 	
-		redshuf_start_rec.timestamp = new String(this_rec.timestamp);
-		redshuf_start_rec.time_start = new String(this_rec.timestamp);
-		redshuf_start_rec.time_end = new String("");
+		redshuf_start_rec.timestamp = this_rec.timestamp;
+		redshuf_start_rec.time_start = this_rec.timestamp;
+		redshuf_start_rec.time_end = "";
 		
 		redshuf_start_rec.generateUniqueID();
 		
@@ -352,20 +349,20 @@ public class JobHistoryTaskDataMapper
 		} else {
 		  return false;
 		}
-		redshuf_end_rec.timestamp = new String(val.getValue("SHUFFLE_FINISHED"));
-		redshuf_end_rec.time_start = new String("");
-		redshuf_end_rec.time_end = new String(val.getValue("SHUFFLE_FINISHED"));
-		redsort_start_rec.timestamp = new String(val.getValue("SHUFFLE_FINISHED")); 
-		redsort_start_rec.time_start = new String(val.getValue("SHUFFLE_FINISHED")); 
-		redsort_start_rec.time_end = new String("");
+		redshuf_end_rec.timestamp = val.getValue("SHUFFLE_FINISHED");
+		redshuf_end_rec.time_start = "";
+		redshuf_end_rec.time_end = val.getValue("SHUFFLE_FINISHED");
+		redsort_start_rec.timestamp = val.getValue("SHUFFLE_FINISHED"); 
+		redsort_start_rec.time_start = val.getValue("SHUFFLE_FINISHED"); 
+		redsort_start_rec.time_end = "";
 		
 		assert(fieldNamesList.contains("SORT_FINISHED"));
-		redsort_end_rec.timestamp = new String(val.getValue("SORT_FINISHED"));
-		redsort_end_rec.time_start = new String("");
-		redsort_end_rec.time_end = new String(val.getValue("SORT_FINISHED"));
-		redred_start_rec.timestamp = new String(val.getValue("SORT_FINISHED"));
-		redred_start_rec.time_start = new String(val.getValue("SORT_FINISHED"));
-		redred_start_rec.time_end = new String("");
+		redsort_end_rec.timestamp = val.getValue("SORT_FINISHED");
+		redsort_end_rec.time_start = "";
+		redsort_end_rec.time_end = val.getValue("SORT_FINISHED");
+		redred_start_rec.timestamp = val.getValue("SORT_FINISHED");
+		redred_start_rec.time_start = val.getValue("SORT_FINISHED");
+		redred_start_rec.time_end = "";
 		
 		/* redred_end times are exactly the same as the original red_end times */
 		

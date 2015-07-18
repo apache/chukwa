@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.rest.bean;
 
+import java.nio.charset.Charset;
 import java.text.ParseException;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -29,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 @XmlRootElement
@@ -49,7 +49,7 @@ public class ViewBean {
   public ViewBean(byte[] buffer) throws ParseException {
     JSONParser parser = new JSONParser();
     try {
-      JSONObject json = (JSONObject) parser.parse(new String(buffer));
+      JSONObject json = (JSONObject) parser.parse(new String(buffer, Charset.forName("UTF-8")));
       if(json.containsKey("description")) {
         this.description = (String) json.get("description");
       } else {

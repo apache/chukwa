@@ -82,7 +82,7 @@ public class ParametersBean {
     }
     if(json.containsKey("edit")) {
       if(json.get("edit").getClass().equals(String.class)) {
-        edit=(new Integer((String)json.get("edit"))).intValue();          
+        edit=Integer.parseInt((String)json.get("edit"));
       } else if(json.get("edit").getClass().equals(Long.class)) {
         edit=((Long)json.get("edit")).intValue();          
       }

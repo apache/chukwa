@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.concurrent.Callable;
@@ -62,9 +63,14 @@ public class MetricDataLoader implements Callable {
   private Connection conn = null;
   private Path source = null;
 
-  private static ChukwaConfiguration conf = null;
-  private static FileSystem fs = null;
+  private ChukwaConfiguration conf = null;
+  private FileSystem fs = null;
   private String jdbc_url = "";
+
+  public MetricDataLoader(String fileName) throws IOException {
+    conf = new ChukwaConfiguration();
+    fs = FileSystem.get(conf);
+  }
 
   /** Creates a new instance of DBWriter */
   public MetricDataLoader(ChukwaConfiguration conf, FileSystem fs, String fileName) {
@@ -171,6 +177,9 @@ public class MetricDataLoader implements Callable {
     return( sb.toString()); 
   }
   
+  @edu.umd.cs.findbugs.annotations.SuppressWarnings(value =
+      "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE", 
+      justification = "Dynamic based upon tables in the database")
   public boolean run() throws IOException {
     boolean first=true;
     log.info("StreamName: " + source.getName());
@@ -195,7 +204,7 @@ public class MetricDataLoader implements Callable {
     try {
       Pattern p = Pattern.compile("(.*)\\-(\\d+)$");
       int batch = 0;
-      while (reader.next(key, record)) {
+      while (reader !=null && reader.next(key, record)) {
     	numOfRecords++;
         if(first) { 
           try {
@@ -336,12 +345,9 @@ public class MetricDataLoader implements Callable {
           }
 
         }
-        Iterator<String> i = hashReport.keySet().iterator();
-        while (i.hasNext()) {
-          Object iteratorNode = i.next();
-          HashMap<String, String> recordSet = hashReport.get(iteratorNode);
-          Iterator<String> fi = recordSet.keySet().iterator();
-          // Map any primary key that was not included in the report keyName
+        for(Entry<String, HashMap<String, String>> entry : hashReport.entrySet()) {
+          HashMap<String, String> recordSet = entry.getValue();
+       // Map any primary key that was not included in the report keyName
           StringBuilder sqlPriKeys = new StringBuilder();
           try {
             for (String priKey : priKeys) {
@@ -363,8 +369,9 @@ public class MetricDataLoader implements Callable {
           // Map the hash objects to database table columns
           StringBuilder sqlValues = new StringBuilder();
           boolean firstValue = true;
-          while (fi.hasNext()) {
-            String fieldKey = fi.next();
+          for(Entry<String, String> fi : recordSet.entrySet()) {
+            String fieldKey = fi.getKey();
+            String fieldValue = fi.getValue();
             if (transformer.containsKey(fieldKey) && transformer.get(fieldKey).intern()!="_delete".intern()) {
               if (!firstValue) {
                 sqlValues.append(", ");
@@ -378,12 +385,12 @@ public class MetricDataLoader implements Callable {
                   if (conversion.containsKey(conversionKey)) {
                     sqlValues.append(transformer.get(fieldKey));
                     sqlValues.append("=");
-                    sqlValues.append(recordSet.get(fieldKey));
+                    sqlValues.append(fieldValue);
                     sqlValues.append(conversion.get(conversionKey).toString());
                   } else {
                     sqlValues.append(transformer.get(fieldKey));
                     sqlValues.append("=\'");
-                    sqlValues.append(escapeQuotes(recordSet.get(fieldKey)));
+                    sqlValues.append(escapeQuotes(fieldValue));
                     sqlValues.append("\'");
                   }
                 } else if (dbSchema.get(dbTables.get(dbKey)).get(
@@ -391,8 +398,7 @@ public class MetricDataLoader implements Callable {
                   SimpleDateFormat formatter = new SimpleDateFormat(
                       "yyyy-MM-dd HH:mm:ss");
                   Date recordDate = new Date();
-                  recordDate.setTime(Long.parseLong(recordSet
-                      .get(fieldKey)));
+                  recordDate.setTime(Long.parseLong(fieldValue));
                   sqlValues.append(transformer.get(fieldKey));
                   sqlValues.append("=\"");
                   sqlValues.append(formatter.format(recordDate));
@@ -405,7 +411,7 @@ public class MetricDataLoader implements Callable {
                         transformer.get(fieldKey)) == java.sql.Types.INTEGER) {
                   long tmp = 0;
                   try {
-                    tmp = Long.parseLong(recordSet.get(fieldKey).toString());
+                    tmp = Long.parseLong(fieldValue);
                     String conversionKey = "conversion." + fieldKey;
                     if (conversion.containsKey(conversionKey)) {
                       tmp = tmp
@@ -420,7 +426,7 @@ public class MetricDataLoader implements Callable {
                   sqlValues.append(tmp);
                 } else {
                   double tmp = 0;
-                  tmp = Double.parseDouble(recordSet.get(fieldKey).toString());
+                  tmp = Double.parseDouble(fieldValue);
                   String conversionKey = "conversion." + fieldKey;
                   if (conversion.containsKey(conversionKey)) {
                     tmp = tmp
@@ -455,7 +461,6 @@ public class MetricDataLoader implements Callable {
               }
             }
           }
-
           StringBuilder sql = new StringBuilder();
           if (sqlPriKeys.length() > 0) {
             sql.append("INSERT INTO ");
@@ -587,9 +592,7 @@ public class MetricDataLoader implements Callable {
 
   public static void main(String[] args) {
     try {
-      conf = new ChukwaConfiguration();
-      fs = FileSystem.get(conf);
-      MetricDataLoader mdl = new MetricDataLoader(conf, fs, args[0]);
+      MetricDataLoader mdl = new MetricDataLoader(args[0]);
       mdl.run();
     } catch (Exception e) {
       e.printStackTrace();

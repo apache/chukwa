@@ -19,6 +19,8 @@ package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -78,13 +80,14 @@ public class JobConfProcessor extends AbstractProcessor {
         = DocumentBuilderFactory.newInstance();
       //ignore all comments inside the xml file
       docBuilderFactory.setIgnoringComments(true);
+      FileOutputStream out = null;
       try {
           DocumentBuilder builder = docBuilderFactory.newDocumentBuilder();
           Document doc = null;
           String fileName = "test_"+randomNumber.nextInt();
           File tmp = new File(fileName);
-          FileOutputStream out = new FileOutputStream(tmp);
-          out.write(recordEntry.getBytes());
+          out = new FileOutputStream(tmp);
+          out.write(recordEntry.getBytes(Charset.forName("UTF-8")));
           out.close();
         doc = builder.parse(fileName);
         Element root = doc.getDocumentElement();
@@ -139,10 +142,15 @@ public class JobConfProcessor extends AbstractProcessor {
         buildGenericRecord(jobConfRecord, null, time, jobConfData);
         output.collect(key, jobConfRecord);
             
-        tmp.delete();
-      } catch(Exception e) {
-          e.printStackTrace();  
-          throw e;
+        if(!tmp.delete()) {
+          log.warn(tmp.getAbsolutePath() + " cannot be deleted.");
+        }
+      } catch(IOException e) {
+        if(out != null) {
+          out.close();
+        }
+        e.printStackTrace();  
+        throw e;
       }
   }
   

@@ -19,13 +19,15 @@
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
-
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -67,10 +69,9 @@ public class Log4JMetricsContextProcessor extends AbstractProcessor {
         recordType += "_" + recordName;
       }
 
-      Iterator<String> ki = json.keySet().iterator();
-      while (ki.hasNext()) {
-        String key = ki.next();
-        String value = String.valueOf(json.get(key));
+      for(Entry<String, Object> entry : (Set<Map.Entry>) json.entrySet()) {
+        String key = entry.getKey();
+        String value = String.valueOf(entry.getValue());
         if(value != null) {
           chukwaRecord.add(key, value);
         }

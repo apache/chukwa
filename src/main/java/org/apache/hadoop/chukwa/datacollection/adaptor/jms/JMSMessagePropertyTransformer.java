@@ -73,14 +73,16 @@ public class JMSMessagePropertyTransformer implements JMSMessageTransformer {
       String token = tokens[i];
 
       if ("-d".equals(token) && i <= tokens.length - 2) {
-        String value = tokens[++i];
+        StringBuilder value = new StringBuilder();
+        value.append(tokens[++i]);
 
         // we lost all spaces with the split, so we have to put them back, yuck.
         while (i <= tokens.length - 2 && !tokens[i + 1].startsWith("-")) {
-          value = value + " " + tokens[++i];
+          value.append(" ");
+          value.append(tokens[++i]);
         }
 
-        delimiter = trimSingleQuotes(value);
+        delimiter = trimSingleQuotes(value.toString());
       }
       else if ("-r".equals(token) && i <= tokens.length - 2) {
         // requiredPropertyNames = null means all are required.

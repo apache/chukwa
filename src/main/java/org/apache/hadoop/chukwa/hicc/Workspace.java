@@ -20,6 +20,7 @@ package org.apache.hadoop.chukwa.hicc;
 
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import javax.servlet.*;
@@ -30,18 +31,16 @@ import java.sql.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.util.XssFilter;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 public class Workspace extends HttpServlet {
   public static final long serialVersionUID = 101L;
   private static final Log log = LogFactory.getLog(Workspace.class);
   private String path = System.getenv("CHUKWA_DATA_DIR");
-  transient private JSONObject hash = new JSONObject();
+  private JSONObject hash = new JSONObject();
   transient private XssFilter xf;
 
   @Override  
@@ -89,7 +88,7 @@ public class Workspace extends HttpServlet {
     try {
       // use buffering, reading one line at a time
       // FileReader always assumes default encoding is OK!
-      BufferedReader input = new BufferedReader(new FileReader(aFile));
+      BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(aFile.getAbsolutePath()), Charset.forName("UTF-8")));
       try {
         String line = null; // not declared within while loop
         /*
@@ -113,8 +112,7 @@ public class Workspace extends HttpServlet {
 
   public void setContents(String fName, String buffer) {
     try {
-      FileWriter fstream = new FileWriter(fName);
-      BufferedWriter out = new BufferedWriter(fstream);
+      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fName), Charset.forName("UTF-8")));
       out.write(buffer);
       out.close();
     } catch (Exception e) {
@@ -240,20 +238,22 @@ public class Workspace extends HttpServlet {
           return name.endsWith(".view");
         }
       });
-      JSONObject[] cacheGroup = new JSONObject[filesWanted.length];
-      for (int i = 0; i < filesWanted.length; i++) {
-        String buffer = getContents(filesWanted[i]);
-        try {
-          JSONObject jt = (JSONObject) JSONValue.parse(buffer);
-          String fn = filesWanted[i].getName();
-          jt.put("key", fn.substring(0, (fn.length() - 5)));
-          cacheGroup[i] = jt;
-        } catch (Exception e) {
-          log.debug(ExceptionUtil.getStackTrace(e));
+      if(filesWanted!=null) {
+        JSONObject[] cacheGroup = new JSONObject[filesWanted.length];
+        for (int i = 0; i < filesWanted.length; i++) {
+          String buffer = getContents(filesWanted[i]);
+          try {
+            JSONObject jt = (JSONObject) JSONValue.parse(buffer);
+            String fn = filesWanted[i].getName();
+            jt.put("key", fn.substring(0, (fn.length() - 5)));
+            cacheGroup[i] = jt;
+          } catch (Exception e) {
+            log.debug(ExceptionUtil.getStackTrace(e));
+          }
         }
+        String viewList = convertObjectsToViewList(cacheGroup);
+        setContents(source + "/workspace_view_list.cache", viewList);
       }
-      String viewList = convertObjectsToViewList(cacheGroup);
-      setContents(source + "/workspace_view_list.cache", viewList);
     }
   }
 
@@ -294,18 +294,20 @@ public class Workspace extends HttpServlet {
           return name.endsWith(".descriptor");
         }
       });
-      JSONObject[] cacheGroup = new JSONObject[filesWanted.length];
-      for (int i = 0; i < filesWanted.length; i++) {
-        String buffer = getContents(filesWanted[i]);
-        try {
-          JSONObject jt = (JSONObject) JSONValue.parse(buffer);
-          cacheGroup[i] = jt;
-        } catch (Exception e) {
-          log.debug(ExceptionUtil.getStackTrace(e));
+      if(filesWanted!=null) {
+        JSONObject[] cacheGroup = new JSONObject[filesWanted.length];
+        for (int i = 0; i < filesWanted.length; i++) {
+          String buffer = getContents(filesWanted[i]);
+          try {
+            JSONObject jt = (JSONObject) JSONValue.parse(buffer);
+            cacheGroup[i] = jt;
+          } catch (Exception e) {
+            log.debug(ExceptionUtil.getStackTrace(e));
+          }
         }
+        String widgetList = convertObjectsToWidgetList(cacheGroup);
+        setContents(source + "/workspace_plugin.cache", widgetList);
       }
-      String widgetList = convertObjectsToWidgetList(cacheGroup);
-      setContents(source + "/workspace_plugin.cache", widgetList);
     }
   }
 

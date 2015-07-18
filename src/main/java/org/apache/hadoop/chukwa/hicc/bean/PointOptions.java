@@ -20,8 +20,24 @@ package org.apache.hadoop.chukwa.hicc.bean;
 public class PointOptions extends SeriesOptions {
   public int radius;
   public String symbol = "circle";
-  
+
   public PointOptions() {
     radius = 5;
+  }
+
+  public int getRadius() {
+    return radius;
+  }
+
+  public void setRadius(int radius) {
+    this.radius = radius;
+  }
+
+  public String getSymbol() {
+    return symbol;
+  }
+
+  public void setSymbol(String symbol) {
+    this.symbol = symbol;
   }
 }

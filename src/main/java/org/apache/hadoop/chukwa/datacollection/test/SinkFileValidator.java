@@ -19,7 +19,11 @@
 package org.apache.hadoop.chukwa.datacollection.test;
 
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.conf.Configuration;
@@ -65,14 +69,16 @@ public class SinkFileValidator {
 
         if (evt.getData().length > 1000) {
           System.out.println("got event; data: "
-              + new String(evt.getData(), 0, 1000));
+              + new String(evt.getData(), 0, 1000, Charset.forName("UTF-8")));
           System.out.println("....[truncating]");
         } else
-          System.out.println("got event; data: " + new String(evt.getData()));
+          System.out.println("got event; data: " + new String(evt.getData(), Charset.forName("UTF-8")));
         events++;
       }
       System.out.println("file looks OK!");
-    } catch (Exception e) {
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (URISyntaxException e) {
       e.printStackTrace();
     }
 

@@ -178,6 +178,7 @@ public class ChukwaRecordKey extends org.apache.hadoop.record.Record {
   }
 
   public Object clone() throws CloneNotSupportedException {
+    super.clone();
     ChukwaRecordKey _rio_other = new ChukwaRecordKey();
     _rio_other.reduceType = this.reduceType;
     _rio_other.key = this.key;

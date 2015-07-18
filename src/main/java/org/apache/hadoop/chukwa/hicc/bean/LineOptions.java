@@ -20,6 +20,21 @@ package org.apache.hadoop.chukwa.hicc.bean;
 public class LineOptions extends SeriesOptions {
   public boolean zero;
   public boolean steps;
-  
+
+  public boolean getZero() {
+    return zero;
+  }
+
+  public void setZero(boolean zero) {
+    this.zero = zero;
+  }
+
+  public boolean getSteps() {
+    return steps;
+  }
+
+  public void setSteps(boolean steps) {
+    this.steps = steps;
+  }
 
 }

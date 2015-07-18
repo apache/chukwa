@@ -34,13 +34,12 @@ public class Log4jJobHistoryProcessor extends AbstractProcessor {
   static Logger log = Logger.getLogger(Log4jJobHistoryProcessor.class);
 
   private static final String recordType = "JobLogHistory";
-  private static String internalRegex = null;
-  private static Pattern ip = null;
+  private static String internalRegex = "(.*?)=\"(.*?)\"(.*)([\\n])?";
+  private Pattern ip = null;
 
   private Matcher internalMatcher = null;
 
   public Log4jJobHistoryProcessor() {
-    internalRegex = "(.*?)=\"(.*?)\"(.*)([\\n])?";
     ip = Pattern.compile(internalRegex);
     internalMatcher = ip.matcher("-");
   }

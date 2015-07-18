@@ -20,7 +20,9 @@ package org.apache.hadoop.chukwa.datacollection.sender;
 
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
+
 import org.apache.hadoop.conf.Configuration;
 
 /***
@@ -40,14 +42,14 @@ public class RetryListOfCollectors implements Iterator<String>, Cloneable {
   long lastLookAtFirstNode;
   int nextCollector = 0;
   private String portNo;
-  Configuration conf;
   public static final String RETRY_RATE_OPT = "chukwaAgent.connector.retryRate";
 
   public RetryListOfCollectors(File collectorFile, Configuration conf)
       throws IOException {
     this(conf);
     try {
-      BufferedReader br = new BufferedReader(new FileReader(collectorFile));
+      FileInputStream fis = new FileInputStream(collectorFile);
+      BufferedReader br = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
       String line, parsedline;
       while ((line = br.readLine()) != null) {
         parsedline = canonicalizeLine(line);
@@ -104,7 +106,6 @@ public class RetryListOfCollectors implements Iterator<String>, Cloneable {
   
   public RetryListOfCollectors(Configuration conf) {
     collectors = new ArrayList<String>();
-    this.conf = conf;
     portNo = conf.get("chukwaCollector.http.port", "8080");
     maxRetryRateMs = conf.getInt(RETRY_RATE_OPT, 15 * 1000);
     lastLookAtFirstNode = 0;

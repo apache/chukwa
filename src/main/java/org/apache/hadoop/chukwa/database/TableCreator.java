@@ -24,7 +24,8 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map.Entry;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.util.DatabaseWriter;
@@ -46,6 +47,9 @@ public class TableCreator {
     createTables(now, now);
   }
 
+  @edu.umd.cs.findbugs.annotations.SuppressWarnings(value =
+      "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE", 
+      justification = "Dynamic based upon tables in the database")
   public void createTables(long start, long end) throws Exception {
     String cluster = System.getProperty("CLUSTER");
     if (cluster == null) {
@@ -53,10 +57,8 @@ public class TableCreator {
     }
     DatabaseWriter dbw = new DatabaseWriter(cluster);
     HashMap<String, String> dbNames = dbc.startWith("report.db.name.");
-    Iterator<String> ki = dbNames.keySet().iterator();
-    while (ki.hasNext()) {
-      String name = ki.next();
-      String tableName = dbNames.get(name);
+    for(Entry<String, String> entry : dbNames.entrySet()) {
+      String tableName = entry.getValue();
       if (!RegexUtil.isRegex(tableName)) {
         log.warn("Skipping tableName: '" + tableName
             + "' because there was an error parsing it as a regex: "
@@ -68,39 +70,44 @@ public class TableCreator {
       try {
         String[] parts = tableList[0].split("_");
         int partition = Integer.parseInt(parts[parts.length - 2]);
-        String table = "";
+        StringBuilder tableNameBuffer = new StringBuilder();
         for (int i = 0; i < parts.length - 2; i++) {
           if (i != 0) {
-            table = table + "_";
+            tableNameBuffer.append("_");
           }
-          table = table + parts[i];
+          tableNameBuffer.append(parts[i]);
         }
-        String query = "show create table " + table + "_template;";
+        String table = tableNameBuffer.toString();
+        StringBuilder q = new StringBuilder();
+        q.append("show create table ");
+        q.append(table);
+        q.append("_template;");
+        final String query = q.toString();
         ResultSet rs = dbw.query(query);
         while (rs.next()) {
           log.debug("table schema: " + rs.getString(2));
-          query = rs.getString(2);
+          String tbl = rs.getString(2);
           log.debug("template table name:" + table + "_template");
           log.debug("replacing with table name:" + table + "_" + partition
               + "_" + parts[parts.length - 1]);
-          log.debug("creating table: " + query);
-          String createPartition = query.replaceFirst(table + "_template",
-              table + "_" + partition + "_" + parts[parts.length - 1]);
-          createPartition = createPartition.replaceFirst("TABLE",
-              "TABLE IF NOT EXISTS");
-          dbw.execute(createPartition);
-          partition++;
-          createPartition = query.replaceFirst(table + "_template", table
-              + "_" + partition + "_" + parts[parts.length - 1]);
-          createPartition = createPartition.replaceFirst("TABLE",
-              "TABLE IF NOT EXISTS");
-          dbw.execute(createPartition);
-          partition++;
-          createPartition = query.replaceFirst(table + "_template", table
-              + "_" + partition + "_" + parts[parts.length - 1]);
-          createPartition = createPartition.replaceFirst("TABLE",
-              "TABLE IF NOT EXISTS");
-          dbw.execute(createPartition);
+          log.debug("creating table: " + tbl);
+          
+          for(int i=0;i<2;i++) {
+            StringBuilder templateName = new StringBuilder();
+            templateName.append(table);
+            templateName.append("_template");
+            StringBuilder partitionName = new StringBuilder();
+            partitionName.append(table);
+            partitionName.append("_");
+            partitionName.append(partition);
+            partitionName.append("_");
+            partitionName.append(parts[parts.length - 1]);
+            tbl = tbl.replaceFirst("TABLE", "TABLE IF NOT EXISTS");
+            tbl = tbl.replaceFirst(templateName.toString(), partitionName.toString());
+            final String createTable = tbl;
+            dbw.execute(createTable);
+            partition++;
+          }
         }
       } catch (NumberFormatException e) {
         log.error("Error in parsing table partition number, skipping table:"

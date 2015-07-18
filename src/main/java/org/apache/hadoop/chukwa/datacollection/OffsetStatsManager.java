@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.LinkedList;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Manages stats for multiple objects of type T. T can be any class that is used
@@ -87,12 +88,10 @@ public class OffsetStatsManager<T> {
   public void addOffsetDataPoint(T key, long offset, long timestamp) {
     OffsetDataStats stats = null;
 
-    synchronized (offsetStatsMap) {
       if (offsetStatsMap.get(key) == null)
         offsetStatsMap.put(key, new OffsetDataStats());
 
       stats = offsetStatsMap.get(key);
-    }
 
     stats.add(new OffsetData(offset, timestamp));
     stats.prune(statsDataTTL);
@@ -176,18 +175,14 @@ public class OffsetStatsManager<T> {
    * @param key key of stats to be removed
    */
   public void remove(T key) {
-    synchronized (offsetStatsMap) {
       offsetStatsMap.remove(key);
-    }
   }
 
   /**
    * Remove all objectst that we're tracking stats for.
    */
   public void clear() {
-    synchronized (offsetStatsMap) {
       offsetStatsMap.clear();
-    }
   }
 
   /**
@@ -195,9 +190,7 @@ public class OffsetStatsManager<T> {
    * @param key key that stats are to be returned for
    */
   private OffsetDataStats get(T key) {
-    synchronized (offsetStatsMap) {
       return offsetStatsMap.get(key);
-    }
   }
 
   public class OffsetData {
@@ -214,9 +207,10 @@ public class OffsetStatsManager<T> {
 
     public double averageRate(OffsetData previous) {
       if (previous == null) return -1;
-
-      return new Double((offset - previous.getOffset())) /
-             new Double((timestamp - previous.getTimestamp())) * 1000L;
+      double elapseOffset = offset - previous.getOffset();
+      double elapseTime = (timestamp - previous.getTimestamp()) / 1000d;
+      double rate = elapseOffset / elapseTime;
+      return rate;
     }
 
     public boolean olderThan(long timestamp) {

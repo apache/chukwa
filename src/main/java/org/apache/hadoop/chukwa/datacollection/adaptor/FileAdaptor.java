@@ -35,8 +35,6 @@ import org.apache.log4j.Logger;
 class FileAdaptorTailer extends Thread {
   static Logger log = Logger.getLogger(FileAdaptorTailer.class);
   private List<FileAdaptor> adaptors = null;
-  private static Configuration conf = null;
-  private Object lock = new Object();
   
   /**
    * How often to call each adaptor.
@@ -46,16 +44,13 @@ class FileAdaptorTailer extends Thread {
 
   
   public FileAdaptorTailer() {
-    
-    if (conf == null) {
-      ChukwaAgent agent = ChukwaAgent.getAgent();
-      if (agent != null) {
-        conf = agent.getConfiguration();
-        if (conf != null) {
-          SAMPLE_PERIOD_MS = conf.getInt(
-              "chukwaAgent.adaptor.context.switch.time",
-              DEFAULT_SAMPLE_PERIOD_MS);
-        }
+    ChukwaAgent agent = ChukwaAgent.getAgent();
+    if (agent != null) {
+      Configuration conf = agent.getConfiguration();
+      if (conf != null) {
+        SAMPLE_PERIOD_MS = conf.getInt(
+            "chukwaAgent.adaptor.context.switch.time",
+            DEFAULT_SAMPLE_PERIOD_MS);
       }
     }
     
@@ -70,17 +65,6 @@ class FileAdaptorTailer extends Thread {
     while(true) {
       try {
 
-        while (adaptors.size() == 0) {
-          synchronized (lock) {
-            try {
-              log.info("Waiting queue is empty");
-              lock.wait();
-            } catch (InterruptedException e) {
-              // do nothing
-            }
-          }
-        }
-        
         long startTime = System.currentTimeMillis();
         for (FileAdaptor adaptor: adaptors) {
           log.info("calling sendFile for " + adaptor.toWatch.getCanonicalPath());
@@ -100,9 +84,6 @@ class FileAdaptorTailer extends Thread {
   
   public void addFileAdaptor(FileAdaptor adaptor) {
     adaptors.add(adaptor);
-    synchronized (lock) {
-      lock.notifyAll();
-    }
   }
   
   public void removeFileAdaptor(FileAdaptor adaptor) {
@@ -119,7 +100,7 @@ public class FileAdaptor extends AbstractAdaptor {
   static FileAdaptorTailer tailer = null;
   
   static final int DEFAULT_TIMEOUT_PERIOD = 5*60*1000;
-  static int TIMEOUT_PERIOD = DEFAULT_TIMEOUT_PERIOD;
+  int TIMEOUT_PERIOD = DEFAULT_TIMEOUT_PERIOD;
   
   static {
     tailer = new FileAdaptorTailer();

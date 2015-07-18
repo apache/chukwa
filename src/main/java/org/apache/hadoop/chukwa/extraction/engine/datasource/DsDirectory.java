@@ -37,7 +37,7 @@ public class DsDirectory {
   private DataConfig dataConfig = null;
 
   private static FileSystem fs = null;
-  private static Configuration conf = null;
+  private Configuration conf = null;
 
   private DsDirectory() {
     dataConfig = new DataConfig();

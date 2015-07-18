@@ -19,12 +19,10 @@ package org.apache.hadoop.chukwa.datacollection.writer.solr;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -105,6 +103,9 @@ public class SolrWriter extends PipelineableWriter {
         }
         if(data.contains("mapredice")) {
           doc.addField(SERVICE, "mapreduce");
+        }
+        if(data.contains("hbase")) {
+          doc.addField(SERVICE, "hbase");
         }
         try {
           Date d = sdf.parse(data);

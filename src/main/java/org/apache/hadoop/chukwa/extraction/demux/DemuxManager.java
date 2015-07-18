@@ -38,8 +38,8 @@ import org.apache.log4j.Logger;
 public class DemuxManager implements CHUKWA_CONSTANT {  
   static Logger log = Logger.getLogger(DemuxManager.class);
 
-  static int globalErrorcounter = 0;
-  static Date firstErrorTime = null;
+  int globalErrorcounter = 0;
+  Date firstErrorTime = null;
 
   protected int ERROR_SLEEP_TIME = 60;
   protected int NO_DATASINK_SLEEP_TIME = 20;
@@ -144,7 +144,7 @@ public class DemuxManager implements CHUKWA_CONSTANT {
          + nagiosPort + ", reportingHost:" + reportingHost);
      
      
-     if (nagiosHost == null || nagiosHost.length() == 0 || nagiosPort == 0 || reportingHost.length() == 0 || reportingHost == null) {
+     if (nagiosHost == null || nagiosHost.length() == 0 || nagiosPort == 0 || reportingHost == null || reportingHost.length() == 0) {
        sendAlert = false;
        log.warn("Alerting is OFF");
      }
@@ -159,7 +159,7 @@ public class DemuxManager implements CHUKWA_CONSTANT {
          if (maxPermittedErrorCount != -1 && globalErrorcounter >= maxPermittedErrorCount) {
            log.warn("==================\nToo many errors (" + globalErrorcounter +
                     "), Bail out!\n==================");
-           System.exit(-1);
+           break;
          }
          
          // Check for anomalies

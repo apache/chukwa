@@ -216,8 +216,8 @@ public class DumpChunks {
         Long b = byteCounts.get(streamName);
         byteCounts.put(streamName, b + chunk.getLength());
       } else {
-        matchCounts.put(streamName, new Integer(1));
-        byteCounts.put(streamName, new Long(chunk.getLength()));
+        matchCounts.put(streamName, Integer.valueOf(1));
+        byteCounts.put(streamName, Long.valueOf(chunk.getLength()));
       }
     }
     

@@ -34,4 +34,12 @@ public class ChukwaDSInternalResult {
   String fileName = null;
 
   ChukwaRecordKey key = null;
+  
+  public ChukwaRecordKey getKey() {
+    return key;
+  }
+  
+  protected void setKey(ChukwaRecordKey key) {
+    this.key = key;
+  }
 }

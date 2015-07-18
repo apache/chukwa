@@ -22,12 +22,36 @@ public class SeriesOptions {
   public boolean fill = false;
   public int lineWidth;
   public String fillColor;
-  
+
   public boolean getFill() {
     return fill;
   }
-  
+
   public void setFill(boolean fill) {
     this.fill = fill;
+  }
+
+  public boolean getShow() {
+    return show;
+  }
+
+  public void setShow(boolean show) {
+    this.show = show;
+  }
+
+  public int getLineWidth() {
+    return lineWidth;
+  }
+
+  public void setLineWidth(int lineWidth) {
+    this.lineWidth = lineWidth;
+  }
+
+  public String getFillColor() {
+    return fillColor;
+  }
+
+  public void setFillColor(String fillColor) {
+    this.fillColor = fillColor;
   }
 }

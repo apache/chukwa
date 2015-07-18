@@ -41,6 +41,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.ChunkQueue;
 import org.apache.hadoop.chukwa.datacollection.DataFactory;
@@ -55,7 +57,7 @@ public class HttpConnector implements Connector, Runnable {
   static Logger log = Logger.getLogger(HttpConnector.class);
 
   Timer statTimer = null;
-  volatile int chunkCount = 0;
+  AtomicInteger chunkCount = new AtomicInteger();
   
   int MAX_SIZE_PER_POST = 2 * 1024 * 1024;
   int MIN_POST_INTERVAL = 5 * 1000;
@@ -78,8 +80,8 @@ public class HttpConnector implements Connector, Runnable {
     statTimer = new Timer();
     statTimer.schedule(new TimerTask() {
       public void run() {
-        int count = chunkCount;
-        chunkCount = 0;
+        int count = chunkCount.get();
+        chunkCount.set(0);
         log.info("# http chunks ACK'ed since last report: " + count);
       }
     }, 100, 60 * 1000);
@@ -170,7 +172,7 @@ public class HttpConnector implements Connector, Runnable {
         // checkpoint the chunks which were committed
         for (ChukwaHttpSender.CommitListEntry cle : results) {
           agent.reportCommit(cle.adaptor, cle.uuid);
-          chunkCount++;
+          chunkCount.set(chunkCount.get()+1);;
         }
 
         long now = System.currentTimeMillis();

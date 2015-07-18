@@ -19,7 +19,9 @@
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
 
+import java.nio.charset.Charset;
 import java.util.Calendar;
+
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
@@ -60,7 +62,7 @@ public class ChunkSaver {
       DataOutputBuffer ob = new DataOutputBuffer(chunk
           .getSerializedSizeEstimate());
       chunk.write(ob);
-      record.add(Record.chunkDataField, new String(ob.getData()));
+      record.add(Record.chunkDataField, new String(ob.getData(), Charset.forName("UTF-8")));
       record.add(Record.chunkExceptionField, ExceptionUtil
           .getStackTrace(throwable));
       output.collect(key, record);
@@ -73,7 +75,7 @@ public class ChunkSaver {
             + " - source:" + chunk.getSource() + " - dataType: "
             + chunk.getDataType() + " - Stream: " + chunk.getStreamName()
             + " - SeqId: " + chunk.getSeqID() + " - Data: "
-            + new String(chunk.getData()));
+            + new String(chunk.getData(), Charset.forName("UTF-8")));
       } catch (Throwable e1) {
         e.printStackTrace();
       }

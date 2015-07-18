@@ -17,6 +17,7 @@
  */
 package org.apache.hadoop.chukwa.rest.resource;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -71,7 +72,7 @@ public class ClientTrace {
         if(c!=null && c.getData()!=null) {
           String action = "";
           long size = 0;
-          String data = new String(c.getData());
+          String data = new String(c.getData(), Charset.forName("UTF-8"));
           String[] entries = data.split("\n");
           for(String entry : entries) {
             Matcher m = pattern.matcher(entry);

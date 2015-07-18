@@ -44,9 +44,6 @@ public class InMemoryWriter implements ChukwaWriter {
       e.printStackTrace();
       throw new WriterException(e);
     }
-    synchronized (this) {
-      notify();
-    }
   }
 
   @Override

@@ -17,6 +17,7 @@
  */
 package org.apache.hadoop.chukwa.datacollection.agent.rest;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
@@ -35,6 +36,8 @@ import javax.servlet.ServletException;
 import javax.servlet.Servlet;
 import javax.ws.rs.core.MediaType;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
@@ -55,6 +58,19 @@ public class TestAdaptorController extends TestCase {
   String adaptor;
 
   protected void setUp() throws Exception {
+    String path = System.getenv("CHUKWA_LOG_DIR");
+    String[] checkpointNames = new File(path).list(new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        String checkPointBaseName = "chukwa_agent_checkpoint";
+        return name.startsWith(checkPointBaseName);
+      }
+    });
+    for(String cpn : checkpointNames) {
+      File checkpoint = new File(path+"/"+cpn);
+      if(!checkpoint.delete()) {
+        Assert.fail("Fail to clean up existing check point file: "+ cpn);
+      }
+    }
     agent = ChukwaAgent.getAgent();
     agent.start();
 

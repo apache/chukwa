@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.concurrent.BlockingQueue;
 
+import org.apache.hadoop.chukwa.datacollection.writer.WriterException;
 import org.apache.hadoop.chukwa.util.CopySequenceFile;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -85,8 +86,8 @@ public class LocalToRemoteHdfsMover extends Thread {
 
     remoteFs = FileSystem.get(new URI(fsname), conf);
     if (remoteFs == null && exitIfHDFSNotavailable) {
-      log.error("can't connect to HDFS at " + remoteFs.getUri() + " bail out!");
-      System.exit(-1);
+      log.error("can't connect to HDFS.");
+      throw new WriterException("can't connect to HDFS.");
     } 
     
     localFs = FileSystem.getLocal(conf);

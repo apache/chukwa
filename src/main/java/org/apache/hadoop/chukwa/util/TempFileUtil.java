@@ -20,8 +20,10 @@ package org.apache.hadoop.chukwa.util;
 
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Random;
+
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.conf.Configuration;
@@ -34,15 +36,21 @@ public class TempFileUtil {
   public static File makeBinary(int length) throws IOException {
     File tmpOutput = new File(System.getProperty("test.build.data", "/tmp"),
         "chukwaTest");
-    FileOutputStream fos = new FileOutputStream(tmpOutput);
-    Random r = new Random();
-    byte[] randomData = new byte[length];
-    r.nextBytes(randomData);
-    randomData[length - 1] = '\n';// need data to end with \n since default
+    FileOutputStream fos = null;
+    try {
+      fos = new FileOutputStream(tmpOutput);
+      Random r = new Random();
+      byte[] randomData = new byte[length];
+      r.nextBytes(randomData);
+      randomData[length - 1] = '\n';// need data to end with \n since default
                                   // tailer uses that
-    fos.write(randomData);
-    fos.flush();
-    fos.close();
+      fos.write(randomData);
+      fos.flush();
+    } finally {
+      if(fos != null) {
+        fos.close();
+      }
+    }
     return tmpOutput;
   }
   
@@ -58,7 +66,7 @@ public class TempFileUtil {
           + r.nextInt() + "\n";
        
       ChunkImpl c = new ChunkImpl("HadoopLogProcessor", "test",
-      line.length()  + lastSeqID, line.getBytes(), null);
+      line.length()  + lastSeqID, line.getBytes(Charset.forName("UTF-8")), null);
       lastSeqID += line.length();
       c.addTag("cluster=\"foocluster\"");
       return c;
@@ -99,8 +107,7 @@ public class TempFileUtil {
    public static File makeTestFile(String name, int size,File baseDir) throws IOException {
      File tmpOutput = new File(baseDir, name);
      FileOutputStream fos = new FileOutputStream(tmpOutput);
-
-     PrintWriter pw = new PrintWriter(fos);
+     PrintWriter pw = new PrintWriter(new OutputStreamWriter(fos, Charset.forName("UTF-8")));
      for (int i = 0; i < size; ++i) {
        pw.print(i + " ");
        pw.println("abcdefghijklmnopqrstuvwxyz");

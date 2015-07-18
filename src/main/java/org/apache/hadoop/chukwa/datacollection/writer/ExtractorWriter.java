@@ -24,7 +24,7 @@ import org.apache.hadoop.conf.Configuration;
 
 public class ExtractorWriter extends PipelineableWriter {
 
-  public static LogDisplayServlet recipient;
+  private static LogDisplayServlet recipient;
   
   @Override
   public void close() throws WriterException {
@@ -42,6 +42,10 @@ public class ExtractorWriter extends PipelineableWriter {
       return next.add(chunks); //pass data through
     else
       return ChukwaWriter.COMMIT_OK;
+  }
+
+  public static void setRecipient(LogDisplayServlet logDisplayServlet) {
+    recipient = logDisplayServlet;
   }
 
 }

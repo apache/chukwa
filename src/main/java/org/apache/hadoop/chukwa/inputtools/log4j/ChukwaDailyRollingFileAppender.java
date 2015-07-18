@@ -381,7 +381,9 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
 
     File target = new File(scheduledFilename);
     if (target.exists()) {
-      target.delete();
+      if(!target.delete()) {
+        LogLog.warn("Unable to remove: "+target.getAbsolutePath());
+      };
     }
 
     File file = new File(fileName);
@@ -405,11 +407,11 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
     cleanUp();
   }
 
-  public String getCleanUpRegex() {
+  public synchronized String getCleanUpRegex() {
     return cleanUpRegex;
   }
 
-  public void setCleanUpRegex(String cleanUpRegex) {
+  protected synchronized void setCleanUpRegex(String cleanUpRegex) {
     this.cleanUpRegex = cleanUpRegex;
   }
 
@@ -439,16 +441,19 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
       String[] dirFiles = dirList.list(new LogFilter(actualFileName, regex));
 
       List<String> files = new ArrayList<String>();
-      for (String file : dirFiles) {
-        files.add(file);
+      if(dirFiles!=null) {
+        for (String file : dirFiles) {
+          files.add(file);
+        }
       }
       Collections.sort(files);
 
       while (files.size() > maxBackupIndex) {
         String file = files.remove(0);
         File f = new File(directoryName + "/" + file);
-        f.delete();
-        LogLog.debug("Removing: " + file);
+        if(!f.delete()) {
+          LogLog.warn("Cannot remove: " + file);
+        }
       }
     } catch (Exception e) {
       errorHandler
@@ -456,7 +461,7 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
     }
   }
 
-  private class LogFilter implements FilenameFilter {
+  private static class LogFilter implements FilenameFilter {
     private Pattern p = null;
     private String logFile = null;
 
@@ -484,12 +489,10 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
    */
   @Override
   protected boolean checkEntryConditions() {
-    if (!hasBeenActivated) {
-      synchronized(chukwaLock) {
-        if (!hasBeenActivated) {
-          hasBeenActivated = true;
-          activateOptions();
-        }
+    synchronized(chukwaLock) {
+      if (!hasBeenActivated) {
+        hasBeenActivated = true;
+        activateOptions();
       }
     }
     return super.checkEntryConditions();
@@ -577,8 +580,7 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
                   + ", starting at offset:" + currentLength);
             } else {
               log.debug("Chukwa adaptor not added, addFile(" + log4jFileName
-                  + ") returned " + adaptorID 
-                  + ", current offset:" + currentLength);
+                  + ") returned, current offset: " + currentLength);
             }
 
           }
@@ -736,5 +738,15 @@ class RollingCalendar extends GregorianCalendar {
       throw new IllegalStateException("Unknown periodicity type.");
     }
     return getTime();
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    return super.equals(o);
+  }
+  
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

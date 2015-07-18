@@ -34,10 +34,12 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.Reporter;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.File;
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 /**
  * Helper class used to create sequence files of Chukwa records
@@ -65,14 +67,15 @@ public class CreateRecordFile {
                                     SequenceFile.CompressionType.NONE, null);
      long lastSeqID = 0;
      String line;
-     BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+     FileInputStream fis = new FileInputStream(inputFile);
+     BufferedReader reader = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
 
      // for each line, create a chunk and an arckive key, pass it to the
      // processor, then write it to the sequence file.  
      while ((line = reader.readLine()) != null) {
 
        ChunkImpl chunk = new ChunkImpl(dataType, streamName,
-         line.length()  + lastSeqID, line.getBytes(), null);
+         line.length()  + lastSeqID, line.getBytes(Charset.forName("UTF-8")), null);
        lastSeqID += line.length();
        chunk.addTag("cluster=\"" + clusterName + "\"");
 
@@ -112,7 +115,7 @@ public class CreateRecordFile {
                                                  ClassNotFoundException,
                                                  IllegalAccessException,
                                                  InstantiationException {
-     if((args.length < 0 && args[0].contains("-h")) || args.length < 2) {
+     if(args.length == 0 || (args.length==1 && args[0].contains("-h"))) {
        usage();
      }
 
@@ -129,7 +132,7 @@ public class CreateRecordFile {
      if (args.length > 4) streamName = args[4];
 
      if (args.length > 5) {
-       Class clazz = null;
+       Class<?> clazz = null;
        try {
          clazz = Class.forName(args[5]);
        }
@@ -165,7 +168,7 @@ public class CreateRecordFile {
    }
 
    public static void usage() {
-     System.out.println("Usage: java " + TempFileUtil.class.toString().split(" ")[1] + " <inputFile> <outputFile> [<clusterName> <dataType> <streamName> <processorClass> [confFile]]");
+     System.out.println("Usage: java " + CreateRecordFile.class.toString().split(" ")[1] + " <inputFile> <outputFile> [<clusterName> <dataType> <streamName> <processorClass> [confFile]]");
      System.out.println("Description: Takes a plain text input file and generates a Hadoop sequence file contaning ChukwaRecordKey,ChukwaRecord entries");
      System.out.println("Parameters: inputFile      - Text input file to read");
      System.out.println("            outputFile     - Sequence file to create");

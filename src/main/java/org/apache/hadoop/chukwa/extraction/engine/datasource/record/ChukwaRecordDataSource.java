@@ -26,7 +26,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
+
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
@@ -150,7 +153,7 @@ public class ChukwaRecordDataSource implements DataSource {
           {
             log.debug("check for hours");
             for (int hour = 0; hour < 24; hour++) {
-              if (workingDay == res.day && hour < workingHour) {
+              if (workingDay.equals(res.day) && hour < workingHour) {
                 continue;
               }
               log.debug(" Hour?  -->" + filePath + dataSource + "/"
@@ -349,7 +352,7 @@ public class ChukwaRecordDataSource implements DataSource {
         }
       }
 
-    } catch (Exception e) {
+    } catch (IOException e) {
       e.printStackTrace();
     } finally {
       try {
@@ -375,7 +378,10 @@ public class ChukwaRecordDataSource implements DataSource {
       contains = fs.exists(new Path(rootFolder + dataSource + "/" + workingDay
           + "/" + workingHour + "/rotateDone"));
       break;
-
+    default:
+      contains = fs.exists(new Path(rootFolder + dataSource + "/" + workingDay
+          + "/rotateDone"));
+      break;
     }
     return contains;
   }
@@ -400,7 +406,10 @@ public class ChukwaRecordDataSource implements DataSource {
       contains = fs.exists(new Path(rootFolder + dataSource + "/" + workingDay
           + "/" + workingHour + "/" + raw));
       break;
-
+    default:
+      contains = fs
+          .exists(new Path(rootFolder + dataSource + "/" + workingDay));
+      break;
     }
     return contains;
   }
@@ -440,6 +449,10 @@ public class ChukwaRecordDataSource implements DataSource {
           + raws[rawIndex] + "/" + dataSource + "_" + day + "_" + hour + "_"
           + raws[rawIndex] + "." + spill + ".evt";
       break;
+    default:
+      fileName = rootFolder + "/" + dataSource + "/" + day + "/" + dataSource
+          + "_" + day + "." + spill + ".evt";
+      break;
     }
     log.debug("buildFileName :" + fileName);
     return fileName;
@@ -473,12 +486,10 @@ public class ChukwaRecordDataSource implements DataSource {
 
     ds.search(result, cluster, dataSource, t0, t1, filter, token);
     TreeMap<Long, List<Record>> records = result.getRecords();
-    Iterator<Long> it = records.keySet().iterator();
-
-    while (it.hasNext()) {
-      long ts = it.next();
+    for(Entry<Long, List<Record>> entry : records.entrySet()) {      
+      long ts = entry.getKey();
       System.out.println("\n\nTimestamp: " + new Date(ts));
-      List<Record> list = records.get(ts);
+      List<Record> list = entry.getValue();
       for (int i = 0; i < list.size(); i++) {
         System.out.println(list.get(i));
       }

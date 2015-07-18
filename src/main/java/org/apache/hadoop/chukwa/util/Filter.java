@@ -17,10 +17,12 @@
  */
 package org.apache.hadoop.chukwa.util;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.extraction.engine.RecordUtil;
@@ -56,7 +58,7 @@ public class Filter {
         String cluster = RecordUtil.getClusterName(chunk);
         return p.matcher(cluster).matches();
       } else if(targ.equals("content")) {
-        String content = new String(chunk.getData());
+        String content = new String(chunk.getData(), Charset.forName("UTF-8"));
         return p.matcher(content).matches();
       } else if(targ.startsWith("tags.")) {
         String tagName = targ.substring("tags.".length());

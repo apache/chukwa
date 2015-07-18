@@ -24,7 +24,6 @@ import java.util.Map;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.conf.*;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import junit.framework.TestCase;
 
 public class TestDirTailingAdaptor extends TestCase {

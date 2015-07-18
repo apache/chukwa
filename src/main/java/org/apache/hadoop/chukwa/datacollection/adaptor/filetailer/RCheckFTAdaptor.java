@@ -26,6 +26,8 @@ import java.util.regex.Pattern;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * Checkpoint state:
  *   date modified of most-recently tailed file, offset of first byte of that file,
@@ -53,6 +55,22 @@ public class RCheckFTAdaptor extends LWFTAdaptor implements FileFilter {
       //want toWatch to be last after a rotation; otherwise, this is basically 
       //just a heuristic that hasn't been tuned yet
       else return (o.f.getName().compareTo(f.getName()));
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+      if(o instanceof FPair) {
+        return mod == ((FPair) o).mod;
+      } else {
+        return false;
+      }
+    }
+    
+    @Override
+    public int hashCode() {
+      return new HashCodeBuilder(643, 1321).
+          append(this.mod).
+          toHashCode();
     }
   }
   
@@ -129,7 +147,7 @@ public class RCheckFTAdaptor extends LWFTAdaptor implements FileFilter {
   }
   
   @Override
-  public synchronized boolean tailFile()
+  public boolean tailFile()
   throws InterruptedException {
     boolean hasMoreData = false;
     try {

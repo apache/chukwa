@@ -17,6 +17,8 @@
  */
 package org.apache.hadoop.chukwa.datacollection.adaptor.jms;
 
+import java.nio.charset.Charset;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -44,7 +46,7 @@ public class JMSTextMessageTransformer implements JMSMessageTransformer {
 
     String text = ((TextMessage)message).getText();
     if (text != null && text.length() > 0) {
-      return text.getBytes();
+      return text.getBytes(Charset.forName("UTF-8"));
     }
 
     return null;

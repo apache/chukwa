@@ -37,8 +37,8 @@ public class MetricDataLoaderPool extends DataLoaderFactory {
   protected MetricDataLoader threads[] = null;
   private static String DATA_LOADER_THREAD_LIMIT = "chukwa.data.loader.threads.limit";
   private int size = 1;
-  private static CompletionService completion = null;
-  private static ExecutorService executor = null;
+  private CompletionService completion = null;
+  private ExecutorService executor = null;
   
   public MetricDataLoaderPool() {
   }

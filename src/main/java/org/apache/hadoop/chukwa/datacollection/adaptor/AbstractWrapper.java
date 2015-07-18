@@ -17,7 +17,6 @@
  */
 package org.apache.hadoop.chukwa.datacollection.adaptor;
 
-import java.util.*;
 import java.util.regex.*;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;

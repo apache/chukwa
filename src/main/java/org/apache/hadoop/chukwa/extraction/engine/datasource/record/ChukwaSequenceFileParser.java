@@ -118,7 +118,7 @@ public class ChukwaSequenceFileParser {
         }
 
       }
-    } catch (Exception e) {
+    } catch (IOException e) {
       e.printStackTrace();
     } finally {
       System.out.println("File: " + fileName + " Line count: " + lineCount);

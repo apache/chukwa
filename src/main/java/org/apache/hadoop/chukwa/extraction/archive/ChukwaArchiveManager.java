@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 
 public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
   static Logger log = Logger.getLogger(ChukwaArchiveManager.class);
-  static SimpleDateFormat day = new java.text.SimpleDateFormat("yyyyMMdd");
+  SimpleDateFormat day = new java.text.SimpleDateFormat("yyyyMMdd");
   
   static final  int ONE_HOUR = 60 * 60 * 1000;
   static final int ONE_DAY = 24*ONE_HOUR;
@@ -113,7 +113,7 @@ public class ChukwaArchiveManager implements CHUKWA_CONSTANT {
         if (maxPermittedErrorCount != -1 && errorCount >= maxPermittedErrorCount) {
           log.warn("==================\nToo many errors (" + errorCount +
                    "), Bail out!\n==================");
-          System.exit(-1);
+          break;
         }
         // /chukwa/archives/<YYYYMMDD>/dataSinkDirXXX
         //  to

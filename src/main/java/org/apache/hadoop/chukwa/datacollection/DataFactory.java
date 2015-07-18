@@ -25,6 +25,7 @@ import java.lang.reflect.Constructor;
 import java.util.Iterator;
 
 import org.apache.hadoop.conf.*;
+import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.agent.MemLimitQueue;
 import org.apache.hadoop.chukwa.datacollection.sender.RetryListOfCollectors;
@@ -35,15 +36,11 @@ public class DataFactory {
   static final String COLLECTORS_FILENAME = "collectors";
   static final String CHUNK_QUEUE = "chukwaAgent.chunk.queue";
   
-  private static DataFactory dataFactory = null;
+  protected static final DataFactory dataFactory = new DataFactory();
   private ChunkQueue chunkQueue = null;
 
   private String defaultTags = "";
   
-  static {
-    dataFactory = new DataFactory();
-  }
-
   private DataFactory() {
   }
 
@@ -57,7 +54,11 @@ public class DataFactory {
     }
     return chunkQueue;
   }
-  
+
+  public void put(Chunk c) throws InterruptedException {
+    chunkQueue.add(c);
+  }
+
   public synchronized ChunkQueue createEventQueue() {
     Configuration conf = ChukwaAgent.getStaticConfiguration();
     if(conf == null){
@@ -96,7 +97,11 @@ public class DataFactory {
   public String getDefaultTags() {
     return defaultTags;
   }
-  
+
+  public void setDefaultTags(String tags) {
+    defaultTags = tags;
+  }
+
   public void addDefaultTag(String tag) {
     this.defaultTags += " " + tag.trim();
   }

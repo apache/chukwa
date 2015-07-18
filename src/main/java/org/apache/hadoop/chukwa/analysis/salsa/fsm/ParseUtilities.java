@@ -35,9 +35,9 @@ public class ParseUtilities {
 		if (st.countTokens() != 3) {
 			throw new Exception("Expected 3 tokens from ChukwaRecordKey but only found " + st.countTokens() + ".");
 		}
-		rec.time_orig_epoch = new String(st.nextToken());
-		rec.job_id = new String(st.nextToken());
-		rec.time_orig = new String(st.nextToken());
+		rec.time_orig_epoch = st.nextToken();
+		rec.job_id = st.nextToken();
+		rec.time_orig = st.nextToken();
 		return rec;
 	}
 	
@@ -45,7 +45,7 @@ public class ParseUtilities {
 	{
 		int firstPos = "tracker_".length();
 		int secondPos;
-		String hostname = new String("");
+		String hostname = "";
 		
 		if (trackerName.startsWith("tracker_")) {
 			secondPos = trackerName.indexOf(":",firstPos);
@@ -59,9 +59,9 @@ public class ParseUtilities {
 	{
 		int pos = origHostname.lastIndexOf("/");
 		if (pos > -1) {
-			return new String(origHostname.substring(pos));
+			return origHostname.substring(pos);
 		} else {
-			return new String(origHostname);
+			return origHostname;
 		}
 	}
 	

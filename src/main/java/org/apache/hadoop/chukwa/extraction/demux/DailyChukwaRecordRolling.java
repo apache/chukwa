@@ -165,7 +165,7 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
               new DailyChukwaRecordRolling(), mergeArgs, deleteRawdata);
           List<RecordMerger> allMerge = new ArrayList<RecordMerger>();
           if (rollInSequence) {
-            merge.run();
+            merge.mergeRecords();
           } else {
             allMerge.add(merge);
             merge.start();

@@ -21,7 +21,6 @@ import java.util.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy;
-import org.apache.hadoop.chukwa.datacollection.collector.servlet.CommitCheckServlet;
 import org.apache.hadoop.chukwa.datacollection.sender.AsyncAckSender;
 import org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter;
 import org.apache.log4j.Logger;
@@ -52,9 +51,8 @@ public class AdaptorResetThread extends Thread {
   
   public AdaptorResetThread(Configuration conf, ChukwaAgent a) {
         //
-    timeout =  conf.getInt(SeqFileWriter.ROTATE_INTERVAL_OPT, timeout/3) 
-        + conf.getInt(AsyncAckSender.POLLPERIOD_OPT, timeout/3) 
-        + conf.getInt(CommitCheckServlet.SCANPERIOD_OPT, timeout/3);
+    timeout =  conf.getInt(SeqFileWriter.ROTATE_INTERVAL_OPT, timeout/2) 
+        + conf.getInt(AsyncAckSender.POLLPERIOD_OPT, timeout/2);
     
     timeout = conf.getInt(TIMEOUT_OPT, timeout); //unless overridden
      

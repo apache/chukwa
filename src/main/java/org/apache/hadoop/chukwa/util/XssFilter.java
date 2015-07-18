@@ -18,14 +18,7 @@
 
 package org.apache.hadoop.chukwa.util;
 
-import java.util.Enumeration;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,12 +26,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.owasp.esapi.ESAPI;
 
-import javax.ws.rs.core.MultivaluedMap;
-
 public class XssFilter {
     private HttpServletRequest request = null;
     private static Log LOG = LogFactory.getLog(XssFilter.class);
-    private HttpSession session = null;
 
     public XssFilter() {
     }
@@ -73,25 +63,6 @@ public class XssFilter {
       return values;
     }
 
-    /**
-     * Apply the XSS filter to the parameters
-     * @param parameters
-     * @param type
-     */
-    private void cleanParams( MultivaluedMap<String, String> parameters ) {
-      for( Map.Entry<String, List<String>> params : parameters.entrySet() ) {
-        String key = params.getKey();
-        List<String> values = params.getValue();
- 
-        List<String> cleanValues = new ArrayList<String>();
-        for( String value : values ) {
-          cleanValues.add( filter( value ) );
-        }
- 
-        parameters.put( key, cleanValues );
-      }
-    }
- 
     /**
      * Strips any potential XSS threats out of the value
      * @param value

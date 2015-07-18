@@ -19,10 +19,12 @@
 package org.apache.hadoop.chukwa.extraction.engine;
 
 
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+
 import org.apache.hadoop.record.Buffer;
 
 public class ChukwaRecord extends ChukwaRecordJT implements Record {
@@ -32,10 +34,10 @@ public class ChukwaRecord extends ChukwaRecordJT implements Record {
   public void add(String key, String value) {
     synchronized (this) {
       if (this.mapFields == null) {
-        this.mapFields = new TreeMap<String, org.apache.hadoop.record.Buffer>();
+        this.mapFields = new TreeMap<String, Buffer>();
       }
     }
-    this.mapFields.put(key, new Buffer(value.getBytes()));
+    this.mapFields.put(key, new Buffer(value.getBytes(Charset.forName("UTF-8"))));
   }
 
   public String[] getFields() {
@@ -44,7 +46,7 @@ public class ChukwaRecord extends ChukwaRecordJT implements Record {
 
   public String getValue(String field) {
     if (this.mapFields.containsKey(field)) {
-      return new String(this.mapFields.get(field).get());
+      return new String(this.mapFields.get(field).get(), Charset.forName("UTF-8"));
     } else {
       return null;
     }
@@ -77,7 +79,7 @@ public class ChukwaRecord extends ChukwaRecordJT implements Record {
     while (it.hasNext()) {
       entry = it.next();
       key = entry.getKey().intern();
-      val = new String(entry.getValue().get());
+      val = new String(entry.getValue().get(), Charset.forName("UTF-8"));
       if (key.intern() == Record.bodyField.intern()) {
         hasBody = true;
         bodyVal = val;

@@ -20,12 +20,12 @@ package org.apache.hadoop.chukwa.hicc;
 
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
@@ -43,7 +43,7 @@ public class Views {
     try {
       // use buffering, reading one line at a time
       // FileReader always assumes default encoding is OK!
-      BufferedReader input = new BufferedReader(new FileReader(aFile));
+      BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(aFile.getAbsolutePath()), Charset.forName("UTF-8")));
       try {
         String line = null; // not declared within while loop
         /*

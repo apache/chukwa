@@ -22,6 +22,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -113,12 +115,9 @@ public class JobTrackerProcessor extends AbstractProcessor {
       } else {
         timeStamp = Long.parseLong(ttTag);
       }
-      Iterator<String> keys = obj.keySet().iterator();
-
-      while (keys.hasNext()) {
-        String key = keys.next();
-        Object value = obj.get(key);
-        String valueString = value == null ? "" : value.toString();
+      for(Entry<String, Object> entry : (Set<Entry<String, Object>>) obj.entrySet()) {
+        String key = entry.getKey();
+        String valueString = entry.getValue().toString();
 
         // Calculate rate for some of the metrics
         if (rateMap.containsKey(key)) {

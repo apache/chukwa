@@ -21,7 +21,9 @@ package org.apache.hadoop.chukwa.util;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.*;
+
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
@@ -109,7 +111,7 @@ public class DumpArchive {
         if(oldC != null)
           counts.put(entryKey, oldC + 1);
         else
-          counts.put(entryKey, new Integer(1));
+          counts.put(entryKey, Integer.valueOf(1));
         
         if(!summarize) {
           System.out.println("\nTimePartition: " + key.getTimePartition());
@@ -123,7 +125,7 @@ public class DumpArchive {
           System.out.println("Source : " + chunk.getSource());
           System.out.println("Application : " + chunk.getStreamName());
           System.out.println("SeqID : " + chunk.getSeqID());
-          System.out.println("Data : " + new String(chunk.getData()));
+          System.out.println("Data : " + new String(chunk.getData(), Charset.forName("UTF-8")));
         }
       }
     } catch (Exception e) {

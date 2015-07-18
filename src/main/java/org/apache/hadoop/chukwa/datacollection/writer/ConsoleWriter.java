@@ -19,9 +19,11 @@
 package org.apache.hadoop.chukwa.datacollection.writer;
 
 
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.conf.Configuration;
 
@@ -84,7 +86,7 @@ public class ConsoleWriter implements ChukwaWriter {
         System.out.print(data.getDataType());
         System.out.print(") ");
         System.out.print(new String(data.getData(), startOffset, offset
-            - startOffset + 1));
+            - startOffset + 1, Charset.forName("UTF-8")));
         startOffset = offset + 1;
       }
     }

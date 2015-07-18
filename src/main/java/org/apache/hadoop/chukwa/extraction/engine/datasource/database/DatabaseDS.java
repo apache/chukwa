@@ -45,6 +45,9 @@ import org.apache.commons.logging.LogFactory;
 public class DatabaseDS implements DataSource {
   private static final Log log = LogFactory.getLog(DatabaseDS.class);
 
+  @edu.umd.cs.findbugs.annotations.SuppressWarnings(value =
+      "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE", 
+      justification = "Dynamic based upon tables in the database")
   public SearchResult search(SearchResult result, String cluster,
       String dataSource, long t0, long t1, String filter, Token token)
       throws DataSourceException {
@@ -60,8 +63,6 @@ public class DatabaseDS implements DataSource {
       timeField = "LAUNCH_TIME";
     } else if (dataSource.equalsIgnoreCase("HodJob")) {
       timeField = "StartTime";
-    } else if (dataSource.equalsIgnoreCase("QueueInfo")) {
-      timeField = "timestamp";
     } else {
       timeField = "timestamp";
     }
@@ -88,13 +89,16 @@ public class DatabaseDS implements DataSource {
         int col = rmeta.getColumnCount();
         while (rs.next()) {
           ChukwaRecord event = new ChukwaRecord();
-          String cell = "";
+          StringBuilder cell = new StringBuilder();;
           long timestamp = 0;
 
           for (int i = 1; i < col; i++) {
             String value = rs.getString(i);
             if (value != null) {
-              cell = cell + " " + rmeta.getColumnName(i) + ":" + value;
+              cell.append(" ");
+              cell.append(rmeta.getColumnName(i));
+              cell.append(":");
+              cell.append(value);
             }
             if (rmeta.getColumnName(i).equals(timeField)) {
               timestamp = rs.getLong(i);
@@ -111,7 +115,7 @@ public class DatabaseDS implements DataSource {
             continue;
           }
 
-          event.add(Record.bodyField, cell);
+          event.add(Record.bodyField, cell.toString());
           event.add(Record.sourceField, cluster + "." + dataSource);
           if (records.containsKey(timestamp)) {
             records.get(timestamp).add(event);

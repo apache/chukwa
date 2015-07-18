@@ -17,6 +17,7 @@
  */
 package org.apache.hadoop.chukwa.datacollection.adaptor.heartbeat;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -54,7 +55,7 @@ public class HttpStatusChecker implements StatusChecker {
       connection = (HttpURLConnection)url.openConnection();
       connection.connect();
       status.put("status", "running");
-    } catch (Exception e) {
+    } catch (IOException e) {
       status.put("status", "stopped");    
     } finally {
       if(connection != null){

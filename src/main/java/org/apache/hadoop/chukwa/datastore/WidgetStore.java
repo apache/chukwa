@@ -20,13 +20,13 @@ package org.apache.hadoop.chukwa.datastore;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.hicc.HiccWebServer;
 import org.apache.hadoop.chukwa.rest.bean.CatalogBean;
@@ -43,12 +43,15 @@ public class WidgetStore {
   private static Log log = LogFactory.getLog(WidgetStore.class);
   private static Configuration config = new Configuration();
   private static ChukwaConfiguration chukwaConf = new ChukwaConfiguration();
-  private static String hiccPath = config.get("fs.defaultFS")+File.separator+chukwaConf.get("chukwa.data.dir")+File.separator+"hicc"+File.separator+"widgets";
+  private static String hiccPath = null;
   private static CatalogBean catalog = null;
   private static HashMap<String, WidgetBean> list = new HashMap<String, WidgetBean>();
   
+  static {
+    config = HiccWebServer.getConfig();
+    hiccPath = config.get("fs.defaultFS")+File.separator+chukwaConf.get("chukwa.data.dir")+File.separator+"hicc"+File.separator+"widgets";
+  }
   public WidgetStore() throws IllegalAccessException {
-    WidgetStore.config = HiccWebServer.getConfig();
   }
 
   public void set(WidgetBean widget) throws IllegalAccessException {
@@ -94,7 +97,7 @@ public class WidgetStore {
           widgetStream.readFully(buffer);
           widgetStream.close();
           try {
-            JSONObject widgetBuffer = (JSONObject) JSONValue.parse(new String(buffer));
+            JSONObject widgetBuffer = (JSONObject) JSONValue.parse(new String(buffer, Charset.forName("UTF-8")));
             WidgetBean widget = new WidgetBean(widgetBuffer);
             catalog.addCatalog(widget);
             list.put(widget.getId(),widget);

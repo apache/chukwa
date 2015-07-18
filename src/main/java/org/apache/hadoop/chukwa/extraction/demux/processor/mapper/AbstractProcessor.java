@@ -19,7 +19,9 @@
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
 
+import java.nio.charset.Charset;
 import java.util.Calendar;
+
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
@@ -121,7 +123,7 @@ public abstract class AbstractProcessor implements MapProcessor {
 
   protected String nextLine() {
     String log = new String(bytes, startOffset, (recordOffsets[currentPos]
-        - startOffset + 1));
+        - startOffset + 1), Charset.forName("UTF-8"));
     startOffset = recordOffsets[currentPos] + 1;
     currentPos++;
     return RecordConstants.recoverRecordSeparators("\n", log);

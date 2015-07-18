@@ -88,9 +88,9 @@ public class ChukwaHttpSender implements ChukwaSender {
 
   protected Iterator<String> collectors;
   
-  static boolean COMPRESS;
-  static String CODEC_NAME;
-  static CompressionCodec codec;
+  boolean COMPRESS;
+  String CODEC_NAME;
+  CompressionCodec codec;
 
   static {
     connectionManager = new MultiThreadedHttpConnectionManager();
@@ -112,9 +112,13 @@ public class ChukwaHttpSender implements ChukwaSender {
   // FIXME: probably we're better off with an EventListRequestEntity
   static class BuffersRequestEntity implements RequestEntity {
     List<DataOutputBuffer> buffers;
+    boolean compress;
+    CompressionCodec codec;
 
-    public BuffersRequestEntity(List<DataOutputBuffer> buf) {
+    public BuffersRequestEntity(List<DataOutputBuffer> buf, boolean compress, CompressionCodec codec) {
       buffers = buf;
+      this.compress = compress;
+      this.codec = codec;
     }
     
     private long getUncompressedContentLenght(){
@@ -125,7 +129,7 @@ public class ChukwaHttpSender implements ChukwaSender {
     }
 
     public long getContentLength() {
-    	if( COMPRESS) {
+    	if(compress) {
     		return -1;
     	}
     	else {
@@ -148,7 +152,7 @@ public class ChukwaHttpSender implements ChukwaSender {
     }
     
     public void writeRequest(OutputStream out) throws IOException {
-      if( COMPRESS) {
+      if(compress) {
           CompressionOutputStream cos = codec.createOutputStream(out);
           DataOutputStream dos = new DataOutputStream( cos);
           doWriteRequest( dos);
@@ -239,7 +243,7 @@ public class ChukwaHttpSender implements ChukwaSender {
     toSend.clear();
 
     // collect all serialized chunks into a single buffer to send
-    RequestEntity postData = new BuffersRequestEntity(serializedEvents);
+    RequestEntity postData = new BuffersRequestEntity(serializedEvents, COMPRESS, codec);
 
     PostMethod method = new PostMethod();
     method.setRequestEntity(postData);

@@ -52,10 +52,8 @@ public class OfflineTimeHandler {
 
   public void init(HashMap<String, String> map) {
     Calendar now = Calendar.getInstance();
-    if (map == null || (map != null 
-        && map.get("time_type") == null
-        && map.get("time_type") == null
-        && map.get("period") == null)) {
+    if (map == null || 
+        (map.get("time_type") == null && map.get("period") == null)) {
       end = now.getTimeInMillis();
       start = end - 60 * 60 * 1000;
     } else if (map.get("period") != null

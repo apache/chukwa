@@ -17,6 +17,8 @@
  */
 package org.apache.hadoop.chukwa.datacollection.adaptor.jms;
 
+import java.nio.charset.Charset;
+
 import org.apache.hadoop.chukwa.datacollection.adaptor.AbstractAdaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy;
@@ -100,7 +102,7 @@ public class JMSAdaptor extends AbstractAdaptor {
         bytesReceived += bytes.length;
 
         if (log.isDebugEnabled()) {
-          log.debug("Adding Chunk from JMS message: " + new String(bytes));
+          log.debug("Adding Chunk from JMS message: " + new String(bytes, Charset.forName("UTF-8")));
         }
 
         Chunk c = new ChunkImpl(type, source, bytesReceived, bytes, JMSAdaptor.this);
@@ -142,6 +144,7 @@ public class JMSAdaptor extends AbstractAdaptor {
 
     String transformerName = null;
     String transformerConfs = null;
+    StringBuilder transformerConfsBuffer = new StringBuilder();
     for (int i = 1; i < tokens.length; i++) {
       String value = tokens[i];
       if ("-t".equals(value)) {
@@ -168,17 +171,19 @@ public class JMSAdaptor extends AbstractAdaptor {
         transformerName = tokens[++i];
       }
       else if ("-p".equals(value)) {
-        transformerConfs = tokens[++i];
+        transformerConfsBuffer.append(tokens[++i]);
+        transformerConfs = transformerConfsBuffer.toString();
 
         // transformerConfs can have multiple words
-        if (transformerConfs.startsWith("\"")) {
+        if (transformerConfsBuffer.toString().startsWith("\"")) {
           for(int j = i + 1; j < tokens.length; j++) {
-            transformerConfs = transformerConfs + " " + tokens[++i];
+            transformerConfsBuffer.append(" ");
+            transformerConfsBuffer.append(tokens[++i]);
             if(tokens[j].endsWith("\"")) {
               break;
             }
           }
-          transformerConfs = trimQuotes(transformerConfs);
+          transformerConfs = trimQuotes(transformerConfsBuffer.toString());
         }
       }
     }
@@ -196,7 +201,7 @@ public class JMSAdaptor extends AbstractAdaptor {
     // create transformer
     if (transformerName != null) {
       try {
-        Class classDefinition = Class.forName(transformerName);
+        Class<?> classDefinition = Class.forName(transformerName);
         Object object = classDefinition.newInstance();
         transformer = (JMSMessageTransformer)object;
       } catch (Exception e) {

@@ -30,7 +30,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 public class DataConfig {
-  private static Configuration config;
+  private Configuration config;
   final static String MDL_XML = "mdl.xml";
   private Log log = LogFactory.getLog(DataConfig.class);
 

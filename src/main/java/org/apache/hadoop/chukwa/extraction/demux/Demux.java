@@ -61,16 +61,28 @@ import org.apache.log4j.Logger;
 
 public class Demux extends Configured implements Tool {
   static Logger log = Logger.getLogger(Demux.class);
-  static SimpleDateFormat day = new java.text.SimpleDateFormat("yyyyMMdd_HH_mm");
   public static Configuration jobConf = null;
+  protected static void setJobConf(JobConf jobConf) {
+    Demux.jobConf = jobConf;
+  }
+
+  protected Configuration getJobConf() {
+    return Demux.jobConf;
+  }
 
   public static class MapClass extends MapReduceBase implements
           Mapper<ChukwaArchiveKey, ChunkImpl, ChukwaRecordKey, ChukwaRecord> {
 
+    private Configuration jobConf = null;
+
     @Override
     public void configure(JobConf jobConf) {
       super.configure(jobConf);
-      Demux.jobConf = jobConf;
+      setJobConf(jobConf);
+    }
+
+    private void setJobConf(JobConf jobConf) {
+      this.jobConf = jobConf;
     }
 
     public void map(ChukwaArchiveKey key, ChunkImpl chunk,
@@ -82,15 +94,15 @@ public class Demux extends Configured implements Tool {
       try {
         long duration = System.currentTimeMillis();
         if (log.isDebugEnabled()) {
-          log.debug("Entry: [" + chunk.getData() + "] EventType: ["
+          log.debug("Entry: [" + String.valueOf(chunk.getData()) + "] EventType: ["
                   + chunk.getDataType() + "]");
         }
 
-        String defaultProcessor = Demux.jobConf.get(
+        String defaultProcessor = jobConf.get(
                 "chukwa.demux.mapper.default.processor",
                 "org.apache.hadoop.chukwa.extraction.demux.processor.mapper.DefaultProcessor");
 
-        String processorClass_pri = Demux.jobConf.get(chunk.getDataType(),
+        String processorClass_pri = jobConf.get(chunk.getDataType(),
                 defaultProcessor);
 
         String processorClass = processorClass_pri.split(",")[0];
@@ -125,9 +137,11 @@ public class Demux extends Configured implements Tool {
   public static class ReduceClass extends MapReduceBase implements
           Reducer<ChukwaRecordKey, ChukwaRecord, ChukwaRecordKey, ChukwaRecord> {
 
+    private Configuration jobConf = null;
+
     public void configure(JobConf jobConf) {
       super.configure(jobConf);
-      Demux.jobConf = jobConf;
+      this.jobConf = jobConf;
     }
 
     public void reduce(ChukwaRecordKey key, Iterator<ChukwaRecord> values,
@@ -143,10 +157,10 @@ public class Demux extends Configured implements Tool {
 
         String defaultProcessor_classname = "org.apache.hadoop.chukwa.extraction.demux.processor.reducer" +
                 ".IdentityReducer";
-        String defaultProcessor = Demux.jobConf.get("chukwa.demux.reducer.default.processor",
+        String defaultProcessor = jobConf.get("chukwa.demux.reducer.default.processor",
                 "," + defaultProcessor_classname);
 
-        String processClass_pri = Demux.jobConf.get(key.getReduceType(), defaultProcessor);
+        String processClass_pri = jobConf.get(key.getReduceType(), defaultProcessor);
         String[] processClass_tmps = processClass_pri.split(",");
         String processClass = null;
         if (processClass_tmps.length != 2)
@@ -199,7 +213,7 @@ public class Demux extends Configured implements Tool {
   public int run(String[] args) throws Exception {
     JobConf conf = new JobConf(new ChukwaConfiguration(), Demux.class);
 
-
+    SimpleDateFormat day = new java.text.SimpleDateFormat("yyyyMMdd_HH_mm");
     conf.setJobName("Chukwa-Demux_" + day.format(new Date()));
     conf.setInputFormat(SequenceFileInputFormat.class);
     conf.setMapperClass(Demux.MapClass.class);

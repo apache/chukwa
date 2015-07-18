@@ -28,8 +28,6 @@ import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.writer.*;
-import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter.CommitStatus;
-import org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter.StatReportingTask;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -45,17 +43,7 @@ public class FilePerPostWriter extends SeqFileWriter {
 
   String baseName;
   AtomicLong counter = new AtomicLong(0);
-  
-  protected FileSystem fs = null;
-  protected Configuration conf = null;
 
-  protected String outputDir = null;
-//  private Calendar calendar = Calendar.getInstance();
-
-  protected Path currentPath = null;
-  protected String currentFileName = null;
-
-  
   @Override
   public synchronized CommitStatus add(List<Chunk> chunks) throws WriterException {
 
@@ -83,12 +71,10 @@ public class FilePerPostWriter extends SeqFileWriter {
             + "/" + chunk.getStreamName());
         archiveKey.setSeqId(chunk.getSeqID());
 
-        if (chunk != null) {
           // compute size for stats
           dataSize += chunk.getData().length;
           bytesThisRotate += chunk.getData().length;
           seqFileWriter.append(archiveKey, chunk);
-        }
 
       }
       
@@ -129,7 +115,13 @@ public class FilePerPostWriter extends SeqFileWriter {
     } catch(Exception e) {
       throw new WriterException(e);
     }
-      
   }
 
+  protected String getCurrentFileName() {
+    return currentFileName;
+  }
+  
+  protected Path getCurrentPath() {
+    return currentPath;
+  }
 }

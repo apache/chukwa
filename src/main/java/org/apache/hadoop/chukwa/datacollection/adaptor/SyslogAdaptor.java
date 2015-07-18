@@ -76,7 +76,7 @@ public class SyslogAdaptor extends UDPAdaptor {
         facility = facility / 8;
         dataType = facilityMap.get(facility); 
       } catch (NumberFormatException nfe) {
-        log.warn("Unsupported format detected by SyslogAdaptor:"+trimmedBuf);
+        log.warn("Unsupported format detected by SyslogAdaptor:"+Arrays.toString(trimmedBuf));
       }
     }
 

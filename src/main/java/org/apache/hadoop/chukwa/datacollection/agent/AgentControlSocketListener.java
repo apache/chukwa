@@ -74,7 +74,7 @@ public class AgentControlSocketListener extends Thread {
         InputStream in = connection.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
         PrintStream out = new PrintStream(new BufferedOutputStream(connection
-            .getOutputStream()));
+            .getOutputStream()), true, "UTF-8");
         String cmd = null;
         while ((cmd = br.readLine()) != null) {
           processCommand(cmd, out);

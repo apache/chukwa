@@ -19,14 +19,16 @@
 package org.apache.hadoop.chukwa.dataloader;
 
 import java.io.IOException;
+import java.util.Arrays;
+
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 
 public abstract class DataLoaderFactory {
 
-  static ChukwaConfiguration conf = null;
-  static FileSystem fs = null;
+  ChukwaConfiguration conf = null;
+  FileSystem fs = null;
   protected FileStatus[] source = null;
 
   public DataLoaderFactory() {
@@ -37,9 +39,20 @@ public abstract class DataLoaderFactory {
    * @throws IOException
    */
   public void load(ChukwaConfiguration conf, FileSystem fs, FileStatus[] src) throws IOException {
-    this.source=src;
+    this.source=src.clone();
     this.conf=conf;
     this.fs=fs;
   }
 
+  public FileStatus[] getSource() {
+    return Arrays.copyOf(source, source.length);
+  }
+  
+  protected FileSystem getFileSystem() {
+    return fs;
+  }
+  
+  protected ChukwaConfiguration getConf() {
+    return conf;
+  }
 }

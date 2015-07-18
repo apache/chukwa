@@ -21,7 +21,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +38,7 @@ public class Macro {
     private long start = 0;
     private long end = 0;
     private static DatabaseConfig dbc = new DatabaseConfig();
-    private static DatabaseWriter db = null;
+    private DatabaseWriter db = null;
     private String query = null;
     private HttpServletRequest request = null;
 
@@ -272,30 +272,30 @@ public class Macro {
     }
     public String toString() {
         try {
-        HashMap<String, String> macroList = findMacros(query);
-        Iterator<String> macroKeys = macroList.keySet().iterator();
-        while(macroKeys.hasNext()) {
-            String mkey = macroKeys.next();
-            if(macroList.get(mkey).contains("|")) {
-                StringBuffer buf = new StringBuffer();
-                String[] tableList = macroList.get(mkey).split("\\|");
-                boolean first = true;
-                for(String table : tableList) {
-                    String newQuery = query.replace("["+mkey+"]", table);
-                    if(!first) {
-                        buf.append(" union ");
-                    }
-                    buf.append("(");
-                    buf.append(newQuery);
-                    buf.append(")");
-                    first = false;
+          HashMap<String, String> macroList = findMacros(query);
+          for(Entry<String, String> entry : macroList.entrySet()) {
+            String mkey = entry.getKey();
+            String value = entry.getValue();
+            if(value.contains("|")) {
+              StringBuffer buf = new StringBuffer();
+              String[] tableList = value.split("\\|");
+              boolean first = true;
+              for(String table : tableList) {
+                String newQuery = query.replace("["+mkey+"]", table);
+                if(!first) {
+                  buf.append(" union ");
                 }
-                query = buf.toString();
+                buf.append("(");
+                buf.append(newQuery);
+                buf.append(")");
+                first = false;
+              }
+              query = buf.toString();
             } else {
-                log.debug("replacing:"+mkey+" with "+macroList.get(mkey));
-                query = query.replace("["+mkey+"]", macroList.get(mkey));
+              log.debug("replacing:"+mkey+" with "+macroList.get(mkey));
+              query = query.replace("["+mkey+"]", macroList.get(mkey));
             }
-        }
+          }
         } catch(SQLException ex) {
             log.error(query);
             log.error(ex.getMessage());

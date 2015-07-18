@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.File;
 import org.apache.hadoop.chukwa.datacollection.adaptor.*;
-import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 /**
  * An adaptor that repeatedly tails a specified file, sending the new bytes.
@@ -118,7 +117,7 @@ public class FileTailingAdaptor extends LWFTAdaptor {
    * @param eq the queue to write Chunks into
    */
   @Override
-  public synchronized boolean tailFile()
+  public boolean tailFile()
       throws InterruptedException {
     boolean hasMoreData = false;
 

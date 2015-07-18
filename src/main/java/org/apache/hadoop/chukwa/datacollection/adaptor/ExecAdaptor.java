@@ -24,7 +24,6 @@ import org.apache.hadoop.chukwa.inputtools.plugin.ExecPlugin;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.ISO8601DateFormat;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
 import java.nio.charset.Charset;
 import java.util.*;
@@ -155,8 +154,6 @@ public class ExecAdaptor extends AbstractAdaptor {
 
   @Override
   public void start(long offset) throws AdaptorException {
-    if(FULL_PATHS && !(new java.io.File(cmd)).exists())
-      throw new AdaptorException("Can't start ExecAdaptor. No command " + cmd);
     this.sendOffset = offset;
     this.exec = new EmbeddedExec(cmd);
     TimerTask execTimer = new RunToolTask();

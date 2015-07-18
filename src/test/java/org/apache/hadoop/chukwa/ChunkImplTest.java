@@ -36,6 +36,7 @@ public class ChunkImplTest extends TestCase {
       DataInputBuffer ib = new DataInputBuffer();
       ib.reset(ob.getData(), c.getSerializedSizeEstimate());
       int version = ib.readInt();
+      ib.close();
       assertEquals(version, ChunkImpl.PROTOCOL_VERSION);
     } catch (IOException e) {
       e.printStackTrace();

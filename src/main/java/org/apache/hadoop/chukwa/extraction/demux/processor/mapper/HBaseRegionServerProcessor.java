@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
+import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -60,13 +61,15 @@ public class HBaseRegionServerProcessor extends AbstractProcessor {
       } else {
         timeStamp = Long.parseLong(ttTag);
       }
-      Iterator<String> keys = obj.keySet().iterator();
+      @SuppressWarnings("unchecked")
+      Iterator<Map.Entry<String, ?>> keys = obj.entrySet().iterator();
 
       while (keys.hasNext()) {
-        String key = keys.next();
-        Object value = obj.get(key);
+        Map.Entry<String, ?> entry = keys.next();
+        String key = entry.getKey();
+        Object value = entry.getValue();
         String valueString = value == null ? "" : value.toString();
-        Buffer b = new Buffer(valueString.getBytes());
+        Buffer b = new Buffer(valueString.getBytes(Charset.forName("UTF-8")));
         metricsMap.put(key, b);
       }
 

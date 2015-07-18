@@ -96,7 +96,7 @@ public class Heatmap {
   protected String timezone;
   protected String query_state;
   protected String query_stat_type;
-  protected final String table = new String("filesystem_fsm");
+  protected final String table = "filesystem_fsm";
   protected boolean plot_legend = false; // controls whether to plot hostnames
   protected boolean sort_nodes = true;
   protected boolean plot_additional_info = true;
@@ -122,11 +122,11 @@ public class Heatmap {
   final String addinfoshapegroup = "AddInfoShape";
   
   public Heatmap() {
-    this.cluster = new String("");
-    this.timezone = new String("");
-    this.query_state = new String("");
-    this.query_stat_type = new String("");
-    param_map = new HashMap<String, String>();    
+    this.cluster = "";
+    this.timezone = "";
+    this.query_state = "";
+    this.query_stat_type = "";
+    param_map = new HashMap<String, String>();
   }
   
   /**
@@ -141,14 +141,14 @@ public class Heatmap {
      String query_stat_type,
      HashMap<String, String> valmap) 
   {
-    this.cluster = new String(cluster);
+    this.cluster = cluster;
     if (timezone != null) {
-      this.timezone = new String(timezone);
+      this.timezone = timezone;
     } else {
       this.timezone = null;
     }    
-    this.query_state = new String(event_type);
-    this.query_stat_type = new String(query_stat_type);
+    this.query_state = event_type;
+    this.query_stat_type = query_stat_type;
 
     /* This should "simulate" an HttpServletRequest
      * Need to have "start" and "end" in seconds since Epoch
@@ -162,14 +162,14 @@ public class Heatmap {
      HashMap<String, String> valmap, String shuffles) 
   {
     
-    this.cluster = new String(cluster);
+    this.cluster = cluster;
     if (timezone != null) {
-      this.timezone = new String(timezone);
+      this.timezone = timezone;
     } else {
       this.timezone = null;
     }
-    this.query_state = new String(query_state);
-    this.query_stat_type = new String(query_stat_type);
+    this.query_state = query_state;
+    this.query_stat_type = query_stat_type;
 
     /* This should "simulate" an HttpServletRequest
      * Need to have "start" and "end" in seconds since Epoch
@@ -185,14 +185,14 @@ public class Heatmap {
      int w, int h) 
   {
     
-    this.cluster = new String(cluster);
+    this.cluster = cluster;
     if (timezone != null) {
-      this.timezone = new String(timezone);
+      this.timezone = timezone;
     } else {
       this.timezone = null;
     }
-    this.query_state = new String(query_state);
-    this.query_stat_type = new String(query_stat_type);
+    this.query_state = query_state;
+    this.query_stat_type = query_stat_type;
 
     /* This should "simulate" an HttpServletRequest
      * Need to have "start" and "end" in seconds since Epoch
@@ -211,15 +211,15 @@ public class Heatmap {
     this.cluster = session.getAttribute("cluster").toString();
     String query_state = xf.getParameter("query_state");
     if (query_state != null) {
-      this.query_state = new String(query_state);
+      this.query_state = query_state;
     } else {
-      this.query_state = new String("read");
+      this.query_state = "read";
     }
     String query_stat_type = xf.getParameter("query_stat_type");
     if (query_stat_type != null) {
-      this.query_stat_type = new String(query_stat_type);
+      this.query_stat_type = query_stat_type;
     } else {
-      this.query_stat_type = new String("transaction_count");
+      this.query_stat_type = "transaction_count";
     }
     this.timezone = session.getAttribute("time_zone").toString();
   }
@@ -262,9 +262,6 @@ public class Heatmap {
     this.viz.setRendererFactory(new RendererFactory(){
       AbstractShapeRenderer sr = new ShapeRenderer();
       ShapeRenderer sr_big = new ShapeRenderer(BOXWIDTH);
-      Renderer arY = new AxisRenderer(Constants.LEFT, Constants.TOP);
-      Renderer arX = new AxisRenderer(Constants.CENTER, Constants.BOTTOM);
-      PolygonRenderer pr = new PolygonRenderer(Constants.POLY_TYPE_LINE);
       LabelRenderer lr = new LabelRenderer("label");
       LabelRenderer lr_legend = new LabelRenderer("label");
             
@@ -363,18 +360,18 @@ public class Heatmap {
     
     VisualTable legend_labels_table_viz = this.viz.addTable(addinfogroup, legend_labels_table);
 
-    legend_labels_table_viz.setFloat(0, VisualItem.X, this.SIZE_X/2);
-    legend_labels_table_viz.setFloat(0, VisualItem.Y, BORDER[1]/2);
+    legend_labels_table_viz.setFloat(0, VisualItem.X, this.SIZE_X/2f);
+    legend_labels_table_viz.setFloat(0, VisualItem.Y, BORDER[1]/2f);
     legend_labels_table_viz.setTextColor(0,ColorLib.color(java.awt.Color.BLACK));
     legend_labels_table_viz.setFont(0,new Font(Font.SANS_SERIF,Font.PLAIN,LEGEND_FONT_SIZE));
 
-    legend_labels_table_viz.setFloat(1, VisualItem.X, this.SIZE_X/2);
-    legend_labels_table_viz.setFloat(1, VisualItem.Y, BORDER[1] + (BOXWIDTH*hd.num_hosts) + BORDER[3]/2);
+    legend_labels_table_viz.setFloat(1, VisualItem.X, this.SIZE_X/2f);
+    legend_labels_table_viz.setFloat(1, VisualItem.Y, BORDER[1] + (BOXWIDTH*hd.num_hosts) + BORDER[3]/2f);
     legend_labels_table_viz.setTextColor(1,ColorLib.color(java.awt.Color.BLACK));
     legend_labels_table_viz.setFont(1,new Font(Font.SANS_SERIF,Font.PLAIN,LEGEND_FONT_SIZE));
 
-    legend_labels_table_viz.setFloat(2, VisualItem.X, BORDER[0] + (BOXWIDTH*hd.num_hosts) + BORDER[2]/2);
-    legend_labels_table_viz.setFloat(2, VisualItem.Y, this.SIZE_Y/2);
+    legend_labels_table_viz.setFloat(2, VisualItem.X, BORDER[0] + (BOXWIDTH*hd.num_hosts) + BORDER[2]/2f);
+    legend_labels_table_viz.setFloat(2, VisualItem.Y, this.SIZE_Y/2f);
     legend_labels_table_viz.setTextColor(2,ColorLib.color(java.awt.Color.BLACK));
     legend_labels_table_viz.setFont(2,new Font(Font.SANS_SERIF,Font.PLAIN,LEGEND_FONT_SIZE));
 
@@ -530,6 +527,9 @@ public class Heatmap {
    * Interfaces with database to get data and 
    * populate data structures for rendering
    */
+  @edu.umd.cs.findbugs.annotations.SuppressWarnings(value =
+      "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE", 
+      justification = "Dynamic based upon tables in the database")
   public HeatmapData getData() {
     // preliminary setup
     OfflineTimeHandler time_offline;
@@ -549,25 +549,27 @@ public class Heatmap {
     DatabaseWriter dbw = new DatabaseWriter(this.cluster);
     
     // setup query
+    
+    String sqlTemplate = "select block_id,start_time,finish_time,start_time_millis,finish_time_millis,status,state_name,hostname,other_host,bytes from [%s] where finish_time between '[start]' and '[end]' and (%s) order by start_time";
     String query;
     if (this.query_state != null && this.query_state.equals("read")) {
-      query = "select block_id,start_time,finish_time,start_time_millis,finish_time_millis,status,state_name,hostname,other_host,bytes from ["+table+"] where finish_time between '[start]' and '[end]' and (state_name like 'read_local' or state_name like 'read_remote')";
+      query = String.format(sqlTemplate, table,"state_name like 'read_local' or state_name like 'read_remote'");
     } else if (this.query_state != null && this.query_state.equals("write")) {
-      query = "select block_id,start_time,finish_time,start_time_millis,finish_time_millis,status,state_name,hostname,other_host,bytes from ["+table+"] where finish_time between '[start]' and '[end]' and (state_name like 'write_local' or state_name like 'write_remote' or state_name like 'write_replicated')";
+      query = String.format(sqlTemplate, table, "state_name like 'write_local' or state_name like 'write_remote' or state_name like 'write_replicated'");
     } else {
-      query = "select block_id,start_time,finish_time,start_time_millis,finish_time_millis,status,state_name,hostname,other_host,bytes from ["+table+"] where finish_time between '[start]' and '[end]' and state_name like '" + query_state + "'";
+      query = String.format(sqlTemplate, table, "state_name like '" + query_state + "'");
     } 
     Macro mp = new Macro(start,end,query);
-    query = mp.toString() + " order by start_time";
+    String q = mp.toString();
     
     ArrayList<HashMap<String, Object>> events = new ArrayList<HashMap<String, Object>>();
 
     ResultSet rs = null;
     
-    log.debug("Query: " + query);
+    log.debug("Query: " + q);
     // run query, extract results
     try {
-      rs = dbw.query(query);
+      rs = dbw.query(q);
       ResultSetMetaData rmeta = rs.getMetaData();
       int col = rmeta.getColumnCount();
       while (rs.next()) {
@@ -609,8 +611,8 @@ public class Heatmap {
     Iterator<String> host_iter = host_set.iterator();
     for (int i = 0; i < num_hosts && host_iter.hasNext(); i++) {
       String curr_host = host_iter.next();
-      host_indices.put(curr_host, new Integer(i));
-      host_rev_indices.put(new Integer(i),curr_host);
+      host_indices.put(curr_host, i);
+      host_rev_indices.put(i,curr_host);
     }
 
     System.out.println("Number of hosts: " + num_hosts);
@@ -747,25 +749,22 @@ public class Heatmap {
     
     // collate data
     HeatmapData hd = new HeatmapData();
-    hd.stats = new long[num_hosts][num_hosts];
     hd.stats = stats;
     hd.min = min;
     hd.max = max;
     hd.num_hosts = num_hosts;
     hd.agg_tab = agg_tab;
     
-    this.add_info_extra = new String("\nState: "+this.prettyStateNames.get(this.query_state)+
-      " ("+events.size()+" "+this.query_state+"'s ["+this.query_stat_type+"])\n" + 
-      "Plotted value range: ["+hd.min+","+hd.max+"] (Zeros in black)");
+    this.add_info_extra = new StringBuilder().append("\nState: ").append(this.prettyStateNames.get(this.query_state)).
+      append(" (").append(events.size()).append(" ").append(this.query_state).
+      append("'s [").append(this.query_stat_type).append("])\n").
+      append("Plotted value range: [").append(hd.min).append(",").append(hd.max).
+      append("] (Zeros in black)").toString();
 
     hd.hostnames = new String [num_hosts];
     for (int i = 0; i < num_hosts; i++) {
-      String curr_host = host_rev_indices.get(new Integer(permute[i]));
-      if (sort_nodes) {
-        hd.hostnames[i] = new String(curr_host);
-      } else {
-        hd.hostnames[i] = new String(curr_host);
-      }
+      String curr_host = host_rev_indices.get(permute[i]);
+      hd.hostnames[i] = curr_host;
     }
     
     return hd;

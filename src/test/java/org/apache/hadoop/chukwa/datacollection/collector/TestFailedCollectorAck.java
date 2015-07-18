@@ -51,7 +51,7 @@ public class TestFailedCollectorAck extends TestCase {
     Configuration conf = new Configuration();
 
     String outputDirectory = TestDelayedAcks.buildConf(conf);
-    SeqFileWriter.ENABLE_ROTATION_ON_CLOSE = false;
+    SeqFileWriter.setEnableRotationOnClose(false);
     File sinkA = new File(outputDirectory, "chukwa_sink_A");
     sinkA.mkdir();
     File sinkB = new File(outputDirectory, "chukwa_sink_B");
@@ -83,7 +83,7 @@ public class TestFailedCollectorAck extends TestCase {
     Thread.sleep(10 * 1000);
     collector1_s.stop();
     Thread.sleep(10 * 1000);
-    SeqFileWriter.ENABLE_ROTATION_ON_CLOSE = true;
+    SeqFileWriter.setEnableRotationOnClose(true);
 
     String[] stat = agent.getAdaptorList().get("adaptor_constSend").split(" ");
     long bytesCommitted = Long.valueOf(stat[stat.length -1]);

@@ -96,13 +96,10 @@ public class FSMBuilder extends Configured implements Tool {
       assert(fnl.contains("TIME_START"));
       assert(fnl.contains("COUNTER_BYTES"));
 
-      String id1 = new String(cr.getValue("TASK_ID")+JCDF_SEP+cr.getValue("TIME_START"));
-      String id2 = new String("map"+JCDF_SEP+cr.getValue("JOB_ID"));
-      String et = new String(
-        (new Long(Long.parseLong(cr.getValue("TIME_END")) - 
-        Long.parseLong(cr.getValue("TIME_START")))).toString()
-      );
-      String ev = new String(cr.getValue("COUNTER_BYTES"));      
+      String id1 = new StringBuilder().append(cr.getValue("TASK_ID")).append(JCDF_SEP).append(cr.getValue("TIME_START")).toString();
+      String id2 = new StringBuilder().append("map").append(JCDF_SEP).append(cr.getValue("JOB_ID")).toString();
+      String et = Long.toString((Long.parseLong(cr.getValue("TIME_END")) - Long.parseLong(cr.getValue("TIME_START"))));
+      String ev = new StringBuilder().append(cr.getValue("COUNTER_BYTES")).toString();
       cr.add(JCDF_ID1, id1);
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
@@ -120,13 +117,10 @@ public class FSMBuilder extends Configured implements Tool {
       assert(fnl.contains("TIME_START"));
       assert(fnl.contains("COUNTER_INPUT_BYTES"));
 
-      String id1 = new String("map"+JCDF_SEP+cr.getValue("TASK_ID"));
-      String id2 = new String("shuf"+JCDF_SEP+cr.getValue("TASK_ID"));
-      String et = new String(
-        (new Long(Long.parseLong(cr.getValue("TIME_END")) - 
-        Long.parseLong(cr.getValue("TIME_START")))).toString()
-      );
-      String ev = new String(cr.getValue("COUNTER_INPUT_BYTES"));      
+      String id1 = new StringBuilder().append("map").append(JCDF_SEP).append(cr.getValue("TASK_ID")).toString();
+      String id2 = new StringBuilder().append("shuf").append(JCDF_SEP).append(cr.getValue("TASK_ID")).toString();
+      String et = Long.toString((Long.parseLong(cr.getValue("TIME_END")) - Long.parseLong(cr.getValue("TIME_START"))));
+      String ev = cr.getValue("COUNTER_INPUT_BYTES");
       cr.add(JCDF_ID1, id1);
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
@@ -154,13 +148,13 @@ public class FSMBuilder extends Configured implements Tool {
       redid = id_parts[0];
       mapid = id_parts[1];
 
-      String id1 = new String("shuf"+JCDF_SEP+mapid);
-      String id2 = new String("shufred"+JCDF_SEP+redid);
-      String et = new String(
-        (new Long(Long.parseLong(cr.getValue("TIME_END")) - 
-        Long.parseLong(cr.getValue("TIME_START")))).toString()
+      String id1 = new StringBuilder().append("shuf").append(JCDF_SEP).append(mapid).toString();
+      String id2 = new StringBuilder().append("shufred").append(JCDF_SEP).append(redid).toString();
+      String et = Long.toString(
+        Long.parseLong(cr.getValue("TIME_END")) - 
+        Long.parseLong(cr.getValue("TIME_START"))
       );
-      String ev = new String(cr.getValue("COUNTER_BYTES"));      
+      String ev = cr.getValue("COUNTER_BYTES");
       cr.add(JCDF_ID1, id1);
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
@@ -178,13 +172,13 @@ public class FSMBuilder extends Configured implements Tool {
       assert(fnl.contains("TIME_START"));
       assert(fnl.contains("COUNTER_INPUT_BYTES"));
 
-      String id1 = new String("shufred"+JCDF_SEP+cr.getValue("TASK_ID"));
-      String id2 = new String("redsort"+JCDF_SEP+cr.getValue("TASK_ID"));
-      String et = new String(
-        (new Long(Long.parseLong(cr.getValue("TIME_END")) - 
-        Long.parseLong(cr.getValue("TIME_START")))).toString()
+      String id1 = new StringBuilder().append("shufred").append(JCDF_SEP).append(cr.getValue("TASK_ID")).toString();
+      String id2 = new StringBuilder().append("redsort").append(JCDF_SEP).append(cr.getValue("TASK_ID")).toString();
+      String et = Long.toString(
+        (Long.parseLong(cr.getValue("TIME_END")) - 
+        Long.parseLong(cr.getValue("TIME_START")))
       );
-      String ev = new String(cr.getValue("COUNTER_INPUT_BYTES"));      
+      String ev = new StringBuilder().append(cr.getValue("COUNTER_INPUT_BYTES")).toString();
       cr.add(JCDF_ID1, id1);
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
@@ -202,13 +196,13 @@ public class FSMBuilder extends Configured implements Tool {
       assert(fnl.contains("TIME_START"));
       assert(fnl.contains("COUNTER_INPUT_BYTES"));
 
-      String id1 = new String("redsort"+JCDF_SEP+cr.getValue("TASK_ID"));
-      String id2 = new String("red"+JCDF_SEP+cr.getValue("TASK_ID"));
-      String et = new String(
-        (new Long(Long.parseLong(cr.getValue("TIME_END")) - 
-        Long.parseLong(cr.getValue("TIME_START")))).toString()
+      String id1 = new StringBuilder().append("redsort").append(JCDF_SEP).append(cr.getValue("TASK_ID")).toString();
+      String id2 = new StringBuilder().append("red").append(JCDF_SEP).append(cr.getValue("TASK_ID")).toString();
+      String et = Long.toString(
+        Long.parseLong(cr.getValue("TIME_END")) - 
+        Long.parseLong(cr.getValue("TIME_START"))
       );
-      String ev = new String(cr.getValue("COUNTER_INPUT_BYTES"));      
+      String ev = new StringBuilder().append(cr.getValue("COUNTER_INPUT_BYTES")).toString();
       cr.add(JCDF_ID1, id1);
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
@@ -226,19 +220,16 @@ public class FSMBuilder extends Configured implements Tool {
       assert(fnl.contains("TIME_START"));
       assert(fnl.contains("COUNTER_INPUT_BYTES"));
 
-      String id1 = new String("red"+JCDF_SEP+cr.getValue("TASK_ID"));
-      String id2 = new String("redout"+JCDF_SEP+cr.getValue("TASK_ID"));
-      String et = new String(
-        (new Long(Long.parseLong(cr.getValue("TIME_END")) - 
-        Long.parseLong(cr.getValue("TIME_START")))).toString()
-      );
-      String ev = new String(cr.getValue("COUNTER_INPUT_BYTES"));      
+      String id1 = new StringBuilder().append("red").append(JCDF_SEP).append(cr.getValue("TASK_ID")).toString();
+      String id2 = new StringBuilder().append("redout").append(JCDF_SEP).append(cr.getValue("TASK_ID")).toString();
+      String et = Long.toString(Long.parseLong(cr.getValue("TIME_END")) - Long.parseLong(cr.getValue("TIME_START")));
+      String ev = cr.getValue("COUNTER_INPUT_BYTES");
       cr.add(JCDF_ID1, id1);
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
       cr.add(JCDF_EDGE_VOL, ev);
-    }    
-    
+    }
+
     protected void addStitchingFields_blockwrite
       (ChukwaRecord cr, ArrayList<String> fnl)
     {
@@ -248,13 +239,10 @@ public class FSMBuilder extends Configured implements Tool {
       assert(fnl.contains("TIME_START"));
       assert(fnl.contains("COUNTER_BYTES"));
 
-      String id1 = new String("redout"+JCDF_SEP+cr.getValue("JOB_ID"));
-      String id2 = new String(cr.getValue("TASK_ID")+JCDF_SEP+cr.getValue("TIME_START"));
-      String et = new String(
-        (new Long(Long.parseLong(cr.getValue("TIME_END")) - 
-        Long.parseLong(cr.getValue("TIME_START")))).toString()
-      );
-      String ev = new String(cr.getValue("COUNTER_BYTES"));      
+      String id1 = new StringBuilder().append("redout").append(JCDF_SEP).append(cr.getValue("JOB_ID")).toString();
+      String id2 = new StringBuilder().append(cr.getValue("TASK_ID")).append(JCDF_SEP).append(cr.getValue("TIME_START")).toString();
+      String et = new StringBuilder().append(Long.toString(Long.parseLong(cr.getValue("TIME_END")) - Long.parseLong(cr.getValue("TIME_START")))).toString();
+      String ev = cr.getValue("COUNTER_BYTES");
       cr.add(JCDF_ID1, id1);
       cr.add(JCDF_ID2, id2);
       cr.add(JCDF_EDGE_TIME, et);
@@ -340,17 +328,17 @@ public class FSMBuilder extends Configured implements Tool {
 					// error handling?
 				}
 						
-				cr.add(new String("STATE_NAME"),start_rec.state_name);
-				cr.add(new String("STATE_UNIQ_ID"),start_rec.getUniqueID());
-				cr.add(new String("TIMESTAMP"),start_rec.timestamp);
-				cr.add(new String("TIME_START"),start_rec.time_start);
-				cr.add(new String("TIME_END"),end_rec.time_end);
-				cr.add(new String("TIME_START_MILLIS"),start_rec.time_start.substring(start_rec.time_start.length()-3));
-				cr.add(new String("TIME_END_MILLIS"),end_rec.time_end.substring(end_rec.time_end.length()-3));
-				cr.add(new String("HOST"),start_rec.host_exec);
-				cr.add(new String("HOST_OTHER"),start_rec.host_other);
-				cr.add(new String("JOB_ID"),start_rec.job_id); 
-				cr.add(new String("TASK_ID"),start_rec.getFriendlyID());
+				cr.add("STATE_NAME",start_rec.state_name);
+				cr.add("STATE_UNIQ_ID",start_rec.getUniqueID());
+				cr.add("TIMESTAMP",start_rec.timestamp);
+				cr.add("TIME_START",start_rec.time_start);
+				cr.add("TIME_END",end_rec.time_end);
+				cr.add("TIME_START_MILLIS",start_rec.time_start.substring(start_rec.time_start.length()-3));
+				cr.add("TIME_END_MILLIS",end_rec.time_end.substring(end_rec.time_end.length()-3));
+				cr.add("HOST",start_rec.host_exec);
+				cr.add("HOST_OTHER",start_rec.host_other);
+				cr.add("JOB_ID",start_rec.job_id); 
+				cr.add("TASK_ID",start_rec.getFriendlyID());
 
 				Set<String> treemapkeys = end_rec.add_info.keySet();
 				Iterator<String> keyIter = treemapkeys.iterator();
@@ -360,17 +348,17 @@ public class FSMBuilder extends Configured implements Tool {
 					String currkey = keyIter.next();
 					if (currkey != null && 
 					    !noncounters.contains(currkey)) {
-						cr.add(new String("COUNTER_" + currkey), end_rec.add_info.get(currkey));	
+						cr.add("COUNTER_" + currkey, end_rec.add_info.get(currkey));	
 					} else if (currkey != null && noncounters.contains(currkey)) {
-						cr.add(new String(currkey), end_rec.add_info.get(currkey));				
+						cr.add(currkey, end_rec.add_info.get(currkey));				
 					} 
 				}
 				assert(!keyIter.hasNext());
 				cr.setTime(Long.parseLong(start_rec.timestamp));
 				
 				newkey = null;
-				newkey = new String(start_rec.time_orig_epoch + 
-					SEP + start_rec.getUniqueID() + SEP + start_rec.time_orig);
+				newkey = new StringBuilder().append(start_rec.time_orig_epoch).append(SEP).append(start_rec.getUniqueID()).
+				    append(SEP).append(start_rec.time_orig).toString();
 
 				log.info("Key ["+newkey+"] Task ["+start_rec.getUniqueID()+"] Job ["+start_rec.job_id+"] Friendly ["+start_rec.getFriendlyID()+"]");
 

@@ -58,10 +58,10 @@ public class WidgetBean {
       this.categories=(String) json.get("categories");
       this.url=(String) json.get("url");
       this.description=(String) json.get("description");
-      if(json.get("refresh").getClass().equals("String")) {
+      if(json.get("refresh").getClass().getName().equals("String")) {
         int refresh = Integer.parseInt((String) json.get("refresh"));
         this.refresh = refresh;
-      } else if(json.get("refresh").getClass().equals("Long")) {
+      } else if(json.get("refresh").getClass().getName().equals("Long")) {
         this.refresh = ((Long) json.get("refresh")).intValue();
       }
       try {

@@ -59,7 +59,7 @@ public class PipelineConnector implements Connector, Runnable {
 
   ChunkQueue chunkQueue;
 
-  private static volatile ChukwaAgent agent = null;
+  private ChukwaAgent agent = null;
 
   private volatile boolean stopMe = false;
   protected ChukwaWriter writers = null;

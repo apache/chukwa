@@ -21,7 +21,8 @@ package org.apache.hadoop.chukwa.inputtools.mdl;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
-import java.nio.channels.*;
+import java.nio.charset.Charset;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,8 +30,7 @@ public class LoaderServer {
 
   String name;
   private static Log log = LogFactory.getLog(LoaderServer.class);
-  private static FileLock lock = null;
-  private static FileOutputStream pidFileOutput = null;
+  private FileOutputStream pidFileOutput = null;
 
   public LoaderServer(String name) {
     this.name = name;
@@ -46,24 +46,14 @@ public class LoaderServer {
         .append(".pid");
     try {
       File pidFile = new File(pidFilesb.toString());
-
       pidFileOutput = new FileOutputStream(pidFile);
-      pidFileOutput.write(pid.getBytes());
+      pidFileOutput.write(pid.getBytes(Charset.forName("UTF-8")));
       pidFileOutput.flush();
-      FileChannel channel = pidFileOutput.getChannel();
-      LoaderServer.lock = channel.tryLock();
-      if (LoaderServer.lock != null) {
-        log.info("Initlization succeeded...");
-      } else {
-        throw (new IOException());
-      }
     } catch (IOException ex) {
       System.out.println("Initializaiton failed: can not write pid file.");
       log.error("Initialization failed...");
       log.error(ex.getMessage());
-      System.exit(-1);
       throw ex;
-
     }
 
   }
@@ -80,7 +70,6 @@ public class LoaderServer {
       log.error("Delete pid file, No such file or directory: " + pidFileName);
     } else {
       try {
-        lock.release();
         pidFileOutput.close();
       } catch (IOException e) {
         log.error("Unable to release file lock: " + pidFileName);

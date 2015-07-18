@@ -30,8 +30,11 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
  * Trigger action that makes an HTTP request when executed.
@@ -129,14 +132,16 @@ public class HttpTriggerAction implements TriggerAction {
     // set headers
     boolean contentLengthExists = false;
     if (headers != null) {
-      for (String name: headers.keySet()) {
+      for(Entry<String, String> entry : headers.entrySet()) {
+        String name = entry.getKey();
+        String value = entry.getValue();
         if (log.isDebugEnabled()) {
-          log.debug("Setting header " + name + ": " + headers.get(name));
+          log.debug("Setting header " + name + ": " + value);
         }
         if (name.equalsIgnoreCase("content-length")) {
           contentLengthExists = true;
         }
-        conn.setRequestProperty(name, headers.get(name));
+        conn.setRequestProperty(name, value);
       }
     }
 
@@ -149,7 +154,7 @@ public class HttpTriggerAction implements TriggerAction {
     // send body if it exists
     if (body != null) {
       conn.setDoOutput(true);
-      OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+      OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream(), Charset.forName("UTF-8"));
       writer.write(body);
       writer.flush();
       writer.close();
@@ -169,7 +174,7 @@ public class HttpTriggerAction implements TriggerAction {
     }
     else {
       BufferedReader reader = new BufferedReader(
-                                new InputStreamReader(conn.getInputStream()));
+                                new InputStreamReader(conn.getInputStream(), Charset.forName("UTF-8")));
       String line;
       StringBuilder sb = new StringBuilder();
       while ((line = reader.readLine()) != null) {
@@ -215,7 +220,7 @@ public class HttpTriggerAction implements TriggerAction {
       for (String header : headersSplit) {
         String[] nvp = header.split(":", 2);
         if (nvp.length < 2) {
-          log.error("Invalid HTTP header found: " + nvp);
+          log.error("Invalid HTTP header found: " + Arrays.toString(nvp));
           continue;
         }
         headerMap.put(nvp[0].trim(), nvp[1].trim());

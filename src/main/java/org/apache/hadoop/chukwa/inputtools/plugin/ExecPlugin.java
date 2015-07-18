@@ -23,6 +23,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+
 import org.json.simple.JSONObject;
 
 /**
@@ -33,8 +35,8 @@ import org.json.simple.JSONObject;
  * 
  */
 public abstract class ExecPlugin implements IPlugin {
-  public final int statusOK = 100;
-  public final int statusKO = -100;
+  public final static int statusOK = 100;
+  public final static int statusKO = -100;
 
   Process process = null;
 
@@ -107,7 +109,6 @@ class OutputReader extends Thread {
   private Process process = null;
   private Output outputType = null;
   public StringBuilder output = new StringBuilder();
-  public boolean isOk = true;
 
   public OutputReader(Process process, Output outputType) {
     this.process = process;
@@ -127,19 +128,18 @@ class OutputReader extends Thread {
         break;
 
       }
-
-      InputStreamReader isr = new InputStreamReader(is);
-      BufferedReader br = new BufferedReader(isr);
-      while ((line = br.readLine()) != null) {
-        // System.out.println("========>>>>>>>["+line+"]");
-        output.append(line).append("\n");
+      if(is!=null) {
+        InputStreamReader isr = new InputStreamReader(is, Charset.forName("UTF-8"));
+        BufferedReader br = new BufferedReader(isr);
+        while ((line = br.readLine()) != null) {
+          // System.out.println("========>>>>>>>["+line+"]");
+          output.append(line).append("\n");
+        }
+        br.close();
       }
-      br.close();
     } catch (IOException e) {
-      isOk = false;
       e.printStackTrace();
     } catch (Throwable e) {
-      isOk = false;
       e.printStackTrace();
     }
   }

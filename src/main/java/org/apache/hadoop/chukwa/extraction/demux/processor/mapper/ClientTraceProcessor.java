@@ -130,7 +130,7 @@ public class ClientTraceProcessor extends AbstractProcessor {
       rec.add(Record.tagsField, chunk.getTags());
       rec.add(Record.sourceField, chunk.getSource());
       rec.add(Record.applicationField, chunk.getStreamName());
-      rec.add("actual_time",(new Long(ms_fullresolution)).toString());
+      rec.add("actual_time",Long.toString(ms_fullresolution));
       output.collect(key, rec);
 
     } catch (ParseException e) {

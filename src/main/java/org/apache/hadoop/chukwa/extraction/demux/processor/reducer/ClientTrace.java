@@ -48,7 +48,7 @@ public class ClientTrace implements ReduceProcessor {
       while (values.hasNext()) {
         /* aggregate bytes for current key */
         rec = values.next();
-        bytes += Long.valueOf(rec.getValue("bytes"));
+        bytes += Long.parseLong(rec.getValue("bytes"));
         
         /* output raw values to different data type for uses which
          * require detailed per-operation data */
@@ -70,7 +70,7 @@ public class ClientTrace implements ReduceProcessor {
 
       String[] k = key.getKey().split("/");
       emit.add(k[1] + "_" + k[2], String.valueOf(bytes));
-      emit.setTime(Long.valueOf(k[3]));
+      emit.setTime(Long.parseLong(k[3]));
       output.collect(key, emit);
 
     } catch (IOException e) {

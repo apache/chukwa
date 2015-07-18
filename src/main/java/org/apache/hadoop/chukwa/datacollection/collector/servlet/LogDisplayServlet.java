@@ -22,11 +22,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
+
 import java.io.*;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+
 import org.apache.hadoop.chukwa.*;
 import org.apache.hadoop.chukwa.datacollection.writer.ExtractorWriter;
 import org.apache.hadoop.conf.Configuration;
@@ -61,8 +65,8 @@ public class LogDisplayServlet extends HttpServlet {
   public static final String BUF_SIZE_OPT = "chukwaCollector.showLogs.buffer";
   long BUF_SIZE = 1024* 1024;
   
-  Configuration conf;
-  Map<String, Deque<Chunk>> chunksBySID = new HashMap<String, Deque<Chunk>>();
+  transient Configuration conf;
+  transient Map<String, Deque<Chunk>> chunksBySID;
   Queue<String> receivedSIDs = new LinkedList<String>();
   long totalStoredSize = 0;
 
@@ -71,12 +75,20 @@ public class LogDisplayServlet extends HttpServlet {
   
   public LogDisplayServlet() {
     conf = new Configuration();
-    ExtractorWriter.recipient = this;
+    chunksBySID = new HashMap<String, Deque<Chunk>>();
+    ExtractorWriter.setRecipient(this);
   }
   
   public LogDisplayServlet(Configuration c) {
     conf = c;
-    ExtractorWriter.recipient = this;
+    chunksBySID = new HashMap<String, Deque<Chunk>>();
+    ExtractorWriter.setRecipient(this);
+  }
+
+  public LogDisplayServlet(Configuration c, Map<String, Deque<Chunk>> chunksBySID) {
+    conf = c;
+    this.chunksBySID = chunksBySID;
+    ExtractorWriter.setRecipient(this);
   }
 
   public void init(ServletConfig servletConf) throws ServletException {
@@ -93,9 +105,9 @@ public class LogDisplayServlet extends HttpServlet {
       MessageDigest md;
       md = MessageDigest.getInstance("MD5");
   
-      md.update(c.getSource().getBytes());
-      md.update(c.getStreamName().getBytes());
-      md.update(c.getTags().getBytes());
+      md.update(c.getSource().getBytes(Charset.forName("UTF-8")));
+      md.update(c.getStreamName().getBytes(Charset.forName("UTF-8")));
+      md.update(c.getTags().getBytes(Charset.forName("UTF-8")));
       StringBuilder sb = new StringBuilder();
       byte[] bytes = md.digest();
       for(int i=0; i < bytes.length; ++i) {
@@ -106,7 +118,6 @@ public class LogDisplayServlet extends HttpServlet {
       return sb.toString();
     } catch(NoSuchAlgorithmException n) {
       log.fatal(n);
-      System.exit(0);
       return null;
     }
   }
@@ -146,7 +157,7 @@ public class LogDisplayServlet extends HttpServlet {
   protected synchronized void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException  {
   
-    PrintStream out = new PrintStream(new BufferedOutputStream(resp.getOutputStream()));
+    PrintStream out = new PrintStream(new BufferedOutputStream(resp.getOutputStream()), true, "UTF-8");
     resp.setStatus(200);
     String path = req.getServletPath();
     String streamID = req.getParameter("sid");

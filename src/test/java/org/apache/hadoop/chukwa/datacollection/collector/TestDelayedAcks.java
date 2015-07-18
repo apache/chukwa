@@ -18,14 +18,12 @@
 package org.apache.hadoop.chukwa.datacollection.collector;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.regex.*;
 import org.apache.hadoop.chukwa.*;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorShutdownPolicy;
 import org.apache.hadoop.chukwa.datacollection.adaptor.TestDirTailingAdaptor;
 import org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.FileTailingAdaptor;
-import org.apache.hadoop.chukwa.datacollection.adaptor.filetailer.TestRawAdaptor;
 import org.apache.hadoop.chukwa.datacollection.agent.AdaptorResetThread;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.collector.servlet.CommitCheckServlet;

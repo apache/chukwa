@@ -93,12 +93,14 @@ public class ClassUtils {
       if (directory.exists()) {
         // Get the list of the files contained in the package
         String[] files = directory.list();
-        for (String file : files) {
-          // we are only interested in .class files
-          if (file.endsWith(".class")) {
-            // removes the .class extension
-            classes.add(Class.forName(pckgname + '.'
+        if (files != null ) {
+          for (String file : files) {
+            // we are only interested in .class files
+            if (file.endsWith(".class")) {
+              // removes the .class extension
+              classes.add(Class.forName(pckgname + '.'
                 + file.substring(0, file.length() - 6)));
+            }
           }
         }
       } else {

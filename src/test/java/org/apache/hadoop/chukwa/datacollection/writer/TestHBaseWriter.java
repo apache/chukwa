@@ -17,8 +17,6 @@
  */
 package org.apache.hadoop.chukwa.datacollection.writer;
 
-
-import java.io.IOException;
 import java.util.ArrayList;
 
 import junit.framework.Assert;
@@ -32,11 +30,10 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseTestingUtility;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.LocalHBaseCluster;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
@@ -53,7 +50,6 @@ public class TestHBaseWriter extends TestCase{
   private byte[] table = Bytes.toBytes("Test");
   private byte[] test = Bytes.toBytes("1234567890 Key Value");
   private ChukwaConfiguration cc;
-  private LocalHBaseCluster cluster;
   long timestamp = 1234567890;
   
   public TestHBaseWriter() {
@@ -93,7 +89,7 @@ public class TestHBaseWriter extends TestCase{
       if(hbw.add(chunks)!=ChukwaWriter.COMMIT_OK) {
         Assert.fail("Commit status is not OK.");
       }
-      HTable testTable = new HTable(conf, table);
+      Table testTable = util.getConnection().getTable(TableName.valueOf(table));
       ResultScanner scanner = testTable.getScanner(columnFamily, qualifier);
       for(Result res : scanner) {
         Assert.assertEquals(new String(expectedValue), new String(res.getValue(columnFamily, qualifier)));

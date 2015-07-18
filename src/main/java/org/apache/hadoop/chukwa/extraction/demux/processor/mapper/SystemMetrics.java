@@ -24,6 +24,7 @@ package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.hadoop.chukwa.datacollection.writer.hbase.Annotation.Table;
@@ -69,14 +70,17 @@ public class SystemMetrics extends AbstractProcessor {
     	  continue;
       }
       actualSize++;
-      Iterator<String> keys = cpu.keySet().iterator();
       combined = combined + Double.parseDouble(cpu.get("combined").toString());
       user = user + Double.parseDouble(cpu.get("user").toString());
       sys = sys + Double.parseDouble(cpu.get("sys").toString());
       idle = idle + Double.parseDouble(cpu.get("idle").toString());
+      @SuppressWarnings("unchecked")
+      Iterator<Map.Entry<String, ?>> keys = cpu.entrySet().iterator();
       while(keys.hasNext()) {
-        String key = keys.next();
-        record.add(key + "." + i, cpu.get(key).toString());
+        Map.Entry<String, ?> entry = keys.next();
+        String key = entry.getKey();
+        Object value = entry.getValue();
+        record.add(key + "." + i, value.toString());
       }
     }
     combined = combined / actualSize;
@@ -101,20 +105,26 @@ public class SystemMetrics extends AbstractProcessor {
 
     record = new ChukwaRecord();
     JSONObject memory = (JSONObject) json.get("memory");
-    Iterator<String> memKeys = memory.keySet().iterator();
+    @SuppressWarnings("unchecked")
+    Iterator<Map.Entry<String, ?>> memKeys = memory.entrySet().iterator();
     while(memKeys.hasNext()) {
-      String key = memKeys.next();
-      record.add(key, memory.get(key).toString());
+      Map.Entry<String, ?> entry = memKeys.next();
+      String key = entry.getKey();
+      Object value = entry.getValue();
+      record.add(key, value.toString());
     }
     buildGenericRecord(record, null, cal.getTimeInMillis(), "memory");
     output.collect(key, record);    
 
     record = new ChukwaRecord();
     JSONObject swap = (JSONObject) json.get("swap");
-    Iterator<String> swapKeys = swap.keySet().iterator();
+    @SuppressWarnings("unchecked")
+    Iterator<Map.Entry<String, ?>> swapKeys = swap.entrySet().iterator();
     while(swapKeys.hasNext()) {
-      String key = swapKeys.next();
-      record.add(key, swap.get(key).toString());
+      Map.Entry<String, ?> entry = swapKeys.next();
+      String key = entry.getKey();
+      Object value = entry.getValue();
+      record.add(key, value.toString());
     }
     buildGenericRecord(record, null, cal.getTimeInMillis(), "swap");
     output.collect(key, record);
@@ -131,25 +141,28 @@ public class SystemMetrics extends AbstractProcessor {
     JSONArray netList = (JSONArray) json.get("network");
     for(int i = 0;i < netList.size(); i++) {
       JSONObject netIf = (JSONObject) netList.get(i);
-      Iterator<String> keys = netIf.keySet().iterator();
+      @SuppressWarnings("unchecked")
+      Iterator<Map.Entry<String, ?>> keys = netIf.entrySet().iterator();
       while(keys.hasNext()) {
-        String key = keys.next();
-        record.add(key + "." + i, netIf.get(key).toString());
+        Map.Entry<String, ?> entry = keys.next();
+        String key = entry.getKey();
+        Object value = entry.getValue();
+        record.add(key + "." + i, value.toString());
         if(i!=0) {
           if(key.equals("RxBytes")) {
-            rxBytes = rxBytes + (Long) netIf.get(key);
+            rxBytes = rxBytes + (Long) value;
           } else if(key.equals("RxDropped")) {
-            rxDropped = rxDropped + (Long) netIf.get(key);
+            rxDropped = rxDropped + (Long) value;
           } else if(key.equals("RxErrors")) {          
-            rxErrors = rxErrors + (Long) netIf.get(key);
+            rxErrors = rxErrors + (Long) value;
           } else if(key.equals("RxPackets")) {
-            rxPackets = rxPackets + (Long) netIf.get(key);
+            rxPackets = rxPackets + (Long) value;
           } else if(key.equals("TxBytes")) {
-            txBytes = txBytes + (Long) netIf.get(key);
+            txBytes = txBytes + (Long) value;
           } else if(key.equals("TxCollisions")) {
-            txCollisions = txCollisions + (Long) netIf.get(key);
+            txCollisions = txCollisions + (Long) value;
           } else if(key.equals("TxErrors")) {
-            txErrors = txErrors + (Long) netIf.get(key);
+            txErrors = txErrors + (Long) value;
           } else if(key.equals("TxPackets")) {
             txPackets = txPackets + (Long) netIf.get(key);
           }
@@ -177,22 +190,25 @@ public class SystemMetrics extends AbstractProcessor {
     JSONArray diskList = (JSONArray) json.get("disk");
     for(int i = 0;i < diskList.size(); i++) {
       JSONObject disk = (JSONObject) diskList.get(i);
-      Iterator<String> keys = disk.keySet().iterator();
+      @SuppressWarnings("unchecked")
+      Iterator<Map.Entry<String, ?>> keys = disk.entrySet().iterator();
       while(keys.hasNext()) {
-        String key = keys.next();
-        record.add(key + "." + i, disk.get(key).toString());
+        Map.Entry<String, ?> entry = keys.next();
+        String key = entry.getKey();
+        Object value = entry.getValue();
+        record.add(key + "." + i, value.toString());
         if(key.equals("ReadBytes")) {
-          readBytes = readBytes + (Long) disk.get("ReadBytes");
+          readBytes = readBytes + (Long) value;
         } else if(key.equals("Reads")) {
-          reads = reads + (Long) disk.get("Reads");
+          reads = reads + (Long) value;
         } else if(key.equals("WriteBytes")) {
-          writeBytes = writeBytes + (Long) disk.get("WriteBytes");
+          writeBytes = writeBytes + (Long) value;
         } else if(key.equals("Writes")) {
-          writes = writes + (Long) disk.get("Writes");
+          writes = writes + (Long) value;
         }  else if(key.equals("Total")) {
-          total = total + (Long) disk.get("Total");
+          total = total + (Long) value;
         } else if(key.equals("Used")) {
-          used = used + (Long) disk.get("Used");
+          used = used + (Long) value;
         }
       }
     }

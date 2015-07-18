@@ -23,6 +23,8 @@ import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.datacollection.*;
 import org.apache.hadoop.chukwa.datacollection.agent.*;
 import org.apache.hadoop.chukwa.datacollection.connector.Connector;
+
+import java.nio.charset.Charset;
 import java.util.*;
 
 /**
@@ -64,7 +66,7 @@ public class ConsoleOutConnector extends Thread implements Connector {
               System.out.println("data length was " + e.getData().length
                   + ", not printing");
             else
-              System.out.println(new String(e.getData()));
+              System.out.println(new String(e.getData(), Charset.forName("UTF-8")));
           }
 
           agent.reportCommit(e.getInitiator(), e.getSeqID());

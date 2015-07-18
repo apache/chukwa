@@ -25,10 +25,13 @@ import org.apache.hadoop.chukwa.datacollection.collector.servlet.ServletCollecto
 import org.apache.hadoop.chukwa.datacollection.connector.http.HttpConnector;
 import org.apache.hadoop.chukwa.datacollection.controller.ChukwaAgentController;
 import org.apache.hadoop.chukwa.datacollection.writer.ConsoleWriter;
+import org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.log4j.Logger;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
+
 import java.io.*;
 import java.util.*;
 
@@ -36,6 +39,7 @@ public class FileTailerStressTest {
 
   static final int DELAY_MIN = 10 * 1000;
   static final int DELAY_RANGE = 2 * 1000;
+  static final Logger log = Logger.getLogger(FileTailerStressTest.class);
 
   static class OccasionalWriterThread extends Thread {
     File file;
@@ -45,9 +49,9 @@ public class FileTailerStressTest {
     }
 
     public void run() {
+      PrintWriter out = null;
       try {
-        FileOutputStream fos = new FileOutputStream(file);
-        PrintWriter out = new PrintWriter(fos);
+        out = new PrintWriter(file.getAbsolutePath(), "UTF-8");
         Random rand = new Random();
         while (true) {
           int delay = rand.nextInt(DELAY_RANGE) + DELAY_MIN;
@@ -59,6 +63,9 @@ public class FileTailerStressTest {
       } catch (IOException e) {
         e.printStackTrace();
       } catch (InterruptedException e) {
+        if(out != null) {
+          out.close();
+        }
       }
     }
   }
@@ -91,7 +98,9 @@ public class FileTailerStressTest {
       ChukwaAgentController cli = new ChukwaAgentController("localhost", portno);
 
       File workdir = new File("/tmp/stresstest/");
-      workdir.mkdir();
+      if(!workdir.mkdir()) {
+        log.warn("Error creating working directory:" + workdir.getAbsolutePath());
+      }
       for (int i = 0; i < FILES_TO_USE; ++i) {
         File newTestF = new File("/tmp/stresstest/" + i);
 
@@ -102,7 +111,9 @@ public class FileTailerStressTest {
 
       Thread.sleep(60 * 1000);
       System.out.println("cleaning up");
-      workdir.delete();
+      if(!workdir.delete()) {
+        log.warn("Error clean up working directory:" + workdir.getAbsolutePath());
+      }
     } catch (Exception e) {
       e.printStackTrace();
     }

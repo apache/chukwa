@@ -79,7 +79,7 @@ public class Swimlanes {
    * Modifier for generic Swimlanes plots to plot shuffle, sort, and reducer
    * states of same reduce on same line 
    */
-  protected class MapReduceSwimlanes {
+  protected static class MapReduceSwimlanes {
     protected Table plot_tab;
     protected HashMap<String, ArrayList<Tuple> > reducepart_hash;
     protected boolean collate_reduces = false;
@@ -302,7 +302,7 @@ public class Swimlanes {
       palette = ColorLib.getCategoryPalette(states.length);
       colourmap = new HashMap<String,Integer>();
       for (int i = 0; i < states.length; i++) {
-        colourmap.put(states[i], new Integer(palette[i]));
+        colourmap.put(states[i], Integer.valueOf(palette[i]));
       }
     }
     public int getColour(String state_name) {
@@ -413,7 +413,7 @@ public class Swimlanes {
   protected String cluster;
   protected String timezone;
   protected String shuffle_option;
-  protected final String table = new String("mapreduce_fsm");
+  protected final String table = "mapreduce_fsm";
   protected boolean plot_legend = true;
   protected String jobname = null;
   
@@ -436,9 +436,9 @@ public class Swimlanes {
   final String legendshapegroup = "LegendShape";
   
   public Swimlanes() {
-    this.cluster = new String("");
-    this.timezone = new String("");
-    this.shuffle_option = new String("");
+    this.cluster = "";
+    this.timezone = "";
+    this.shuffle_option = "";
     param_map = new HashMap<String, String>();
   }
   
@@ -453,13 +453,13 @@ public class Swimlanes {
     (String timezone, String cluster, String event_type, 
      HashMap<String, String> valmap) 
   {
-    this.cluster = new String(cluster);
+    this.cluster = cluster;
     if (timezone != null) {
-      this.timezone = new String(timezone);
+      this.timezone = timezone;
     } else {
       this.timezone = null;
     }
-    this.shuffle_option = new String(event_type);
+    this.shuffle_option = event_type;
     
     /* This should "simulate" an HttpServletRequest
      * Need to have "start" and "end" in seconds since Epoch
@@ -471,13 +471,13 @@ public class Swimlanes {
     (String timezone, String cluster, String event_type, 
      HashMap<String, String> valmap, int width, int height) 
   {
-    this.cluster = new String(cluster);
+    this.cluster = cluster;
     if (timezone != null) {
-      this.timezone = new String(timezone);
+      this.timezone = timezone;
     } else {
       this.timezone = null;
     }
-    this.shuffle_option = new String(event_type);
+    this.shuffle_option = event_type;
     
     /* This should "simulate" an HttpServletRequest
      * Need to have "start" and "end" in seconds since Epoch
@@ -493,13 +493,13 @@ public class Swimlanes {
      HashMap<String, String> valmap, int width, int height,
      String legend_opt) 
   {
-    this.cluster = new String(cluster);
+    this.cluster = cluster;
     if (timezone != null) {
-      this.timezone = new String(timezone);
+      this.timezone = timezone;
     } else {
       this.timezone = null;
     }
-    this.shuffle_option = new String(event_type);
+    this.shuffle_option = event_type;
     
     /* This should "simulate" an HttpServletRequest
      * Need to have "start" and "end" in seconds since Epoch
@@ -523,9 +523,9 @@ public class Swimlanes {
     this.cluster = session.getAttribute("cluster").toString();
       String evt_type = xf.getParameter("event_type");
     if (evt_type != null) {
-      this.shuffle_option = new String(evt_type);
+      this.shuffle_option = evt_type;
     } else {
-      this.shuffle_option = new String("noshuffle");
+      this.shuffle_option = "noshuffle";
     }
     this.timezone = session.getAttribute("time_zone").toString();
   }
@@ -535,7 +535,7 @@ public class Swimlanes {
    * Call before calling @see #run
    */
   public void setJobName(String s) {
-    this.jobname = new String(s);
+    this.jobname = s;
   }
 
   /**
@@ -692,11 +692,11 @@ public class Swimlanes {
     textlabels_table.addColumn("label",String.class);
     textlabels_table.addColumn("type",String.class);
     textlabels_table.addRow();
-    textlabels_table.setString(0,"label",new String("Time/s"));
-    textlabels_table.setString(0,"type",new String("xaxisname"));
+    textlabels_table.setString(0,"label","Time/s");
+    textlabels_table.setString(0,"type","xaxisname");
     
     VisualTable textlabelsviz = this.viz.addTable(labelgroup, textlabels_table);
-    textlabelsviz.setX(0,SIZE_X/2);
+    textlabelsviz.setX(0,SIZE_X/2d);
     textlabelsviz.setY(0,SIZE_Y - BORDER[2] + (BORDER[2]*0.1));
     textlabelsviz.setTextColor(0,ColorLib.color(java.awt.Color.GRAY));
     textlabelsviz.setFont(0,new Font(Font.SANS_SERIF,Font.PLAIN,AXIS_NAME_FONT_SIZE));
@@ -835,6 +835,9 @@ public class Swimlanes {
 
   }
   
+  @edu.umd.cs.findbugs.annotations.SuppressWarnings(value =
+      "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE", 
+      justification = "Dynamic based upon tables in the database")
   public Table getData() {
     // preliminary setup
     OfflineTimeHandler time_offline;
@@ -885,16 +888,14 @@ public class Swimlanes {
     }
     
     HashMap<String, Integer> state_counts = new HashMap<String, Integer>();
-    HashSet<String> states = new HashSet<String>();
     for (int i = 0; i < rs_tab.getRowCount(); i++) {
       String curr_state = rs_tab.getString(i, "state_name");
-      states.add(curr_state);
       Integer cnt = state_counts.get(curr_state);
       if (cnt == null) {
-        state_counts.put(curr_state, new Integer(1));
+        state_counts.put(curr_state, Integer.valueOf(1));
       } else {
         state_counts.remove(curr_state);
-        state_counts.put(curr_state, new Integer(cnt.intValue()+1));
+        state_counts.put(curr_state, Integer.valueOf(cnt.intValue()+1));
       }
     }
     

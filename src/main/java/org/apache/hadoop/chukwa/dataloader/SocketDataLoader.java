@@ -22,6 +22,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -100,7 +101,7 @@ public class SocketDataLoader implements Runnable {
           output.append(" all");
         }
         output.append("\n");
-        dos.write((output.toString()).getBytes());
+        dos.write((output.toString()).getBytes(Charset.forName("UTF-8")));
       } catch (SocketException e) {
         log.warn("Error while settin soTimeout to 120000");
       }
@@ -135,7 +136,7 @@ public class SocketDataLoader implements Runnable {
   /*
    * Unsubscribe from Chukwa collector and stop streaming.
    */
-  public void stop() {
+  public synchronized void stop() {
     if(s!=null) {
       try {
         dis.close();
@@ -169,7 +170,7 @@ public class SocketDataLoader implements Runnable {
    * into SDL queue.
    */
   @Override
-  public void run() {
+  public synchronized  void run() {
     try {
       Chunk c;
       while ((c = ChunkImpl.read(dis)) != null) {

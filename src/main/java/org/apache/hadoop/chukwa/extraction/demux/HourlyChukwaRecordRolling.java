@@ -121,7 +121,7 @@ public class HourlyChukwaRecordRolling extends Configured implements Tool {
               new HourlyChukwaRecordRolling(), mergeArgs, deleteRawdata);
           List<RecordMerger> allMerge = new ArrayList<RecordMerger>();
           if (rollInSequence) {
-            merge.run();
+            merge.mergeRecords();
           } else {
             allMerge.add(merge);
             merge.start();

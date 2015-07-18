@@ -24,9 +24,9 @@ import org.apache.hadoop.chukwa.util.RecordConstants;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
-public class TaskLogAppender extends 
+public class ChukwaTaskLogAppender extends 
     org.apache.hadoop.mapred.TaskLogAppender {
-  static Logger log = Logger.getLogger(TaskLogAppender.class);
+  static Logger log = Logger.getLogger(ChukwaTaskLogAppender.class);
   static final String adaptorType = ChukwaAgentController.CharFileTailUTF8NewLineEscaped;
   ChukwaAgentController chukwaClient;
   String recordType = null;
@@ -70,8 +70,7 @@ public class TaskLogAppender extends
                   + ", starting at offset:" + currentLength);
             } else {
               log.debug("Chukwa adaptor not added, addFile(" + log4jFileName
-                  + ") returned " + adaptorID
-                  + ", current offset:" + currentLength);
+                  + ") returned, current offset:" + currentLength);
             }
           }
         }

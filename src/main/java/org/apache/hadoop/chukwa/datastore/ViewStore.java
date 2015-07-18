@@ -20,13 +20,12 @@ package org.apache.hadoop.chukwa.datastore;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.hicc.HiccWebServer;
 import org.apache.hadoop.chukwa.rest.bean.ViewBean;
@@ -44,15 +43,18 @@ public class ViewStore {
   private String uid = null;
   private ViewBean view = null;
   private static Log log = LogFactory.getLog(ViewStore.class);
-  private static Configuration config = new Configuration();
+  private static Configuration config = null;
   private static ChukwaConfiguration chukwaConf = new ChukwaConfiguration();
-  private static String viewPath = config.get("fs.defaultFS")+File.separator+chukwaConf.get("chukwa.data.dir")+File.separator+"hicc"+File.separator+"views";
+  private static String viewPath = null;
   private static String publicViewPath = viewPath+File.separator+"public";
   private static String usersViewPath = viewPath+File.separator+"users";
   private static String PUBLIC = "public".intern();
 
+  static {
+    config = HiccWebServer.getConfig();
+    viewPath = config.get("fs.defaultFS")+File.separator+chukwaConf.get("chukwa.data.dir")+File.separator+"hicc"+File.separator+"views";
+  }
   public ViewStore() throws IllegalAccessException {
-    ViewStore.config = HiccWebServer.getConfig();
   }
 
   public ViewStore(String uid, String vid) throws IllegalAccessException {
@@ -141,7 +143,7 @@ public class ViewStore {
         try {
           FileSystem fs = FileSystem.get(config);
           FSDataOutputStream out = fs.create(viewFile,true);
-          out.write(view.deserialize().toString().getBytes());
+          out.write(view.deserialize().toString().getBytes(Charset.forName("UTF-8")));
           out.close();
         } catch (IOException ex) {
           log.error(ExceptionUtil.getStackTrace(ex));

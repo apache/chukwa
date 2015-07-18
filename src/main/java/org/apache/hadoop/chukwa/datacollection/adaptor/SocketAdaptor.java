@@ -140,16 +140,14 @@ public class SocketAdaptor extends AbstractAdaptor {
           }
         }
       } catch(java.io.EOFException e) {
-        log.info("Caught java.io.EOFException closing conneciton.");
+        log.debug("Caught java.io.EOFException:", e);
       } catch(java.net.SocketException e) {
-        log.info("Caught java.net.SocketException closing conneciton.");
+        log.debug("Caught java.net.SocketException:", e);
       } catch(InterruptedIOException e) {
         Thread.currentThread().interrupt();
-        log.info("Caught java.io.InterruptedIOException: "+e);
-        log.info("Closing connection.");
+        log.debug("Caught java.io.InterruptedIOException: ", e);
       } catch(IOException e) {
-        log.info("Caught java.io.IOException: "+e);
-        log.info("Closing connection.");
+        log.debug("Caught java.io.IOException: "+e);
       } catch(Exception e) {
         log.error("Unexpected exception. Closing conneciton.", e);
       } finally {

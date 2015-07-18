@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class LogEntry {
-	private final static SimpleDateFormat sdf = new SimpleDateFormat(
+	private SimpleDateFormat sdf = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm");
 
 	private Date date;
@@ -43,11 +43,11 @@ public class LogEntry {
 	}
 
 	public Date getDate() {
-		return date;
+		return (Date) date.clone();
 	}
 
 	public void setDate(Date date) {
-		this.date = date;
+		this.date = (Date) date.clone();
 	}
 
 	public String getLogLevel() {

@@ -20,13 +20,13 @@ package org.apache.hadoop.chukwa.datastore;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-
 import org.apache.hadoop.chukwa.conf.ChukwaConfiguration;
 import org.apache.hadoop.chukwa.hicc.HiccWebServer;
 import org.apache.hadoop.chukwa.rest.bean.UserBean;
@@ -44,10 +44,14 @@ public class UserStore {
   private static Log log = LogFactory.getLog(UserStore.class);
   private static Configuration config = new Configuration();
   private static ChukwaConfiguration chukwaConf = new ChukwaConfiguration();
-  private static String hiccPath = config.get("fs.defaultFS")+File.separator+chukwaConf.get("chukwa.data.dir")+File.separator+"hicc"+File.separator+"users";
+  private static String hiccPath = null;
+    
+  static {
+    config = HiccWebServer.getConfig();
+    hiccPath = config.get("fs.defaultFS")+File.separator+chukwaConf.get("chukwa.data.dir")+File.separator+"hicc"+File.separator+"users";
+}
   
   public UserStore() throws IllegalAccessException {
-    UserStore.config = HiccWebServer.getConfig();
   }
 
   public UserStore(String uid) throws IllegalAccessException {
@@ -73,7 +77,7 @@ public class UserStore {
         viewStream.readFully(buffer);
         viewStream.close();
         try {
-          JSONObject json = (JSONObject) JSONValue.parse(new String(buffer));
+          JSONObject json = (JSONObject) JSONValue.parse(new String(buffer, Charset.forName("UTF-8")));
           profile = new UserBean(json);
         } catch (Exception e) {
           log.error(ExceptionUtil.getStackTrace(e));
@@ -110,7 +114,7 @@ public class UserStore {
     try {
       fs = FileSystem.get(config);
       FSDataOutputStream out = fs.create(profileFile,true);
-      out.write(profile.deserialize().toString().getBytes());
+      out.write(profile.deserialize().toString().getBytes(Charset.forName("UTF-8")));
       out.close();
     } catch (IOException ex) {
       log.error(ExceptionUtil.getStackTrace(ex));
@@ -138,7 +142,7 @@ public class UserStore {
           profileStream.readFully(buffer);
           profileStream.close();
           try {
-            UserBean user = new UserBean((JSONObject) JSONValue.parse(new String(buffer)));
+            UserBean user = new UserBean((JSONObject) JSONValue.parse(new String(buffer, Charset.forName("UTF-8"))));
             list.add(user.getId());
           } catch (Exception e) {
             log.error(ExceptionUtil.getStackTrace(e));

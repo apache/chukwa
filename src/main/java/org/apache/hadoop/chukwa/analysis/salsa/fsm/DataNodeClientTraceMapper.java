@@ -104,25 +104,25 @@ public class DataNodeClientTraceMapper
       src_add = src_regex.group(1);
     } else {
       log.warn("Failed to match src IP:"+val.getValue("src")+"");
-      src_add = new String("");
+      src_add = "";
     }
     Matcher dest_regex = ipPattern.matcher(val.getValue("dest"));
     if (dest_regex.matches()) {
       dest_add = dest_regex.group(1);
     } else {
       log.warn("Failed to match dest IP:"+val.getValue("dest")+"");
-      dest_add = new String("");
+      dest_add = "";
     }
     Matcher datanodeserver_regex = ipPattern.matcher(val.getValue("srvID"));
     if (datanodeserver_regex.matches()) {
       datanodeserver_add = datanodeserver_regex.group(1);
     } else {
       log.warn("Failed to match DataNode server address:"+val.getValue("srvID")+"");
-      datanodeserver_add = new String("");
+      datanodeserver_add = "";
     }
     
-    start_rec.host_exec = new String(src_add);
-    end_rec.host_exec = new String(src_add);
+    start_rec.host_exec = src_add;
+    end_rec.host_exec = src_add;
         
     blkid = val.getValue("blockid").trim();
     if (fieldNamesList.contains("cliID")) {
@@ -131,7 +131,7 @@ public class DataNodeClientTraceMapper
         cli_id = cli_id.substring(10);
       }
     } else {
-      cli_id = new String("");
+      cli_id = "";
     }
     current_op = val.getValue("op");
     String [] k = key.getKey().split("/");    
@@ -148,21 +148,21 @@ public class DataNodeClientTraceMapper
     }
     
     start_rec.time_orig_epoch = k[0];
-    start_rec.time_orig = (new Long(actual_time_ms)).toString(); // not actually used
-    start_rec.timestamp = (new Long(actual_time_ms)).toString();
-    start_rec.time_end = new String("");
-    start_rec.time_start = new String(start_rec.timestamp);
+    start_rec.time_orig = Long.toString(actual_time_ms); // not actually used
+    start_rec.timestamp = Long.toString(actual_time_ms);
+    start_rec.time_end = "";
+    start_rec.time_start = start_rec.timestamp;
     
     end_rec.time_orig_epoch = k[0];
-    end_rec.time_orig = val.getValue("actual_time");    
-    end_rec.timestamp = new String(val.getValue("actual_time"));
-    end_rec.time_end = new String(val.getValue("actual_time"));
-    end_rec.time_start = new String("");
+    end_rec.time_orig = val.getValue("actual_time");
+    end_rec.timestamp = val.getValue("actual_time");
+    end_rec.time_end = val.getValue("actual_time");
+    end_rec.time_start = "";
     
     log.debug("Duration: " + (Long.parseLong(end_rec.time_end) - Long.parseLong(start_rec.time_start)));
 
-    end_rec.job_id = new String(cli_id); // use job id = block id
-    start_rec.job_id = new String(cli_id); 
+    end_rec.job_id = cli_id; // use job id = block id
+    start_rec.job_id = cli_id; 
       
     if (current_op.equals("HDFS_READ")) {
       if (src_add != null && src_add.equals(dest_add)) {
@@ -171,43 +171,41 @@ public class DataNodeClientTraceMapper
         start_rec.state_hdfs = new HDFSState(HDFSState.READ_REMOTE);
       }
       // should these ALWAYS be dest?
-      start_rec.host_other = new String(dest_add);
-      end_rec.host_other = new String(dest_add);
+      start_rec.host_other = dest_add;
+      end_rec.host_other = dest_add;
     } else if (current_op.equals("HDFS_WRITE")) {
       if (src_add != null && dest_add.equals(datanodeserver_add)) {
         start_rec.state_hdfs = new HDFSState(HDFSState.WRITE_LOCAL);
-        } else if (dest_add != null && !dest_add.equals(datanodeserver_add)) {
+        } else if (!dest_add.equals(datanodeserver_add)) {
         start_rec.state_hdfs = new HDFSState(HDFSState.WRITE_REMOTE);
       } else {
-        start_rec.state_hdfs = new HDFSState(HDFSState.WRITE_REPLICATED);        
+        start_rec.state_hdfs = new HDFSState(HDFSState.WRITE_REPLICATED);
       }
-      start_rec.host_other = new String(dest_add);
-      end_rec.host_other = new String(dest_add);
+      start_rec.host_other = dest_add;
+      end_rec.host_other = dest_add;
     } else {
       log.warn("Invalid state: " + current_op);
     }
     end_rec.state_hdfs = start_rec.state_hdfs;
     start_rec.state_name = start_rec.state_hdfs.toString();
     end_rec.state_name = end_rec.state_hdfs.toString();
-    start_rec.identifier = new String(blkid);
-    end_rec.identifier = new String(blkid);
+    start_rec.identifier = blkid;
+    end_rec.identifier = blkid;
     
-    start_rec.unique_id = new String(start_rec.state_name + "@" + 
-      start_rec.identifier + "@" + start_rec.job_id);
-    end_rec.unique_id = new String(end_rec.state_name + "@" + 
-      end_rec.identifier + "@" + end_rec.job_id);
+    start_rec.unique_id = new StringBuilder().append(start_rec.state_name).append("@").append(start_rec.identifier).append("@").append(start_rec.job_id).toString();
+    end_rec.unique_id = new StringBuilder().append(end_rec.state_name).append("@").append(end_rec.identifier).append("@").append(end_rec.job_id).toString();
       
     start_rec.add_info.put(Record.tagsField,val.getValue(Record.tagsField));
 		start_rec.add_info.put("csource",val.getValue("csource"));
     end_rec.add_info.put(Record.tagsField,val.getValue(Record.tagsField));
 		end_rec.add_info.put("csource",val.getValue("csource"));
-		end_rec.add_info.put("STATE_STRING",new String("SUCCESS")); // by default
+		end_rec.add_info.put("STATE_STRING","SUCCESS"); // by default
 		
 		// add counter value
 		end_rec.add_info.put("BYTES",val.getValue("bytes"));
 		    
-    String crk_mid_string_start = new String(start_rec.getUniqueID() + "_" + start_rec.timestamp);
-    String crk_mid_string_end = new String(end_rec.getUniqueID() + "_" + start_rec.timestamp);
+    String crk_mid_string_start = new StringBuilder().append(start_rec.getUniqueID()).append("_").append(start_rec.timestamp).toString();
+    String crk_mid_string_end = new StringBuilder().append(end_rec.getUniqueID()).append("_").append(start_rec.timestamp).toString();
     output.collect(new ChukwaRecordKey(FSM_CRK_ReduceType, crk_mid_string_start), start_rec);
     output.collect(new ChukwaRecordKey(FSM_CRK_ReduceType, crk_mid_string_end), end_rec);
     

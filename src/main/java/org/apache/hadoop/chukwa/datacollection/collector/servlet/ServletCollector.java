@@ -54,14 +54,14 @@ public class ServletCollector extends HttpServlet {
    * If a chunk is committed; then the ack will start with the following string.
    */
   public static final String ACK_PREFIX = "ok: ";
-  org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter writer = null;
+  transient ChukwaWriter writer = null;
 
   private static final long serialVersionUID = 6286162898591407111L;
-  Logger log = Logger.getRootLogger();// .getLogger(ServletCollector.class);
+  transient Logger log = Logger.getLogger(ServletCollector.class);
   
-  static boolean COMPRESS;
-  static String CODEC_NAME;
-  static CompressionCodec codec;
+  boolean COMPRESS;
+  String CODEC_NAME;
+  transient CompressionCodec codec;
 
   public void setWriter(ChukwaWriter w) {
     writer = w;
@@ -76,7 +76,7 @@ public class ServletCollector extends HttpServlet {
   int numberchunks = 0;
   long lifetimechunks = 0;
 
-  Configuration conf;
+  transient Configuration conf;
 
   public ServletCollector(Configuration c) {
     conf = c;
@@ -151,7 +151,6 @@ public class ServletCollector extends HttpServlet {
   protected void accept(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException {
     numberHTTPConnection++;
-    ServletDiagnostics diagnosticPage = new ServletDiagnostics();
     final long currentTime = System.currentTimeMillis();
     try {
 
@@ -173,10 +172,6 @@ public class ServletCollector extends HttpServlet {
       final int numEvents = di.readInt();
       // log.info("saw " + numEvents+ " in request");
 
-      if (FANCY_DIAGNOSTICS) {
-        diagnosticPage.sawPost(req.getRemoteHost(), numEvents, currentTime);
-      }
-
       List<Chunk> events = new LinkedList<Chunk>();
       StringBuilder sb = new StringBuilder();
 
@@ -184,9 +179,6 @@ public class ServletCollector extends HttpServlet {
         ChunkImpl logEvent = ChunkImpl.read(di);
         events.add(logEvent);
 
-        if (FANCY_DIAGNOSTICS) {
-          diagnosticPage.sawChunk(logEvent, i);
-        }
       }
 
       int responseStatus = HttpServletResponse.SC_OK;
@@ -226,10 +218,6 @@ public class ServletCollector extends HttpServlet {
         l_out.println("can't write: no writer");
       }
 
-      if (FANCY_DIAGNOSTICS) {
-        diagnosticPage.doneWithPost();
-      }
-
       resp.setStatus(responseStatus);
 
     } catch (Throwable e) {
@@ -251,7 +239,7 @@ public class ServletCollector extends HttpServlet {
 
 
     log.info("new GET from " + req.getRemoteHost() + " at " + System.currentTimeMillis());
-    PrintStream out = new PrintStream(resp.getOutputStream());
+    PrintStream out = new PrintStream(resp.getOutputStream(), true, "UTF-8");
     resp.setStatus(200);
 
     String pingAtt = req.getParameter("ping");
@@ -264,8 +252,6 @@ public class ServletCollector extends HttpServlet {
       out.println("lifetimechunks:" + lifetimechunks);
     } else {
       out.println("<html><body><h2>Chukwa servlet running</h2>");
-      if (FANCY_DIAGNOSTICS)
-        ServletDiagnostics.printPage(out);
       out.println("</body></html>");
     }
 

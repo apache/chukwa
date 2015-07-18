@@ -21,6 +21,8 @@ package org.apache.hadoop.chukwa.extraction.demux.processor.reducer;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecord;
 import org.apache.hadoop.chukwa.extraction.engine.ChukwaRecordKey;
 import org.apache.hadoop.chukwa.extraction.engine.Record;
@@ -73,10 +75,12 @@ public class MRJobReduceProcessor implements ReduceProcessor {
       newRecord.add(Record.tagsField, record.getValue(Record.tagsField));
       newRecord.setTime(initTime);
       newRecord.add(Record.tagsField, record.getValue(Record.tagsField));
-      Iterator<String> it = data.keySet().iterator();
+      Iterator<Map.Entry<String, String>> it = data.entrySet().iterator();
       while (it.hasNext()) {
-        String field = it.next();
-        newRecord.add(field, data.get(field));
+        Map.Entry<String, ?> entry = it.next();
+        String field = entry.getKey();
+        String value = entry.getValue().toString();
+        newRecord.add(field, value);
       }
 
       output.collect(newKey, newRecord);

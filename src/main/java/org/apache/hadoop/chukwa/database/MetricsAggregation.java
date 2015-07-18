@@ -41,6 +41,9 @@ public class MetricsAggregation {
    * @param args
    * @throws SQLException
    */
+  @edu.umd.cs.findbugs.annotations.SuppressWarnings(value =
+      "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE", 
+      justification = "Dynamic based upon tables in the database")
   public static void main(String[] args) throws SQLException {
     mdlConfig = new DatabaseConfig();
 
@@ -147,7 +150,8 @@ public class MetricsAggregation {
       // run query
       conn.setAutoCommit(false);
       stmt = conn.createStatement();
-      stmt.execute(sb0.toString());
+      final String query = sb0.toString();
+      stmt.execute(query);
 
       // update last run
       stmt = conn.createStatement();

@@ -21,7 +21,6 @@ package org.apache.hadoop.chukwa.datacollection.adaptor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -105,9 +104,16 @@ public class JMXAdaptor extends AbstractAdaptor{
 			while(!shutdown){
 				try{					
 					BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(jmx_pw_file.getAbsolutePath()), Charset.forName("UTF-8")));
-					String[] creds = br.readLine().split(" ");
-					Map<String, String[]> env = new HashMap<String, String[]>();			
-					env.put(JMXConnector.CREDENTIALS, creds);
+					String buffer = br.readLine();
+					String[] creds = null;
+					if(buffer != null ) {
+					  creds = buffer.split(" ");
+					}
+					br.close();
+					Map<String, String[]> env = new HashMap<String, String[]>();
+					if(creds!=null) {
+					  env.put(JMXConnector.CREDENTIALS, creds);
+					}
 					jmxc = JMXConnectorFactory.connect(url, env);
 					mbsc = jmxc.getMBeanServerConnection();							
 					if(timer == null) {
@@ -131,7 +137,7 @@ public class JMXAdaptor extends AbstractAdaptor{
 					timer.cancel();
 					timer = null;
 					shutdown = true;
-				}						
+				}
 			}
 		}
 		
@@ -181,7 +187,7 @@ public class JMXAdaptor extends AbstractAdaptor{
 							Descriptor d = mb.getDescriptor();
 							val = mbsc.getAttribute(oname, mb.getName());
 							if(d.getFieldNames().length > 0){ //this is an open mbean
-								OpenType openType = (OpenType)d.getFieldValue("openType");	
+								OpenType<?> openType = (OpenType<?>)d.getFieldValue("openType");	
 								
 								if(openType.isArray()){									
 									Object[] valarray = (Object[])val;									

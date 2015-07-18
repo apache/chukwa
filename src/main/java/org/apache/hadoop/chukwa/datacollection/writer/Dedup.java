@@ -57,7 +57,7 @@ public class Dedup extends PipelineableWriter {
     final HashSet<EntryType> hs;
     final Queue<EntryType> toDrop;
     final int maxSize;
-    volatile long dupchunks = 0;
+    long dupchunks = 0;
 
     public FixedSizeCache(int size) {
       maxSize = size;

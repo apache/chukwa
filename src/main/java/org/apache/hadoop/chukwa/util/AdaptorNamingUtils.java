@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.chukwa.util;
 
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -28,9 +29,9 @@ public class AdaptorNamingUtils {
     MessageDigest md;
    md = MessageDigest.getInstance("MD5");
 
-    md.update(adaptorClassName.getBytes());
-    md.update(dataType.getBytes());
-    md.update(params.getBytes());
+    md.update(adaptorClassName.getBytes(Charset.forName("UTF-8")));
+    md.update(dataType.getBytes(Charset.forName("UTF-8")));
+    md.update(params.getBytes(Charset.forName("UTF-8")));
     StringBuilder sb = new StringBuilder();
     sb.append("adaptor_");
     byte[] bytes = md.digest();

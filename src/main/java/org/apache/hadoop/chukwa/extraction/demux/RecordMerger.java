@@ -43,12 +43,16 @@ public class RecordMerger extends Thread {
     this.conf = conf;
     this.fs = fs;
     this.tool = tool;
-    this.mergeArgs = mergeArgs;
+    this.mergeArgs = mergeArgs.clone();
     this.deleteRawData = deleteRawData;
   }
 
   @Override
   public void run() {
+    mergeRecords();
+  }
+
+  void mergeRecords() {
     System.out.println("\t Running Merge! : output [" + mergeArgs[1] + "]");
     int res;
     try {

@@ -17,7 +17,6 @@
  */
 package org.apache.hadoop.chukwa.datacollection.adaptor;
 
-import java.util.*;
 import java.io.*;
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.ChunkImpl;
@@ -37,7 +36,7 @@ public class WriteaheadBuffered extends AbstractWrapper {
   
   
   @Override
-  public synchronized void add(Chunk event) throws InterruptedException {
+  public void add(Chunk event) throws InterruptedException {
     try {
       event.write(outToDisk);
       outToDisk.flush();
@@ -85,7 +84,7 @@ public class WriteaheadBuffered extends AbstractWrapper {
   }
   
   @Override
-  public synchronized void committed(long l) {
+  public void committed(long l) {
 
     try {
       long bytesOutstanding = highestSentOffset - l;
@@ -93,7 +92,10 @@ public class WriteaheadBuffered extends AbstractWrapper {
         fSize = 0;
         outToDisk.close();
         File outBufTmp = new File(outBuf.getAbsoluteFile(), outBuf.getName() + ".tmp");
-        outBuf.renameTo(outBufTmp);
+        if(!outBuf.renameTo(outBufTmp)) {
+          log.warn("Cannot rename temp file "+outBuf.getAbsolutePath()+
+              " to "+outBufTmp.getAbsolutePath());
+        };
         outToDisk = new DataOutputStream(new FileOutputStream(outBuf, false));
         DataInputStream dis = new DataInputStream(new FileInputStream(outBufTmp));
         while(dis.available() > 0) {
@@ -104,7 +106,9 @@ public class WriteaheadBuffered extends AbstractWrapper {
           }
         }
         dis.close();
-        outBufTmp.delete();
+        if(!outBufTmp.delete()) {
+          log.warn("Can not delete temp file: "+outBufTmp.getAbsolutePath());
+        };
       }
     } catch(IOException e) {
       log.error(e);
@@ -114,8 +118,11 @@ public class WriteaheadBuffered extends AbstractWrapper {
   
   @Override
   public long shutdown(AdaptorShutdownPolicy p) throws AdaptorException {
-    if(p != RESTARTING)
-      outBuf.delete();    
+    if(p != RESTARTING) {
+      if(outBuf.delete()) {
+        log.warn("Cannot delete output buffer file:"+outBuf.getAbsolutePath());
+      };
+    }
     return inner.shutdown(p);
   }
 

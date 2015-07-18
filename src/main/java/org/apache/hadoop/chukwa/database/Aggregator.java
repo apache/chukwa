@@ -42,7 +42,7 @@ public class Aggregator {
   private String jdbc = null;
   private int[] intervals;
   private long current = 0;
-  private static DatabaseWriter db = null;
+  private DatabaseWriter db = null;
 
   public Aggregator() {
     Calendar now = Calendar.getInstance();
@@ -76,6 +76,8 @@ public class Aggregator {
     } catch(Exception e) {
       log.error("Query: "+query);
       throw new Exception("Aggregation failed for: "+query);
+    } finally {
+      db.close();
     }
   }
 
@@ -111,7 +113,6 @@ public class Aggregator {
     if (cluster == null) {
       cluster = "unknown";
     }
-    db = new DatabaseWriter(cluster);
     String queries = Aggregator.getContents(new File(System
         .getenv("CHUKWA_CONF_DIR")
         + File.separator + "aggregator.sql"));
@@ -122,6 +123,7 @@ public class Aggregator {
           log.debug("skipping: " + query[i]);
         } else if(!query[i].equals("")) {
           Aggregator dba = new Aggregator();
+          dba.setWriter(new DatabaseWriter(cluster));
           long start = Calendar.getInstance().getTimeInMillis();
           try {
             if(startTime!=0 && endTime!=0) {
@@ -142,7 +144,6 @@ public class Aggregator {
       }
       startTime = startTime + 5*60000;
     }
-    db.close();
     long aggregatorEnd = Calendar.getInstance().getTimeInMillis();
     log.info("Longest running query: " + longQuery + " (" + (double) longest
         / 1000 + " seconds)");

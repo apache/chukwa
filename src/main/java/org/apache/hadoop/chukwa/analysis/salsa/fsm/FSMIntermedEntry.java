@@ -24,8 +24,10 @@ import java.io.DataOutput;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.hadoop.io.WritableComparable;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /*
  * FSM Intermediate State Entry
@@ -79,20 +81,20 @@ public class FSMIntermedEntry
 		this.state_hdfs = new HDFSState(HDFSState.NONE);
 		this.state_type = new StateType(StateType.STATE_NOOP);			
 		this.add_info = new TreeMap<String, String>();
-		this.host_other = new String("");
-		this.job_id = new String("");
-		this.time_orig_epoch = new String("");
-		this.time_orig = new String("");
+		this.host_other = "";
+		this.job_id = "";
+		this.time_orig_epoch = "";
+		this.time_orig = "";
 	}
 	
 	public String getUniqueID()
 	{
-		return new String(this.unique_id);
+		return this.unique_id;
 	}
 	
 	public String getFriendlyID()
 	{
-		return new String(this.identifier);
+		return this.identifier;
 	}
 	
 	/**
@@ -103,13 +105,13 @@ public class FSMIntermedEntry
 		if (this.fsm_type.val == FSMType.MAPREDUCE_FSM || 
 			  this.fsm_type.val == FSMType.MAPREDUCE_FSM_INCOMPLETE) 
 		{
-			this.state_name = new String(this.state_mapred.toString());
-		} else if (this.fsm_type.val == FSMType.MAPREDUCE_FSM || 
-							 this.fsm_type.val == FSMType.MAPREDUCE_FSM_INCOMPLETE) 
+			this.state_name = this.state_mapred.toString();
+		} else if (this.fsm_type.val == FSMType.FILESYSTEM_FSM || 
+			 this.fsm_type.val == FSMType.FILESYSTEM_FSM_INCOMPLETE) 
 		{
-			this.state_name = new String(this.state_hdfs.toString());
+			this.state_name = this.state_hdfs.toString();
 		}
-		this.unique_id = new String(this.state_name + "@" + this.identifier);
+		this.unique_id = new StringBuilder().append(this.state_name).append("@").append(this.identifier).toString();
 	}	
 	
 	public void write(DataOutput out) throws IOException {
@@ -142,26 +144,20 @@ public class FSMIntermedEntry
 		if (job_id.length() > 0) out.writeUTF(job_id);
 		out.writeInt(identifier.length());
 		if (identifier.length() > 0) out.writeUTF(identifier);
-					
+
 		mapKeys = this.add_info.keySet();
 		out.writeInt(mapKeys.size());
 		
-		Iterator<String> keyIter = mapKeys.iterator(); 
-		
-		for (int i = 0; i < mapKeys.size(); i++) {
-			assert(keyIter.hasNext());
-			String currKey = keyIter.next();
-			if (currKey != null) {
-				String currvalue = this.add_info.get(currKey);
-				out.writeUTF(currKey);
-				out.writeInt(currvalue.length());
-				if (currvalue.length() > 0) {
-					out.writeUTF(currvalue);
-				} 
-			} else {
-				out.writeUTF(new String("NULL"));
-				out.writeInt(0);
-			}
+		for(Entry<String, String> entry : this.add_info.entrySet()) {
+		  String value = entry.getValue();
+		  if(value.length() > 0) {
+	      out.writeUTF(entry.getKey());
+	      out.writeInt(value.length());
+		    out.writeUTF(value);
+		  } else {
+		    out.writeUTF("NULL");
+		    out.writeInt(0);
+		  }
 		}
 	}
 
@@ -176,47 +172,47 @@ public class FSMIntermedEntry
 
 		currlen = in.readInt();
 		if (currlen > 0) this.state_name = in.readUTF();
-		else this.state_name = new String("");
+		else this.state_name = "";
 
 		currlen = in.readInt();
 		if (currlen > 0) this.unique_id = in.readUTF();
-		else this.unique_id = new String("");
+		else this.unique_id = "";
 
 		currlen = in.readInt();
 		if (currlen > 0) this.timestamp = in.readUTF();
-		else this.timestamp = new String("");
+		else this.timestamp = "";
 
 		currlen = in.readInt();
 		if (currlen > 0) this.time_start = in.readUTF();
-		else this.time_start = new String("");
+		else this.time_start = "";
 
 		currlen = in.readInt();
 		if (currlen > 0) this.time_end = in.readUTF();
-		else this.time_end = new String("");
+		else this.time_end = "";
 
 		currlen = in.readInt();
 		if (currlen > 0) this.host_exec = in.readUTF();
-		else this.host_exec = new String("");
+		else this.host_exec = "";
 
 		currlen = in.readInt();
 		if (currlen > 0) this.host_other = in.readUTF();
-		else this.host_other = new String("");
+		else this.host_other = "";
 
 		currlen = in.readInt();
 		if (currlen > 0) this.time_orig_epoch = in.readUTF();
-		else this.time_orig_epoch = new String("");
+		else this.time_orig_epoch = "";
 
 		currlen = in.readInt();
 		if (currlen > 0) this.time_orig = in.readUTF();
-		else this.time_orig = new String("");
+		else this.time_orig = "";
 
 		currlen = in.readInt();
 		if (currlen > 0) this.job_id = in.readUTF();
-		else this.job_id = new String("");
+		else this.job_id = "";
 			
 		currlen = in.readInt();
 		if (currlen > 0) this.identifier = in.readUTF();
-		else this.identifier = new String("");			
+		else this.identifier = "";
 					
 		numkeys = in.readInt();
 
@@ -235,15 +231,34 @@ public class FSMIntermedEntry
 		}
 	}
 	 
-	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(13, 71).
+		append(this.unique_id).
+		toHashCode();
+	}
+
+	@Override	
 	public boolean equals (Object o) {
-		FSMIntermedEntry other = (FSMIntermedEntry) o;
-		return this.unique_id.equals(other.unique_id);
+	  if((o instanceof FSMIntermedEntry)) {
+	    FSMIntermedEntry other = (FSMIntermedEntry) o;
+	    return this.unique_id.equals(other.unique_id);
+	  }
+	  return false;
 	}
 	
 	public int compareTo (Object o) {
-		FSMIntermedEntry other = (FSMIntermedEntry) o;
-		return this.unique_id.compareTo(other.unique_id);
+	  final int BEFORE = -1;
+    final int EQUAL = 0;
+    //this optimization is usually worthwhile, and can
+    //always be added
+    if ( this == o ) return EQUAL;
+    
+	  if((o instanceof FSMIntermedEntry)) {
+	    FSMIntermedEntry other = (FSMIntermedEntry) o;
+	    return this.unique_id.compareTo(other.unique_id);
+	  }
+	  return BEFORE;
 	}
 	
 	/*
@@ -260,36 +275,29 @@ public class FSMIntermedEntry
 		newObj.fsm_type = new FSMType(this.fsm_type.val);
 
 		/* Deep copy all strings */
-		newObj.state_name = new String(this.state_name);
-		newObj.unique_id = new String(this.unique_id);
-		newObj.timestamp = new String(this.timestamp);
-		newObj.time_start = new String(this.time_start);
-		newObj.time_end = new String(this.time_end);
+		newObj.state_name = this.state_name;
+		newObj.unique_id = this.unique_id;
+		newObj.timestamp = this.timestamp;
+		newObj.time_start = this.time_start;
+		newObj.time_end = this.time_end;
 		
-		newObj.time_orig_epoch = new String(this.time_orig_epoch);
-		newObj.time_orig = new String(this.time_orig);
-		newObj.job_id = new String(this.job_id);
+		newObj.time_orig_epoch = this.time_orig_epoch;
+		newObj.time_orig = this.time_orig;
+		newObj.job_id = this.job_id;
 		
 		
 		/* Deep copy of TreeMap */
 		newObj.add_info = new TreeMap<String,String>();
-		mapKeys = this.add_info.keySet();
-		Iterator<String> keyIter = mapKeys.iterator();
-		String currKey = null;
-		
-		for (int i = 0; i < mapKeys.size(); i++) {
-			assert(keyIter.hasNext());
-			currKey = keyIter.next();
-			if (currKey != null) {
-				newObj.add_info.put(currKey, this.add_info.get(currKey));
-			}
-		}
-		
+		for(Entry<String, String> entry : this.add_info.entrySet()) {
+		  String currKey = entry.getKey();
+		  String value = entry.getValue();
+		  newObj.add_info.put(currKey, value);
+		}		
 		return newObj;
 	}
 	
 	public String toString() {
-		return new String(this.state_name + "@" + this.unique_id);
+		return new StringBuilder().append(this.state_name).append("@").append(this.unique_id).toString();
 	}
 	
 }

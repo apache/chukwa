@@ -21,9 +21,6 @@ import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.adaptor.AdaptorException;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.OffsetStatsManager;
-import org.apache.hadoop.chukwa.util.ExceptionUtil;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.json.simple.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -31,15 +28,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 
 import java.text.DecimalFormat;
@@ -54,7 +47,7 @@ import java.util.Map;
 public class AdaptorController {
 
   private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat();
-  private static final Log log = LogFactory.getLog(AdaptorController.class);
+  private static final Log LOG = LogFactory.getLog(AdaptorController.class);
 
   static {
     DECIMAL_FORMAT.setMinimumFractionDigits(2);
@@ -95,6 +88,8 @@ public class AdaptorController {
       String adaptorId = agent.processAddCommandE(addCommand.toString());
       return doGetAdaptor(adaptorId);
     } catch (AdaptorException e) {
+      LOG.warn("Could not add adaptor for data type: '" + ac.getDataType() +
+          "', error: " + e.getMessage());
       return badRequestResponse("Could not add adaptor for data type: '" + ac.getDataType() +
               "', error: " + e.getMessage());
     }
@@ -180,7 +175,7 @@ public class AdaptorController {
   protected AdaptorInfo buildAdaptor(String adaptorId) {
     ChukwaAgent agent = ChukwaAgent.getAgent();
     Adaptor adaptor = agent.getAdaptor(adaptorId);
-    OffsetStatsManager adaptorStats = agent.getAdaptorStatsManager();
+    OffsetStatsManager<Adaptor> adaptorStats = agent.getAdaptorStatsManager();
 
     AdaptorInfo info = new AdaptorInfo();
     info.setId(adaptorId);
@@ -205,7 +200,7 @@ public class AdaptorController {
     AdaptorList list = new AdaptorList();
     for(String name : adaptorMap.keySet()) {
       Adaptor adaptor = agent.getAdaptor(name);
-      OffsetStatsManager adaptorStats = agent.getAdaptorStatsManager();
+      OffsetStatsManager<Adaptor> adaptorStats = agent.getAdaptorStatsManager();
 
       AdaptorInfo info = new AdaptorInfo();
       info.setId(name);

@@ -28,7 +28,7 @@ public class ChunkCatcherConnector implements Connector {
   
   Timer tm;
   
-  class Interruptor extends TimerTask {
+  static class Interruptor extends TimerTask {
     Thread targ;
     volatile boolean deactivate = false;
     Interruptor(Thread t) {

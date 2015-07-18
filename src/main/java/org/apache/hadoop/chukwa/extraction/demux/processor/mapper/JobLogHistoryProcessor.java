@@ -22,6 +22,7 @@ package org.apache.hadoop.chukwa.extraction.demux.processor.mapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,13 +39,12 @@ public class JobLogHistoryProcessor extends AbstractProcessor {
   static Logger log = Logger.getLogger(JobLogHistoryProcessor.class);
 
   private static final String recordType = "JobLogHistory";
-  private static String internalRegex = null;
-  private static Pattern ip = null;
+  private static final String internalRegex = "(.*?)=\"(.*?)\"(.*)([\\n])?";
+  private Pattern ip = null;
 
   private Matcher internalMatcher = null;
 
   public JobLogHistoryProcessor() {
-    internalRegex = "(.*?)=\"(.*?)\"(.*)([\\n])?";
     ip = Pattern.compile(internalRegex);
     internalMatcher = ip.matcher("-");
   }
@@ -331,10 +331,8 @@ public class JobLogHistoryProcessor extends AbstractProcessor {
           record.setTime(Long.parseLong(keys.get("FINISH_TIME")));
         }
 
-        Iterator<String> it = keys.keySet().iterator();
-        while (it.hasNext()) {
-          String field = it.next();
-          record.add(field, keys.get(field));
+        for(Entry<String, String> entry : keys.entrySet()) {
+          record.add(entry.getKey(), entry.getValue());
         }
 
         output.collect(key, record);

@@ -49,13 +49,6 @@ public class SysLog extends AbstractProcessor {
       throws Throwable {
     try {
       String dStr = recordEntry.substring(0, 15);
-      int start = 15;
-      int idx = recordEntry.indexOf(' ', start);
-      start = idx + 1;
-      idx = recordEntry.indexOf(' ', start);
-      String body = recordEntry.substring(idx + 1);
-      body = body.replaceAll("\n", "");
-
       Calendar convertDate = Calendar.getInstance();
       Date d = sdf.parse(dStr);
       int year = convertDate.get(Calendar.YEAR);

@@ -23,12 +23,10 @@ import org.apache.hadoop.chukwa.datacollection.agent.*;
 import org.apache.hadoop.chukwa.datacollection.adaptor.Adaptor;
 import org.apache.hadoop.chukwa.datacollection.collector.servlet.CommitCheckServlet;
 import org.apache.hadoop.chukwa.datacollection.collector.servlet.ServletCollector;
-import org.apache.hadoop.chukwa.datacollection.sender.ChukwaHttpSender.CommitListEntry;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.hadoop.conf.*;
-import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 //import com.google.common.collect.SortedSetMultimap;
@@ -74,7 +72,7 @@ public class AsyncAckSender extends ChukwaHttpSender{
       int c = o.aName.compareTo(this.aName);
       if(c != 0)
         return c;
-      c = fname.compareTo(this.fname);
+      c = o.fname.compareTo(this.fname);
       if(c != 0)
         return c;
       if(o.start < start)
@@ -83,7 +81,19 @@ public class AsyncAckSender extends ChukwaHttpSender{
         return -1;
       else return 0;
     }
-    
+
+    @Override
+    public boolean equals(Object o) {
+      if(!(o instanceof DelayedCommit)) {
+        return false;
+      }
+      DelayedCommit dc = (DelayedCommit) o;
+      if(this.aName.equals(dc.aName)) {
+        return true;
+      }
+      return false;
+    }
+
     public String toString() {
       return adaptor +" commits from" + start + " to " + uuid + " when " + fname + " hits " + fOffset;
     }

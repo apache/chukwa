@@ -20,14 +20,18 @@ package org.apache.hadoop.chukwa.datacollection.writer;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
+
 import org.apache.hadoop.chukwa.Chunk;
 import org.apache.hadoop.chukwa.util.Filter;
 import org.apache.hadoop.chukwa.util.RegexUtil.CheckedPatternSyntaxException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
+
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.io.*;
+
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 /**
@@ -145,7 +149,7 @@ public class SocketTeeWriter extends PipelineableWriter {
           else {
             byte[] data = c.getData();
             byte[] header = (c.getSource()+ " " + c.getDataType() + " " + c.getStreamName()+ " "+  
-                c.getSeqID()+"\n").getBytes(); 
+                c.getSeqID()+"\n").getBytes(Charset.forName("UTF-8")); 
             out.writeInt(data.length+ header.length);
             out.write(header);
             out.write(data);
@@ -170,9 +174,12 @@ public class SocketTeeWriter extends PipelineableWriter {
        try { //inner try catches bad command syntax errors
         sock.setSoTimeout(timeout);
         sock.setKeepAlive(USE_KEEPALIVE);
-        in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+        in = new BufferedReader(new InputStreamReader(sock.getInputStream(), Charset.forName("UTF-8")));
         out = new DataOutputStream(sock.getOutputStream());
         String cmd = in.readLine();
+        if(cmd==null) {
+          throw new IllegalArgumentException("No input found.");
+        }
         if(!cmd.contains(" ")) {
           
           throw new IllegalArgumentException(
@@ -198,8 +205,8 @@ public class SocketTeeWriter extends PipelineableWriter {
           try {
             rules = new Filter(cmdAfterSpace);
           } catch (CheckedPatternSyntaxException pse) {
-            out.write("Error parsing command as a regex: ".getBytes());
-            out.write(pse.getMessage().getBytes());
+            out.write("Error parsing command as a regex: ".getBytes(Charset.forName("UTF-8")));
+            out.write(pse.getMessage().getBytes(Charset.forName("UTF-8")));
             out.writeByte('\n');
             out.close();
             in.close();
@@ -212,10 +219,10 @@ public class SocketTeeWriter extends PipelineableWriter {
         synchronized(tees) {
           tees.add(this);
         }
-        out.write("OK\n".getBytes());
+        out.write("OK\n".getBytes(Charset.forName("UTF-8")));
         log.info("tee to " + sock.getInetAddress() + " established");
       } catch(IllegalArgumentException e) {
-          out.write(e.toString().getBytes());
+          out.write(e.toString().getBytes(Charset.forName("UTF-8")));
           out.writeByte('\n');
           out.close();
           in.close();
@@ -239,8 +246,11 @@ public class SocketTeeWriter extends PipelineableWriter {
     public void handle(Chunk c) {
       
       //don't ever block; just ignore this chunk if we don't have room for it.
-      if(rules.matches(c)) 
-        sendQ.offer(c);
+      if(rules.matches(c)) {
+        if(!sendQ.offer(c)) {
+          log.debug("Queue is full.");
+        }
+      }
     }
   }
 
@@ -249,7 +259,6 @@ public class SocketTeeWriter extends PipelineableWriter {
   
   SocketListenThread listenThread;
   List<Tee> tees;
-  ChukwaWriter next;
   
   @Override
   public void setNextStage(ChukwaWriter next) {

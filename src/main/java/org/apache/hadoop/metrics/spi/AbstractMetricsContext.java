@@ -297,14 +297,12 @@ public abstract class AbstractMetricsContext implements MetricsContext {
    *  Emits the records.
    */
   private synchronized void emitRecords() throws IOException {
-    for (String recordName : bufferedData.keySet()) {
-      RecordMap recordMap = bufferedData.get(recordName);
-      synchronized (recordMap) {
-        Set<Entry<TagMap, MetricMap>> entrySet = recordMap.entrySet ();
-        for (Entry<TagMap, MetricMap> entry : entrySet) {
-          OutputRecord outRec = new OutputRecord(entry.getKey(), entry.getValue());
-          emitRecord(contextName, recordName, outRec);
-        }
+    for (Entry<String, RecordMap> record : bufferedData.entrySet()) {
+      String recordName = record.getKey();
+      RecordMap recordMap = record.getValue();
+      for (Entry<TagMap, MetricMap> entry : record.getValue().entrySet()) {
+        OutputRecord outRec = new OutputRecord(entry.getKey(), entry.getValue());
+        emitRecord(contextName, recordName, outRec);
       }
     }
     flush();

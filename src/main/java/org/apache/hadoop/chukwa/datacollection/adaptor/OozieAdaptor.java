@@ -50,7 +50,7 @@ public class OozieAdaptor extends AbstractAdaptor {
   private final ScheduledExecutorService scheduler = Executors
       .newScheduledThreadPool(1);
   private static final long initialDelay = 60; // seconds
-  private static long periodicity = 60; // seconds
+  private long periodicity = 60; // seconds
   private ScheduledFuture<?> scheduledCollectorThread;
 
   @Override
