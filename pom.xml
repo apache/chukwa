@@ -45,7 +45,7 @@
         <TODO_DEMUX_FS_INMEMORY_SIZE_MB>64</TODO_DEMUX_FS_INMEMORY_SIZE_MB>
         <TODO_DEMUX_IO_SORT_FACTOR>10</TODO_DEMUX_IO_SORT_FACTOR>
         <CHUKWA_DIR>/chukwa</CHUKWA_DIR>
-        <JAVA_HOME>${java.home}</JAVA_HOME>
+        <!-- <JAVA_HOME>${java.home}</JAVA_HOME> -->
     </properties>
 
     <name>Apache Chukwa</name>
@@ -267,7 +267,7 @@
           <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-bundle</artifactId>
-            <version>1.4</version>
+            <version>1.9</version>
           </dependency>
           <dependency>
             <groupId>com.google.guava</groupId>

@@ -52,6 +52,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-775. Updated Jersey version.  (Eric Yang)
+
     CHUKWA-774. Fixed resolution of symlinked prefix directory.  (Eric Yang)
 
     CHUKWA-771. Improved code quality issue identified by findbugs.  (Eric Yang)
