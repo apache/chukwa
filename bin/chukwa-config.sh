@@ -24,11 +24,12 @@ this="${BASH_SOURCE-$0}"
 
 # convert relative path to absolute path
 CHUKWA_LIBEXEC=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
+CHUKWA_PREFIX=$(dirname ${CHUKWA_LIBEXEC})
 script="$(basename -- "$this")"
 this="$CHUKWA_PREFIX/$script"
 
 # the root of the Chukwa installation
-export CHUKWA_HOME=`pwd -P ${CHUKWA_LIBEXEC}/..`
+export CHUKWA_HOME=$CHUKWA_PREFIX
 
 #check to see if the conf dir is given as an optional argument
 if [ $# -gt 1 ]

@@ -52,7 +52,9 @@ Trunk (unreleased changes)
 
   BUGS
 
-    CHUKWA-771.  Improved code quality issue identified by findbugs.  (Eric Yang)
+    CHUKWA-774. Fixed resolution of symlinked prefix directory.  (Eric Yang)
+
+    CHUKWA-771. Improved code quality issue identified by findbugs.  (Eric Yang)
 
     CHUKWA-770. Moved default dashboard population code to login.jsp. (Eric Yang)
 
