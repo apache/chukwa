@@ -1,0 +1,114 @@
+#*
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ *#
+<html>
+<head>
+<title>Circliful</title>
+
+<link href="/hicc/css/jquery.circliful.css" rel="stylesheet" type="text/css" />
+<link href="/hicc/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+<script src="/hicc/js/jquery.js"></script>
+<script src="/hicc/js/jquery.circliful.min.js"></script>
+
+<style>
+body {
+    font-family: arial,verdana, sans-serif;
+    font-size: 12px;
+}
+
+.outer {
+    display: table;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.middle {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.inner {
+    margin-left: auto;
+    margin-right: auto; 
+}
+
+</style>
+</head>
+<body onResize="resize()">
+<div class="outer">
+<div class="middle">
+<div class="inner" id="ring" data-startdegree="270" data-text="35%" data-info="$chart.getTitle()" data-width="30" data-fontsize="38" data-percent="35" data-fgcolor="#61a9dc" data-bgcolor="#eee" data-animationstep="0"></div>
+</div>
+</div>
+
+<script>
+var tracker;
+
+function resize() {
+    clearTimeout(tracker);
+    tracker = setTimeout(load, 50);
+}
+
+function load() {
+    var _series=$seriesMetaData;
+    var buffer=JSON.stringify(_series);
+    $.ajax({
+      url: '/hicc/v1/circles/preview/series',
+      type: 'PUT',
+      contentType: 'application/json',
+      data: buffer,
+      dataType: 'json',
+      success: function(result) {
+        render(result);
+      }
+    });
+}
+
+function render(result) {
+    var radius = $(document).width() / 1.3334;
+    var width = 30;
+    var fontsize = 38;
+    var percent = result.series.data[0][1];
+    var text = percent+"%";
+    var color = "#70cac8";
+    if(percent > 75) {
+      color = "#fc6e64";
+    } else if (percent > 50) {
+      color = "#f7d254";
+    }
+    if(radius < 200) {
+      width=10;
+      fontsize = 12;
+    }
+    $('#ring').empty().removeData().attr('data-percent', percent).
+    attr('data-width', width).
+    attr('data-fontsize', fontsize).
+    attr('data-dimension', radius).
+    attr('data-fgcolor', color).
+    attr('data-text', text).circliful();
+    document.body.style.overflow = 'hidden';
+    tracker = setTimeout(load, 3000);
+}
+
+$( document ).ready(function() {
+  load();
+});
+</script>
+</body>
+</html>

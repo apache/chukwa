@@ -50,7 +50,7 @@ public class ChunkImpl implements org.apache.hadoop.io.Writable, Chunk {
   private static String localHostAddr;
   static {
     try {
-      setHostAddress(InetAddress.getLocalHost().getHostName());
+      setHostAddress(InetAddress.getLocalHost().getHostName().toLowerCase());
     } catch (UnknownHostException e) {
       setHostAddress("localhost");
     }

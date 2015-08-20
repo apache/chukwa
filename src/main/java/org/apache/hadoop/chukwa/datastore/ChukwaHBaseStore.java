@@ -808,7 +808,7 @@ public class ChukwaHBaseStore {
       if(defaultExists) {
         return;
       }
-      String hostname = InetAddress.getLocalHost().getHostName();
+      String hostname = InetAddress.getLocalHost().getHostName().toLowerCase();
       // Populate example chart widgets
       String[] metrics = { "SystemMetrics.LoadAverage.1" };
       createChart("1", "", "System Load Average", metrics, hostname);
@@ -822,7 +822,11 @@ public class ChukwaHBaseStore {
       createChart("5", "bytes", "Network Utilization", netMetrics, hostname);
       String[] swapMetrics = { "SystemMetrics.swap.Total", "SystemMetrics.swap.Used", "SystemMetrics.swap.Free" };
       createChart("6", "bytes-decimal", "Swap Utilization", swapMetrics, hostname);
-      
+      StringBuilder namenode = new StringBuilder();
+      namenode.append(hostname);
+      namenode.append(":NameNode");
+      String[] namenodeHeap = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
+      createChart("7", "percent", "Namenode Memory", namenodeHeap, namenode.toString());
       // Populate default widgets
       Widget widget = new Widget();
       widget.setTitle("System Load Average");
@@ -918,6 +922,14 @@ public class ChukwaHBaseStore {
       createWidget(widget);
       dashboard.add(widget);
 
+      widget = new Widget();
+      widget.setTitle("Namenode Memory");
+      widget.setSrc(new URI("/hicc/v1/circles/draw/7"));
+      widget.setCol(1);
+      widget.setRow(1);
+      widget.setSize_x(2);
+      widget.setSize_y(2);
+      createWidget(widget);
       updateDashboard("system", "", dashboard);
       
     } catch (Throwable ex) {

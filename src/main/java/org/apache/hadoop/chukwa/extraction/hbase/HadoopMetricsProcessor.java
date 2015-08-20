@@ -51,7 +51,7 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
       time = ((Long) json.get(timestampField)).longValue();
       String contextName = (String) json.get(contextNameField);
       String recordName = (String) json.get(recordNameField);
-      String src = (String) json.get(hostName);
+      String src = ((String) json.get(hostName)).toLowerCase();
       if(json.get(processName)!=null) {
         src = new StringBuilder(src).append(":").append(json.get(processName)).toString();
       }

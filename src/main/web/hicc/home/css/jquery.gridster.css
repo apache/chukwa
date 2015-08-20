@@ -61,8 +61,8 @@ body {
 .gridster .gs-w {
     background: #FFF;
     cursor: pointer;
-    -webkit-box-shadow: 0 0 5px rgba(0,0,0,0.3);
-    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    //-webkit-box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    //box-shadow: 0 0 5px rgba(0,0,0,0.3);
     z-index: 2;
     position: absolute;
     min-width: 140px;
@@ -176,7 +176,7 @@ body {
 
 .gs-w:hover .gs-header {
     opacity: .9;
-    filter: blur(5px);
+    //filter: blur(5px);
 }
 
 .gs-header {

@@ -78,7 +78,8 @@
 
   <property>
     <name>chukwa.pipeline</name>
-    <value>org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter,org.apache.hadoop.chukwa.datacollection.writer.solr.SolrWriter</value>
+    <!--<value>org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter,org.apache.hadoop.chukwa.datacollection.writer.solr.SolrWriter</value>-->
+    <value>org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter</value>
   </property>
 
   <property>
