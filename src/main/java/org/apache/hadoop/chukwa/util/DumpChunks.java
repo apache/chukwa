@@ -46,7 +46,7 @@ public class DumpChunks {
     
     if(args.length < 2) {
       System.out.println("usage: Dump [-s] pattern1,pattern2,pattern3... file1 file2 file3...");
-      System.exit(-1);
+      return;
     }
     
     ChukwaConfiguration conf = new ChukwaConfiguration();

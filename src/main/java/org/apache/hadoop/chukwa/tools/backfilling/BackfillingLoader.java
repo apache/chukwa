@@ -82,7 +82,6 @@ public class BackfillingLoader {
   
   public static void usage() {
     System.out.println("java org.apache.hadoop.chukwa.tools.backfilling.BackfillingLoader <cluster> <machine> <adaptorName> <recordType> <logFile>");
-    System.exit(-1);
   }
   
   /**
@@ -92,7 +91,8 @@ public class BackfillingLoader {
   public static void main(String[] args) throws Exception {
 
     if (args.length != 5) {
-      usage();
+	usage();
+	return;
     }
     
 

@@ -117,6 +117,7 @@ public class CreateRecordFile {
                                                  InstantiationException {
      if(args.length == 0 || (args.length==1 && args[0].contains("-h"))) {
        usage();
+       return;
      }
 
      File inputFile = new File(args[0]);
@@ -177,6 +178,5 @@ public class CreateRecordFile {
      System.out.println("            streamName     - Stream name to use in the records");
      System.out.println("            processorClass - Processor class to use. Defaults to TsProcessor");
      System.out.println("            confFile       - File to use to create the JobConf");
-     System.exit(0);
    }
 }

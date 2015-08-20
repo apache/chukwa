@@ -265,7 +265,7 @@ public class ChukwaAgent implements AdaptorManager {
       if (args.length > 0 && args[0].equals("-help")) {
         System.out.println("usage:  LocalAgent [-noCheckPoint]"
             + "[default collector URL]");
-        System.exit(0);
+        return;
       }
 
       Configuration conf = ChukwaUtil.readConfiguration();
@@ -303,7 +303,7 @@ public class ChukwaAgent implements AdaptorManager {
       System.out
           .println("agent started already on this machine with same portno;"
               + " bailing out");
-      System.exit(0); // better safe than sorry
+      return;
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -740,7 +740,7 @@ public class ChukwaAgent implements AdaptorManager {
     adaptorStatsManager.clear();
     agent.stop();
     if (exit)
-      System.exit(0);
+      return;
   }
 
   /**

@@ -261,7 +261,7 @@ public class Demux extends Configured implements Tool {
 
   public static void main(String[] args) throws Exception {
     int res = ToolRunner.run(new Configuration(), new Demux(), args);
-    System.exit(res);
+    return;
   }
 
 }

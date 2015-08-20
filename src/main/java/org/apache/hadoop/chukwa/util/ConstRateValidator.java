@@ -277,7 +277,7 @@ public class ConstRateValidator extends Configured implements Tool{
  //   System.out.println("specify -D textOutput=true for text output");
     int res = ToolRunner.run(new Configuration(),
         new ConstRateValidator(), args);
-    System.exit(res);
+    return;
   }
 
   @Override

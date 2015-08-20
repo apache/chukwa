@@ -52,6 +52,8 @@ public class TestClientTrace extends SetupTestEnv {
       assertTrue(l.size()==1);
       psw.add(l);
       assertTrue(true);
+    } catch (RuntimeException er) {
+	fail(ExceptionUtil.getStackTrace(er));
     } catch (WriterException e) {
       fail(ExceptionUtil.getStackTrace(e));
     }

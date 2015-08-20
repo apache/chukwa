@@ -100,7 +100,7 @@ public class GenerateTestFile {
     outputFile = outputFile.makeQualified(fs);
     if (fs.exists(outputFile)) {
       System.out.println("File already there, exit -1," + outputFile );
-      System.exit(-1);
+      return;
     }
     System.out.println("outputFile:" + outputFile);
     

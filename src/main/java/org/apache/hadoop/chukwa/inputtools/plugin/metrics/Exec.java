@@ -71,7 +71,7 @@ public class Exec extends TimerTask {
       System.out
           .println("Usage: java -DPERIOD=nn -DRECORD_TYPE=recordType Exec [cmd]");
       System.out.println("PERIOD should be numeric format of seconds.");
-      System.exit(0);
+      return;
     }
     Timer timer = new Timer();
     timer.schedule(new Exec(args), 0, period * 1000);

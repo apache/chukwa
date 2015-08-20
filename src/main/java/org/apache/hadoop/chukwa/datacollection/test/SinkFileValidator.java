@@ -40,7 +40,7 @@ public class SinkFileValidator {
     if (args.length < 1) {
       System.out
           .println("usage:  SinkFileValidator <filename> [filesystem URI] ");
-      System.exit(0);
+      return;
     }
     fname = args[0];
     if (args.length > 1)

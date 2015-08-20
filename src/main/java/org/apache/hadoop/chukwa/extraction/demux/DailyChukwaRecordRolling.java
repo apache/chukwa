@@ -63,7 +63,6 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
   public static void usage() {
     System.err
         .println("usage: java org.apache.hadoop.chukwa.extraction.demux.DailyChukwaRecordRolling rollInSequence <True/False> deleteRawdata <True/False>");
-    System.exit(-1);
   }
 
   public static boolean hourlyRolling(String dailyStreamDirectory) {
@@ -221,14 +220,17 @@ public class DailyChukwaRecordRolling extends Configured implements Tool {
     // TODO do a real parameter parsing
     if (args.length != 4) {
       usage();
+      return;
     }
 
     if (!args[0].equalsIgnoreCase("rollInSequence")) {
       usage();
+      return;
     }
 
     if (!args[2].equalsIgnoreCase("deleteRawdata")) {
       usage();
+      return;
     }
 
     if (args[1].equalsIgnoreCase("true")) {

@@ -61,7 +61,7 @@ public class HiccWebServer {
     }
     if(serverConf==null) {
       log.error("Unable to locate jetty-web.xml.");
-      System.exit(-1);
+      throw new RuntimeException("Unable to locate jetty-web.xml.");
     }
     return instance;
   }

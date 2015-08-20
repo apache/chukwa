@@ -35,7 +35,6 @@ public class DemuxDirectoryValidator {
 
   public static void usage() {
     System.out.println("Usage ...");
-    System.exit(-1);
   }
 
   public static void validate(boolean isLocal, FileSystem fs,
@@ -63,6 +62,7 @@ public class DemuxDirectoryValidator {
 
     if (args.length != 3) {
       usage();
+      return;
     }
 
     String demuxGoldDirectory = args[1];
@@ -84,13 +84,14 @@ public class DemuxDirectoryValidator {
     } else {
       System.out.println("Wrong first argument");
       usage();
+      return;
     }
 
     String[] dirs = { demuxGoldDirectory, demuxTestDirectory };
     validate(isLocal, fs, conf, dirs);
 
     System.out.println("Gold and test directories are equivalent");
-    System.exit(10);
+    return;
   }
 
   public static void compareHDFSDirectory(String gold, String test) {

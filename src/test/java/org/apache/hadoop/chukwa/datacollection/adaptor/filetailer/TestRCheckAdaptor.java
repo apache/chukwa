@@ -172,16 +172,13 @@ public class TestRCheckAdaptor extends TestCase implements ChunkReceiver {
   
   @Override
   public void add(Chunk event) throws InterruptedException {
-//    System.out.println("got a chunk; len = " + event.getData().length);
     String[] lines = new String(event.getData()).split("\n");
     System.err.println("got chunk; " + lines.length + " lines " + event.getData().length + " bytes");
     for(String line: lines) {
       String n = line.substring(line.indexOf(':')+1);
       int i = Integer.parseInt(n);
-//      System.out.println("saw "+i);
       if(i != nextExpectedLine) {
         System.err.println("lines out of order: saw " + i + " expected " + nextExpectedLine);
-        System.exit(0);
         fail();
       }
       nextExpectedLine = i+1;

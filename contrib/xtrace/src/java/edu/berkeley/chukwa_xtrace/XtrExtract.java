@@ -250,7 +250,7 @@ public static class MapClass extends Mapper <Object, Object, BytesWritable, Text
   public static void main(String[] args) throws Exception {
     int res = ToolRunner.run(new Configuration(),
         new XtrExtract(), args);
-    System.exit(res);
+    return;
   }
 
 }

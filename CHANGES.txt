@@ -20,6 +20,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-773. Update maven surefire version.  (Anna Wang via Eric Yang)
+
     CHUKWA-769. Updated Chukwa to current HBase API. (Eric Yang)
 
     CHUKWA-767. Implemented low pass filter for Charting REST API.  (Eric Yang)

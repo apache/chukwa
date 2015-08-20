@@ -142,6 +142,6 @@ public class ChukwaArchiveBuilder extends Configured implements Tool {
   public static void main(String[] args) throws Exception {
     int res = ToolRunner.run(new ChukwaConfiguration(), new ChukwaArchiveBuilder(),
         args);
-    System.exit(res);
+    return;
   }
 }

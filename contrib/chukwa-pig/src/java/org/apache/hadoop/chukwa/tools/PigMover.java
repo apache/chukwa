@@ -44,7 +44,6 @@ public class PigMover {
   public static void usage() {
     System.out
         .println("PigMover <cluster> <recordType> <pigDir> <finalOutPutDir>");
-    System.exit(-1);
   }
 
   /**
@@ -56,6 +55,7 @@ public class PigMover {
     if (args.length != 5) {
       log.warn("Wrong number of arguments");
       usage();
+      return;
     }
     Configuration conf = new Configuration();
     FileSystem fs = FileSystem.get(conf);

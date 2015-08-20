@@ -450,7 +450,7 @@ public class FSMBuilder extends Configured implements Tool {
         
     int res = ToolRunner.run(new Configuration(), new FSMBuilder(), args);
     
-    System.exit(res);
+    return;
   }
 
 

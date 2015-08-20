@@ -78,7 +78,7 @@ public class JPluginAgent {
     if (args.length < 1) {
       System.out
           .println("Usage: java -DPERIOD=nn JavaPluginAgent <class name> [parameters]");
-      System.exit(0);
+      return;
     }
 
     int period = -1;
@@ -89,7 +89,7 @@ public class JPluginAgent {
     } catch (NumberFormatException ex) {
       ex.printStackTrace();
       System.out.println("PERIOD should be numeric format of seconds.");
-      System.exit(0);
+      return;
     }
 
     JPlugin plugin = null;
@@ -98,7 +98,7 @@ public class JPluginAgent {
       plugin.init(args);
     } catch (Throwable e) {
       e.printStackTrace();
-      System.exit(-1);
+      return;
     }
 
     try {
