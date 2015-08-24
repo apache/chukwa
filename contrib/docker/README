@@ -1,0 +1,14 @@
+This file contains instruction on how to build docker image for Chukwa
+
+- Copy chukwa binary tarball to the same directory as this README file.
+- Run docker build procedure:
+
+  docker build -t chukwa .
+
+- Trim down the size of docker image using docker-squash
+
+  docker save [id] | sudo /usr/local/bin/docker-squash -t chukwa/chukwa | docker load
+
+- Chukwa image can be launched using:
+
+  docker run -itP -p 4080:4080 -p 50070:50070 -p 8088:8088 -p 60010:60010 chukwa/chukwa
