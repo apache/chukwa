@@ -457,6 +457,12 @@ input.gn-search:focus {
 		content: "\e017";
 }
 
+.gn-icon-home::before {
+		font-family: 'Glyphicons Halflings';
+		font-size: 18px;
+		content: "\e021";
+}
+
 .gn-username {
 		font-family: 'Helvetica Neue', Arial, sans-serif;
 }

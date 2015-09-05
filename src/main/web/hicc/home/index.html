@@ -34,7 +34,7 @@
     <script src="js/jquery.gridster.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/typeahead.bundle.js" type="text/javascript"></script>
   </head>
-  <body onunload="">
+  <body>
     <div id="glass" class="glass" onclick="toggleGlass()"></div>
     <div class="frame">
       <ul><li><iframe id="frame"></iframe></li></ul>
@@ -51,7 +51,8 @@
                   <input placeholder="Search" id="url" type="search" class="gn-search">
                   <a class="gn-icon gn-icon-search"><span>Search</span></a>
                 </li>
-                <li><a class="gn-icon gn-icon-illustrator" onclick="setDashboard('default')">User Activities</a></li>
+                <li><a class="gn-icon gn-icon-home" onclick="setDashboard('default')">Home</a></li>
+                <li><a class="gn-icon gn-icon-illustrator" onclick="setDashboard('user')">User Activities</a></li>
                 <li><a class="gn-icon gn-icon-article" onclick="setDashboard('system')">System Activities</a></li>
                 <li><a class="gn-icon gn-icon-pictures" onclick="showFrame('graph-explorer.html')">Graph Explorer</a></li>
                 <li><a class="gn-icon gn-icon-cog" onclick="showFrame('settings')">Settings</a></li>
@@ -80,7 +81,7 @@
     <script src="js/classie.js"></script>
     <script src="js/gnmenu.js"></script>
     <script>
-
+window.onunload = function(){};
 var dashboard = 'default';
 var widgets = [];
 var widgetsToUrl = {};
@@ -224,9 +225,25 @@ function showFrame(target) {
   gnMenu._closeMenu();
 }
 
+// Read a page's GET URL variables and return them as an associative array.
+function getUrlVars()
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
 var gnMenu = new gnMenu( document.getElementById( 'gn-menu' ) );
 $(function(){ //DOM Ready
-
+  if(getUrlVars()['view']!=null) {
+    dashboard = getUrlVars()['view'];
+  }
   $.getJSON('/hicc/v1/session/key/period',
     function(data) {
       var value = (data['period'] == null) ? "last1hr" : data['period'];
@@ -256,7 +273,7 @@ $(function(){ //DOM Ready
 
   $.getJSON('/hicc/v1/session/key/dashboard',
     function(data) {
-      var value = (data['dashboard'] == null) ? "default" : data['dashboard'];
+      var value = (data['dashboard'] != null) ? data['dashboard'] : "default";
       dashboard = value;
       load();
     }
@@ -281,7 +298,7 @@ function logout() {
     url: '/hicc/logout',
     success: function(data) {
       document.cookie = 'JSESSIONID=;path=/hicc;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-      window.location.assign("/hicc/login.jsp");
+      window.location.assign("/hicc/v1/login/check");
     }
   });
 }

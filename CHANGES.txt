@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-777. Added Home page and some widgets for the demo purpose. (Eric Yang)
+
     CHUKWA-776. Added Docker support.  (Eric Yang)
 
     CHUKWA-772. Added ChukwaParquetWriter.  (Eric Yang)

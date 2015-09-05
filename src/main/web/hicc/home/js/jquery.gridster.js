@@ -1198,7 +1198,7 @@
 
             this.empty_cells(col, row, size_x, size_y);
         }
-        var html = '<li><iframe src="'+url+'"/></li>';
+        var html = '<li><iframe src="'+url+'" seamless /></li>';
         var $w = $(html).attr({
                 'data-col': pos.col,
                 'data-row': pos.row,
