@@ -1,6 +1,6 @@
 var data = {
   labels: ['Mapreduce', 'HBase', 'Hive', 'Spark', 'BigSQL', 'R'],
-  series: [45, 29, 21,3, 2, 1]
+  series: [25, 19, 21,13, 12, 11]
 };
 
 var options = {

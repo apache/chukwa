@@ -269,6 +269,8 @@ $(function(){ //DOM Ready
     cache: false
   }).done(function( html ) {
     $('#username').append(html);
+  }).fail(function() {
+    window.location = "/hicc/";
   });
 
   $.getJSON('/hicc/v1/session/key/dashboard',

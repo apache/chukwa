@@ -17,6 +17,7 @@
  */
 package org.apache.hadoop.chukwa.hicc.rest;
 
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,10 +35,16 @@ import org.apache.hadoop.chukwa.hicc.TimeHandler;
 import org.apache.hadoop.chukwa.hicc.bean.Heatmap;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.log4j.Logger;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 
 @Path("/heatmap")
 public class HeatmapController {
   static Logger log = Logger.getLogger(HeatmapController.class);
+  
+  @Context
+  VelocityEngine velocity;
 
   @GET
   @Path("{metricGroup}/{metric}")
@@ -72,5 +79,34 @@ public class HeatmapController {
       log.error(ExceptionUtil.getStackTrace(e));
     }
     return heatmap;
+  }
+  
+  @GET
+  @Path("render/{metricGroup}/{metric}")
+  @Produces(MediaType.TEXT_HTML)
+  public String heatmapTemplate(@PathParam("metricGroup") @DefaultValue("SystemMetrics") String metricGroup,
+      @PathParam("metric") @DefaultValue("cpu.combined.") String metric,
+      @QueryParam("width") @DefaultValue("700px") String width,
+      @QueryParam("height") @DefaultValue("400px") String height,
+      @QueryParam("title") @DefaultValue("CPU") String title,
+      @QueryParam("yLabel") @DefaultValue("device") String yLabel) {
+    StringBuilder url = new StringBuilder();
+    url.append("/hicc/v1/heatmap/").append(metricGroup).append("/").append(metric);
+    VelocityContext context = new VelocityContext();
+    StringWriter sw = null;
+    try {
+      context.put("url", url.toString());
+      context.put("width", width);
+      context.put("height", height);
+      context.put("title", title);
+      context.put("yLabel", yLabel);
+      Template template = velocity.getTemplate("heatmap.vm");
+      sw = new StringWriter();
+      template.merge(context, sw);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return e.getMessage();
+    }
+    return sw.toString();
   }
 }

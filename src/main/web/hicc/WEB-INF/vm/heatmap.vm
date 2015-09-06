@@ -1,0 +1,141 @@
+#*
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+*#
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+
+      .outer {
+        display: table;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+      }
+
+      .middle {
+        display: table-cell;
+        vertical-align: middle;
+      }
+
+      .inner {
+        margin-left: auto;
+        margin-right: auto; 
+      }
+
+      #heatmapArea {
+        display: block;
+        position:absolute;
+        float:left;
+        top:0;
+        left: 50px;
+      }
+
+      #yaxis {
+        text-align: center;
+        width: 50px;
+        height: $height;
+        line-height: 400px;
+      }
+
+      p {
+        border:0px solid red;
+        writing-mode:lr-tb;
+        -webkit-transform:rotate(270deg);
+        -moz-transform:rotate(270deg);
+        -o-transform: rotate(270deg);
+        white-space:nowrap;
+        bottom:0;
+      }
+
+      #xaxis {
+        width: $width px;
+        position: relative;
+        left: 0px;
+        height: 20px;
+        text-align: center;
+        display: block;
+      }
+
+      body {
+        color:#333;
+        font-family: Oswald, Helvetica, Arial;
+        font-weight:normal;
+      }
+
+    </style>
+    <link href="/hicc/css/default.css" rel="stylesheet" type="text/css">
+  </head>
+  <body onresize="resize()">
+    <div class="outer">
+      <div class="middle">
+        <div class="inner">
+          <div id="yaxis">
+            <p id="yLabel"></p>
+          </div>
+          <div id="heatmapArea"></div>
+          <div id="xaxis">Time</div>
+        </div>
+      </div>
+    </div>
+    <script src="/hicc/js/jquery.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="/hicc/js/heatmap.js"></script>
+    <script type="text/javascript">
+      function load() {
+        var x = window.innerWidth - 80;
+        var y = window.innerHeight - 60;
+        $.ajax({ 
+          url: "$url", 
+          dataType: "json", 
+          success: function(data) {
+            $('#yLabel').html(data.series + " $yLabel (s)");
+            var config = {
+              width: x,
+              height: y,
+              element: document.getElementById("heatmapArea"),
+              radius: y / data.radius * 4/3,
+              opacity: 50,
+              legend: {
+                position: 'br',
+                title: '$title Distribution'
+              }
+            };
+            $("#heatmapArea").empty();
+            var heatmap = h337.create(config);
+            heatmap.store.setDataSet(data);
+            setTimeout(load, 5000);
+          }
+        });
+      }
+      
+      function resize() {
+        var x = window.innerWidth - 80;
+        var y = window.innerHeight - 60;
+        $("#heatmapArea").width(x + 'px');
+        $("#heatmapArea").height(y + 'px');
+      }
+
+      window.onload = function() {
+        document.body.style.overflow = 'hidden';
+        window.addEventListener("resize", resize, false);
+        setTimeout(load, 5000);
+      };
+    </script>
+  </body>
+</html>

@@ -118,3 +118,7 @@ su - hdfs -c '/opt/apache/hadoop/bin/hadoop fs -chown hbase:hadoop /hbase >/dev/
 su - hbase -c '/opt/apache/hbase/bin/start-hbase.sh'
 sleep 5
 su - hbase -c '/opt/apache/hbase/bin/hbase shell < /opt/apache/chukwa/etc/chukwa/hbase.schema'
+sleep 5
+su - hbase -c '/opt/apache/hbase/bin/stop-hbase.sh'
+su - hdfs -c '/opt/apache/hadoop/sbin/stop-dfs.sh'
+su - zookeeper -c '/opt/apache/zookeeper/bin/zkServer.sh stop'

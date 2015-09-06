@@ -1,4 +1,4 @@
-<%--
+#*
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
   ~ distributed with this work for additional information
@@ -15,21 +15,17 @@
   ~ KIND, either express or implied.  See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
-  --%>
-<%@ page import = "org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore" %>
-<%
-  ChukwaHBaseStore.populateDefaults();
-%>
+  *#
 <html>
 <head>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <link type="text/css" rel="stylesheet" href="css/login.css"/>
-    <link href="css/bootstrap.min.css" type="text/css" rel="stylesheet" />
-    <link href="css/bootstrap-theme.min.css" type="text/css" rel="stylesheet" />
-    <script src="js/jquery.js" type="text/javascript"></script>
-    <script src="js/bootstrap.min.js" type="text/javascript"></script>
+    <link type="text/css" rel="stylesheet" href="/hicc/css/login.css"/>
+    <link href="/hicc/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+    <link href="/hicc/css/bootstrap-theme.min.css" type="text/css" rel="stylesheet" />
+    <script src="/hicc/js/jquery.js" type="text/javascript"></script>
+    <script src="/hicc/js/bootstrap.min.js" type="text/javascript"></script>
 </head>
 <body>
 
@@ -46,6 +42,12 @@
         </label>
       </div>
       <input type="submit" class="btn btn-lg btn-primary btn-block" name="submit" value="Login">
+      #if ($invalid)
+        <br>
+        <div class="alert alert-danger alert-dismissible" role="alert">
+          Invalid username or password
+        </div>
+      #end
       <span class="form-signin-footer">
         Copyright (c) 2008-2015 Apache Software Foundation
       </span>

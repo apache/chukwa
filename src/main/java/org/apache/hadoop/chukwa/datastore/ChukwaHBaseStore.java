@@ -827,6 +827,26 @@ public class ChukwaHBaseStore {
       namenode.append(":NameNode");
       String[] namenodeHeap = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
       createChart("7", "percent", "Namenode Memory", namenodeHeap, namenode.toString());
+      String[] hdfsUsage = { "HadoopMetrics.dfs.FSNamesystem.CapacityUsed", "HadoopMetrics.dfs.FSNamesystem.CapacityTotal" };
+      createChart("8", "percent", "HDFS Usage", hdfsUsage, hostname);
+
+      StringBuilder rmnode = new StringBuilder();
+      rmnode.append(hostname);
+      rmnode.append(":ResourceManager");
+      String[] rmHeap = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
+      createChart("9", "percent", "Resource Manager Memory", rmHeap, rmnode.toString());
+
+      StringBuilder hbaseMaster = new StringBuilder();
+      hbaseMaster.append(hostname);
+      hbaseMaster.append(":Master");
+      String[] hbm = { "HBaseMetrics.jvm.JvmMetrics.MemHeapUsedM", "HBaseMetrics.jvm.JvmMetrics.MemHeapMaxM" };
+      createChart("10", "percent", "HBase Master Memory", hbm, hbaseMaster.toString());
+
+      // Demo metrics
+      String[] trialAbandonRate = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
+      createChart("11", "percent", "Trial Abandon Rate", trialAbandonRate, namenode.toString());
+      createChart("12", "percent", "Unhealthy Clusters", hdfsUsage, hostname);
+      
       // Populate default widgets
       Widget widget = new Widget();
       widget.setTitle("System Load Average");
@@ -837,46 +857,200 @@ public class ChukwaHBaseStore {
       widget.setSize_y(1);
       createWidget(widget);
 
-      // CPU heatmap
+      // Populate default dashboard
+      Dashboard dashboard = new Dashboard();
+
       widget = new Widget();
-      widget.setTitle("CPU Heatmap");
-      widget.setSrc(new URI("/hicc/jsp/heatmap.jsp"));
+      widget.setTitle("Trial Downloading");
+      widget.setSrc(new URI("/hicc/home/downloads.html"));
       widget.setCol(1);
       widget.setRow(1);
-      widget.setSize_x(5);
+      widget.setSize_x(2);
       widget.setSize_y(1);
       createWidget(widget);
+      dashboard.add(widget);
 
-      Dashboard dashboard = new Dashboard();
+      widget = new Widget();
+      widget.setTitle("Cluster Running");
+      widget.setSrc(new URI("/hicc/home/clusters.html"));
+      widget.setCol(3);
+      widget.setRow(1);
+      widget.setSize_x(2);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Users Working");
+      widget.setSrc(new URI("/hicc/home/users.html"));
+      widget.setCol(5);
+      widget.setRow(1);
+      widget.setSize_x(2);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Applications Running");
+      widget.setSrc(new URI("/hicc/home/apps.html"));
+      widget.setCol(7);
+      widget.setRow(1);
+      widget.setSize_x(2);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Trial Abandon Rate");
+      widget.setSrc(new URI("/hicc/v1/circles/draw/11"));
+      widget.setCol(1);
+      widget.setRow(2);
+      widget.setSize_x(2);
+      widget.setSize_y(2);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Clusters Health");
+      widget.setSrc(new URI("/hicc/v1/circles/draw/12"));
+      widget.setCol(3);
+      widget.setRow(2);
+      widget.setSize_x(2);
+      widget.setSize_y(2);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Top Active Clusters");
+      widget.setSrc(new URI("/hicc/clusters/"));
+      widget.setCol(5);
+      widget.setRow(2);
+      widget.setSize_x(2);
+      widget.setSize_y(2);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Top Applications");
+      widget.setSrc(new URI("/hicc/apps/"));
+      widget.setCol(7);
+      widget.setRow(2);
+      widget.setSize_x(2);
+      widget.setSize_y(2);
+      createWidget(widget);
+//      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Applications Usage");
+      widget.setSrc(new URI("/hicc/apps/apps-usage.html"));
+      widget.setCol(7);
+      widget.setRow(2);
+      widget.setSize_x(2);
+      widget.setSize_y(2);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      updateDashboard("default", "", dashboard);
+
+      // Populate user dashboards
+      dashboard = new Dashboard();
+      widget = new Widget();
+      widget.setTitle("Top Applications");
+      widget.setSrc(new URI("/hicc/apps/"));
+      widget.setCol(1);
+      widget.setRow(1);
+      widget.setSize_x(2);
+      widget.setSize_y(2);
+      dashboard.add(widget);
+
       // Log Search widget
       widget = new Widget();
       widget.setTitle("Log Search");
       widget.setSrc(new URI("/hicc/ajax-solr/chukwa"));
-      widget.setCol(1);
+      widget.setCol(3);
       widget.setRow(1);
-      widget.setSize_x(7);
-      widget.setSize_y(4);
+      widget.setSize_x(6);
+      widget.setSize_y(6);
       createWidget(widget);
       dashboard.add(widget);
-      updateDashboard("default", "", dashboard);
+
+      widget = new Widget();
+      widget.setTitle("Top Users");
+      widget.setSrc(new URI("/hicc/users/"));
+      widget.setCol(1);
+      widget.setRow(3);
+      widget.setSize_x(2);
+      widget.setSize_y(2);
+      createWidget(widget);
+      dashboard.add(widget);
+      updateDashboard("user", "", dashboard);
 
       // Populate system dashboards
       dashboard = new Dashboard();
       widget = new Widget();
-      widget.setTitle("CPU Utilization");
-      widget.setSrc(new URI("/hicc/v1/chart/draw/2"));
+      widget.setTitle("Services Running");
+      widget.setSrc(new URI("/hicc/services/services.html"));
       widget.setCol(1);
       widget.setRow(1);
-      widget.setSize_x(3);
+      widget.setSize_x(2);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+      
+      widget = new Widget();
+      widget.setTitle("Applications Running");
+      widget.setSrc(new URI("/hicc/home/apps.html"));
+      widget.setCol(3);
+      widget.setRow(1);
+      widget.setSize_x(2);
+      widget.setSize_y(1);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("HDFS Usage");
+      widget.setSrc(new URI("/hicc/v1/circles/draw/8"));
+      widget.setCol(5);
+      widget.setRow(1);
+      widget.setSize_x(1);
       widget.setSize_y(1);
       createWidget(widget);
       dashboard.add(widget);
 
       widget = new Widget();
-      widget.setTitle("Memory Utilization");
-      widget.setSrc(new URI("/hicc/v1/chart/draw/3"));
-      widget.setCol(4);
+      widget.setTitle("Namenode Memory");
+      widget.setSrc(new URI("/hicc/v1/circles/draw/7"));
+      widget.setCol(6);
       widget.setRow(1);
+      widget.setSize_x(1);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Resource Manager Memory");
+      widget.setSrc(new URI("/hicc/v1/circles/draw/9"));
+      widget.setCol(7);
+      widget.setRow(1);
+      widget.setSize_x(1);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("HBase Master Memory");
+      widget.setSrc(new URI("/hicc/v1/circles/draw/10"));
+      widget.setCol(8);
+      widget.setRow(1);
+      widget.setSize_x(1);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("System Load Average");
+      widget.setSrc(new URI("/hicc/v1/chart/draw/1"));
+      widget.setCol(1);
+      widget.setRow(2);
       widget.setSize_x(3);
       widget.setSize_y(1);
       createWidget(widget);
@@ -885,8 +1059,28 @@ public class ChukwaHBaseStore {
       widget = new Widget();
       widget.setTitle("Disk Utilization");
       widget.setSrc(new URI("/hicc/v1/chart/draw/4"));
-      widget.setCol(1);
+      widget.setCol(4);
       widget.setRow(2);
+      widget.setSize_x(3);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Timeline");
+      widget.setSrc(new URI("/hicc/timeline/"));
+      widget.setCol(7);
+      widget.setRow(2);
+      widget.setSize_x(4);
+      widget.setSize_y(6);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("CPU Utilization");
+      widget.setSrc(new URI("/hicc/v1/chart/draw/2"));
+      widget.setCol(1);
+      widget.setRow(3);
       widget.setSize_x(3);
       widget.setSize_y(1);
       createWidget(widget);
@@ -896,7 +1090,17 @@ public class ChukwaHBaseStore {
       widget.setTitle("Network Utilization");
       widget.setSrc(new URI("/hicc/v1/chart/draw/5"));
       widget.setCol(4);
-      widget.setRow(2);
+      widget.setRow(3);
+      widget.setSize_x(3);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Memory Utilization");
+      widget.setSrc(new URI("/hicc/v1/chart/draw/3"));
+      widget.setCol(1);
+      widget.setRow(4);
       widget.setSize_x(3);
       widget.setSize_y(1);
       createWidget(widget);
@@ -905,31 +1109,69 @@ public class ChukwaHBaseStore {
       widget = new Widget();
       widget.setTitle("Swap Utilization");
       widget.setSrc(new URI("/hicc/v1/chart/draw/6"));
-      widget.setCol(1);
-      widget.setRow(3);
-      widget.setSize_x(3);
-      widget.setSize_y(1);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("System Load Average");
-      widget.setSrc(new URI("/hicc/v1/chart/draw/1"));
       widget.setCol(4);
-      widget.setRow(3);
+      widget.setRow(4);
       widget.setSize_x(3);
       widget.setSize_y(1);
       createWidget(widget);
       dashboard.add(widget);
 
+      // CPU heatmap
       widget = new Widget();
-      widget.setTitle("Namenode Memory");
-      widget.setSrc(new URI("/hicc/v1/circles/draw/7"));
+      widget.setTitle("CPU Heatmap");
+      widget.setSrc(new URI("/hicc/v1/heatmap/render/SystemMetrics/cpu.combined."));
       widget.setCol(1);
-      widget.setRow(1);
-      widget.setSize_x(2);
-      widget.setSize_y(2);
+      widget.setRow(5);
+      widget.setSize_x(6);
+      widget.setSize_y(5);
       createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Alerts");
+      widget.setSrc(new URI("/hicc/alerts/"));
+      widget.setCol(1);
+      widget.setRow(5);
+      widget.setSize_x(6);
+      widget.setSize_y(5);
+      createWidget(widget);
+
+      widget = new Widget();
+      widget.setTitle("Log Errors");
+      widget.setSrc(new URI("/hicc/logs/"));
+      widget.setCol(1);
+      widget.setRow(5);
+      widget.setSize_x(6);
+      widget.setSize_y(5);
+      createWidget(widget);
+
+      widget = new Widget();
+      widget.setTitle("Web Stats");
+      widget.setSrc(new URI("https://birepo-internal.svl.ibm.com/awstats/awstats.pl?config=ibm-open-platform&framename=mainright&month=08&year=2015#month"));
+      widget.setCol(1);
+      widget.setRow(5);
+      widget.setSize_x(6);
+      widget.setSize_y(5);
+      createWidget(widget);
+
+      widget = new Widget();
+      widget.setTitle("Sessions");
+      widget.setSrc(new URI("https://birepo-internal.svl.ibm.com/awstats/awstats.pl?config=ibm-open-platform&framename=mainright&month=08&year=2015#sessions"));
+      widget.setCol(1);
+      widget.setRow(5);
+      widget.setSize_x(6);
+      widget.setSize_y(5);
+      createWidget(widget);
+
+      widget = new Widget();
+      widget.setTitle("Domains");
+      widget.setSrc(new URI("https://birepo-internal.svl.ibm.com/awstats/awstats.pl?config=ibm-open-platform&framename=mainright&month=08&year=2015#domains"));
+      widget.setCol(1);
+      widget.setRow(5);
+      widget.setSize_x(6);
+      widget.setSize_y(5);
+      createWidget(widget);
+
       updateDashboard("system", "", dashboard);
       
     } catch (Throwable ex) {
