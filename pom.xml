@@ -753,121 +753,129 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <numUnapprovedLicenses>0</numUnapprovedLicenses>
-                    <excludes>
-			            <!-- notice files -->
-			            <exclude>CHANGES.txt</exclude>
-			            <exclude>README.md</exclude>
+                  <numUnapprovedLicenses>0</numUnapprovedLicenses>
+                  <excludes>
+  			            <!-- notice files -->
+  			            <exclude>CHANGES.txt</exclude>
+  			            <exclude>README.md</exclude>
 
-			            <!-- generated files -->
-			            <exclude>bin/VERSION</exclude>
-			            <exclude>**/target/**</exclude>
-			            <exclude>**/.classpath</exclude>
-			            <exclude>**/.project</exclude>
-			            <exclude>**/.settings/**</exclude>
+  			            <!-- generated files -->
+  			            <exclude>bin/VERSION</exclude>
+  			            <exclude>**/target/**</exclude>
+  			            <exclude>**/.classpath</exclude>
+  			            <exclude>**/.project</exclude>
+  			            <exclude>**/.settings/**</exclude>
 
-			            <!-- Data files -->
-			            <exclude>conf/agents</exclude>
-			            <exclude>conf/alert</exclude>
-			            <exclude>conf/auth.conf</exclude>
-			            <exclude>conf/collectors</exclude>
-			            <exclude>conf/hbase.schema</exclude>
-			            <exclude>conf/initial_adaptors</exclude>
-			            <exclude>conf/jmxremote.access</exclude>
-			            <exclude>conf/jmxremote.password</exclude>
-			            <exclude>contrib/solr/logs/conf/_schema_analysis_stopwords_english.json</exclude>
-			            <exclude>contrib/solr/logs/conf/_schema_analysis_synonyms_english.json</exclude>
-			            <exclude>src/main/web/hicc/descriptors/**</exclude>
-			            <exclude>src/main/web/hicc/views/**</exclude>
+  			            <!-- Data files -->
+  			            <exclude>conf/agents</exclude>
+  			            <exclude>conf/alert</exclude>
+  			            <exclude>conf/auth.conf</exclude>
+  			            <exclude>conf/collectors</exclude>
+  			            <exclude>conf/hbase.schema</exclude>
+  			            <exclude>conf/initial_adaptors</exclude>
+  			            <exclude>conf/jmxremote.access</exclude>
+  			            <exclude>conf/jmxremote.password</exclude>
+  			            <exclude>contrib/solr/logs/conf/_schema_analysis_stopwords_english.json</exclude>
+  			            <exclude>contrib/solr/logs/conf/_schema_analysis_synonyms_english.json</exclude>
+  			            <exclude>src/main/web/hicc/descriptors/**</exclude>
+  			            <exclude>src/main/web/hicc/views/**</exclude>
 
-			            <!-- Test samples -->
-			            <exclude>src/test/resources/Hadoop18JobHistoryLog.txt</exclude>
-			            <exclude>src/test/resources/TestJobLog.txt</exclude>
-			            <exclude>test/samples/ClientTrace.log</exclude>
-			            <exclude>test/samples/Iostat.log</exclude>
-			            <exclude>test/samples/JobHistory.log</exclude>
+  			            <!-- Test samples -->
+  			            <exclude>src/test/resources/Hadoop18JobHistoryLog.txt</exclude>
+  			            <exclude>src/test/resources/TestJobLog.txt</exclude>
+  			            <exclude>test/samples/ClientTrace.log</exclude>
+  			            <exclude>test/samples/Iostat.log</exclude>
+  			            <exclude>test/samples/JobHistory.log</exclude>
 
-			            <!-- bsd licensed files -->
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_da.txt</exclude>
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_de.txt</exclude>
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_es.txt</exclude>
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_fa.txt</exclude>
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_fi.txt</exclude>
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_fr.txt</exclude>
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_hi.txt</exclude>
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_hu.txt</exclude>
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_it.txt</exclude>
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_nl.txt</exclude>
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_no.txt</exclude>
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_pt.txt</exclude>
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_ru.txt</exclude>
-			            <exclude>contrib/solr/logs/conf/lang/stopwords_sv.txt</exclude>
-			            <exclude>src/main/web/hicc/js/jquery*</exclude>
-			            <exclude>src/main/web/hicc/home/js/jquery.js</exclude>
-			            <exclude>src/main/web/hicc/css/iui.css</exclude>
-			            <exclude>src/main/web/hicc/js/behaviour.js</exclude>
-			            <exclude>src/main/web/hicc/js/heatmap.js</exclude>
-			            <exclude>src/main/web/hicc/js/iui.js</exclude>
-			            <exclude>src/main/web/hicc/js/yahoo-dom-event.js</exclude>
-			            <exclude>src/main/web/hicc/js/treeview-min.js</exclude>
-                                    <exclude>src/main/resources/ESAPI.properties</exclude>
+  			            <!-- bsd licensed files -->
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_da.txt</exclude>
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_de.txt</exclude>
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_es.txt</exclude>
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_fa.txt</exclude>
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_fi.txt</exclude>
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_fr.txt</exclude>
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_hi.txt</exclude>
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_hu.txt</exclude>
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_it.txt</exclude>
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_nl.txt</exclude>
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_no.txt</exclude>
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_pt.txt</exclude>
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_ru.txt</exclude>
+  			            <exclude>contrib/solr/logs/conf/lang/stopwords_sv.txt</exclude>
+  			            <exclude>src/main/web/hicc/js/jquery*</exclude>
+  			            <exclude>src/main/web/hicc/home/js/jquery.js</exclude>
+                    <exclude>src/main/web/hicc/css/jquery.circliful.css</exclude>
+  			            <exclude>src/main/web/hicc/css/iui.css</exclude>
+  			            <exclude>src/main/web/hicc/js/behaviour.js</exclude>
+  			            <exclude>src/main/web/hicc/js/heatmap.js</exclude>
+  			            <exclude>src/main/web/hicc/js/iui.js</exclude>
+  			            <exclude>src/main/web/hicc/js/yahoo-dom-event.js</exclude>
+  			            <exclude>src/main/web/hicc/js/treeview-min.js</exclude>
+                    <exclude>src/main/resources/ESAPI.properties</exclude>
 
-			            <!-- MIT licensed files -->
-			            <exclude>contrib/solr/logs/conf/velocity/jquery.autocomplete.js</exclude>
-			            <exclude>src/main/web/hicc/css/flexigrid/flexigrid.css</exclude>
-			            <exclude>src/main/web/hicc/css/timeline.css</exclude>
-			            <exclude>src/main/web/hicc/lib/timeline/**</exclude>
-			            <exclude>lib/agent.dict</exclude>
-			            <exclude>lib/collector.dict</exclude>
-			            <exclude>lib/confspellcheck-README</exclude>
-			            <exclude>lib/json-README.txt</exclude>
-			            <exclude>src/main/web/hicc/js/ajaxtree.js</exclude>
-			            <exclude>src/main/web/hicc/js/flexigrid.js</exclude>
-			            <exclude>src/main/web/hicc/js/flexigrid.pack.js</exclude>
-			            <exclude>src/main/web/hicc/js/workspace/builder.js</exclude>
-			            <exclude>src/main/web/hicc/js/workspace/controls.js</exclude>
-			            <exclude>src/main/web/hicc/js/workspace/dragdrop.js</exclude>
-			            <exclude>src/main/web/hicc/js/workspace/effects.js</exclude>
-			            <exclude>src/main/web/hicc/js/workspace/scriptaculous.js</exclude>
-			            <exclude>src/main/web/hicc/js/workspace/slider.js</exclude>
-			            <exclude>src/main/web/hicc/js/workspace/sound.js</exclude>
-			            <exclude>src/main/web/hicc/js/org/tool-man/*</exclude>
-			            <exclude>src/main/web/hicc/js/timeframe.js</exclude>
-			            <exclude>src/main/web/hicc/js/workspace/prototype.js</exclude>
-			            <exclude>src/main/web/hicc/js/jquery.flot.pack.js</exclude>
-			            <exclude>src/main/web/hicc/js/gsv.js</exclude>
-			            <exclude>src/main/web/hicc/js/bootstrap.min.js</exclude>
-			            <exclude>src/main/web/hicc/js/js-cookie.js</exclude>
-			            <exclude>src/main/web/hicc/css/bootstrap-theme.css.map</exclude>
-			            <exclude>src/main/web/hicc/css/bootstrap-theme.min.css</exclude>
-			            <exclude>src/main/web/hicc/css/bootstrap.min.css</exclude>
-			            <exclude>src/main/web/hicc/fonts/glyphicons-halflings-regular.svg</exclude>
-			            <exclude>src/main/web/hicc/home/js/jquery.gridster.min.js</exclude>
-			            <exclude>src/main/web/hicc/home/js/jquery.gridster.with-extras.min.js</exclude>
-			            <exclude>src/main/web/hicc/home/css/jquery.gridster.css</exclude>
-			            <exclude>src/main/web/hicc/home/css/jquery.gridster.min.css</exclude>
-			            <exclude>src/main/web/hicc/home/js/typeahead.bundle.js</exclude>
-			            <exclude>src/main/web/hicc/home/js/classie.js</exclude>
-			            <exclude>src/main/web/hicc/home/js/gnmenu.js</exclude>
-			            <exclude>src/main/web/hicc/home/js/modernizr.custom.js</exclude>
-                                    <exclude>src/main/web/hicc/ajax-solr/chukwa/css/jquery-ui.min.css</exclude>
-                                    <exclude>src/main/web/hicc/ajax-solr/chukwa/css/jquery-ui.structure.min.css</exclude>
-                                    <exclude>src/main/web/hicc/ajax-solr/chukwa/css/jquery-ui.theme.min.css</exclude>
-                                    <exclude>src/main/web/hicc/ajax-solr/chukwa/js/jquery-ui.min.js</exclude>
-                                    <exclude>src/main/web/hicc/ajax-solr/chukwa/js/require.min.js</exclude>
-                                    <exclude>src/main/web/hicc/home/css/select2.min.css</exclude>
-                                    <exclude>src/main/web/hicc/home/js/select2.min.js</exclude>
+  			            <!-- MIT licensed files -->
+  			            <exclude>contrib/solr/logs/conf/velocity/jquery.autocomplete.js</exclude>
+  			            <exclude>src/main/web/hicc/css/flexigrid/flexigrid.css</exclude>
+  			            <exclude>src/main/web/hicc/css/timeline.css</exclude>
+  			            <exclude>src/main/web/hicc/lib/timeline/**</exclude>
+  			            <exclude>lib/agent.dict</exclude>
+  			            <exclude>lib/collector.dict</exclude>
+  			            <exclude>lib/confspellcheck-README</exclude>
+  			            <exclude>lib/json-README.txt</exclude>
+  			            <exclude>src/main/web/hicc/js/ajaxtree.js</exclude>
+  			            <exclude>src/main/web/hicc/js/flexigrid.js</exclude>
+  			            <exclude>src/main/web/hicc/js/flexigrid.pack.js</exclude>
+  			            <exclude>src/main/web/hicc/js/workspace/builder.js</exclude>
+  			            <exclude>src/main/web/hicc/js/workspace/controls.js</exclude>
+  			            <exclude>src/main/web/hicc/js/workspace/dragdrop.js</exclude>
+  			            <exclude>src/main/web/hicc/js/workspace/effects.js</exclude>
+  			            <exclude>src/main/web/hicc/js/workspace/scriptaculous.js</exclude>
+  			            <exclude>src/main/web/hicc/js/workspace/slider.js</exclude>
+  			            <exclude>src/main/web/hicc/js/workspace/sound.js</exclude>
+  			            <exclude>src/main/web/hicc/js/org/tool-man/*</exclude>
+  			            <exclude>src/main/web/hicc/js/timeframe.js</exclude>
+  			            <exclude>src/main/web/hicc/js/workspace/prototype.js</exclude>
+  			            <exclude>src/main/web/hicc/js/jquery.flot.pack.js</exclude>
+  			            <exclude>src/main/web/hicc/js/gsv.js</exclude>
+  			            <exclude>src/main/web/hicc/js/bootstrap.min.js</exclude>
+  			            <exclude>src/main/web/hicc/js/js-cookie.js</exclude>
+  			            <exclude>src/main/web/hicc/css/bootstrap-theme.css.map</exclude>
+  			            <exclude>src/main/web/hicc/css/bootstrap-theme.min.css</exclude>
+  			            <exclude>src/main/web/hicc/css/bootstrap.min.css</exclude>
+  			            <exclude>src/main/web/hicc/fonts/glyphicons-halflings-regular.svg</exclude>
+  			            <exclude>src/main/web/hicc/home/js/jquery.gridster.min.js</exclude>
+  			            <exclude>src/main/web/hicc/home/js/jquery.gridster.with-extras.min.js</exclude>
+  			            <exclude>src/main/web/hicc/home/css/jquery.gridster.css</exclude>
+  			            <exclude>src/main/web/hicc/home/css/jquery.gridster.min.css</exclude>
+  			            <exclude>src/main/web/hicc/home/js/typeahead.bundle.js</exclude>
+  			            <exclude>src/main/web/hicc/home/js/classie.js</exclude>
+  			            <exclude>src/main/web/hicc/home/js/gnmenu.js</exclude>
+  			            <exclude>src/main/web/hicc/home/js/modernizr.custom.js</exclude>
+                    <exclude>src/main/web/hicc/ajax-solr/chukwa/css/jquery-ui.min.css</exclude>
+                    <exclude>src/main/web/hicc/ajax-solr/chukwa/css/jquery-ui.structure.min.css</exclude>
+                    <exclude>src/main/web/hicc/ajax-solr/chukwa/css/jquery-ui.theme.min.css</exclude>
+                    <exclude>src/main/web/hicc/ajax-solr/chukwa/js/jquery-ui.min.js</exclude>
+                    <exclude>src/main/web/hicc/ajax-solr/chukwa/js/require.min.js</exclude>
+                    <exclude>src/main/web/hicc/home/css/select2.min.css</exclude>
+                    <exclude>src/main/web/hicc/home/js/select2.min.js</exclude>
+                    <exclude>src/main/web/hicc/css/font-awesome.min.css</exclude>
 
-			            <!-- Creative Commons licensed files -->
-			            <exclude>src/main/web/hicc/js/autoHeight.js</exclude>
+  			            <!-- Creative Commons licensed files -->
+  			            <exclude>src/main/web/hicc/js/autoHeight.js</exclude>
 
-			            <!-- Public Domain -->
-			            <exclude>src/main/web/hicc/js/base64.js</exclude>
-			            <exclude>src/main/web/hicc/js/canvas2image.js</exclude>
-			            <exclude>src/main/web/hicc/js/json.js</exclude>
-			            <exclude>src/main/web/hicc/home/fonts/codropsicons/*</exclude>
-			            <exclude>src/main/web/hicc/home/fonts/ecoicons/*</exclude>
-                    </excludes>
+  			            <!-- Public Domain -->
+  			            <exclude>src/main/web/hicc/js/base64.js</exclude>
+  			            <exclude>src/main/web/hicc/js/canvas2image.js</exclude>
+  			            <exclude>src/main/web/hicc/js/json.js</exclude>
+  			            <exclude>src/main/web/hicc/home/fonts/codropsicons/*</exclude>
+  			            <exclude>src/main/web/hicc/home/fonts/ecoicons/*</exclude>
+
+                    <!-- DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 -->
+                    <exclude>src/main/web/hicc/css/chartist.css</exclude>
+                    <exclude>src/main/web/hicc/css/chartist.css.map</exclude>
+                    <exclude>src/main/web/hicc/js/chartist.min.js</exclude>
+                    <exclude>src/main/web/hicc/js/chartist.min.js.map</exclude>                    
+                  </excludes>
                 </configuration>
             </plugin>
         </plugins>
