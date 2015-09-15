@@ -60,6 +60,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-781. Redirect to login screen for invalid session.  (Eric Yang)
+
     CHUKWA-779.  Remove support for JSP pages.  (Eric Yang)
 
     CHUKWA-775. Updated Jersey version.  (Eric Yang)

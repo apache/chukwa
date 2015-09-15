@@ -270,7 +270,7 @@ $(function(){ //DOM Ready
   }).done(function( html ) {
     $('#username').append(html);
   }).fail(function() {
-    window.location = "/hicc/";
+    window.location = "/hicc/v1/login/check";
   });
 
   $.getJSON('/hicc/v1/session/key/dashboard',
