@@ -127,7 +127,7 @@ jar cf $CHUKWA_HOME/hbase-env.jar $HBASE_CONF_DIR
   [[4]] Setup a cron job or Hudson job for analytics script to run periodically:
 
 ---
-pig -Dpig.additional.jars=${HBASE_HOME}/hbase-{{${hbaseVersion}}}.jar:${HBASE_HOME}/lib/zookeeper-{{${zookeeperVersion}}}.jar:${PIG_PATH}/pig.jar:${CHUKWA_HOME}/hbase-env.jar ${CHUKWA_HOME}/script/pig/ClusterSummary.pig
+pig -Dpig.additional.jars=${HBASE_HOME}/hbase-${hbaseVersion}.jar:${HBASE_HOME}/lib/zookeeper-${zookeeperVersion}.jar:${PIG_PATH}/pig.jar:${CHUKWA_HOME}/hbase-env.jar ${CHUKWA_HOME}/script/pig/ClusterSummary.pig
 ---
 
 * Start HICC
