@@ -45,6 +45,10 @@
         <TODO_DEMUX_FS_INMEMORY_SIZE_MB>64</TODO_DEMUX_FS_INMEMORY_SIZE_MB>
         <TODO_DEMUX_IO_SORT_FACTOR>10</TODO_DEMUX_IO_SORT_FACTOR>
         <CHUKWA_DIR>/chukwa</CHUKWA_DIR>
+        <json-simpleVersion>1.1</json-simpleVersion>
+        <zookeeperVersion>3.4.5</zookeeperVersion>
+        <hbaseVersion>1.0.0</hbaseVersion>
+        <hadoopVersion>2.6.0</hadoopVersion>
         <!-- <JAVA_HOME>${java.home}</JAVA_HOME> -->
     </properties>
 
@@ -147,7 +151,7 @@
           <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
-            <version>1.1</version>
+            <version>${json-simpleVersion}</version>
           </dependency>
           <dependency>
             <groupId>org.apache.activemq</groupId>
@@ -262,7 +266,7 @@
           <dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
-            <version>3.4.5</version>
+            <version>${zookeeperVersion}</version>
           </dependency>
           <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -945,15 +949,11 @@
                     <name>!hbase.profile</name>
                 </property>
             </activation>
-            <properties>
-                <hbase.version>1.0.0</hbase.version>
-                <hadoop.version>2.6.0</hadoop.version>
-            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.hbase</groupId>
                     <artifactId>hbase-common</artifactId>
-                    <version>${hbase.version}</version>
+                    <version>${hbaseVersion}</version>
                     <exclusions>
                         <exclusion>
                             <groupId>com.sun.jersey</groupId>
@@ -1000,7 +1000,7 @@
                 <dependency>
                     <groupId>org.apache.hbase</groupId>
                     <artifactId>hbase-server</artifactId>
-                    <version>${hbase.version}</version>
+                    <version>${hbaseVersion}</version>
                     <exclusions>
                         <exclusion>
                             <groupId>org.mortbay.jetty</groupId>
@@ -1040,14 +1040,14 @@
                     <groupId>org.apache.hbase</groupId>
                     <artifactId>hbase-common</artifactId>
                     <classifier>tests</classifier>
-                    <version>${hbase.version}</version>
+                    <version>${hbaseVersion}</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.hbase</groupId>
                     <artifactId>hbase-server</artifactId>
                     <classifier>tests</classifier>
-                    <version>${hbase.version}</version>
+                    <version>${hbaseVersion}</version>
                     <scope>test</scope>
                     <exclusions>
                         <exclusion>
@@ -1076,20 +1076,20 @@
                     <groupId>org.apache.hbase</groupId>
                     <artifactId>hbase-hadoop-compat</artifactId>
                     <classifier>tests</classifier>
-                    <version>${hbase.version}</version>
+                    <version>${hbaseVersion}</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.hbase</groupId>
                     <artifactId>hbase-hadoop2-compat</artifactId>
                     <classifier>tests</classifier>
-                    <version>${hbase.version}</version>
+                    <version>${hbaseVersion}</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-common</artifactId>
-                    <version>${hadoop.version}</version>
+                    <version>${hadoopVersion}</version>
                     <exclusions>
                         <exclusion>
                             <groupId>javax.servlet.jsp</groupId>
@@ -1112,38 +1112,38 @@
                 <dependency>
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-auth</artifactId>
-                    <version>${hadoop.version}</version>
+                    <version>${hadoopVersion}</version>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-client</artifactId>
-                    <version>${hadoop.version}</version>
+                    <version>${hadoopVersion}</version>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-mapreduce-client-core</artifactId>
-                    <version>${hadoop.version}</version>
+                    <version>${hadoopVersion}</version>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-yarn-common</artifactId>
-                    <version>${hadoop.version}</version>
+                    <version>${hadoopVersion}</version>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-hdfs</artifactId>
-                    <version>${hadoop.version}</version>
+                    <version>${hadoopVersion}</version>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-yarn-server-tests</artifactId>
-                    <version>${hadoop.version}</version>
+                    <version>${hadoopVersion}</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.hadoop</groupId>
 	            <artifactId>hadoop-minicluster</artifactId>
-                    <version>${hadoop.version}</version>
+                    <version>${hadoopVersion}</version>
                 </dependency>
             </dependencies>
         </profile>
