@@ -24,7 +24,7 @@ Pre-requisites
 
   Chukwa should work on any POSIX platform, but GNU/Linux is the only production platform that has been tested extensively. Chukwa has also been used successfully on Mac OS X, which several members of the Chukwa team use for development.
 
-  The only absolute software requirements are Java 1.6 or better, ZooKeeper 3.4.5, HBase 1.0.0 and Hadoop 2.6.0.
+  The only absolute software requirements are Java 1.6 or better, ZooKeeper {{${zookeeperVersion}}}, HBase {{${hbaseVersion}}} and Hadoop {{${hadoopVersion}}}.
 
   The Chukwa cluster management scripts rely on ssh; these scripts, however, are not required if you have some alternate mechanism for starting and stopping daemons.
 
@@ -45,11 +45,11 @@ Installing Chukwa
 
 []
 
-[./images/chukwa_architecture.png] Chukwa 0.6.0 Architecture 
+[./images/chukwa_architecture.png] Chukwa ${VERSION} Architecture 
 
 First Steps
 
-  * Obtain a copy of Chukwa. You can find the latest release on the Chukwa release page.
+  * Obtain a copy of Chukwa. You can find the latest release on the Chukwa {{{http://www.apache.org/dyn/closer.cgi/chukwa/}release page}} (or alternatively check the source code out from SCM).
 
   * Un-tar the release, via tar xzf.
 
@@ -64,24 +64,24 @@ Setting Up Chukwa Cluster
   [[1]] Copy Chukwa files to Hadoop and HBase directories:
 
 ---
-cp $CHUKWA_CONF_DIR/hadoop-log4j.properties $HADOOP_CONF_DIR/log4j.properties
+cp $CHUKWA_HOME/etc/chukwa/hadoop-log4j.properties $HADOOP_CONF_DIR/log4j.properties
 cp $CHUKWA_HOME/etc/chukwa/hadoop-metrics2.properties $HADOOP_CONF_DIR/hadoop-metrics2.properties
-cp $CHUKWA_HOME/share/chukwa/chukwa-0.7.0-client.jar $HADOOP_HOME/share/hadoop/common/lib
-cp $CHUKWA_HOME/share/chukwa/lib/json-simple-1.1.jar $HADOOP_HOME/share/hadoop/common/lib
-cp $CHUKWA_CONF_DIR/hbase-log4j.properties $HBASE_CONF_DIR/log4j.properties
+cp $CHUKWA_HOME/share/chukwa/chukwa-${VERSION}-client.jar $HADOOP_HOME/share/hadoop/common/lib
+cp $CHUKWA_HOME/share/chukwa/lib/json-simple-${json-simpleVersion}.jar $HADOOP_HOME/share/hadoop/common/lib
+cp $CHUKWA_HOME/etc/chukwa/hbase-log4j.properties $HBASE_CONF_DIR/log4j.properties
 cp $CHUKWA_HOME/etc/chukwa/hadoop-metrics2-hbase.properties $HBASE_CONF_DIR/hadoop-metrics2-hbase.properties
-cp $CHUKWA_HOME/share/chukwa/chukwa-0.7.0-client.jar $HBASE_HOME/lib
-cp $CHUKWA_HOME/share/chukwa/lib/json-simple-1.1.jar $HBASE_HOME/lib
+cp $CHUKWA_HOME/share/chukwa/chukwa-${VERSION}-client.jar $HBASE_HOME/lib
+cp $CHUKWA_HOME/share/chukwa/lib/json-simple-${json-simpleVersion}.jar $HBASE_HOME/lib
 ---  
 
-  [[2]] Restart your Hadoop Cluster. General Hadoop configuration is available at: {{{http://hadoop.apache.org/common/docs/current/cluster_setup.html}Hadoop Configuration}}
+  [[2]] Restart your Hadoop Cluster. General Hadoop configuration is available at: {{{http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html}Hadoop Configuration}}. <<N.B.>> You may see some additional logging messages at this stage which looks as if error(s) are present. These messages are showing up because the log4j socket appender writes to stderr for warn messages when it is unable to stream logs to a log4j socket server. If the Chukwa agent is started with socket adaptors prior to Hadoop and HBase, those messages will not show up. For the time being do not worry about these messages, they will disappear once Chukwa agent is started with socket adaptors.
   
-  [[3]] Make sure HBase is started. General HBASE configuration is available at: {{{http://hbase.apache.org/docs/current/api/overview-summary.html#overview_description}HBase Configuration}}
+  [[3]] Make sure HBase is started. General HBASE configuration is available at: {{{http://hbase.apache.org/book.html#configuration}HBase Configuration}}
   
   [[4]] After Hadoop and HBase are started, run:
 
 ---
-bin/hbase shell < CHUKWA_HOME/etc/chukwa/hbase.schema
+bin/hbase shell < $CHUKWA_HOME/etc/chukwa/hbase.schema
 ---
 
   This procedure initializes the default Chukwa HBase schema.
@@ -127,7 +127,7 @@ jar cf $CHUKWA_HOME/hbase-env.jar $HBASE_CONF_DIR
   [[4]] Setup a cron job or Hudson job for analytics script to run periodically:
 
 ---
-pig -Dpig.additional.jars=${HBASE_HOME}/hbase-0.90.4.jar:${HBASE_HOME}/lib/zookeeper-3.3.2.jar:${PIG_PATH}/pig.jar:${CHUKWA_HOME}/hbase-env.jar ${CHUKWA_HOME}/script/pig/ClusterSummary.pig
+pig -Dpig.additional.jars=${HBASE_HOME}/hbase-${hbaseVersion}.jar:${HBASE_HOME}/lib/zookeeper-${zookeeperVersion}.jar:${PIG_PATH}/pig.jar:${CHUKWA_HOME}/hbase-env.jar ${CHUKWA_HOME}/script/pig/ClusterSummary.pig
 ---
 
 * Start HICC
