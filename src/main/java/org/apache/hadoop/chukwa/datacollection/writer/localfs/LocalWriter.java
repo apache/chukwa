@@ -219,6 +219,9 @@ public class LocalWriter implements ChukwaWriter {
       long interval = time - lastTs;
       lastTs = time;
 
+      if(interval <= 0) {
+        interval = 1;
+      }
       long dataRate = 1000 * currentDs / interval; // kb/sec
       log.info("stat:datacollection.writer.local.LocalWriter dataSize="
           + currentDs + " dataRate=" + dataRate);
