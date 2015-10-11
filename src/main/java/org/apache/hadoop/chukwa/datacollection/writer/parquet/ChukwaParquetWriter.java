@@ -43,8 +43,8 @@ import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 public class ChukwaParquetWriter extends PipelineableWriter {
   private static Logger LOG = Logger.getLogger(ChukwaParquetWriter.class);
   public static final String OUTPUT_DIR_OPT= "chukwaCollector.outputDir";
-  private int blockSize = 64 * 1024 * 1024;
-  private int pageSize = 64 * 1024;
+  private int blockSize = 128 * 1024 * 1024;
+  private int pageSize = 1 * 1024 * 1024;
   private Schema avroSchema = null;
   private AvroParquetWriter<GenericRecord> parquetWriter = null;
   protected String outputDir = null;
@@ -75,7 +75,7 @@ public class ChukwaParquetWriter extends PipelineableWriter {
       localHostAddr = "-NA-";
     }
     outputDir = c.get(OUTPUT_DIR_OPT, "/chukwa/logs");
-    blockSize = c.getInt("dfs.blocksize", 64 * 1024 * 1024);
+    blockSize = c.getInt("dfs.blocksize", 128 * 1024 * 1024);
     rotateInterval = c.getLong("chukwaCollector.rotateInterval", 300000L);
     if(fs == null) {
       try {
@@ -85,21 +85,8 @@ public class ChukwaParquetWriter extends PipelineableWriter {
       }
     }
 
-    String input = "{\"namespace\": \"chukwa.apache.org\"," +
-      "\"type\": \"record\"," +
-      "\"name\": \"Chunk\"," +
-      "\"fields\": [" +
-          "{\"name\": \"dataType\", \"type\": \"string\"}," +
-          "{\"name\": \"data\", \"type\": \"bytes\"}," +
-          "{\"name\": \"source\", \"type\": \"string\"}," +
-          "{\"name\": \"stream\", \"type\": \"string\"}," +
-          "{\"name\": \"tags\", \"type\": \"string\"}," +
-          "{\"name\": \"seqId\",  \"type\": [\"long\", \"null\"]}" +
-      "]"+
-     "}";
-
-    // load your Avro schema
-    avroSchema = new Schema.Parser().parse(input);
+    // load Chukwa Avro schema
+    avroSchema = ChukwaAvroSchema.getSchema();
     // generate the corresponding Parquet schema
     rotate();
   }
@@ -147,7 +134,8 @@ public class ChukwaParquetWriter extends PipelineableWriter {
     if(parquetWriter!=null) {
       try {
         parquetWriter.close();
-        fs.rename(previousPath, new Path(previousFileName + ".done"));
+        String newFileName = previousFileName.substring(0, previousFileName.length() - 7);
+        fs.rename(previousPath, new Path(newFileName + ".done"));
       } catch (IOException e) {
         LOG.warn("Fail to close Chukwa write ahead log.");
       }
@@ -161,7 +149,7 @@ public class ChukwaParquetWriter extends PipelineableWriter {
     newName = newName.replace("-", "");
     newName = newName.replace(":", "");
     newName = newName.replace(".", "");
-    newName = outputDir + "/" + newName.trim();
+    newName = outputDir + "/" + newName.trim() + ".chukwa";
     LOG.info("writing: "+newName);
     Path path = new Path(newName);
     try {
@@ -171,5 +159,34 @@ public class ChukwaParquetWriter extends PipelineableWriter {
     } catch (IOException e) {
       throw new WriterException(e);
     }
+  }
+
+  /**
+   * Calculates delay for scheduling the next rotation in case of
+   * FixedTimeRotatorScheme. This delay is the time difference between the
+   * currentTimestamp (t1) and the next time the collector should rotate the
+   * sequence files (t2). t2 is the time when the current rotateInterval ends
+   * plus an offset (as set by chukwaCollector.FixedTimeIntervalOffset).
+   * So, delay = t2 - t1
+   *
+   * @param currentTime - the current timestamp
+   * @param rotateInterval - chukwaCollector.rotateInterval
+   * @param offsetInterval - chukwaCollector.fixedTimeIntervalOffset
+   * @return delay for scheduling next rotation
+   */
+  public long getDelayForFixedInterval(long currentTime, long rotateInterval, long offsetInterval){
+    // time since last rounded interval
+    long remainder = (currentTime % rotateInterval);
+    long prevRoundedInterval = currentTime - remainder;
+    long nextRoundedInterval = prevRoundedInterval + rotateInterval;
+    long delay = nextRoundedInterval - currentTime + offsetInterval;
+
+    if (LOG.isInfoEnabled()) {
+      LOG.info("currentTime="+currentTime+" prevRoundedInterval="+
+             prevRoundedInterval+" nextRoundedInterval" +
+            "="+nextRoundedInterval+" delay="+delay);
+    }
+
+    return delay;
   }
 }

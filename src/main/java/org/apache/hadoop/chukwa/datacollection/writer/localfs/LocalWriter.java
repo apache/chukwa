@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
@@ -29,19 +30,22 @@ import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.chukwa.ChukwaArchiveKey;
 import org.apache.hadoop.chukwa.Chunk;
-import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter;
 import org.apache.hadoop.chukwa.datacollection.writer.WriterException;
+import org.apache.hadoop.chukwa.datacollection.writer.parquet.ChukwaAvroSchema;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.SequenceFile;
 import org.apache.log4j.Logger;
+import org.apache.parquet.avro.AvroParquetWriter;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 
 /**
  * <p>This class <b>is</b> thread-safe -- rotate() and save() both synchronize on
@@ -82,6 +86,8 @@ public class LocalWriter implements ChukwaWriter {
   static Logger log = Logger.getLogger(LocalWriter.class);
   static final int STAT_INTERVAL_SECONDS = 30;
   static String localHostAddr = null;
+  private int blockSize = 128 * 1024 * 1024;
+  private int pageSize = 1 * 1024 * 1024;
 
   private final Object lock = new Object();
   private BlockingQueue<String> fileQueue = null;
@@ -95,8 +101,7 @@ public class LocalWriter implements ChukwaWriter {
 
   private Path currentPath = null;
   private String currentFileName = null;
-  private FSDataOutputStream currentOutputStr = null;
-  private SequenceFile.Writer seqFileWriter = null;
+  private AvroParquetWriter<GenericRecord> parquetWriter = null;
   private int rotateInterval = 1000 * 60;
 
  
@@ -106,7 +111,7 @@ public class LocalWriter implements ChukwaWriter {
   private Timer rotateTimer = null;
   private Timer statTimer = null;
   
-  
+  private Schema avroSchema = null;
   private int initWriteChunkRetries = 10;
   private int writeChunkRetries = initWriteChunkRetries;
   private boolean chunksWrittenThisRotate = false;
@@ -123,8 +128,18 @@ public class LocalWriter implements ChukwaWriter {
     }
   }
 
+  public LocalWriter(Configuration conf) throws WriterException {
+    setup(conf);
+  }
+
   public void init(Configuration conf) throws WriterException {
+  }
+
+  public void setup(Configuration conf) throws WriterException {
     this.conf = conf;
+
+    // load Chukwa Avro schema
+    avroSchema = ChukwaAvroSchema.getSchema();
 
     try {
       fs = FileSystem.getLocal(conf);
@@ -166,18 +181,17 @@ public class LocalWriter implements ChukwaWriter {
     log.info("outputDir is " + localOutputDir);
     log.info("localFileSystem is " + fs.getUri().toString());
     log.info("minPercentFreeDisk is " + minPercentFreeDisk);
-    
-    // Setup everything by rotating
-    rotate();
 
-    rotateTimer = new Timer();
-    rotateTimer.schedule(new RotateTask(), rotateInterval,
+    if(rotateTimer==null) {
+      rotateTimer = new Timer();
+      rotateTimer.schedule(new RotateTask(), 0,
         rotateInterval);
-    
-    statTimer = new Timer();
-    statTimer.schedule(new StatReportingTask(), 1000,
+    }
+    if(statTimer==null) {
+      statTimer = new Timer();
+      statTimer.schedule(new StatReportingTask(), 0,
         STAT_INTERVAL_SECONDS * 1000);
-
+    }
     fileQueue = new LinkedBlockingQueue<String>();
     localToRemoteHdfsMover = new LocalToRemoteHdfsMover(fileQueue, conf);
     
@@ -249,8 +263,14 @@ public class LocalWriter implements ChukwaWriter {
             archiveKey.setStreamName(chunk.getTags() + "/" + chunk.getSource()
                 + "/" + chunk.getStreamName());
             archiveKey.setSeqId(chunk.getSeqID());
-
-            seqFileWriter.append(archiveKey, chunk);
+            GenericRecord record = new GenericData.Record(avroSchema);
+            record.put("dataType", chunk.getDataType());
+            record.put("data", ByteBuffer.wrap(chunk.getData()));
+            record.put("tags", chunk.getTags());
+            record.put("seqId", chunk.getSeqID());
+            record.put("source", chunk.getSource());
+            record.put("stream", chunk.getStreamName());
+            parquetWriter.write(record);
             // compute size for stats
             dataSize += chunk.getData().length;
           }
@@ -274,30 +294,34 @@ public class LocalWriter implements ChukwaWriter {
     return COMMIT_OK;
   }
 
-  protected void rotate() throws WriterException {
-    isRunning = true;
+  protected String getNewFileName() {
     calendar.setTimeInMillis(System.currentTimeMillis());
-    log.info("start Date [" + calendar.getTime() + "]");
-    log.info("Rotate from " + Thread.currentThread().getName());
-
     String newName = new java.text.SimpleDateFormat("yyyyddHHmmssSSS")
-        .format(calendar.getTime());
+    .format(calendar.getTime());
     newName += localHostAddr + new java.rmi.server.UID().toString();
     newName = newName.replace("-", "");
     newName = newName.replace(":", "");
     newName = newName.replace(".", "");
     newName = localOutputDir + "/" + newName.trim();
+    return newName;
+  }
+
+  protected void rotate() throws WriterException {
+    isRunning = true;
+    log.info("start Date [" + calendar.getTime() + "]");
+    log.info("Rotate from " + Thread.currentThread().getName());
+
+    String newName = getNewFileName();
 
     synchronized (lock) {
       try {
-        FSDataOutputStream previousOutputStr = currentOutputStr;
-        Path previousPath = currentPath;
-        String previousFileName = currentFileName;
-
-        if (previousOutputStr != null) {
-          previousOutputStr.close();
+        if (currentPath != null) {
+          Path previousPath = currentPath;
           if (chunksWrittenThisRotate) {
-            fs.rename(previousPath, new Path(previousFileName + ".done"));
+            String previousFileName = previousPath.getName().replace(".chukwa", ".done");
+            if(fs.exists(previousPath)) {
+              fs.rename(previousPath, new Path(previousFileName + ".done"));
+            }
             fileQueue.add(previousFileName + ".done");
           } else {
             log.info("no chunks written to " + previousPath + ", deleting");
@@ -306,16 +330,15 @@ public class LocalWriter implements ChukwaWriter {
         }
         
         Path newOutputPath = new Path(newName + ".chukwa");
-        FSDataOutputStream newOutputStr = fs.create(newOutputPath);
-        
-        currentOutputStr = newOutputStr;
+        while(fs.exists(newOutputPath)) {
+          newName = getNewFileName();
+          newOutputPath = new Path(newName + ".chukwa");
+        }
+
         currentPath = newOutputPath;
         currentFileName = newName;
         chunksWrittenThisRotate = false;
-        // Uncompressed for now
-        seqFileWriter = SequenceFile.createWriter(conf, newOutputStr,
-            ChukwaArchiveKey.class, ChunkImpl.class,
-            SequenceFile.CompressionType.NONE, null);
+        parquetWriter = new AvroParquetWriter<GenericRecord>(newOutputPath, avroSchema, CompressionCodecName.SNAPPY, blockSize, pageSize);
 
       } catch (IOException e) {
         log.fatal("IO Exception in rotate: ", e);
@@ -354,12 +377,8 @@ public class LocalWriter implements ChukwaWriter {
       }
 
       try {
-        if (this.currentOutputStr != null) {
-          this.currentOutputStr.close();
-
-          if (seqFileWriter != null) {
-            seqFileWriter.close();
-          }
+        if (parquetWriter != null) {
+          parquetWriter.close();
         }
         if (localToRemoteHdfsMover != null) {
           localToRemoteHdfsMover.shutdown();

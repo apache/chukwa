@@ -17,26 +17,25 @@
  */
 package org.apache.hadoop.chukwa.tools.backfilling;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.ByteBuffer;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.commons.io.FileUtils;
-import org.apache.hadoop.chukwa.ChukwaArchiveKey;
-import org.apache.hadoop.chukwa.ChunkImpl;
-import org.apache.hadoop.chukwa.extraction.engine.RecordUtil;
+import org.apache.hadoop.chukwa.datacollection.writer.parquet.ChukwaAvroSchema;
 import org.apache.hadoop.chukwa.validationframework.util.MD5;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.SequenceFile;
-
+import org.apache.parquet.avro.AvroParquetReader;
+import org.apache.parquet.avro.AvroReadSupport;
 
 public class TestBackfillingLoader extends TestCase{
 
@@ -133,8 +132,8 @@ public class TestBackfillingLoader extends TestCase{
       
       File finalOutputFile = new File(dataDir + "/input/in2.txt.sav");
       
-      Assert.assertTrue(inputFile.exists() == false);
-      Assert.assertTrue(finalOutputFile.exists() == true);
+      Assert.assertTrue("Input file exists", inputFile.exists() == false);
+      Assert.assertTrue("Final input file exists", finalOutputFile.exists() == true);
       
       String doneFile = null;
       File directory = new File(dataDir  + "/log/");
@@ -287,30 +286,28 @@ public class TestBackfillingLoader extends TestCase{
   }
   protected long validateDataSink(FileSystem fs,Configuration conf, String dataSinkFile, File logFile, 
       String cluster,String dataType, String source, String application) throws Throwable {
-    SequenceFile.Reader reader = null;
+    AvroParquetReader<GenericRecord> reader = null;
     long lastSeqId = -1;
-    BufferedWriter out = null;
+    FileOutputStream out = null;
     try {
-      
-      reader = new SequenceFile.Reader(fs, new Path(dataSinkFile), conf);
-      ChukwaArchiveKey key = new ChukwaArchiveKey();
-      ChunkImpl chunk = ChunkImpl.getBlankChunk();
+      Schema chukwaAvroSchema = ChukwaAvroSchema.getSchema();
+      AvroReadSupport.setRequestedProjection(conf, chukwaAvroSchema);
+      reader = new AvroParquetReader<GenericRecord>(conf, new Path(dataSinkFile));
 
       String dataSinkDumpName = dataSinkFile + ".dump";
-      out = new BufferedWriter(new FileWriter(dataSinkDumpName));
-      
+      out = new FileOutputStream(new File(dataSinkDumpName), true);
 
-
-      while (reader.next(key, chunk)) {
-        System.out.println("cluster:" + cluster);
-        System.out.println("cluster:" + RecordUtil.getClusterName(chunk));
-
-        Assert.assertTrue(cluster.equals(RecordUtil.getClusterName(chunk)));
-        Assert.assertTrue(dataType.equals(chunk.getDataType()));
-        Assert.assertTrue(source.equals(chunk.getSource()));
-        
-        out.write(new String(chunk.getData()));
-        lastSeqId = chunk.getSeqID() ;
+      GenericRecord record = null;
+      while ( true ) {
+        record = reader.read();
+        if(record == null)
+          break;
+        Assert.assertTrue(record.get("tags").toString().contains(cluster));
+        Assert.assertTrue(dataType.equals(record.get("dataType")));
+        Assert.assertTrue(source.equals(record.get("source")));
+        byte[] data = ((ByteBuffer)record.get("data")).array();
+        out.write(data);
+        lastSeqId = ((Long)record.get("seqId")).longValue();
       }
       
       out.close();
@@ -336,7 +333,7 @@ public class TestBackfillingLoader extends TestCase{
     return lastSeqId;
   }
   
-  private File makeTestFile(String name, int size) throws IOException {
+  private File makeTestFile(final String name, int size) throws IOException {
     File tmpOutput = new File(name);
     
     FileOutputStream fos = new FileOutputStream(tmpOutput);
@@ -348,6 +345,7 @@ public class TestBackfillingLoader extends TestCase{
     }
     pw.flush();
     pw.close();
+    fos.close();
     return tmpOutput;
   }
   

@@ -22,7 +22,9 @@ package org.apache.hadoop.chukwa.datacollection.adaptor.filetailer;
 import org.apache.hadoop.chukwa.ChunkImpl;
 import org.apache.hadoop.chukwa.datacollection.ChunkReceiver;
 import org.apache.hadoop.chukwa.util.RecordConstants;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A subclass of FileTailingAdaptor that reads UTF8/ascii files and splits
@@ -69,14 +71,28 @@ public class CharFileTailingAdaptorUTF8NewLineEscaped extends
 
     if (offsets.size() > 0) {
       int[] offsets_i = new int[offsets.size()];
-      for (int i = 0; i < offsets_i.length; ++i)
+      for (int i = 0; i < offsets.size(); i++) {
+        try {
         offsets_i[i] = offsets.get(i);
+        } catch(NullPointerException e) {
+          // Skip offsets 0 where it can be null.
+        }
+      }
       // make the stream unique to this adaptor
-      int bytesUsed = offsets_i[offsets_i.length - 1] + 1; // char at last
+      int bytesUsed = 0;
+      if(buf.length==offsets_i[offsets_i.length -1]) {
+        // If Separator is last character of stream,
+        // send the record.
+        bytesUsed = offsets_i[offsets_i.length - 2] + 1;
+      } else {
+        // If the last record is partial read,
+        // truncate the record to the n -1 new line.
+        bytesUsed = offsets_i[offsets_i.length - 1] + 1; // char at last        
+      }
                                                            // offset uses a byte
       assert bytesUsed > 0 : " shouldn't send empty events";
       ChunkImpl chunk = new ChunkImpl(type, toWatch.getAbsolutePath(),
-          buffOffsetInFile + bytesUsed, buf, this);
+          buffOffsetInFile + bytesUsed, Arrays.copyOf(buf, bytesUsed), this);
 
       chunk.setSeqID(buffOffsetInFile + bytesUsed);
       chunk.setRecordOffsets(offsets_i);

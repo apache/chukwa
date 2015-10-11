@@ -27,7 +27,7 @@ import org.apache.hadoop.chukwa.datacollection.DataFactory;
 import org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent;
 import org.apache.hadoop.chukwa.datacollection.connector.Connector;
 import org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter;
-import org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter;
+import org.apache.hadoop.chukwa.datacollection.writer.parquet.ChukwaParquetWriter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 
@@ -89,15 +89,14 @@ public class QueueToWriterConnector implements Connector, Runnable {
     log.info("initializing QueueToWriterConnector");
     try {
       String writerClassName = conf.get("chukwaCollector.writerClass",
-          SeqFileWriter.class.getCanonicalName());
+          ChukwaParquetWriter.class.getCanonicalName());
       Class<?> writerClass = Class.forName(writerClassName);
       if (writerClass != null
           && ChukwaWriter.class.isAssignableFrom(writerClass)) {
-        writer = (ChukwaWriter) writerClass.newInstance();
+        writer = (ChukwaWriter) writerClass.getDeclaredConstructor(Configuration.class).newInstance(conf);
       } else {
         throw new RuntimeException("Wrong class type");
       }
-      writer.init(conf);
 
     } catch (Throwable e) {
       log.warn("failed to use user-chosen writer class, Bail out!", e);

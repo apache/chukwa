@@ -60,6 +60,9 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-784. Improve CharFileTailingAdaptorUTF8NewLineEscaped and LocalWriter 
+                logic to send proper data chunk. (Eric Yang)
+
     CHUKWA-781. Redirect to login screen for invalid session.  (Eric Yang)
 
     CHUKWA-779.  Remove support for JSP pages.  (Eric Yang)
