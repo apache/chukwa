@@ -863,6 +863,7 @@
                     <exclude>src/main/web/hicc/home/css/select2.min.css</exclude>
                     <exclude>src/main/web/hicc/home/js/select2.min.js</exclude>
                     <exclude>src/main/web/hicc/css/font-awesome.min.css</exclude>
+                    <exclude>src/main/web/hicc/fonts/glyphicons-halflings-regular.*</exclude>
 
   			            <!-- Creative Commons licensed files -->
   			            <exclude>src/main/web/hicc/js/autoHeight.js</exclude>
