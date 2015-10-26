@@ -638,6 +638,43 @@ public class ChukwaHBaseStore {
     return list;
   }
 
+  public static synchronized List<String> getData(ArrayList<SeriesMetaData> series, long startTime, long endTime) {
+    ArrayList<String> data = new ArrayList<String>();
+    try {
+      getHBaseConnection();
+      Table table = connection.getTable(TableName.valueOf(CHUKWA));
+      Scan scan = new Scan();
+      for(SeriesMetaData s : series) {
+        String snapshot = "";
+        String[] parts = s.getUrl().toString().split("/");
+        String metric = parts[5];
+        String source = parts[6];
+        long currentDay = startTime;
+        byte[] rowKey = HBaseUtil.buildKey(currentDay, metric, source);
+        scan.addFamily(COLUMN_FAMILY);
+        scan.setStartRow(rowKey);
+        scan.setStopRow(rowKey);
+        scan.setTimeRange(startTime, endTime);
+        scan.setBatch(10000);
+        ResultScanner rs = table.getScanner(scan);
+        Iterator<Result> it = rs.iterator();
+        while(it.hasNext()) {
+          Result result = it.next();
+          for(Cell kv : result.rawCells()) {
+            snapshot = new String(CellUtil.cloneValue(kv));
+          }
+        }
+        data.add(snapshot);
+        rs.close();
+      }
+      table.close();
+    } catch(Exception e) {
+      closeHBase();
+      LOG.error(ExceptionUtil.getStackTrace(e));
+    }
+    return data;
+  }
+
   /**
    * Find widget by title prefix in HBase.
    * 
@@ -861,6 +898,16 @@ public class ChukwaHBaseStore {
       Dashboard dashboard = new Dashboard();
 
       widget = new Widget();
+      widget.setTitle("Welcome Page");
+      widget.setSrc(new URI("/hicc/welcome.html"));
+      widget.setCol(1);
+      widget.setRow(1);
+      widget.setSize_x(9);
+      widget.setSize_y(5);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
       widget.setTitle("Trial Downloading");
       widget.setSrc(new URI("/hicc/home/downloads.html"));
       widget.setCol(1);
@@ -868,7 +915,6 @@ public class ChukwaHBaseStore {
       widget.setSize_x(2);
       widget.setSize_y(1);
       createWidget(widget);
-      dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("Cluster Running");
@@ -878,7 +924,6 @@ public class ChukwaHBaseStore {
       widget.setSize_x(2);
       widget.setSize_y(1);
       createWidget(widget);
-      dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("Users Working");
@@ -888,7 +933,6 @@ public class ChukwaHBaseStore {
       widget.setSize_x(2);
       widget.setSize_y(1);
       createWidget(widget);
-      dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("Applications Running");
@@ -898,7 +942,6 @@ public class ChukwaHBaseStore {
       widget.setSize_x(2);
       widget.setSize_y(1);
       createWidget(widget);
-      dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("Trial Abandon Rate");
@@ -908,7 +951,6 @@ public class ChukwaHBaseStore {
       widget.setSize_x(2);
       widget.setSize_y(2);
       createWidget(widget);
-      dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("Clusters Health");
@@ -918,7 +960,6 @@ public class ChukwaHBaseStore {
       widget.setSize_x(2);
       widget.setSize_y(2);
       createWidget(widget);
-      dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("Top Active Clusters");
@@ -928,7 +969,6 @@ public class ChukwaHBaseStore {
       widget.setSize_x(2);
       widget.setSize_y(2);
       createWidget(widget);
-      dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("Top Applications");
@@ -938,7 +978,6 @@ public class ChukwaHBaseStore {
       widget.setSize_x(2);
       widget.setSize_y(2);
       createWidget(widget);
-//      dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("Applications Usage");
@@ -948,7 +987,6 @@ public class ChukwaHBaseStore {
       widget.setSize_x(2);
       widget.setSize_y(2);
       createWidget(widget);
-      dashboard.add(widget);
 
       updateDashboard("default", "", dashboard);
 

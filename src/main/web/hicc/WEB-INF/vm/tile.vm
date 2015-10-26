@@ -1,0 +1,133 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+--> 
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    <title>$chart.getTitle()</title>
+    <link href="/hicc/css/bootstrap-theme.min.css" type="text/css" rel="stylesheet" />
+    <link href="/hicc/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+    <script src="/hicc/js/jquery.js" type="text/javascript"></script>
+    <script src="/hicc/js/bootstrap.min.js" type="text/javascript"></script>
+    <style>
+      .tile {
+        color: #ffffff;
+        background-color: #5bc0de;
+      }
+      .container {
+        width: 100%;
+      }
+      .row {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display:         flex;
+      }
+
+      .jumbotron.vertical-center {
+        margin-bottom: 0; /* Remove the default bottom margin of .jumbotron */
+      }
+
+      .vertical-center {
+        min-height: 100%;  /* Fallback for vh unit */
+        min-height: 100vh; /* You might also want to use
+                              'height' property instead.
+
+                               Note that for percentage values of
+                              'height' or 'min-height' properties,
+                               the 'height' of the parent element
+                               should be specified explicitly.
+ 
+                               In this case the parent of '.vertical-center'
+                               is the <body> element */
+
+        /* Make it a flex container */
+        display: -webkit-box;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+ 
+        /* Align the bootstrap's container vertically */
+          -webkit-box-align : center;
+        -webkit-align-items : center;
+             -moz-box-align : center;
+             -ms-flex-align : center;
+                align-items : center;
+
+        /* In legacy web browsers such as Firefox 9
+           we need to specify the width of the flex container */
+        width: 100%;
+
+        /* Also 'margin: 0 auto' doesn't have any effect on flex items in such web browsers
+           hence the bootstrap's container won't be aligned to the center anymore.
+
+           Therefore, we should use the following declarations to get it centered again */
+               -webkit-box-pack : center;
+                  -moz-box-pack : center;
+                  -ms-flex-pack : center;
+        -webkit-justify-content : center;
+                justify-content : center;
+      }
+
+    </style>
+  </head>
+  <body onResize="resize()">
+    <div class="vertical-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-5 col-md-5 text-center tile">
+            <h2><span class="glyphicon $chart.getIcon()" aria-hidden="true"></span></h2>
+            $chart.getBannerText()
+        </div>
+        <div class="col-xs-7 col-md-7 text-center">
+          <p><h1 id="value"></h1> $chart.getSuffixText()</p>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <script src="/hicc/js/jquery.js"></script>
+    <script>
+      var tracker;
+
+      function resize() {
+        clearTimeout(tracker);
+        tracker = setTimeout(render, 50);
+      }
+
+      function render() {
+        var _series=$seriesMetaData;
+        var buffer=JSON.stringify(_series);
+        $.ajax({
+          type: "PUT",
+          url: "/hicc/v1/tile/preview/series",
+          dataType: "json",
+          data: buffer,
+          success: function(data) {
+            $("#value").html(data.join("/"));
+          }
+        });
+        tracker = setTimeout(render, 3000);
+      }
+
+      $( document ).ready(function() {
+        render();
+      });
+    </script>
+  </body>
+</html>

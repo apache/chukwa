@@ -24,6 +24,7 @@ import java.util.List;
 
 public class Chart {
   private String id;
+  private ChartType type;
   private String title;
   private List<SeriesMetaData> series;
   private boolean xLabelOn;
@@ -42,9 +43,13 @@ public class Chart {
   private boolean userDefinedMax = true;
   private boolean userDefinedMin = true;
   private String yUnitType = "";
+  private String icon = "";
+  private String bannerText = "";
+  private String suffixText = "";
 
   public Chart(String id) {
     this.id = id;
+    this.type = ChartType.TIME_SERIES;
     this.title = "Untitled Chart";
     this.xLabelOn = true;
     this.yLabelOn = true;
@@ -54,6 +59,14 @@ public class Chart {
     this.max = 0;
     this.userDefinedMax = false;
     this.userDefinedMin = false;
+  }
+
+  public ChartType getType() {
+    return this.type;
+  }
+  
+  public void setType(ChartType type) {
+    this.type = type;
   }
 
   public void setYMax(double max) {
@@ -195,5 +208,29 @@ public class Chart {
   
   public String getYUnitType() {
     return this.yUnitType;
+  }
+
+  public void setIcon(String icon) {
+    this.icon = icon;
+  }
+
+  public String getIcon() {
+    return this.icon;
+  }
+
+  public void setBannerText(String bannerText) {
+    this.bannerText = bannerText;
+  }
+
+  public String getBannerText() {
+    return this.bannerText;
+  }
+
+  public void setSuffixText(String suffixText) {
+    this.suffixText = suffixText;
+  }
+
+  public String getSuffixText() {
+    return this.suffixText;
   }
 }

@@ -15,15 +15,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  *#
-<html>
+<!DOCTYPE html>
+<html lang="en" class="no-js">
 <head>
 <title>Circliful</title>
 
 <link href="/hicc/css/jquery.circliful.css" rel="stylesheet" type="text/css" />
 <link href="/hicc/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-
-<script src="/hicc/js/jquery.js"></script>
-<script src="/hicc/js/jquery.circliful.min.js"></script>
 
 <style>
 body {
@@ -57,6 +55,9 @@ body {
 </div>
 </div>
 
+<script src="/hicc/js/jquery.js" type="text/javascript"></script>
+<script src="/hicc/js/jquery.circliful.min.js" type="text/javascript"></script>
+
 <script>
 var tracker;
 
@@ -78,6 +79,7 @@ function load() {
         render(result);
       }
     });
+    tracker = setTimeout(load, 3000);
 }
 
 function render(result) {
@@ -85,7 +87,7 @@ function render(result) {
     var width = 30;
     var fontsize = 38;
     var percent = result.series.data[0][1];
-    var text = percent+"%";
+    var text = percent+"$chart.getSuffixText()";
     var color = "#70cac8";
     if(percent > 75) {
       color = "#fc6e64";
@@ -103,11 +105,10 @@ function render(result) {
     attr('data-fgcolor', color).
     attr('data-text', text).circliful();
     document.body.style.overflow = 'hidden';
-    tracker = setTimeout(load, 3000);
 }
 
 $( document ).ready(function() {
-  load();
+    load();
 });
 </script>
 </body>

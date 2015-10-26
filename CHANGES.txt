@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-785. Added banner, pie chart, gauge chart to graph explorer.  (Eric Yang)
+
     CHUKWA-778. Added pie chart, circle chart and timeline javascripts.  (Eric Yang)
 
     CHUKWA-777. Added Home page and some widgets for the demo purpose. (Eric Yang)

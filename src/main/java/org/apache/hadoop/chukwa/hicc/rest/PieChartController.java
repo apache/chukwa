@@ -22,23 +22,20 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore;
 import org.apache.hadoop.chukwa.hicc.TimeHandler;
 import org.apache.hadoop.chukwa.hicc.bean.Chart;
-import org.apache.hadoop.chukwa.hicc.bean.Series;
+import org.apache.hadoop.chukwa.hicc.bean.ChartType;
 import org.apache.hadoop.chukwa.hicc.bean.SeriesMetaData;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
@@ -48,27 +45,24 @@ import org.apache.velocity.app.VelocityEngine;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-@Path("/circles")
-public class CirclesController {
-  static Logger LOG = Logger.getLogger(CirclesController.class);
+@Path("/piechart")
+public class PieChartController extends ChartController{
+  static Logger LOG = Logger.getLogger(ChartController.class);
   SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
   @Context
   VelocityEngine velocity;
-  
+
   /**
-   * Render circle using jquery circliful.js
+   * Render pie chart using chartist.js
    * 
-   * @param title Title of the tile.
-   * @param metric Metric name to lookup in hbase.
-   * @param source Metric source.
-   * @param invert Toggle to display warning, error color by upper bound or lower bound.
-   * @return html circle widget.
+   * @param id Reference ID of Chart stored in HBase chukwa_meta table.
+   * @return html chart widget
    */
   @GET
   @Path("draw/{id}")
   @Produces(MediaType.TEXT_HTML)
-  public String draw(@PathParam("id") String id, @DefaultValue("false") @QueryParam("invert") boolean invert) {
+  public String draw(@PathParam("id") String id) {
     VelocityContext context = new VelocityContext();
     StringWriter sw = null;
     try {
@@ -79,7 +73,8 @@ public class CirclesController {
 
       context.put("chart", chart);
       context.put("seriesMetaData", seriesMetaData);
-      Template template = velocity.getTemplate("circles.vm");
+      context.put("chartTypeDonut", ChartType.DONUT);
+      Template template = velocity.getTemplate("pie.vm");
       sw = new StringWriter();
       template.merge(context, sw);
     } catch (Exception e) {
@@ -89,6 +84,9 @@ public class CirclesController {
     return sw.toString();
   }
 
+  /**
+   * Preview a pie chart
+   */
   @PUT
   @Path("preview")
   public String preview(String buffer) {
@@ -99,9 +97,11 @@ public class CirclesController {
       Chart chart = gson.fromJson(buffer, Chart.class);
       List<SeriesMetaData> series = chart.getSeries();
       String seriesMetaData = gson.toJson(series);
+
       context.put("chart", chart);
       context.put("seriesMetaData", seriesMetaData);
-      Template template = velocity.getTemplate("circles.vm");
+      context.put("chartTypeDonut", ChartType.DONUT);
+      Template template = velocity.getTemplate("pie.vm");
       sw = new StringWriter();
       template.merge(context, sw);
     } catch (Exception e) {
@@ -110,7 +110,7 @@ public class CirclesController {
     }
     return sw.toString();
   }
-  
+
   @PUT
   @Path("preview/series")
   @Produces("application/json")
@@ -124,30 +124,8 @@ public class CirclesController {
     endTime = time.getEndTime();
     Gson gson = new Gson();
     ArrayList<SeriesMetaData> series = gson.fromJson(buffer, listType);
-    double percent;
     List<String> data = ChukwaHBaseStore.getData(series, startTime, endTime);
-    if(series.size()>=2) {
-      double x = 0;
-      double y = 1;
-      try {
-        x = Double.parseDouble(data.get(0));
-      } catch(NumberFormatException e) {
-        x = 0;
-      }
-      try {
-        y = Double.parseDouble(data.get(1));
-      } catch(NumberFormatException e) {
-        y = 1;
-      }
-      percent = x / y * 100d;
-    } else {
-      double x = Double.parseDouble(data.get(0));
-      percent = x;
-    }
-    percent = Math.round(percent * 100d) / 100d;
-    Series answer = new Series("circle");
-    answer.add(endTime, percent);
-    String result = gson.toJson(answer);
+    String result = gson.toJson(data);
     return result;
   }
 }
