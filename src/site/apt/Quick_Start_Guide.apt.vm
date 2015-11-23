@@ -24,7 +24,7 @@ Pre-requisites
 
   Chukwa should work on any POSIX platform, but GNU/Linux is the only production platform that has been tested extensively. Chukwa has also been used successfully on Mac OS X, which several members of the Chukwa team use for development.
 
-  The only absolute software requirements are Java 1.6 or better, ZooKeeper {{${zookeeperVersion}}}, HBase {{${hbaseVersion}}} and Hadoop {{${hadoopVersion}}}.
+  Software requirements are Java 1.6 or better, ZooKeeper {{${zookeeperVersion}}}, HBase {{${hbaseVersion}}} and Hadoop {{${hadoopVersion}}}.
 
   The Chukwa cluster management scripts rely on ssh; these scripts, however, are not required if you have some alternate mechanism for starting and stopping daemons.
 

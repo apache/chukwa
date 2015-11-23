@@ -49,6 +49,7 @@
         <zookeeperVersion>3.4.5</zookeeperVersion>
         <hbaseVersion>1.0.0</hbaseVersion>
         <hadoopVersion>2.6.0</hadoopVersion>
+        <solrVersion>4.7.2</solrVersion>
         <!-- <JAVA_HOME>${java.home}</JAVA_HOME> -->
     </properties>
 
@@ -293,7 +294,7 @@
           <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-test-framework</artifactId>
-            <version>4.7.2</version>
+            <version>${solrVersion}</version>
             <type>jar</type>
             <scope>test</scope>
             <exclusions>
@@ -739,6 +740,16 @@
                                 <copy todir="${project.build.directory}/site">
                                     <fileset dir="src/site/resources/css" includes="*.css" />
                                 </copy>
+                                <copy todir="${project.build.directory}/site/css">
+                                    <fileset dir="src/main/web/hicc/css" includes="*" />
+                                </copy>
+                                <copy todir="${project.build.directory}/site/js">
+                                    <fileset dir="src/main/web/hicc/js" includes="*" />
+                                </copy>
+                                <copy todir="${project.build.directory}/site/fonts">
+                                    <fileset dir="src/main/web/hicc/fonts" includes="*" />
+                                </copy>
+                                <copy file="src/main/web/hicc/welcome.html" tofile="${project.build.directory}/site/hicc.html" />
                             </tasks>
                         </configuration>
                     </execution>

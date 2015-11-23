@@ -82,16 +82,27 @@ be added automatically.
   Adaptor parameters aren't required by the Chukwa agent, but each class of 
 adaptor may itself specify both mandatory and optional parameters. See below.
 
-Command-line options
+Configuration options
 
-  Normally, agents are configured via the file <conf/chukwa-agent-conf.xml.>
-However, there are a few command-line options that are sometimes useful in
-troubleshooting. If you specify "local" as an option, then the agent will print
-chunks to standard out, rather than to pipeline writers.
-This option is intended for testing and debugging, not for production use.
+  Chukwa agents are configured via the file <conf/chukwa-agent-conf.xml.>
+Chukwa control port runs on port 9093 by default.
 
 ---
-bin/chukwa agent local
+  <property>
+    <name>chukwaAgent.control.port</name>
+    <value>9093</value>
+    <description>The socket port number the agent's control interface can be contacted at.</description>
+  </property>
+---
+
+  Chukwa agent working directory:
+
+---
+  <property>
+    <name>chukwaAgent.checkpoint.dir</name>
+    <value>${CHUKWA_LOG_DIR}/</value>
+    <description>the location to put the agent's checkpoint file(s)</description>
+  </property>
 ---
 
 Adaptors

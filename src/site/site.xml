@@ -52,7 +52,8 @@
         <item name="Javadocs" href="apidocs/index.html"/>
       </item>
       <item name="Architecture" href="design.html">
-        <item name="HDFS Layout" href="dataflow.html"/>
+        <item name="Data Model" href="datamodel.html"/>
+        <!--<item name="HDFS Layout" href="dataflow.html"/>-->
       </item>
       <item name="Wiki" href="http://wiki.apache.org/hadoop/Chukwa/"/>
       <item name="FAQ" href="http://wiki.apache.org/hadoop/Chukwa/FAQ"/>

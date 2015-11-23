@@ -14,4 +14,149 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-Welcome to Hadoop Infrastructure Care Center.
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    <link href="css/bootstrap-theme.min.css" type="text/css" rel="stylesheet" />
+    <link href="css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+    <link href="css/welcome.css" type="text/css" rel="stylesheet" />
+    <script src="js/jquery.js" type="text/javascript"></script>
+    <script src="js/bootstrap.min.js" type="text/javascript"></script>
+  </head>
+  <body data-spy="scroll" data-target="#side-nav">
+
+<div class="container">
+  <div class="row">
+    <div id="side-nav" class="span3">
+      <ul class="nav nav-list affix">
+        <li><a href="#one"><span class="glyphicon glyphicon-unchecked"></span></a></li>
+        <li><a href="#two"><span class="glyphicon glyphicon-unchecked"></span></a></li>
+        <li><a href="#three"><span class="glyphicon glyphicon-unchecked"></span></a></li>
+        <li><a href="#four"><span class="glyphicon glyphicon-unchecked"></span></a></li>
+        <li><a href="#five"><span class="glyphicon glyphicon-unchecked"></span></a></li>
+      </ul>
+    </div>
+    <div class="span9 content">
+      <section id="one">
+        <div class="jumbotron text-center">
+          <h1>
+            Manage services and users and monitor your cluster with the Hadoop Infrastructure Care Center dashboard
+          </h1>
+          <br><br>
+          <p>
+            This starter kit gets you started using the HICC dashboard to manage and monitor your clusters. 
+            By the end of this starter kit, you'll be familiar with the steps to work with home page, 
+            monitor activities, set up views, and define widgets.</p>
+        </div>
+      </section>
+      <section id="two">
+        <div class="jumbotron">
+          <h1>Home</h1>
+          <br><br>
+          <p>
+           Home is a user customizable home page.  Use top right <span class="glyphicon glyphicon-menu-hamburger"></span> 
+           menu button to bring up navigation.  Search function assists to find widgets in HICC Widget catalog.  
+           When hover over a widget, user have 4 options to interact with the widgets.  <span class="glyphicon glyphicon-remove"></span>
+           on the menu bar will close the Widget.  <span class="glyphicon glyphicon-new-window"></span> will 
+           zoom the widget to full page view.  Widget bar enables dragging placement of widget in the dashboard.
+           By dragging the bottom right corner of the widget, the widget can be resized.
+          </p>
+          <p>
+           At top menu bar, H D M Y are representation buttons of Time range.  Each button presents a different time scale.  
+           The available time scale are: <b>H</b>our, <b>D</b>ay, <b>M</b>onth, and <b>Y</b>ear.  By pressing the button, 
+           the dashboard displays information corresponding to the selected time scale.
+          </p>
+          <p>
+           The top right <span class="glyphicon glyphicon-off"></span> button is the logout button.
+          </p>
+        </div>
+      </section>
+      <section id="three">
+        <div class="jumbotron">
+          <h1>User Activities</h1>
+          <br><br>
+          <p>
+            User Activities dashboard displays Administrator defined dashboard for visualizing the user
+            related information.
+          </p>
+          <p>
+            User generated activities, such as running, deploying and administering an
+            application.  Log search helps to provide ability to search for key words that help user
+            to correlate events together.  Other activities such as metering of application usage
+            also help users to gain insights about their usage pattern.  From usage pattern, application
+            administrator can improve capacity plan for various type of applications.
+          </p>
+        </div>
+      </section>
+      <section id="four">
+        <div class="jumbotron">
+          <h1>System Activities</h1>
+          <br><br>
+          <p>
+            System Activities dashboard displays Administrator defined dashboard for visualizing the overall health
+            of the infrastructure.
+          </p>
+          <p>
+            The default system dashboard displays cluster, system, and services health.  This dashboard
+            helps to monitor the cluster health, and amount of resource usage.  These information can
+            help system administrators to improve infrastructure quality.
+          </p>
+        </div>
+      </section>
+      <section id="five">
+        <div class="jumbotron">
+          <h1>Graph Explorer</h1>
+          <br><br>
+          <p>
+            Graph Explorer is a widget composer for data scientist to correlate metrics data and generate chart and graphs.
+          </p>
+          <h2>Metrics Group</h2>
+          <p>
+            Metrics Group is a kind of data collected by Chukwa Agent.  When a data stream is collected from the source, data type
+            is predefined to ensure Chukwa can use the correct parser to process the incoming data type.  When user wants to compose
+            a new widget, metrics group is used to narrow down which group the information belongs to.
+          </p>
+          <h2>Metrics</h2>
+          <p>
+            Metrics is a list of possible metrics from a metrics group.  User can select multiple metrics to visualize correlation
+            between metrics.  For example, for correlation of total disk uage, user can select SystemMetrics.disk.Total and 
+            SystemMetrics.disk.Used to visualize the disk usage of a given node.
+          </p>
+          <h2>Sources</h2>
+          <p>
+            Source refers to the origin of the data source.  It is a high level concept to representing the source of the data
+            is originated from a node, a service, a process, or a device.  This enables user to selectively filter the source of the metrics
+            and visualize individual source or all sources.
+          </p>
+          <h2>Title</h2>
+          <p>
+            Title defines searchable name when widget is published to Widget catalog.
+          </p>
+          <h2>Time Series</h2>
+          <p>
+            Visualize time series metrics in a 2 dimension xy chart.  User can customize the visualization to plot line, bar, area, and 
+            scatter chart.
+          </p>
+          <h2>Tile</h2>
+          <p>
+            Display a banner of the last known value.  User can customize tile to display either a string, or numerical value.
+          </p>
+          <h2>Pie Chart</h2>
+          <p>
+            Pie chart visualization is designed to visualize pie chart base on pre-defined metrics type.  User can select multiple
+            metrics and the averaged value of the selected time range is used to compute the values of each metrics on the pie chart.
+          </p>
+          <h2>Ring Chart</h2>
+          <p>
+            Ring chart visualization is suitable for visualize guage value to ensure specific metrics does not exceed its maximum
+            value.  A single metrics of 100% percent or a pair of metrics that representing current / maximum values can be specified
+            to visualize the ring chart.
+          </p>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+  </body>
+</html>

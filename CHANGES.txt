@@ -28,6 +28,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-786. Update documentation to reflect 0.7 release. (Eric Yang)
+
     CHUKWA-773. Update maven surefire version.  (Anna Wang via Eric Yang)
 
     CHUKWA-769. Updated Chukwa to current HBase API. (Eric Yang)
