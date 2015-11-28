@@ -55,7 +55,7 @@
           <p><a href="/hicc/ajax-solr/chukwa/" target="link_target">Search Log Files</a></p>
         </div>
         <div class="main col-md-10 col-lg-10">
-          <iframe id="link_target" src="/hicc/ajax-solr/chukwa/" width="100%" height="100%"></iframe>
+          <iframe name="link_target" src="/hicc/ajax-solr/chukwa/" width="100%" height="100%"></iframe>
         </div>
       </div>
     </div>
