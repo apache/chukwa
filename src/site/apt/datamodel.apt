@@ -51,4 +51,92 @@ little peculiar, but it's actually the same way that TCP sequence numbers work.
 correctly after a crash, and not send redundant data. When starting adaptors, 
 it's usually save to specify 0 as an ID, but it's sometimes useful to specify 
 something else. For instance, it lets you do things like only tail the second 
-half of a file. 
+half of a file.
+
+HBase Schema
+
+* Metrics
+
+  Chukwa table stores time series data.
+
+** Row Key
+
+*------*------*------------*------------*
+|      | Day  | Metric MD5 | Source MD5 |
+*------*------*------------*------------*
+| Size | 2    | 6          | 6          |
+*------*------*------------*------------*
+
+  Row key is composed of 14 bytes data.  First 2 bytes are day of the year.
+The next 6 bytes are md5 signature of metrics name.  The last 6 bytes are
+md5 signature of data source.  This arrangement helps Chukwa to partition
+data evenly across regions base on time.
+
+  This arrangement provides a good condensed store for data of the same day
+for the same source.
+
+** Column Family
+
+  The column family format for Chukwa table are:
+
+*---------------*-----------------------------------------------------------------:
+| Column Family | Description                                                     |
+*---------------*-----------------------------------------------------------------:
+| t             | Time series data.  Column name is timestamp.  Value is a string |
+*---------------*-----------------------------------------------------------------:
+| a             | Annotation, string tags associated with time series data.       |
+*---------------*-----------------------------------------------------------------:
+
+* Metadata
+
+  Metadata is designed to store point lookup data.  For example, small amount of 
+data to describe the metric name mapping for chukwa table.  It is also used to store
+JSON blob of dashboard data.
+
+** Row Key
+
+*----------------*------------------------------------------------------------------:
+| Row Key        | Description                                                      |
+*----------------*------------------------------------------------------------------:
+| [Metrics Group]| Metrics Group Name, this allows to fetch all metrics name from   |
+|                | the group can be fetched from loading the row key.               |
+*----------------*------------------------------------------------------------------:
+| chart_meta     | All charts are stored in this row.                               |
+*----------------*------------------------------------------------------------------:
+| dashboard_meta | All dashboard are stored in this row.                            |
+*----------------*------------------------------------------------------------------:
+| widget_meta    | All widgets are stored in this row.                              |
+*----------------*------------------------------------------------------------------:
+
+** Special Row
+
+*----------------*------------------------------------------------------------------:
+| chart_meta     | Cell contains the rendering option and metric series name in     |
+|                | a JSON blob                                                      |
+*----------------*------------------------------------------------------------------:
+| dashboard_meta | Cell describes one dashboard view                                |
+*----------------*------------------------------------------------------------------:
+| widget_meta    | Cell describes title and URL of a dashboard widget               |
+*----------------*------------------------------------------------------------------:
+
+** Column Family
+
+*---------------*-------------------------------------------------------------------:
+| Column Family | Description                                                       |
+*---------------*-------------------------------------------------------------------:
+| k             | Key, associated with a fixed structure for describing key types   |
+|               | and md5 signature of the key used in chukwa table.                |
+*---------------*-------------------------------------------------------------------:
+| c             | column for storing JSON blob for special rows.  This column is    |
+|               | used to store dashboard, chart, and widget metadata.              |
+*---------------*-------------------------------------------------------------------:
+
+  Key Types for k column Family, the current supported key types are:
+
+*----------*----------------------------------------------------:
+| Type     | Description                                        |
+*----------*----------------------------------------------------:
+| metric   | This key is a metric name.                         |
+*----------*----------------------------------------------------:
+| source   | This key is a source name.                         |
+*----------*----------------------------------------------------:

@@ -30,6 +30,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-789. Added HBase schema to data model document. (Eric Yang)
+
     CHUKWA-786. Update documentation to reflect 0.7 release. (Eric Yang)
 
     CHUKWA-773. Update maven surefire version.  (Anna Wang via Eric Yang)
