@@ -88,12 +88,21 @@ function render(result) {
     var fontsize = 38;
     var percent = result.series.data[0][1];
     var text = percent+"$chart.getSuffixText()";
-    var color = "#70cac8";
-    if(percent > 75) {
-      color = "#fc6e64";
-    } else if (percent > 50) {
-      color = "#f7d254";
-    }
+    #if ($chart.getThreshold()=="up")
+      var color = "#70cac8";
+      if(percent > 75) {
+        color = "#fc6e64";
+      } else if (percent > 50) {
+        color = "#f7d254";
+      }
+    #else
+      var color = "#70cac8";
+      if(percent < 25) {
+        color = "#fc6e64";
+      } else if (percent < 50) {
+        color = "#f7d254";
+      }
+    #end
     if(radius < 200) {
       width=10;
       fontsize = 12;

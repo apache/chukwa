@@ -54,9 +54,9 @@ public class HBaseUtil {
     c.setTimeInMillis(time);
     byte[] day = Integer.toString(c.get(Calendar.DAY_OF_YEAR)).getBytes(Charset.forName("UTF-8"));
     byte[] pk = getHash(primaryKey);
-    byte[] key = new byte[12];
+    byte[] key = new byte[14];
     System.arraycopy(day, 0, key, 0, day.length);
-    System.arraycopy(pk, 0, key, 2, 5);
+    System.arraycopy(pk, 0, key, 2, 6);
     return key;
   }
   
@@ -66,16 +66,16 @@ public class HBaseUtil {
     byte[] day = Integer.toString(c.get(Calendar.DAY_OF_YEAR)).getBytes(Charset.forName("UTF-8"));
     byte[] pk = getHash(primaryKey);
     byte[] src = getHash(source);
-    byte[] key = new byte[12];
+    byte[] key = new byte[14];
     System.arraycopy(day, 0, key, 0, day.length);
-    System.arraycopy(pk, 0, key, 2, 5);
-    System.arraycopy(src, 0, key, 7, 5);
+    System.arraycopy(pk, 0, key, 2, 6);
+    System.arraycopy(src, 0, key, 8, 6);
     return key;
   }
   
   private static byte[] getHash(String key) {
-    byte[] hash = new byte[5];
-    System.arraycopy(md5.digest(key.getBytes(Charset.forName("UTF-8"))), 0, hash, 0, 5);
+    byte[] hash = new byte[6];
+    System.arraycopy(md5.digest(key.getBytes(Charset.forName("UTF-8"))), 0, hash, 0, 6);
     return hash;
   }
 }

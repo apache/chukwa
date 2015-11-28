@@ -449,10 +449,11 @@ public class ChukwaHBaseStore {
    * @throws URISyntaxException 
    */
   public static synchronized String createCircle(String id,
-      String title, String[] metrics, String source, String suffixLabel) throws URISyntaxException {
+      String title, String[] metrics, String source, String suffixLabel, String direction) throws URISyntaxException {
     Chart chart = new Chart(id);
     chart.setSuffixText(suffixLabel);
     chart.setTitle(title);
+    chart.setThreshold(direction);
     ArrayList<SeriesMetaData> series = new ArrayList<SeriesMetaData>();
     for(String metric : metrics) {
       SeriesMetaData s = new SeriesMetaData();
@@ -924,18 +925,18 @@ public class ChukwaHBaseStore {
       namenode.append(hostname);
       namenode.append(":NameNode");
       String[] namenodeHeap = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
-      createCircle("7", "Namenode Memory", namenodeHeap, namenode.toString(), "%");
+      createCircle("7", "Namenode Memory", namenodeHeap, namenode.toString(), "%", "up");
       
       // HDFS Usage
-      String[] hdfsUsage = { "HadoopMetrics.dfs.FSNamesystem.CapacityUsed", "HadoopMetrics.dfs.FSNamesystem.CapacityTotal" };
-      createCircle("8", "HDFS Usage", hdfsUsage, hostname, "%");
+      String[] hdfsUsage = { "HadoopMetrics.dfs.FSNamesystem.CapacityRemainingGB", "HadoopMetrics.dfs.FSNamesystem.CapacityTotalGB" };
+      createCircle("8", "HDFS Remaining", hdfsUsage, hostname, "%", "down");
 
       // Resource Manager Memory
       StringBuilder rmnode = new StringBuilder();
       rmnode.append(hostname);
       rmnode.append(":ResourceManager");
       String[] rmHeap = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
-      createCircle("9", "Resource Manager Memory", rmHeap, rmnode.toString(), "%");
+      createCircle("9", "Resource Manager Memory", rmHeap, rmnode.toString(), "%", "up");
 
       // Node Managers Health
       String[] nmh = { "HadoopMetrics.yarn.ClusterMetrics.NumActiveNMs", "HadoopMetrics.yarn.ClusterMetrics.NumLostNMs" };
@@ -962,7 +963,7 @@ public class ChukwaHBaseStore {
       hbaseMaster.append(hostname);
       hbaseMaster.append(":Master");
       String[] hbm = { "HBaseMetrics.jvm.JvmMetrics.MemHeapUsedM", "HBaseMetrics.jvm.JvmMetrics.MemHeapMaxM" };
-      createCircle("15", "HBase Master Memory", hbm, hbaseMaster.toString(), "%");
+      createCircle("15", "HBase Master Memory", hbm, hbaseMaster.toString(), "%", "up");
 
       // Demo metrics
 //      String[] trialAbandonRate = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
@@ -1200,7 +1201,7 @@ public class ChukwaHBaseStore {
       dashboard.add(widget);
 
       widget = new Widget();
-      widget.setTitle("HDFS Usage");
+      widget.setTitle("HDFS Remaining");
       widget.setSrc(new URI("/hicc/v1/circles/draw/8"));
       widget.setCol(1);
       widget.setRow(2);

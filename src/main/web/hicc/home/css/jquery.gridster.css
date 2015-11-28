@@ -177,18 +177,18 @@ body {
 }
 
 .gs-w:hover .gs-header {
-    opacity: .9;
+    opacity: .3;
     //filter: blur(5px);
 }
 
 .gs-header {
-    color: white;
+    color: #555555;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 30px;
-    background-color: #496274;
+    background-color: #eeeeee;
     opacity: 0;
     z-index: 20;
 }

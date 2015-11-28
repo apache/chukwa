@@ -66,6 +66,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-788. Save ring chart threshold setting in HBase. (Eric Yang)
+
     CHUKWA-784. Improve CharFileTailingAdaptorUTF8NewLineEscaped and LocalWriter 
                 logic to send proper data chunk. (Eric Yang)
 

@@ -46,6 +46,7 @@ public class Chart {
   private String icon = "";
   private String bannerText = "";
   private String suffixText = "";
+  private String threshold = "";
 
   public Chart(String id) {
     this.id = id;
@@ -232,5 +233,13 @@ public class Chart {
 
   public String getSuffixText() {
     return this.suffixText;
+  }
+
+  public void setThreshold(String direction) {
+    this.threshold = direction;
+  }
+  
+  public String getThreshold() {
+    return this.threshold;
   }
 }

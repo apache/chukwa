@@ -82,8 +82,8 @@
             <div role="tabpanel" class="tab-pane" id="ring">
               <label>Threshold</label>
               <select id="threshold" class="form-control">
-                <option>Upper bound</option>
-                <option>Lower bound</option>
+                <option value="up">Upper bound</option>
+                <option value="down">Lower bound</option>
               </select>
               <label>Suffix Label</label><input type="text" id="ringSuffix" class="form-control" />
             </div>
@@ -227,6 +227,7 @@ $(function() {
       var ymin = $('#ymin').val() ;
       var ymax = $('#ymax').val();
       var yunit = $('#yunit').val();
+      var threshold = $('#threshold').val();
       var banner = $('#banner').val();
       var suffix = $('#suffix').val();
       var view = $("ul#view li.active");
@@ -239,10 +240,11 @@ $(function() {
                    'icon' : icon,
                    'bannerText' : banner, 
                    'suffixText' : suffix, 
-                   'yUnitType' : yunit, 
+                   'yUnitType' : yunit,
+                   'threshold' : threshold, 
                    'width' : 300, 
                    'height' : 200, 
-                   'series' : url 
+                   'series' : url
       };
       if(ymin!='') {
         data['min']=ymin;
