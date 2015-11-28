@@ -243,10 +243,10 @@ body {
 		user-select: none;
 }
 
-.gn-menu-main > li:nth-last-child(2) {
+.gn-menu-main > li:nth-last-child(3) {
 		padding-right: 10px;
                 position: absolute;
-		right: 82px;
+		right: 164px;
 		overflow: hidden;
 		float: left;
 		border-left: none;
@@ -254,7 +254,7 @@ body {
 		white-space: nowrap;
 }
 
-.gn-menu-main > li:last-child {
+.gn-menu-main > li:nth-last-child(-n+2) {
 		width: 82px;
 		float: right;
 		border-right: none;
@@ -455,6 +455,12 @@ input.gn-search:focus {
 		font-family: 'Glyphicons Halflings';
 		font-size: 18px;
 		content: "\e017";
+}
+
+.gn-icon-fullscreen::before {
+		font-family: 'Glyphicons Halflings';
+		font-size: 18px;
+		content: "\e140";
 }
 
 .gn-icon-home::before {

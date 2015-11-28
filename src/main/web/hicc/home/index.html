@@ -72,6 +72,7 @@
         </li>
         <li><span id="username"></span></li>
         <li><a class="gn-icon-poweroff" onclick="logout()"><span> </span></a></li>
+        <li><a class="gn-icon-fullscreen" onclick="toggleFullScreen()"><span> </span></a></li>
       </ul>
     </div><!-- /container -->
     <div class="gridster">
@@ -110,6 +111,32 @@ var substringMatcher = function(strs) {
     cb(matches);
   };
 };
+
+function toggleFullScreen() {
+  var element = document.documentElement;
+  if(document.fullscreenElement ||
+	document.webkitFullscreenElement ||
+	document.mozFullScreenElement ||
+	document.msFullscreenElement) {
+    if(document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if(document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if(document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  } else {
+    if(element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if(element.mozRequestFullScreen) {
+      element.mozRequestFullScreen();
+    } else if(element.webkitRequestFullscreen) {
+      element.webkitRequestFullscreen();
+    } else if(element.msRequestFullscreen) {
+      element.msRequestFullscreen();
+    }
+  }
+}
 
 function toggleGlass() {
   $('#glass').toggle();

@@ -424,8 +424,8 @@ public class ChukwaHBaseStore {
    * Create a chart in HBase by specifying parameters.
    * @throws URISyntaxException 
    */
-  public static synchronized String createChart(String id, String yunitType, 
-      String title, String[] metrics, String source) throws URISyntaxException {
+  public static synchronized String createChart(String id,
+      String title, String[] metrics, String source, String yunitType) throws URISyntaxException {
     Chart chart = new Chart(id);
     chart.setYUnitType(yunitType);
     chart.setTitle(title);
@@ -442,6 +442,58 @@ public class ChukwaHBaseStore {
     chart.setSeries(series);
     return createChart(chart);
     
+  }
+
+  /**
+   * Create a chart in HBase by specifying parameters.
+   * @throws URISyntaxException 
+   */
+  public static synchronized String createCircle(String id,
+      String title, String[] metrics, String source, String suffixLabel) throws URISyntaxException {
+    Chart chart = new Chart(id);
+    chart.setSuffixText(suffixLabel);
+    chart.setTitle(title);
+    ArrayList<SeriesMetaData> series = new ArrayList<SeriesMetaData>();
+    for(String metric : metrics) {
+      SeriesMetaData s = new SeriesMetaData();
+      s.setLabel(metric + "/" + source);
+      s.setUrl(new URI("/hicc/v1/metrics/series/" + metric + "/"
+        + source));
+      series.add(s);
+    }
+    chart.setSeries(series);
+    return createChart(chart);
+    
+  }
+
+  /**
+   * Create a tile in HBase by specifying parameters.
+   * @param id
+   * @param title
+   * @param bannerText
+   * @param suffixLabel
+   * @param metrics
+   * @param source
+   * @param icon
+   * @return
+   * @throws URISyntaxException
+   */
+  public static synchronized String createTile(String id, String title, 
+      String bannerText, String suffixLabel, String[] metrics, String source, 
+      String icon) throws URISyntaxException {
+    Chart chart = new Chart(id);
+    chart.setTitle(title);
+    chart.setBannerText(bannerText);
+    chart.setSuffixText(suffixLabel);
+    chart.setIcon(icon);
+    List<SeriesMetaData> smd = new ArrayList<SeriesMetaData>();
+    for (String metric : metrics) {
+      SeriesMetaData series = new SeriesMetaData();
+      series.setUrl(new URI("/hicc/v1/metrics/series/" + metric + "/" + source));
+      smd.add(series);
+    }
+    chart.setSeries(smd);
+    return createChart(chart);
   }
 
   /**
@@ -662,6 +714,13 @@ public class ChukwaHBaseStore {
           Result result = it.next();
           for(Cell kv : result.rawCells()) {
             snapshot = new String(CellUtil.cloneValue(kv));
+            if(snapshot.matches("-?\\d+(\\.\\d+)?")) {
+              int endOffset = snapshot.length();
+              if(snapshot.length() - snapshot.indexOf(".") > 2) {
+                endOffset = snapshot.indexOf(".") + 2;
+              }
+              snapshot = snapshot.substring(0, endOffset);
+            }
           }
         }
         data.add(snapshot);
@@ -848,41 +907,67 @@ public class ChukwaHBaseStore {
       String hostname = InetAddress.getLocalHost().getHostName().toLowerCase();
       // Populate example chart widgets
       String[] metrics = { "SystemMetrics.LoadAverage.1" };
-      createChart("1", "", "System Load Average", metrics, hostname);
+      createChart("1", "System Load Average", metrics, hostname, "");
       String[] cpuMetrics = { "SystemMetrics.cpu.combined", "SystemMetrics.cpu.sys", "SystemMetrics.cpu.user" };
-      createChart("2", "percent", "CPU Utilization", cpuMetrics, hostname);
+      createChart("2", "CPU Utilization", cpuMetrics, hostname, "percent");
       String[] memMetrics = { "SystemMetrics.memory.FreePercent", "SystemMetrics.memory.UsedPercent"};
-      createChart("3", "percent", "Memory Utilization", memMetrics, hostname);
+      createChart("3", "Memory Utilization", memMetrics, hostname, "percent");
       String[] diskMetrics = { "SystemMetrics.disk.ReadBytes", "SystemMetrics.disk.WriteBytes" };
-      createChart("4", "bytes-decimal", "Disk Utilization", diskMetrics, hostname);
+      createChart("4", "Disk Utilization", diskMetrics, hostname, "bytes-decimal");
       String[] netMetrics = { "SystemMetrics.network.TxBytes", "SystemMetrics.network.RxBytes" };
-      createChart("5", "bytes", "Network Utilization", netMetrics, hostname);
+      createChart("5", "Network Utilization", netMetrics, hostname, "bytes");
       String[] swapMetrics = { "SystemMetrics.swap.Total", "SystemMetrics.swap.Used", "SystemMetrics.swap.Free" };
-      createChart("6", "bytes-decimal", "Swap Utilization", swapMetrics, hostname);
+      createChart("6", "Swap Utilization", swapMetrics, hostname, "bytes-decimal");
+      
+      // Namenode heap usage
       StringBuilder namenode = new StringBuilder();
       namenode.append(hostname);
       namenode.append(":NameNode");
       String[] namenodeHeap = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
-      createChart("7", "percent", "Namenode Memory", namenodeHeap, namenode.toString());
+      createCircle("7", "Namenode Memory", namenodeHeap, namenode.toString(), "%");
+      
+      // HDFS Usage
       String[] hdfsUsage = { "HadoopMetrics.dfs.FSNamesystem.CapacityUsed", "HadoopMetrics.dfs.FSNamesystem.CapacityTotal" };
-      createChart("8", "percent", "HDFS Usage", hdfsUsage, hostname);
+      createCircle("8", "HDFS Usage", hdfsUsage, hostname, "%");
 
+      // Resource Manager Memory
       StringBuilder rmnode = new StringBuilder();
       rmnode.append(hostname);
       rmnode.append(":ResourceManager");
       String[] rmHeap = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
-      createChart("9", "percent", "Resource Manager Memory", rmHeap, rmnode.toString());
+      createCircle("9", "Resource Manager Memory", rmHeap, rmnode.toString(), "%");
 
+      // Node Managers Health
+      String[] nmh = { "HadoopMetrics.yarn.ClusterMetrics.NumActiveNMs", "HadoopMetrics.yarn.ClusterMetrics.NumLostNMs" };
+      createTile("10", "Node Managers Health", "Node Managers", "Active/Lost", nmh, hostname, "glyphicon-th");
+
+      // High Availability State
+      String[] ha = { "HadoopMetrics.dfs.FSNamesystem.HAState" };
+      createTile("11", "HDFS High Availability State", "HDFS High Availability", "", ha, hostname, "glyphicon-random");
+
+      // HDFS Load
+      String[] hdfsLoad = { "HadoopMetrics.dfs.FSNamesystem.TotalLoad" };
+      createTile("12", "HDFS Load Average", "HDFS Load", "", hdfsLoad, hostname, "glyphicon-signal");
+
+      // Namenode RPC Latency
+      String[] nnLatency = { "HadoopMetrics.rpc.rpc.RpcProcessingTimeAvgTime" };
+      createTile("13", "NameNode Latency", "NameNode RPC Latency", "Milliseconds", nnLatency, hostname, "glyphicon-tasks");
+
+      // Datanode Health
+      String[] dnHealth = { "HadoopMetrics.dfs.FSNamesystem.StaleDataNodes" };
+      createTile("14", "Datanodes Health", "Datanodes", "Dead", dnHealth, hostname, "glyphicon-hdd");
+
+      // HBase Master Memory
       StringBuilder hbaseMaster = new StringBuilder();
       hbaseMaster.append(hostname);
       hbaseMaster.append(":Master");
       String[] hbm = { "HBaseMetrics.jvm.JvmMetrics.MemHeapUsedM", "HBaseMetrics.jvm.JvmMetrics.MemHeapMaxM" };
-      createChart("10", "percent", "HBase Master Memory", hbm, hbaseMaster.toString());
+      createCircle("15", "HBase Master Memory", hbm, hbaseMaster.toString(), "%");
 
       // Demo metrics
-      String[] trialAbandonRate = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
-      createChart("11", "percent", "Trial Abandon Rate", trialAbandonRate, namenode.toString());
-      createChart("12", "percent", "Unhealthy Clusters", hdfsUsage, hostname);
+//      String[] trialAbandonRate = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
+//      createChart("T1", "Trial Abandon Rate", trialAbandonRate, namenode.toString(), "percent");
+//      createChart("T2", "Unhealthy Clusters", hdfsUsage, hostname, "percent");
       
       // Populate default widgets
       Widget widget = new Widget();
@@ -902,7 +987,7 @@ public class ChukwaHBaseStore {
       widget.setSrc(new URI("/hicc/welcome.html"));
       widget.setCol(1);
       widget.setRow(1);
-      widget.setSize_x(9);
+      widget.setSize_x(10);
       widget.setSize_y(5);
       createWidget(widget);
       dashboard.add(widget);
@@ -992,6 +1077,57 @@ public class ChukwaHBaseStore {
 
       // Populate user dashboards
       dashboard = new Dashboard();
+
+      widget = new Widget();
+      widget.setTitle("Quick Links");
+      widget.setSrc(new URI("/hicc/v1/dashboard/quicklinks"));
+      widget.setCol(1);
+      widget.setRow(1);
+      widget.setSize_x(10);
+      widget.setSize_y(5);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      // Log Search widget
+      widget = new Widget();
+      widget.setTitle("Log Search");
+      widget.setSrc(new URI("/hicc/ajax-solr/chukwa"));
+      widget.setCol(1);
+      widget.setRow(1);
+      widget.setSize_x(6);
+      widget.setSize_y(6);
+      createWidget(widget);
+
+      // Applications
+      widget = new Widget();
+      widget.setTitle("YARN Applications");
+      widget.setSrc(new URI("http://localhost:8088/"));
+      widget.setCol(1);
+      widget.setRow(7);
+      widget.setSize_x(6);
+      widget.setSize_y(6);
+      createWidget(widget);
+
+      // Hadoop Distributed File System
+      widget = new Widget();
+      widget.setTitle("HDFS");
+      widget.setSrc(new URI("http://localhost:50070/explorer.html#/"));
+      widget.setCol(1);
+      widget.setRow(7);
+      widget.setSize_x(6);
+      widget.setSize_y(6);
+      createWidget(widget);
+
+      // HBase Tables
+      widget = new Widget();
+      widget.setTitle("HBase Tables");
+      widget.setSrc(new URI("http://localhost:50654/tablesDetailed.jsp"));
+      widget.setCol(1);
+      widget.setRow(14);
+      widget.setSize_x(6);
+      widget.setSize_y(6);
+      createWidget(widget);
+
       widget = new Widget();
       widget.setTitle("Top Applications");
       widget.setSrc(new URI("/hicc/apps/"));
@@ -999,18 +1135,7 @@ public class ChukwaHBaseStore {
       widget.setRow(1);
       widget.setSize_x(2);
       widget.setSize_y(2);
-      dashboard.add(widget);
-
-      // Log Search widget
-      widget = new Widget();
-      widget.setTitle("Log Search");
-      widget.setSrc(new URI("/hicc/ajax-solr/chukwa"));
-      widget.setCol(3);
-      widget.setRow(1);
-      widget.setSize_x(6);
-      widget.setSize_y(6);
       createWidget(widget);
-      dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("Top Users");
@@ -1020,15 +1145,44 @@ public class ChukwaHBaseStore {
       widget.setSize_x(2);
       widget.setSize_y(2);
       createWidget(widget);
-      dashboard.add(widget);
       updateDashboard("user", "", dashboard);
 
       // Populate system dashboards
       dashboard = new Dashboard();
       widget = new Widget();
-      widget.setTitle("Services Running");
-      widget.setSrc(new URI("/hicc/services/services.html"));
+      widget.setTitle("HDFS High Availability State");
+      widget.setSrc(new URI("/hicc/v1/tile/draw/11"));
       widget.setCol(1);
+      widget.setRow(1);
+      widget.setSize_x(2);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("HDFS Load");
+      widget.setSrc(new URI("/hicc/v1/tile/draw/12"));
+      widget.setCol(3);
+      widget.setRow(1);
+      widget.setSize_x(2);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("HDFS Namenode Latency");
+      widget.setSrc(new URI("/hicc/v1/tile/draw/13"));
+      widget.setCol(5);
+      widget.setRow(1);
+      widget.setSize_x(2);
+      widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Datanodes Health");
+      widget.setSrc(new URI("/hicc/v1/tile/draw/14"));
+      widget.setCol(7);
       widget.setRow(1);
       widget.setSize_x(2);
       widget.setSize_y(1);
@@ -1036,100 +1190,71 @@ public class ChukwaHBaseStore {
       dashboard.add(widget);
       
       widget = new Widget();
-      widget.setTitle("Applications Running");
-      widget.setSrc(new URI("/hicc/home/apps.html"));
-      widget.setCol(3);
+      widget.setTitle("Node Managers Health");
+      widget.setSrc(new URI("/hicc/v1/tile/draw/10"));
+      widget.setCol(9);
       widget.setRow(1);
       widget.setSize_x(2);
       widget.setSize_y(1);
+      createWidget(widget);
       dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("HDFS Usage");
       widget.setSrc(new URI("/hicc/v1/circles/draw/8"));
-      widget.setCol(5);
-      widget.setRow(1);
-      widget.setSize_x(1);
-      widget.setSize_y(1);
+      widget.setCol(1);
+      widget.setRow(2);
+      widget.setSize_x(2);
+      widget.setSize_y(2);
       createWidget(widget);
       dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("Namenode Memory");
       widget.setSrc(new URI("/hicc/v1/circles/draw/7"));
-      widget.setCol(6);
-      widget.setRow(1);
-      widget.setSize_x(1);
-      widget.setSize_y(1);
+      widget.setCol(3);
+      widget.setRow(2);
+      widget.setSize_x(2);
+      widget.setSize_y(2);
       createWidget(widget);
       dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("Resource Manager Memory");
       widget.setSrc(new URI("/hicc/v1/circles/draw/9"));
-      widget.setCol(7);
-      widget.setRow(1);
-      widget.setSize_x(1);
-      widget.setSize_y(1);
+      widget.setCol(5);
+      widget.setRow(2);
+      widget.setSize_x(2);
+      widget.setSize_y(2);
       createWidget(widget);
       dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("HBase Master Memory");
-      widget.setSrc(new URI("/hicc/v1/circles/draw/10"));
-      widget.setCol(8);
-      widget.setRow(1);
-      widget.setSize_x(1);
-      widget.setSize_y(1);
+      widget.setSrc(new URI("/hicc/v1/circles/draw/15"));
+      widget.setCol(7);
+      widget.setRow(2);
+      widget.setSize_x(2);
+      widget.setSize_y(2);
       createWidget(widget);
       dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("System Load Average");
       widget.setSrc(new URI("/hicc/v1/chart/draw/1"));
-      widget.setCol(1);
+      widget.setCol(9);
       widget.setRow(2);
-      widget.setSize_x(3);
+      widget.setSize_x(2);
       widget.setSize_y(1);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("Disk Utilization");
-      widget.setSrc(new URI("/hicc/v1/chart/draw/4"));
-      widget.setCol(4);
-      widget.setRow(2);
-      widget.setSize_x(3);
-      widget.setSize_y(1);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("Timeline");
-      widget.setSrc(new URI("/hicc/timeline/"));
-      widget.setCol(7);
-      widget.setRow(2);
-      widget.setSize_x(4);
-      widget.setSize_y(6);
       createWidget(widget);
       dashboard.add(widget);
 
       widget = new Widget();
       widget.setTitle("CPU Utilization");
       widget.setSrc(new URI("/hicc/v1/chart/draw/2"));
-      widget.setCol(1);
+      widget.setCol(9);
       widget.setRow(3);
-      widget.setSize_x(3);
-      widget.setSize_y(1);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("Network Utilization");
-      widget.setSrc(new URI("/hicc/v1/chart/draw/5"));
-      widget.setCol(4);
-      widget.setRow(3);
-      widget.setSize_x(3);
+      widget.setSize_x(2);
       widget.setSize_y(1);
       createWidget(widget);
       dashboard.add(widget);
@@ -1137,9 +1262,9 @@ public class ChukwaHBaseStore {
       widget = new Widget();
       widget.setTitle("Memory Utilization");
       widget.setSrc(new URI("/hicc/v1/chart/draw/3"));
-      widget.setCol(1);
+      widget.setCol(9);
       widget.setRow(4);
-      widget.setSize_x(3);
+      widget.setSize_x(2);
       widget.setSize_y(1);
       createWidget(widget);
       dashboard.add(widget);
@@ -1147,10 +1272,30 @@ public class ChukwaHBaseStore {
       widget = new Widget();
       widget.setTitle("Swap Utilization");
       widget.setSrc(new URI("/hicc/v1/chart/draw/6"));
-      widget.setCol(4);
-      widget.setRow(4);
-      widget.setSize_x(3);
+      widget.setCol(9);
+      widget.setRow(5);
+      widget.setSize_x(2);
       widget.setSize_y(1);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Disk Utilization");
+      widget.setSrc(new URI("/hicc/v1/chart/draw/4"));
+      widget.setCol(1);
+      widget.setRow(4);
+      widget.setSize_x(4);
+      widget.setSize_y(2);
+      createWidget(widget);
+      dashboard.add(widget);
+
+      widget = new Widget();
+      widget.setTitle("Network Utilization");
+      widget.setSrc(new URI("/hicc/v1/chart/draw/5"));
+      widget.setCol(5);
+      widget.setRow(4);
+      widget.setSize_x(4);
+      widget.setSize_y(2);
       createWidget(widget);
       dashboard.add(widget);
 
@@ -1163,52 +1308,73 @@ public class ChukwaHBaseStore {
       widget.setSize_x(6);
       widget.setSize_y(5);
       createWidget(widget);
-      dashboard.add(widget);
 
+      // HDFS Namenode
       widget = new Widget();
-      widget.setTitle("Alerts");
-      widget.setSrc(new URI("/hicc/alerts/"));
+      widget.setTitle("HDFS UI");
+      widget.setSrc(new URI("http://localhost:50070/"));
       widget.setCol(1);
-      widget.setRow(5);
+      widget.setRow(11);
       widget.setSize_x(6);
-      widget.setSize_y(5);
+      widget.setSize_y(6);
       createWidget(widget);
 
+      // HBase Master
       widget = new Widget();
-      widget.setTitle("Log Errors");
-      widget.setSrc(new URI("/hicc/logs/"));
+      widget.setTitle("HBase Master UI");
+      widget.setSrc(new URI("http://localhost:16010/"));
       widget.setCol(1);
-      widget.setRow(5);
+      widget.setRow(18);
       widget.setSize_x(6);
-      widget.setSize_y(5);
+      widget.setSize_y(6);
       createWidget(widget);
 
-      widget = new Widget();
-      widget.setTitle("Web Stats");
-      widget.setSrc(new URI("https://birepo-internal.svl.ibm.com/awstats/awstats.pl?config=ibm-open-platform&framename=mainright&month=08&year=2015#month"));
-      widget.setCol(1);
-      widget.setRow(5);
-      widget.setSize_x(6);
-      widget.setSize_y(5);
-      createWidget(widget);
+//    widget = new Widget();
+//    widget.setTitle("Services Running");
+//    widget.setSrc(new URI("/hicc/services/services.html"));
+//    widget.setCol(1);
+//    widget.setRow(1);
+//    widget.setSize_x(2);
+//    widget.setSize_y(1);
+//    createWidget(widget);
+//    dashboard.add(widget);
+//    
+//    widget = new Widget();
+//    widget.setTitle("Applications Running");
+//    widget.setSrc(new URI("/hicc/home/apps.html"));
+//    widget.setCol(3);
+//    widget.setRow(1);
+//    widget.setSize_x(2);
+//    widget.setSize_y(1);
+//    dashboard.add(widget);
 
-      widget = new Widget();
-      widget.setTitle("Sessions");
-      widget.setSrc(new URI("https://birepo-internal.svl.ibm.com/awstats/awstats.pl?config=ibm-open-platform&framename=mainright&month=08&year=2015#sessions"));
-      widget.setCol(1);
-      widget.setRow(5);
-      widget.setSize_x(6);
-      widget.setSize_y(5);
-      createWidget(widget);
+//    widget = new Widget();
+//    widget.setTitle("Timeline");
+//    widget.setSrc(new URI("/hicc/timeline/"));
+//    widget.setCol(7);
+//    widget.setRow(2);
+//    widget.setSize_x(4);
+//    widget.setSize_y(6);
+//    createWidget(widget);
+//    dashboard.add(widget);
 
-      widget = new Widget();
-      widget.setTitle("Domains");
-      widget.setSrc(new URI("https://birepo-internal.svl.ibm.com/awstats/awstats.pl?config=ibm-open-platform&framename=mainright&month=08&year=2015#domains"));
-      widget.setCol(1);
-      widget.setRow(5);
-      widget.setSize_x(6);
-      widget.setSize_y(5);
-      createWidget(widget);
+//      widget = new Widget();
+//      widget.setTitle("Alerts");
+//      widget.setSrc(new URI("/hicc/alerts/"));
+//      widget.setCol(1);
+//      widget.setRow(5);
+//      widget.setSize_x(6);
+//      widget.setSize_y(5);
+//      createWidget(widget);
+//
+//      widget = new Widget();
+//      widget.setTitle("Log Errors");
+//      widget.setSrc(new URI("/hicc/logs/"));
+//      widget.setCol(1);
+//      widget.setRow(5);
+//      widget.setSize_x(6);
+//      widget.setSize_y(5);
+//      createWidget(widget);
 
       updateDashboard("system", "", dashboard);
       
