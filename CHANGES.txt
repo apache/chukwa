@@ -30,6 +30,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-790. Update pom.xml to support JDK 1.8. (Eric Yang)
+
     CHUKWA-789. Added HBase schema to data model document. (Eric Yang)
 
     CHUKWA-786. Update documentation to reflect 0.7 release. (Eric Yang)
