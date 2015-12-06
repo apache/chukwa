@@ -70,6 +70,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-791.  Update quick links url to use IP address.  (Eric Yang)
+ 
     CHUKWA-788. Save ring chart threshold setting in HBase. (Eric Yang)
 
     CHUKWA-784. Improve CharFileTailingAdaptorUTF8NewLineEscaped and LocalWriter 

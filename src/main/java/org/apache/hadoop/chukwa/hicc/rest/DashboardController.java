@@ -19,6 +19,7 @@ package org.apache.hadoop.chukwa.hicc.rest;
 
 import java.io.StringWriter;
 import java.util.Set;
+import java.net.InetAddress;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -105,20 +106,35 @@ public class DashboardController {
       if(sourceParts[1].equals("NameNode")) {
         String[] parts = hadoop.get(DFSConfigKeys.DFS_NAMENODE_HTTP_ADDRESS_KEY).split(":");
         StringBuilder buffer = new StringBuilder();
-        buffer.append(sourceParts[0]);
+        try {
+          InetAddress address = InetAddress.getByName(sourceParts[0]);
+          buffer.append(address.getHostAddress());
+        } catch (Exception e) {
+          buffer.append(sourceParts[0]);
+        } 
         buffer.append(":");
         buffer.append(parts[1]);
         nn = buffer.toString();
       } else if(sourceParts[1].equals("ResourceManager")) {
         String[] parts = hadoop.get(YarnConfiguration.RM_WEBAPP_ADDRESS).split(":");
         StringBuilder buffer = new StringBuilder();
-        buffer.append(sourceParts[0]);
+        try {
+          InetAddress address = InetAddress.getByName(sourceParts[0]);
+          buffer.append(address.getHostAddress());
+        } catch (Exception e) {
+          buffer.append(sourceParts[0]);
+        } 
         buffer.append(":");
         buffer.append(parts[1]);
         rm = buffer.toString();
       } else if(sourceParts[1].equals("Master")) {
         StringBuilder buffer = new StringBuilder();
-        buffer.append(sourceParts[0]);
+        try {
+          InetAddress address = InetAddress.getByName(sourceParts[0]);
+          buffer.append(address.getHostAddress());
+        } catch (Exception e) {
+          buffer.append(sourceParts[0]);
+        } 
         buffer.append(":");
         buffer.append(hconf.getInt("hbase.master.info.port", HConstants.DEFAULT_MASTER_INFOPORT));
         hm = buffer.toString();
