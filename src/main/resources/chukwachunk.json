@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "ChukwaChunk",
+  "doc": "Chukwa Adaptors emit data in Chunks. A Chunk is a sequence of bytes, with some metadata. Several of these are set automatically by the Agent or Adaptors. Two of them require user intervention: cluster name and datatype. Cluster name is specified in conf/chukwa-agent-conf.xml, and is global to each Agent process. Datatype describes the expected format of the data collected by an Adaptor instance, and it is specified when that instance is started. ",
+  "namespace": "org.apache.hadoop.chukwa.datacollection.writer.gora",
+  "fields" : [
+    {"name": "source", "type": ["null","string"], "default":null},
+    {"name": "tags", "type": ["null","string"], "default":null},
+    {"name": "datatype", "type": ["null","string"], "default":null},
+    {"name": "sequenceID", "type": ["null","long"], "default":null},
+    {"name": "name", "type": ["null","string"], "default":null},
+    {"name": "data", "type": ["null","bytes"], "default":null}
+  ]
+}

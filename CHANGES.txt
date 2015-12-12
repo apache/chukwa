@@ -4,6 +4,8 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+    CHUKWA-734. Added GoraWriter.  (Lewis John McGibbney via Eric Yang)
+
     CHUKWA-787. Added full screen support, and quick link to Hadoop and HBase UI.  (Eric Yang)
 
     CHUKWA-785. Added banner, pie chart, gauge chart to graph explorer.  (Eric Yang)
