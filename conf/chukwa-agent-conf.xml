@@ -79,7 +79,18 @@
   <property>
     <name>chukwa.pipeline</name>
     <value>org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter,org.apache.hadoop.chukwa.datacollection.writer.solr.SolrWriter</value>
-    <!--<value>org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter</value>-->
+    <description>
+     The pipeline writer implementation to use for writing Chukwa logs.
+     Options include:
+       org.apache.hadoop.chukwa.datacollection.writer.ConsoleWriter
+       org.apache.hadoop.chukwa.datacollection.writer.NullWriter
+       org.apache.hadoop.chukwa.datacollection.writer.InMemoryWriter
+       org.apache.hadoop.chukwa.datacollection.writer.SeqFileWriter
+       org.apache.hadoop.chukwa.datacollection.writer.gora.GoraWriter
+       org.apache.hadoop.chukwa.datacollection.writer.hbase.HBaseWriter
+       org.apache.hadoop.chukwa.datacollection.writer.localfs.LocalWriter
+       org.apache.hadoop.chukwa.datacollection.writer.solr.SolrWriter
+     </description>
   </property>
 
   <property>
