@@ -88,6 +88,8 @@ public class ChartController {
 
   /**
    * Describe chart meta data
+   * @param id 
+   * @return 
    */
   @GET
   @Path("describe/{id}")
@@ -102,8 +104,8 @@ public class ChartController {
   /**
    * Create a new chart meta data
    * 
-   * @param chart
-   * @return
+   * @param buffer JSON description of a chart object
+   * @return web response
    */
   @POST
   @Path("save")
@@ -121,8 +123,9 @@ public class ChartController {
   /**
    * Save chart meta data
    * 
-   * @param chart
-   * @return
+   * @param id chart id
+   * @param buffer JSON description of a chart object
+   * @return web response
    */
   @PUT
   @Path("save/{id}")
@@ -137,6 +140,8 @@ public class ChartController {
 
   /**
    * Preview a chart
+   * @param buffer 
+   * @return 
    */
   @PUT
   @Path("preview")

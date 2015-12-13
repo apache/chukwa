@@ -67,6 +67,7 @@ public class TestArchive extends TestCase {
   /**
    * Writes a single chunk to a file, checks that archiver delivers it
    * to an archive file with correct filename.
+   * @throws Exception 
    */
   public void testArchiving() throws Exception {
     FileSystem fileSys;

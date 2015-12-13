@@ -55,6 +55,7 @@ public class ClientTrace {
    * src    - Source IP address
    * dest   - Destination IP address
    * size   - Size of the data payload.
+   * @return 
    * 
    */
   @GET

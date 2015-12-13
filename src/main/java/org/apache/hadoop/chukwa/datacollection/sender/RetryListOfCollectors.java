@@ -95,8 +95,8 @@ public class RetryListOfCollectors implements Iterator<String>, Cloneable {
   /**
    * This is only used for debugging. Possibly it should sanitize urls the same way the other
    * constructor does.
-   * @param collectors
-   * @param maxRetryRateMs
+   * @param collectors List of collectors
+   * @param conf Chukwa Configuration
    */
   public RetryListOfCollectors(final List<String> collectors, Configuration conf) {
     this(conf);

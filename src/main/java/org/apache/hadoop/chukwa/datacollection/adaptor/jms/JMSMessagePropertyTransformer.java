@@ -108,7 +108,7 @@ public class JMSMessagePropertyTransformer implements JMSMessageTransformer {
    * <P>
    * The could be enhanced to support the concept of optional/required properties.
    * @param message
-   * @return
+   * @return byte array message
    * @throws JMSException
    */
   public byte[] transform(Message message) throws JMSException {

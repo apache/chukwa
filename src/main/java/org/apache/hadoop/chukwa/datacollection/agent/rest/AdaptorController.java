@@ -57,6 +57,8 @@ public class AdaptorController {
 
   /**
    * Adds an adaptor to the agent and returns the adaptor info
+   * @param ac 
+   * @return 
    * 
    * @request.representation.example {@link Examples#CREATE_ADAPTOR_SAMPLE}
    * @response.representation.200.doc Adaptor has been registered
@@ -99,6 +101,7 @@ public class AdaptorController {
    * Remove an adaptor from the agent
    *
    * @param adaptorId id of adaptor to remove.
+   * @return 
    * @response.representation.200.doc Delete adaptor by id
    * @response.representation.200.mediaType text/plain
    */
@@ -125,6 +128,7 @@ public class AdaptorController {
 
   /**
    * Get all adaptors
+   * @return 
    * 
    * @response.representation.200.doc List all configured adaptors
    * @response.representation.200.mediaType application/json
@@ -140,6 +144,7 @@ public class AdaptorController {
    * Get a single adaptor
    * 
    * @param adaptorId id of the adaptor to return
+   * @return 
    * @response.representation.200.doc Adaptor status and data transfer rate in 1, 5, 10 minutes averages
    * @response.representation.200.mediaType application/json
    * @response.representation.200.example {@link Examples#ADAPTOR_STATUS_SAMPLE}

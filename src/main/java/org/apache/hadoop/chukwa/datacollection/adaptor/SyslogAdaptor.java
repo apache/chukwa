@@ -38,10 +38,10 @@ import org.apache.log4j.Logger;
  * 
  * Data Type mapping can be overwritten in Chukwa Agent Configuration file, i.e.:
  * 
- * <property>
- *   <name>syslog.adaptor.port.9095.facility.LOCAL1</name>
- *   <value>HADOOP</value>
- * </property>
+ * &lt;property&gt;
+ *   &lt;name&gt;syslog.adaptor.port.9095.facility.LOCAL1&lt;/name&gt;
+ *   &lt;value&gt;HADOOP&lt;/value&gt;
+ * &lt;/property&gt;
  * 
  * When demux takes place, data received on port 9095 with facility name LOCAL0 will
  * be processed by demux parser for data type "HADOOP".

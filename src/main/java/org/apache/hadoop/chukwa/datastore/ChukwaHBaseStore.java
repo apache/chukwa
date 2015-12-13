@@ -116,7 +116,7 @@ public class ChukwaHBaseStore {
    * @param source
    * @param startTime
    * @param endTime
-   * @return
+   * @return Series
    */
   public static Series getSeries(String metricGroup, String metric,
       String source, long startTime, long endTime) {
@@ -132,7 +132,7 @@ public class ChukwaHBaseStore {
    * @param source
    * @param startTime
    * @param endTime
-   * @return
+   * @return Series
    */
   public static synchronized Series getSeries(String metric, String source, long startTime,
       long endTime) {
@@ -343,7 +343,7 @@ public class ChukwaHBaseStore {
    * 
    * @param startTime
    * @param endTime
-   * @return
+   * @return Set<String> of cluster names
    */
   public static Set<String> getClusterNames(long startTime, long endTime) {
     Set<String> clusters = new HashSet<String>();
@@ -375,7 +375,7 @@ public class ChukwaHBaseStore {
    * Get a chart from HBase by ID.
    * 
    * @param id
-   * @return
+   * @return Chart
    */
   public static Chart getChart(String id) {
     Chart chart = null;
@@ -422,6 +422,12 @@ public class ChukwaHBaseStore {
 
   /**
    * Create a chart in HBase by specifying parameters.
+   * @param id 
+   * @param title 
+   * @param metrics 
+   * @param source 
+   * @param yunitType 
+   * @return 
    * @throws URISyntaxException 
    */
   public static synchronized String createChart(String id,
@@ -446,6 +452,13 @@ public class ChukwaHBaseStore {
 
   /**
    * Create a chart in HBase by specifying parameters.
+   * @param id 
+   * @param title 
+   * @param metrics 
+   * @param source 
+   * @param suffixLabel 
+   * @param direction 
+   * @return 
    * @throws URISyntaxException 
    */
   public static synchronized String createCircle(String id,
@@ -476,7 +489,7 @@ public class ChukwaHBaseStore {
    * @param metrics
    * @param source
    * @param icon
-   * @return
+   * @return html
    * @throws URISyntaxException
    */
   public static synchronized String createTile(String id, String title, 
@@ -502,7 +515,6 @@ public class ChukwaHBaseStore {
    * 
    * @param chart
    * @return id of newly created chart
-   * @throws IOException
    */
   public static synchronized String createChart(Chart chart) {
     String id = chart.getId();
@@ -541,7 +553,7 @@ public class ChukwaHBaseStore {
    * @param series
    * @param startTime
    * @param endTime
-   * @return
+   * @return List of series meta data
    */
   public static synchronized ArrayList<org.apache.hadoop.chukwa.hicc.bean.SeriesMetaData> getChartSeries(ArrayList<org.apache.hadoop.chukwa.hicc.bean.SeriesMetaData> series, long startTime, long endTime) {
     ArrayList<org.apache.hadoop.chukwa.hicc.bean.SeriesMetaData> list = new ArrayList<org.apache.hadoop.chukwa.hicc.bean.SeriesMetaData>();
@@ -654,7 +666,7 @@ public class ChukwaHBaseStore {
    * 
    * @param limit
    * @param offset
-   * @return
+   * @return List of widgets
    */
   public static synchronized List<Widget> listWidget(int limit, int offset) {
     ArrayList<Widget> list = new ArrayList<Widget>();
@@ -739,7 +751,7 @@ public class ChukwaHBaseStore {
    * Find widget by title prefix in HBase.
    * 
    * @param query - Prefix query of widget title.
-   * @return
+   * @return List of widgets
    */
   public static synchronized List<Widget> searchWidget(String query) {
     ArrayList<Widget> list = new ArrayList<Widget>();
@@ -774,7 +786,7 @@ public class ChukwaHBaseStore {
    * View a widget information in HBase.
    * 
    * @param title - Title of the widget.
-   * @return
+   * @return Widget
    */
   public static synchronized Widget viewWidget(String title) {
     Widget w = null;
@@ -799,6 +811,7 @@ public class ChukwaHBaseStore {
    * Create a widget in HBase.
    * 
    * @param widget
+   * @return 
    */
   public static synchronized boolean createWidget(Widget widget) {
     boolean created = false;
@@ -832,7 +845,7 @@ public class ChukwaHBaseStore {
    * 
    * @param title
    * @param widget
-   * @throws IOException 
+   * @return 
    */
   public static synchronized boolean updateWidget(String title, Widget widget) {
     boolean result = false;
@@ -862,8 +875,7 @@ public class ChukwaHBaseStore {
    * Delete a widget in HBase.
    * 
    * @param title
-   * @param widget
-   * @throws IOException 
+   * @return 
    */
   public static synchronized boolean deleteWidget(String title) {
     boolean result = false;

@@ -33,7 +33,7 @@ public interface JMSMessageTransformer {
    * passed. If they weren't, this method will never be called.
    *
    * @param args Arguments needed to configur the transformer.
-   * @return
+   * @return input string
    */
   public String parseArgs(String args);
 

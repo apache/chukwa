@@ -45,6 +45,8 @@ public class RecordUtil {
   /**
    * Uses a precompiled pattern, so theoretically faster than
    * Chunk.getTag().
+   * @param chunk 
+   * @return 
    * 
    */
   public static String getClusterName(Chunk chunk) {

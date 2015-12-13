@@ -34,7 +34,7 @@ import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
  * offset in the stream.
  * 
  * If an adaptor crashes at byte offset n, and is restarted at byte offset k,
- * with k < n, it is allowed to send different values for bytes k through n the
+ * with k &#60; n, it is allowed to send different values for bytes k through n the
  * second time around. However, the stream must still be parseable, assuming
  * that bytes 0-k come from the first run,and bytes k - n come from the second.
  * 
@@ -48,10 +48,11 @@ import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 public interface Adaptor {
   /**
    * Start this adaptor
-   * 
+   *
+   * @param adaptorID cutomized application ID
    * @param type the application type, who is starting this adaptor
-   * @param status the status string to use for configuration.
    * @param offset the stream offset of the first byte sent by this adaptor
+   * @param dest receiver of the chunk
    * @throws AdaptorException
    */
   public void start(String adaptorID, String type, long offset,
@@ -74,6 +75,9 @@ public interface Adaptor {
    * Return the stream name, given params.
    * The stream name is the part of the Adaptor status that's used to 
    * determine uniqueness. 
+   * @param datatype 
+   * @param params 
+   * @param c 
    * 
    * @return Stream name as a string, null if params are malformed
    */
@@ -84,6 +88,7 @@ public interface Adaptor {
   /**
    * Signals this adaptor to come to an orderly stop. The adaptor ought to push
    * out all the data it can before exiting depending of the shutdown policy
+   * @param shutdownPolicy 
    * 
    * @return the logical offset at which the adaptor was when the method return
    * @throws AdaptorException

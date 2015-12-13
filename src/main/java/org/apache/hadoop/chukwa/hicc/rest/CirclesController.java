@@ -59,9 +59,7 @@ public class CirclesController {
   /**
    * Render circle using jquery circliful.js
    * 
-   * @param title Title of the tile.
-   * @param metric Metric name to lookup in hbase.
-   * @param source Metric source.
+   * @param id Chart id
    * @param invert Toggle to display warning, error color by upper bound or lower bound.
    * @return html circle widget.
    */

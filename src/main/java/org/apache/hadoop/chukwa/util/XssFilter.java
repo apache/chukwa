@@ -66,7 +66,7 @@ public class XssFilter {
     /**
      * Strips any potential XSS threats out of the value
      * @param value
-     * @return
+     * @return sanitized html text
      */
     public String filter( String value ) {
       if( value == null )

@@ -114,7 +114,6 @@ public class FileTailingAdaptor extends LWFTAdaptor {
    * This method is not thread safe. Returns true if there's more data in the
    * file
    * 
-   * @param eq the queue to write Chunks into
    */
   @Override
   public boolean tailFile()

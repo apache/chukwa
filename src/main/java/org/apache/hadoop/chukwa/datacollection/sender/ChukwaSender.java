@@ -34,6 +34,7 @@ public interface ChukwaSender {
    * @param chunksToSend a list of chunks to commit
    * @return the list of committed chunks
    * @throws InterruptedException if interrupted while trying to send
+   * @throws java.io.IOException 
    */
   public List<CommitListEntry> send(List<Chunk> chunksToSend)
       throws InterruptedException, java.io.IOException;

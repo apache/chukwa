@@ -91,6 +91,7 @@ public interface Chunk {
   /**
    * Retrieve a reference to the adaptor that sent this event. Used by
    * LocalAgent and Connectors to deliver acks to the appropriate place.
+   * @return 
    */
   public Adaptor getInitiator();
 
@@ -110,6 +111,7 @@ public interface Chunk {
 
   /**
    * Add tag.
+   * @param tag 
    * 
    */
   public void addTag(String tag);

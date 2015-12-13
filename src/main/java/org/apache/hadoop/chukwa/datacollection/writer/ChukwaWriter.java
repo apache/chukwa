@@ -68,7 +68,7 @@ public interface ChukwaWriter {
    * add(), and that add() won't be called after close().
    * 
    * @param chunks
-   * @return
+   * @return CommitStatus
    * @throws WriterException
    */
   public CommitStatus add(List<Chunk> chunks) throws WriterException;

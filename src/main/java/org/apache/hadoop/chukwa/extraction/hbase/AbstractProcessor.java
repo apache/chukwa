@@ -86,10 +86,8 @@ public abstract class AbstractProcessor {
    * assumes "time" and "source" have been defined and will construct primaryKey
    * only, without recompute time and source md5.
    * 
-   * @param time
-   * @param primaryKey
+   * @param metric
    * @param value
-   * @param output
    */
   public void addRecord(String metric, byte[] value) {
     String primaryKey = new StringBuilder(primaryKeyHelper).append(".")

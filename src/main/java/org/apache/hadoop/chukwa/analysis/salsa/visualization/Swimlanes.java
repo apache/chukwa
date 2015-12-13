@@ -443,7 +443,7 @@ public class Swimlanes {
   }
   
   /**
-   * @brief Constructor for Swimlanes visualization object
+   * Constructor for Swimlanes visualization object
    * @param timezone Timezone string from environment
    * @param cluster Cluster name from environment
    * @param event_type Whether to display shuffles or not
@@ -533,6 +533,7 @@ public class Swimlanes {
   /**
    * Set job ID to filter results on
    * Call before calling @see #run
+   * @param s 
    */
   public void setJobName(String s) {
     this.jobname = s;
@@ -541,6 +542,8 @@ public class Swimlanes {
   /**
    * Set dimensions of image to be generated
    * Call before calling @see #run
+   * @param width 
+   * @param height 
    */  
   public void setDimensions(int width, int height) {
     this.SIZE_X=width;
@@ -552,6 +555,7 @@ public class Swimlanes {
    * Advisable to not print legend for excessively small images since
    * legend has fixed point size
    * Call before calling @see #run
+   * @param legendopt 
    */
   public void setLegend(boolean legendopt) {
     if (legendopt) {
@@ -564,6 +568,10 @@ public class Swimlanes {
   /**
    * Generates image in specified format, and writes image as binary
    * output to supplied output stream 
+   * @param output 
+   * @param img_fmt 
+   * @param scale 
+   * @return 
    */
   public boolean getImage(java.io.OutputStream output, String img_fmt, double scale) {
     dis = new Display(this.viz);

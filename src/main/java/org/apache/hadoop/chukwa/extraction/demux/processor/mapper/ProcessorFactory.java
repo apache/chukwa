@@ -65,6 +65,8 @@ public class ProcessorFactory {
 
   /**
    * Register a specific parser for a {@link ChunkProcessor} implementation.
+   * @param recordType 
+   * @param processor 
    */
   public static synchronized void register(String recordType,
       ChunkProcessor processor) {

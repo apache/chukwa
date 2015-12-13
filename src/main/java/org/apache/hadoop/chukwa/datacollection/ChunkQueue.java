@@ -39,6 +39,9 @@ public interface ChunkQueue extends ChunkReceiver {
   /**
    * Return at least one, and no more than count, Chunks into chunks. Blocks if
    * queue is empty.
+   * @param chunks 
+   * @param count 
+   * @throws InterruptedException 
    */
   public void collect(List<Chunk> chunks, int count)
       throws InterruptedException;
@@ -46,6 +49,7 @@ public interface ChunkQueue extends ChunkReceiver {
   /**
    * Return an approximation of the number of chunks in the queue currently. No
    * guarantees are made about the accuracy of this number.
+   * @return 
    */
   public int size();
 }

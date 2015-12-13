@@ -122,8 +122,8 @@ public class JMSAdaptor extends AbstractAdaptor {
    * <brokerURL> <-t <topicName>|-q <queueName>> [-s <JMSSelector>] [-x <transformerName>]
    * [-p <transformerProperties>]
    *
-   * @param s
-   * @return
+   * @param s input string
+   * @return input string
    */
   @Override
   public String parseArgs(String s) {
@@ -283,7 +283,7 @@ public class JMSAdaptor extends AbstractAdaptor {
    *
    * Without the first token in <currentStatus>, which is expected to be <dataType>.
    *
-   * @return
+   * @return status
    */
   @Override
   public String getCurrentStatus() {

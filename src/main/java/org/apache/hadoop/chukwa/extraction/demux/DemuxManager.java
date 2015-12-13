@@ -408,8 +408,8 @@ public class DemuxManager implements CHUKWA_CONSTANT {
 
    /**
     * Move sourceFolder inside destFolder
-    * @param demuxInputDir: ex chukwa/demux/inputDir
-    * @param archiveDirectory: ex /chukwa/archives
+    * @param demuxInputDir ex chukwa/demux/inputDir
+    * @param archiveDirectory ex /chukwa/archives
     * @return true if able to move chukwa/demux/inputDir to /chukwa/archives/raw/<YYYYMMDD>/dataSinkDirXXX
     * @throws IOException
     */
@@ -421,8 +421,8 @@ public class DemuxManager implements CHUKWA_CONSTANT {
 
    /**
     * Move sourceFolder inside destFolder
-    * @param demuxOutputDir: ex chukwa/demux/outputDir 
-    * @param postProcessDirectory: ex /chukwa/postProcess
+    * @param demuxOutputDir ex chukwa/demux/outputDir 
+    * @param postProcessDirectory ex /chukwa/postProcess
     * @return true if able to move chukwa/demux/outputDir to /chukwa/postProcess/demuxOutputDirXXX
     * @throws IOException 
     */

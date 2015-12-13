@@ -604,7 +604,7 @@ public class ChukwaAgent implements AdaptorManager {
 /**
  * Expose the adaptor list.  Keys are adaptor ID numbers, values are the 
  * adaptor status strings.
- * @return
+ * @return adaptors
  */
   public Map<String, String> getAdaptorList() {
     Map<String, String> adaptors = new HashMap<String, String>(adaptorsByName.size());
@@ -700,6 +700,7 @@ public class ChukwaAgent implements AdaptorManager {
   /**
    * Triggers agent shutdown. For now, this method doesn't shut down adaptors
    * explicitly. It probably should.
+   * @param exit 
    */
   public void shutdown(boolean exit) {
     controlSock.shutdown(); // make sure we don't get new requests

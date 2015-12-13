@@ -50,7 +50,8 @@ public class HierarchyDataType {
    * @param fs The file system
    * @param path The parent folder
    * @param filter The pattern matcher to filter the required files
-   * @return
+   * @param recursive 
+   * @return List of file status
    */
   public static List<FileStatus> globStatus(FileSystem fs, Path path,
       PathFilter filter, boolean recursive) {
@@ -137,7 +138,7 @@ public class HierarchyDataType {
    * Get the directory without first and last slash mark.
    * 
    * @param datasource
-   * @return
+   * @return directory name
    */
   public static String trimSlash(String datasource) {
     String results = datasource;
@@ -155,7 +156,7 @@ public class HierarchyDataType {
    * slash mark)
    * 
    * @param datasource
-   * @return
+   * @return filename
    */
   public static String getHierarchyDataTypeFileName(String datasource){
     return datasource.replace("/", CHUKWA_CONSTANT.HIERARCHY_CONNECTOR);
@@ -166,7 +167,7 @@ public class HierarchyDataType {
    * slash mark)
    * 
    * @param datasource
-   * @return
+   * @return directory name
    */
   public static String getHierarchyDataTypeDirectory(String datasource) {
     return datasource.replace(CHUKWA_CONSTANT.HIERARCHY_CONNECTOR, "/");

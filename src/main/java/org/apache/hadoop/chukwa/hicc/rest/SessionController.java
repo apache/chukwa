@@ -44,6 +44,7 @@ public class SessionController {
 
   /**
    * Utility to get session attributes
+   * @param request 
    * @param id
    * @return session attribute
    */

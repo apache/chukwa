@@ -1,6 +1,6 @@
 Chukwa Change Log
 
-Trunk (unreleased changes)
+Release 0.7 - (unreleased changes)
 
   NEW FEATURES
 
@@ -29,6 +29,8 @@ Trunk (unreleased changes)
     CHUKWA-747. Update Widget API to store data in HBase.  (Eric Yang)
 
   IMPROVEMENTS
+
+    CHUKWA-794. Update Javadoc to support JDK 1.8. (Eric Yang)
 
     CHUKWA-790. Update pom.xml to support JDK 1.8. (Eric Yang)
 

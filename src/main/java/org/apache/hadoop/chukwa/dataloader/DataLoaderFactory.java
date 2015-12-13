@@ -35,7 +35,9 @@ public abstract class DataLoaderFactory {
   }
 
   /**
-   * @param args
+   * @param conf
+   * @param fs
+   * @param src
    * @throws IOException
    */
   public void load(ChukwaConfiguration conf, FileSystem fs, FileStatus[] src) throws IOException {

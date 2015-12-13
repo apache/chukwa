@@ -37,10 +37,13 @@ public class DumpChunks {
   
   /**
    * Tries to find chunks matching a given pattern.
-   * Takes as input a set of &-delimited patterns, followed
+   * Takes as input a set of &#38; delimited patterns, followed
    * by a list of file names.
    * 
-   * E.g:  Dump datatype=Iostat&source=/my/log/.* *.done
+   * E.g:  Dump datatype=Iostat&#38;source=/my/log/.* *.done
+   * @param args 
+   * @throws IOException 
+   * @throws URISyntaxException 
    */
   public static void main(String[] args) throws IOException, URISyntaxException {
     

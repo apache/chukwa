@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit;
  * <P>
  * Care should be taken to always call <code>remove()</code> when old T objects
  * should no longer be tracked.
+ * @param <T> 
  */
 public class OffsetStatsManager<T> {
   protected Logger log = Logger.getLogger(getClass());

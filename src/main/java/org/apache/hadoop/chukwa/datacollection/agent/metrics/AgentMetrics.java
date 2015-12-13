@@ -42,7 +42,9 @@ public class AgentMetrics implements Updater {
   public MetricsTimeVaryingInt removedAdaptor =
     new MetricsTimeVaryingInt("removedAdaptor", registry,"number of removed adaptor");
   
-  /** Creates a new instance of AgentMetrics */
+  /** Creates a new instance of AgentMetrics 
+   * @param processName 
+   * @param recordName */
   public AgentMetrics(String processName, String recordName) {
       MetricsContext context = MetricsUtil.getContext(processName);
       metricsRecord = MetricsUtil.createRecord(context, recordName);

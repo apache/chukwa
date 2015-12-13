@@ -42,12 +42,12 @@ import org.apache.hadoop.metrics.Updater;
 /**
  * The main class of the Service Provider Interface.  This class should be
  * extended in order to integrate the Metrics API with a specific metrics
- * client library. <p/>
+ * client library.
  *
  * This class implements the internal table of metric data, and the timer
  * on which data is to be sent to the metrics system.  Subclasses must
  * override the abstract <code>emitRecord</code> method in order to transmit
- * the data. <p/>
+ * the data.
  */
 public abstract class AbstractMetricsContext implements MetricsContext {
     
@@ -70,6 +70,8 @@ public abstract class AbstractMetricsContext implements MetricsContext {
     }
     /**
      * Returns true if this tagmap contains every tag in other.
+     * @param other 
+     * @return 
      */
     public boolean containsAll(TagMap other) {
       for (Map.Entry<String,Object> entry : other.entrySet()) {
@@ -145,6 +147,7 @@ public abstract class AbstractMetricsContext implements MetricsContext {
     
   /**
    * Returns the factory by which this context was created.
+   * @return 
    */
   public ContextFactory getContextFactory() {
     return factory;
