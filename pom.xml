@@ -1326,6 +1326,7 @@
                       <encoding>UTF-8</encoding>
                       <verbose>false</verbose>
                       <show>public</show>
+                      <failOnError>false</failOnError>
                       <subpackages>org.apache.hadoop.chukwa.datacollection.agent.rest</subpackages>
                       <doclet>com.sun.jersey.wadl.resourcedoc.ResourceDocletJSON</doclet>
                       <docletPath>${path.separator}${project.build.outputDirectory}</docletPath>
