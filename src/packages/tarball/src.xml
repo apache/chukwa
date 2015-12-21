@@ -30,6 +30,7 @@
         <include>**</include>
       </includes>
       <excludes>
+        <exclude>.*/**</exclude>
         <exclude>target/**</exclude>
       </excludes>
     </fileSet>
