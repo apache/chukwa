@@ -20,14 +20,14 @@
     <properties>
         <buildtype>test</buildtype>
         <BUILD_NUMBER>${env.BUILD_NUMBER}</BUILD_NUMBER>
-        <VERSION>0.7.0</VERSION>
+        <VERSION>0.8.0-SNAPSHOT</VERSION>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <package.prefix>/usr</package.prefix>
         <package.conf.dir>/etc/chukwa</package.conf.dir>
         <package.log.dir>/var/log/chukwa</package.log.dir>
         <package.pid.dir>/var/run/chukwa</package.pid.dir>
         <package.release>1</package.release>
-        <package.version>0.7.0</package.version>
+        <package.version>0.8.0</package.version>
         <final.name>${project.artifactId}-${package.version}</final.name>
         <TODO_ALERT_EMAIL>user@example.com</TODO_ALERT_EMAIL>
         <TODO_CLUSTER_NAME>chukwa</TODO_CLUSTER_NAME>
@@ -64,7 +64,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.chukwa</groupId>
-    <version>0.7.0</version>
+    <version>0.8.0-SNAPSHOT</version>
     <artifactId>chukwa</artifactId>
     <packaging>jar</packaging>
 
