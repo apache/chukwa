@@ -43,7 +43,7 @@ define([
 
   $(function () {
     Manager = new AjaxSolr.Manager({
-      solrUrl: '/hicc/solr/logs/'
+      solrUrl: '/hicc/solr/chukwa/'
     });
     Manager.addWidget(new AjaxSolr.ResultWidget({
       id: 'result',

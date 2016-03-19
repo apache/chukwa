@@ -48,7 +48,7 @@ function getLog(type, startDate, direction) {
   }
   console.log(q);
   $.ajax({
-    url: '/hicc/solr/logs/select',
+    url: '/hicc/solr/chukwa/select',
     data: {
       q: q,
       wt: "json",

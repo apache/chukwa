@@ -33,6 +33,7 @@ import junit.framework.Assert;
 
 public class TestSolrWriter extends SolrJettyTestBase {
   private static Logger log = Logger.getLogger(TestSolrWriter.class);
+  private static EmbeddedSolrServer server;
   CoreContainer container;
   
   public void setUp() {

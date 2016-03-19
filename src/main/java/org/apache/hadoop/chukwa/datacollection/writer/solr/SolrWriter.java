@@ -36,6 +36,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrServer;
+import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
 
 public class SolrWriter extends PipelineableWriter {
@@ -77,6 +78,9 @@ public class SolrWriter extends PipelineableWriter {
 
   @Override
   public CommitStatus add(List<Chunk> chunks) throws WriterException {
+    if(server == null) {
+      init(ChukwaAgent.getStaticConfiguration());
+    }
     CommitStatus rv = ChukwaWriter.COMMIT_OK;
     for(Chunk chunk : chunks) {
       try {
@@ -94,18 +98,19 @@ public class SolrWriter extends PipelineableWriter {
         Matcher m = userPattern.matcher(data);
         if(m.find()) {
           doc.addField(USER, m.group(1));
+        } else {
+          doc.addField(USER, "Unclassified");
         }
         if(data.contains("hdfs")) {
           doc.addField(SERVICE, "hdfs");
-        }
-        if(data.contains("yarn")) {
+        } else if(data.contains("yarn")) {
           doc.addField(SERVICE, "yarn");
-        }
-        if(data.contains("mapredice")) {
+        } else if(data.contains("mapredice")) {
           doc.addField(SERVICE, "mapreduce");
-        }
-        if(data.contains("hbase")) {
+        } else  if(data.contains("hbase")) {
           doc.addField(SERVICE, "hbase");
+        } else {
+          doc.addField(SERVICE, "Unclassified");
         }
         try {
           Date d = sdf.parse(data);
@@ -114,11 +119,19 @@ public class SolrWriter extends PipelineableWriter {
           
         }
         server.add(doc);
-        server.commit();
-      } catch (SolrServerException | IOException e) {
+      } catch (Exception e) {
         log.warn("Failed to store data to Solr Cloud.");
         log.warn(ExceptionUtil.getStackTrace(e));
+        server = null;
       }
+    }
+    try {
+      if(server != null) {
+        server.commit();
+      }
+    } catch (Exception e) {
+      log.warn("Failed to store data to Solr Cloud.");
+      log.warn(ExceptionUtil.getStackTrace(e));
     }
     if (next != null) {
       rv = next.add(chunks); //pass data through

@@ -116,6 +116,6 @@
 
   <property>
     <name>solr.collection</name>
-    <value>logs</value>
+    <value>chukwa</value>
   </property>
 </configuration>
