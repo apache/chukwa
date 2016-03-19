@@ -35,7 +35,6 @@ if [ $# = 0 ]; then
   echo "where COMMAND is one of:"
   echo "  agent         run a Chukwa Agent"
   echo "  archive       run the Archive Manager"
-  echo "  collector     run a Chukwa Collector"
   echo "  demux         run the Demux Manager"
   echo "  dp            run the Post Demux data processors"
   echo "  hicc          run a HICC Webserver"
@@ -90,9 +89,6 @@ if [ "$COMMAND" = "agent" ]; then
 elif [ "$COMMAND" = "archive" ]; then
   APP='archive'
   CLASS='org.apache.hadoop.chukwa.extraction.archive.ChukwaArchiveManager'
-elif [ "$COMMAND" = "collector" ]; then
-  APP='collector'
-  CLASS='org.apache.hadoop.chukwa.datacollection.collector.CollectorStub'
 elif [ "$COMMAND" = "dp" ]; then
   APP='postprocess'
   CLASS='org.apache.hadoop.chukwa.extraction.demux.PostProcessorManager'
