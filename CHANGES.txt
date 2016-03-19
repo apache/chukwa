@@ -8,6 +8,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-799. Updated jsoup version. (Eric Yang)
+
     CHUKWA-798. Added retry logic for SolrWriter and update to Solr 5.5.0 API (Eric Yang)
 
     CHUKWA-797. Added retry logic for sending data to HBase.  (Eric Yang)
