@@ -4,6 +4,20 @@ Trunk (unreleased changes)
 
   NEW FEATURES
 
+  IMPROVEMENTS
+
+  BUGS
+
+    CHUKWA-798. Added retry logic for SolrWriter and update to Solr 5.5.0 API (Eric Yang)
+
+    CHUKWA-797. Added retry logic for sending data to HBase.  (Eric Yang)
+
+    CHUKWA-796. Remove collector from shell script.  (Eric Yang)
+
+Release 0.6 - 09/28/2014
+
+  NEW FEATURES
+
     CHUKWA-734. Added GoraWriter.  (Lewis John McGibbney via Eric Yang)
 
     CHUKWA-787. Added full screen support, and quick link to Hadoop and HBase UI.  (Eric Yang)
