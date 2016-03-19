@@ -54,6 +54,7 @@ public class HBaseWriter extends PipelineableWriter {
   private ArrayList<Put> output;
   private Reporter reporter;
   private ChukwaConfiguration conf;
+  private Configuration hconf;
   String defaultProcessor;
   private static Connection connection;
   
@@ -92,6 +93,7 @@ public class HBaseWriter extends PipelineableWriter {
   private HBaseWriter(boolean reportStats, ChukwaConfiguration conf, Configuration hconf) throws IOException {
     this.reportStats = reportStats;
     this.conf = conf;
+    this.hconf = hconf;
     this.statTimer = new Timer();
     this.defaultProcessor = conf.get(
       "chukwa.demux.mapper.default.processor",
@@ -106,7 +108,7 @@ public class HBaseWriter extends PipelineableWriter {
     } catch (NoSuchAlgorithmException e) {
       throw new IOException("Can not register hashing algorithm.");
     }
-    if (connection == null) {
+    if (connection == null || connection.isClosed()) {
       connection = ConnectionFactory.createConnection(hconf);
     }
   }
@@ -118,6 +120,13 @@ public class HBaseWriter extends PipelineableWriter {
   }
 
   public void init(Configuration conf) throws WriterException {
+    if (connection == null || connection.isClosed()) {
+      try {
+        connection = ConnectionFactory.createConnection(hconf);
+      } catch (IOException e) {
+        throw new WriterException("HBase is offline, retry later...");
+      }
+    }
   }
 
   @Override

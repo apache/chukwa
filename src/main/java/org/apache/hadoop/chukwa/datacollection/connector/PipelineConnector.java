@@ -109,17 +109,19 @@ public class PipelineConnector implements Connector, Runnable {
         try {
           // get all ready chunks from the chunkQueue to be sent
           chunkQueue.collect(newQueue, MAX_SIZE_PER_POST);
+          CommitStatus result = writers.add(newQueue);
+          if(result.equals(ChukwaWriter.COMMIT_OK)) {
+            chunkCount = newQueue.size();
+            for (Chunk c : newQueue) {
+              agent.reportCommit(c.getInitiator(), c.getSeqID());
+            }          
+          }
+        } catch (WriterException e) {
+          log.warn("PipelineStageWriter Exception: ", e);
         } catch (InterruptedException e) {
           log.warn("thread interrupted during addChunks(ChunkQueue)");
           Thread.currentThread().interrupt();
           break;
-        }
-        CommitStatus result = writers.add(newQueue);
-        if(result.equals(ChukwaWriter.COMMIT_OK)) {
-          chunkCount = newQueue.size();
-          for (Chunk c : newQueue) {
-            agent.reportCommit(c.getInitiator(), c.getSeqID());
-          }          
         }
         long now = System.currentTimeMillis();
         long delta = MIN_POST_INTERVAL - now + lastPost;
@@ -129,8 +131,6 @@ public class PipelineConnector implements Connector, Runnable {
         lastPost = now;
       } // end of try forever loop
       log.info("received stop() command so exiting run() loop to shutdown connector");
-    } catch (WriterException e) {
-      log.warn("PipelineStageWriter Exception: ", e);
     } catch (OutOfMemoryError e) {
       log.warn("Bailing out", e);
       throw new RuntimeException("Shutdown pipeline connector.");
