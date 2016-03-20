@@ -752,6 +752,7 @@
                                 <copy file="${basedir}/conf/auth.conf" tofile="${project.build.directory}/test/conf/auth.conf"></copy>
                                 <chmod file="${project.build.directory}/test/conf/jmxremote.password" perm="600" />
                                 <chmod file="${project.build.directory}/test/conf/jmxremote.access" perm="600" />
+                                <copy file="${basedir}/src/test/resources/solr.xml" tofile="${project.build.directory}/test/var/solr.xml"></copy>
                             </target>
                         </configuration>
                         <goals>
