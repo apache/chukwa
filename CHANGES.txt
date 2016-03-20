@@ -8,6 +8,10 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-801. Increase measurement timeout for TestFailTailer. (Eric Yang)
+
+    CHUKWA-800. Updated Hadoop, HBase version. (Eric Yang)
+
     CHUKWA-799. Updated jsoup version. (Eric Yang)
 
     CHUKWA-798. Added retry logic for SolrWriter and update to Solr 5.5.0 API (Eric Yang)

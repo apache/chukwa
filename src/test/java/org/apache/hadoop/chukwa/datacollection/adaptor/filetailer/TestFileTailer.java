@@ -46,6 +46,7 @@ public class TestFileTailer {
 
 	@Test
 	public void testDontSleepIfHasMoreData() throws AlreadyRunningException, IOException, InterruptedException {
+		int DEFAULT_SAMPLE_PERIOD_MS = 1000 * 2;
 		ChukwaConfiguration cc = new ChukwaConfiguration();
 		cc.setInt("chukwaAgent.fileTailingAdaptor.maxReadSize", 18); // small in order to have hasMoreData=true
 																	 // (with 26 letters we should have 2 chunks)
@@ -66,7 +67,7 @@ public class TestFileTailer {
 		chunks.waitForAChunk();
 		
 		long endTime = System.currentTimeMillis();
-		assertTrue( endTime - startTime < 300 ); // ensure that everything finishes very fast
+		assertTrue( endTime - startTime < DEFAULT_SAMPLE_PERIOD_MS ); // ensure that everything finishes very fast
 												 // faster than SAMPLE_PERIOD_MS (ie: we don't sleep)
 	}
 
