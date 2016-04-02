@@ -111,12 +111,12 @@ public class ChukwaHBaseStore {
    * Scan chukwa table for a particular metric group and metric name based on
    * time ranges.
    * 
-   * @param metricGroup
-   * @param metric
-   * @param source
-   * @param startTime
-   * @param endTime
-   * @return
+   * @param metricGroup metric group name
+   * @param metric metric name
+   * @param source source of the metric
+   * @param startTime start time
+   * @param endTime end time
+   * @return Series object
    */
   public static Series getSeries(String metricGroup, String metric,
       String source, long startTime, long endTime) {
@@ -128,11 +128,11 @@ public class ChukwaHBaseStore {
   /**
    * Scan chukwa table for a full metric name based on time ranges.
    * 
-   * @param metric
-   * @param source
-   * @param startTime
-   * @param endTime
-   * @return
+   * @param metric metric group name and metric name combined
+   * @param source source of the metric
+   * @param startTime start time
+   * @param endTime end time
+   * @return Series object
    */
   public static synchronized Series getSeries(String metric, String source, long startTime,
       long endTime) {
@@ -341,9 +341,9 @@ public class ChukwaHBaseStore {
    * Scan chukwa table and find cluster tag from annotation column family from a
    * range of entries.
    * 
-   * @param startTime
-   * @param endTime
-   * @return
+   * @param startTime start time in epoch
+   * @param endTime start time in epoch
+   * @return Set of cluster names
    */
   public static Set<String> getClusterNames(long startTime, long endTime) {
     Set<String> clusters = new HashSet<String>();
@@ -374,8 +374,8 @@ public class ChukwaHBaseStore {
   /**
    * Get a chart from HBase by ID.
    * 
-   * @param id
-   * @return
+   * @param id Chart ID
+   * @return Chart object
    */
   public static Chart getChart(String id) {
     Chart chart = null;
@@ -400,8 +400,8 @@ public class ChukwaHBaseStore {
   /**
    * Update a chart in HBase by ID.
    * 
-   * @param id
-   * @param chart
+   * @param id Chart ID
+   * @param chart Chart Object
    */
   public static void putChart(String id, Chart chart) {
     try {
@@ -422,7 +422,13 @@ public class ChukwaHBaseStore {
 
   /**
    * Create a chart in HBase by specifying parameters.
-   * @throws URISyntaxException 
+   * @param id is unique chart identifier
+   * @param title is searchable name of the chart
+   * @param metrics is list of metric names to render chart
+   * @param source is data source name
+   * @param yunitType is y axis unit type
+   * @return Chart ID
+   * @throws URISyntaxException if metrics name can not compose valid URL syntax
    */
   public static synchronized String createChart(String id,
       String title, String[] metrics, String source, String yunitType) throws URISyntaxException {
@@ -446,7 +452,14 @@ public class ChukwaHBaseStore {
 
   /**
    * Create a chart in HBase by specifying parameters.
-   * @throws URISyntaxException 
+   * @param id is unique chart identifier
+   * @param title is searchable name of the chart
+   * @param metrics is list of metric names to render ring chart
+   * @param source is data source name
+   * @param suffixLabel is text label to append to metric values
+   * @param direction sets the threshold to have either upper limit or lower limit
+   * @return Chart ID
+   * @throws URISyntaxException if metrics name can not compose valid URL syntax
    */
   public static synchronized String createCircle(String id,
       String title, String[] metrics, String source, String suffixLabel, String direction) throws URISyntaxException {
@@ -469,15 +482,15 @@ public class ChukwaHBaseStore {
 
   /**
    * Create a tile in HBase by specifying parameters.
-   * @param id
-   * @param title
-   * @param bannerText
-   * @param suffixLabel
-   * @param metrics
-   * @param source
-   * @param icon
-   * @return
-   * @throws URISyntaxException
+   * @param id is unique tile identifier
+   * @param title is searchable name of the tile widget
+   * @param bannerText is description of the tile widget
+   * @param suffixLabel is text label to append to metric values
+   * @param metrics is list of metric names to render tile widget
+   * @param source is data source name
+   * @param icon is emoji symbol to render beside tile widget
+   * @return Widget ID
+   * @throws URISyntaxException if metrics name can not compose valid URL syntax
    */
   public static synchronized String createTile(String id, String title, 
       String bannerText, String suffixLabel, String[] metrics, String source, 
@@ -500,9 +513,8 @@ public class ChukwaHBaseStore {
   /**
    * Create a chart in HBase.
    * 
-   * @param chart
+   * @param chart is a chukwa Chart object
    * @return id of newly created chart
-   * @throws IOException
    */
   public static synchronized String createChart(Chart chart) {
     String id = chart.getId();
@@ -538,10 +550,10 @@ public class ChukwaHBaseStore {
   /**
    * Return data for multiple series of metrics stored in HBase.
    * 
-   * @param series
-   * @param startTime
-   * @param endTime
-   * @return
+   * @param series is SeriesMetaData object
+   * @param startTime sets the start time of metrics
+   * @param endTime sets the end time of metrics
+   * @return A list of Series meta data
    */
   public static synchronized ArrayList<org.apache.hadoop.chukwa.hicc.bean.SeriesMetaData> getChartSeries(ArrayList<org.apache.hadoop.chukwa.hicc.bean.SeriesMetaData> series, long startTime, long endTime) {
     ArrayList<org.apache.hadoop.chukwa.hicc.bean.SeriesMetaData> list = new ArrayList<org.apache.hadoop.chukwa.hicc.bean.SeriesMetaData>();
@@ -652,9 +664,9 @@ public class ChukwaHBaseStore {
   /**
    * List widgets stored in HBase.
    * 
-   * @param limit
-   * @param offset
-   * @return
+   * @param limit sets the number of widgets to return
+   * @param offset sets the starting point to return widgets
+   * @return List of Widgets
    */
   public static synchronized List<Widget> listWidget(int limit, int offset) {
     ArrayList<Widget> list = new ArrayList<Widget>();
@@ -738,8 +750,8 @@ public class ChukwaHBaseStore {
   /**
    * Find widget by title prefix in HBase.
    * 
-   * @param query - Prefix query of widget title.
-   * @return
+   * @param query is prefix query of widget title.
+   * @return List of Widgets
    */
   public static synchronized List<Widget> searchWidget(String query) {
     ArrayList<Widget> list = new ArrayList<Widget>();
@@ -773,8 +785,8 @@ public class ChukwaHBaseStore {
   /**
    * View a widget information in HBase.
    * 
-   * @param title - Title of the widget.
-   * @return
+   * @param title is title of the widget.
+   * @return List of Widgets
    */
   public static synchronized Widget viewWidget(String title) {
     Widget w = null;
@@ -798,7 +810,8 @@ public class ChukwaHBaseStore {
   /**
    * Create a widget in HBase.
    * 
-   * @param widget
+   * @param widget is chukwa Widget object
+   * @return true if widget is created
    */
   public static synchronized boolean createWidget(Widget widget) {
     boolean created = false;
@@ -830,9 +843,9 @@ public class ChukwaHBaseStore {
   /**
    * Update a widget in HBase.
    * 
-   * @param title
-   * @param widget
-   * @throws IOException 
+   * @param title is searchable title in a widget
+   * @param widget is Chukwa Widget object
+   * @return true if widget has been updated
    */
   public static synchronized boolean updateWidget(String title, Widget widget) {
     boolean result = false;
@@ -861,9 +874,8 @@ public class ChukwaHBaseStore {
   /**
    * Delete a widget in HBase.
    * 
-   * @param title
-   * @param widget
-   * @throws IOException 
+   * @param title is searchable title in a widget
+   * @return true if widget has been deleted
    */
   public static synchronized boolean deleteWidget(String title) {
     boolean result = false;

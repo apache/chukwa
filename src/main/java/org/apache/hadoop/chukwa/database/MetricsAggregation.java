@@ -38,8 +38,8 @@ public class MetricsAggregation {
   private static DatabaseConfig mdlConfig;
 
   /**
-   * @param args
-   * @throws SQLException
+   * @param args is list of command line parameters
+   * @throws SQLException if SQL query fails
    */
   @edu.umd.cs.findbugs.annotations.SuppressWarnings(value =
       "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE", 

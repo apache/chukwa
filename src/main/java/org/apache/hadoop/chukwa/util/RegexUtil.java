@@ -75,6 +75,7 @@ public class RegexUtil {
      * <p>
      * Consider calling this constructor with the result of
      * {@link RegexUtil#regexError}.
+     * @param pse is PatternSyntaxException object
      */
     public CheckedPatternSyntaxException(PatternSyntaxException pse) {
       this.pse = pse;
@@ -139,6 +140,8 @@ public class RegexUtil {
   /**
    * Returns true if the argument is a syntactically valid regular
    * expression.
+   * @param s is regular expression
+   * @return true if there is a match
    */
   public static boolean isRegex(String s) {
     return isRegex(s, 0);
@@ -147,6 +150,9 @@ public class RegexUtil {
   /**
    * Returns true if the argument is a syntactically valid regular
    * expression with at least the given number of groups.
+   * @param s is regular expression
+   * @param groups is number of groups to match
+   * @return true if there is a match
    */
   /*>>>
   @SuppressWarnings("regex")    // RegexUtil
@@ -165,11 +171,9 @@ public class RegexUtil {
   /**
    * Returns true if the argument is a syntactically valid regular
    * expression.
+   * @param c is a character
+   * @return true if there is a match
    */
-  /*>>>
-  @SuppressWarnings("regex")    // RegexUtil
-  */
-  /*@Pure*/
   public static boolean isRegex(char c) {
     return isRegex(Character.toString(c));
   }
@@ -178,12 +182,10 @@ public class RegexUtil {
    * Returns null if the argument is a syntactically valid regular
    * expression. Otherwise returns a string describing why the argument is
    * not a regex.
+   * @param s is regular expression
+   * @return null if s is a regular expression
    */
-  /*>>>
-  @SuppressWarnings("regex")    // RegexUtil
-  */
-  /*@Pure*/
-  public static /*@Nullable*/ String regexError(String s) {
+  public static String regexError(String s) {
     return regexError(s, 0);
   }
 
@@ -191,12 +193,11 @@ public class RegexUtil {
    * Returns null if the argument is a syntactically valid regular
    * expression with at least the given number of groups. Otherwise returns
    * a string describing why the argument is not a regex.
+   * @param s is regular expression
+   * @param groups is number of groups to match
+   * @return null if s is a regular expression
    */
-  /*>>>
-  @SuppressWarnings("regex")    // RegexUtil
-  */
-  /*@Pure*/
-  public static /*@Nullable*/ String regexError(String s, int groups) {
+  public static String regexError(String s, int groups) {
     try {
       Pattern p = Pattern.compile(s);
       int actualGroups = getGroupCount(p);
@@ -213,12 +214,10 @@ public class RegexUtil {
    * Returns null if the argument is a syntactically valid regular
    * expression. Otherwise returns a PatternSyntaxException describing
    * why the argument is not a regex.
+   * @param s is regular expression
+   * @return null if s is a regular expression
    */
-  /*>>>
-  @SuppressWarnings("regex")    // RegexUtil
-  */
-  /*@Pure*/
-  public static /*@Nullable*/ PatternSyntaxException regexException(String s) {
+  public static PatternSyntaxException regexException(String s) {
     return regexException(s, 0);
   }
 
@@ -226,12 +225,11 @@ public class RegexUtil {
    * Returns null if the argument is a syntactically valid regular
    * expression with at least the given number of groups. Otherwise returns a
    * PatternSyntaxException describing why the argument is not a regex.
+   * @param s is regular expression
+   * @param groups is number of groups to match
+   * @return null if s is a regular expression
    */
-  /*>>>
-  @SuppressWarnings("regex")    // RegexUtil
-  */
-  /*@Pure*/
-  public static /*@Nullable*/ PatternSyntaxException regexException(String s, int groups) {
+  public static PatternSyntaxException regexException(String s, int groups) {
     try {
       Pattern p = Pattern.compile(s);
       int actualGroups = getGroupCount(p);
@@ -249,8 +247,10 @@ public class RegexUtil {
    * otherwise throws an error. The purpose of this method is to suppress Regex
    * Checker warnings. Once the the Regex Checker supports flow-sensitivity, it
    * should be very rarely needed.
+   * @param s is a regular expression
+   * @return null if s is a regular expression
    */
-  public static /*@Regex*/ String asRegex(String s) {
+  public static String asRegex(String s) {
     return asRegex(s, 0);
   }
 
@@ -259,12 +259,11 @@ public class RegexUtil {
    * with at least the given number of groups, otherwise throws an error. The
    * purpose of this method is to suppress Regex Checker warnings. Once the the
    * Regex Checker supports flow-sensitivity, it should be very rarely needed.
+   * @param s is a regular expression
+   * @param groups is number of group to match
+   * @return null if s is a regular expression
    */
-  /*>>>
-  @SuppressWarnings("regex")    // RegexUtil
-  */
-  /*@Pure*/
-  public static /*@Regex*/ String asRegex(String s, int groups) {
+  public static String asRegex(String s, int groups) {
     try {
       Pattern p = Pattern.compile(s);
       int actualGroups = getGroupCount(p);

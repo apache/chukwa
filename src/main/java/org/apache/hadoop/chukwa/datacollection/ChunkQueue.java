@@ -31,7 +31,7 @@ public interface ChunkQueue extends ChunkReceiver {
   /**
    * Add a chunk to the queue, blocking if queue is full.
    * 
-   * @param chunk
+   * @param chunk A binary blob
    * @throws InterruptedException if thread is interrupted while blocking
    */
   public void add(Chunk chunk) throws InterruptedException;
@@ -39,6 +39,9 @@ public interface ChunkQueue extends ChunkReceiver {
   /**
    * Return at least one, and no more than count, Chunks into chunks. Blocks if
    * queue is empty.
+   * @param chunks List of binary blobs
+   * @param count maximum number of chunk to return
+   * @throws InterruptedException if thread is interrupted while collecting
    */
   public void collect(List<Chunk> chunks, int count)
       throws InterruptedException;
@@ -46,6 +49,7 @@ public interface ChunkQueue extends ChunkReceiver {
   /**
    * Return an approximation of the number of chunks in the queue currently. No
    * guarantees are made about the accuracy of this number.
+   * @return number of chunks in the queue currently
    */
   public int size();
 }

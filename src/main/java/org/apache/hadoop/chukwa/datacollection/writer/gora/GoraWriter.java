@@ -47,6 +47,7 @@ public class GoraWriter extends PipelineableWriter {
 
   /**
    * Default constructor for this class.
+   * @throws WriterException if error writing
    */
   public GoraWriter() throws WriterException {
     log.debug("Initializing configuration for GoraWriter pipeline...");
@@ -57,8 +58,7 @@ public class GoraWriter extends PipelineableWriter {
    * {@link org.apache.gora.store.DataStore} objects are created from a factory. It is necessary to 
    * provide the key and value class. The datastore class parameters is optional, 
    * and if not specified it will be read from the <code>gora.properties</code> file.
-   * @throws WriterException
-   * @throws GoraException 
+   * @throws WriterException if error occurs
    * @see org.apache.hadoop.chukwa.datacollection.writer.ChukwaWriter#init(org.apache.hadoop.conf.Configuration)
    */
   @Override

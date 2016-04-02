@@ -37,10 +37,13 @@ public class DumpChunks {
   
   /**
    * Tries to find chunks matching a given pattern.
-   * Takes as input a set of &-delimited patterns, followed
+   * Takes as input a set of &amp;-delimited patterns, followed
    * by a list of file names.
    * 
-   * E.g:  Dump datatype=Iostat&source=/my/log/.* *.done
+   * E.g:  Dump datatype=Iostat&amp;source=/my/log/.* *.done
+   * @param args is command line parameters
+   * @throws IOException if problem access HDFS
+   * @throws URISyntaxException if error parsing HDFS URL
    */
   public static void main(String[] args) throws IOException, URISyntaxException {
     

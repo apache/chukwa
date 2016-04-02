@@ -6,6 +6,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-802. Updated Javadoc for Java 8 support.  (Eric Yang)
+
   BUGS
 
     CHUKWA-801. Increase measurement timeout for TestFailTailer. (Eric Yang)

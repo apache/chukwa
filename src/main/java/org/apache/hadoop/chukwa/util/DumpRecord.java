@@ -31,9 +31,9 @@ import org.apache.hadoop.io.SequenceFile;
 public class DumpRecord {
 
   /**
-   * @param args
-   * @throws URISyntaxException
-   * @throws IOException
+   * @param args is command line parameters
+   * @throws URISyntaxException if problem parsing URL
+   * @throws IOException if problem reading files on HDFS
    */
   public static void main(String[] args) throws IOException, URISyntaxException {
     System.out.println("Input file:" + args[0]);

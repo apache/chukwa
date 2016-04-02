@@ -20,21 +20,29 @@
  * 
  * DO NOT EDIT DIRECTLY
  */
-package org.apache.hadoop.chukwa.datacollection.writer.gora;  
-/** Chukwa Adaptors emit data in Chunks. A Chunk is a sequence of bytes, with some metadata. Several of these are set automatically by the Agent or Adaptors. Two of them require user intervention: cluster name and datatype. Cluster name is specified in conf/chukwa-agent-conf.xml, and is global to each Agent process. Datatype describes the expected format of the data collected by an Adaptor instance, and it is specified when that instance is started.  */
+package org.apache.hadoop.chukwa.datacollection.writer.gora;
+
+/**
+ * Chukwa Adaptors emit data in Chunks. A Chunk is a sequence of bytes, with
+ * some metadata. Several of these are set automatically by the Agent or
+ * Adaptors. Two of them require user intervention: cluster name and datatype.
+ * Cluster name is specified in conf/chukwa-agent-conf.xml, and is global to
+ * each Agent process. Datatype describes the expected format of the data
+ * collected by an Adaptor instance, and it is specified when that instance is
+ * started.
+ */
 @SuppressWarnings("all")
-public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase implements org.apache.avro.specific.SpecificRecord, org.apache.gora.persistency.Persistent {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"ChukwaChunk\",\"namespace\":\"org.apache.hadoop.chukwa.datacollection.writer.gora\",\"doc\":\"Chukwa Adaptors emit data in Chunks. A Chunk is a sequence of bytes, with some metadata. Several of these are set automatically by the Agent or Adaptors. Two of them require user intervention: cluster name and datatype. Cluster name is specified in conf/chukwa-agent-conf.xml, and is global to each Agent process. Datatype describes the expected format of the data collected by an Adaptor instance, and it is specified when that instance is started. \",\"fields\":[{\"name\":\"source\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"tags\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"datatype\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"sequenceID\",\"type\":[\"null\",\"long\"],\"default\":null},{\"name\":\"name\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"data\",\"type\":[\"null\",\"bytes\"],\"default\":null}]}");
+public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
+    implements org.apache.avro.specific.SpecificRecord,
+    org.apache.gora.persistency.Persistent {
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
+      .parse(
+          "{\"type\":\"record\",\"name\":\"ChukwaChunk\",\"namespace\":\"org.apache.hadoop.chukwa.datacollection.writer.gora\",\"doc\":\"Chukwa Adaptors emit data in Chunks. A Chunk is a sequence of bytes, with some metadata. Several of these are set automatically by the Agent or Adaptors. Two of them require user intervention: cluster name and datatype. Cluster name is specified in conf/chukwa-agent-conf.xml, and is global to each Agent process. Datatype describes the expected format of the data collected by an Adaptor instance, and it is specified when that instance is started. \",\"fields\":[{\"name\":\"source\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"tags\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"datatype\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"sequenceID\",\"type\":[\"null\",\"long\"],\"default\":null},{\"name\":\"name\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"data\",\"type\":[\"null\",\"bytes\"],\"default\":null}]}");
 
   /** Enum containing all data bean's fields. */
   public static enum Field {
-    SOURCE(0, "source"),
-    TAGS(1, "tags"),
-    DATATYPE(2, "datatype"),
-    SEQUENCE_ID(3, "sequenceID"),
-    NAME(4, "name"),
-    DATA(5, "data"),
-    ;
+    SOURCE(0, "source"), TAGS(1, "tags"), DATATYPE(2, "datatype"), SEQUENCE_ID(
+        3, "sequenceID"), NAME(4, "name"), DATA(5, "data"),;
     /**
      * Field's index.
      */
@@ -47,41 +55,51 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
 
     /**
      * Field's constructor
-     * @param index field's index.
-     * @param name field's name.
+     * 
+     * @param index
+     *          field's index.
+     * @param name
+     *          field's name.
      */
-    Field(int index, String name) {this.index=index;this.name=name;}
+    Field(int index, String name) {
+      this.index = index;
+      this.name = name;
+    }
 
     /**
      * Gets field's index.
+     * 
      * @return int field's index.
      */
-    public int getIndex() {return index;}
+    public int getIndex() {
+      return index;
+    }
 
     /**
      * Gets field's name.
+     * 
      * @return String field's name.
      */
-    public String getName() {return name;}
+    public String getName() {
+      return name;
+    }
 
     /**
      * Gets field's attributes to string.
+     * 
      * @return String field's attributes to string.
      */
-    public String toString() {return name;}
+    public String toString() {
+      return name;
+    }
   };
 
-  public static final String[] _ALL_FIELDS = {
-  "source",
-  "tags",
-  "datatype",
-  "sequenceID",
-  "name",
-  "data",
-  };
+  public static final String[] _ALL_FIELDS = { "source", "tags", "datatype",
+      "sequenceID", "name", "data", };
 
   /**
    * Gets the total field count.
+   * 
    * @return int field count
    */
   public int getFieldsCount() {
@@ -94,36 +112,62 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
   private java.lang.Long sequenceID;
   private java.lang.CharSequence name;
   private java.nio.ByteBuffer data;
-  public org.apache.avro.Schema getSchema() { return SCHEMA$; }
-  // Used by DatumWriter.  Applications should not call. 
+
+  public org.apache.avro.Schema getSchema() {
+    return SCHEMA$;
+  }
+
+  // Used by DatumWriter. Applications should not call.
   public java.lang.Object get(int field$) {
     switch (field$) {
-    case 0: return source;
-    case 1: return tags;
-    case 2: return datatype;
-    case 3: return sequenceID;
-    case 4: return name;
-    case 5: return data;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
+    case 0:
+      return source;
+    case 1:
+      return tags;
+    case 2:
+      return datatype;
+    case 3:
+      return sequenceID;
+    case 4:
+      return name;
+    case 5:
+      return data;
+    default:
+      throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
-  
-  // Used by DatumReader.  Applications should not call. 
-  @SuppressWarnings(value="unchecked")
+
+  // Used by DatumReader. Applications should not call.
+  @SuppressWarnings(value = "unchecked")
   public void put(int field$, java.lang.Object value) {
     switch (field$) {
-    case 0: source = (java.lang.CharSequence)(value); break;
-    case 1: tags = (java.lang.CharSequence)(value); break;
-    case 2: datatype = (java.lang.CharSequence)(value); break;
-    case 3: sequenceID = (java.lang.Long)(value); break;
-    case 4: name = (java.lang.CharSequence)(value); break;
-    case 5: data = (java.nio.ByteBuffer)(value); break;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
+    case 0:
+      source = (java.lang.CharSequence) (value);
+      break;
+    case 1:
+      tags = (java.lang.CharSequence) (value);
+      break;
+    case 2:
+      datatype = (java.lang.CharSequence) (value);
+      break;
+    case 3:
+      sequenceID = (java.lang.Long) (value);
+      break;
+    case 4:
+      name = (java.lang.CharSequence) (value);
+      break;
+    case 5:
+      data = (java.nio.ByteBuffer) (value);
+      break;
+    default:
+      throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
 
   /**
    * Gets the value of the 'source' field.
+   * 
+   * @return source
    */
   public java.lang.CharSequence getSource() {
     return source;
@@ -131,16 +175,19 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
 
   /**
    * Sets the value of the 'source' field.
-   * @param value the value to set.
+   * 
+   * @param value is the value to set.
    */
   public void setSource(java.lang.CharSequence value) {
     this.source = value;
     setDirty(0);
   }
-  
+
   /**
-   * Checks the dirty status of the 'source' field. A field is dirty if it represents a change that has not yet been written to the database.
-   * @param value the value to set.
+   * Checks the dirty status of the 'source' field. A field is dirty if it
+   * represents a change that has not yet been written to the database.
+   * 
+   * @return true if a sourcefield has not been written to database
    */
   public boolean isSourceDirty() {
     return isDirty(0);
@@ -148,6 +195,8 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
 
   /**
    * Gets the value of the 'tags' field.
+   * 
+   * @return value of tags field
    */
   public java.lang.CharSequence getTags() {
     return tags;
@@ -155,16 +204,19 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
 
   /**
    * Sets the value of the 'tags' field.
-   * @param value the value to set.
+   * 
+   * @param value is the value to set.
    */
   public void setTags(java.lang.CharSequence value) {
     this.tags = value;
     setDirty(1);
   }
-  
+
   /**
-   * Checks the dirty status of the 'tags' field. A field is dirty if it represents a change that has not yet been written to the database.
-   * @param value the value to set.
+   * Checks the dirty status of the 'tags' field. A field is dirty if it
+   * represents a change that has not yet been written to the database.
+   * 
+   * @return true if tags field has not been written to database
    */
   public boolean isTagsDirty() {
     return isDirty(1);
@@ -172,6 +224,8 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
 
   /**
    * Gets the value of the 'datatype' field.
+   * 
+   * @return datatype field
    */
   public java.lang.CharSequence getDatatype() {
     return datatype;
@@ -179,16 +233,19 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
 
   /**
    * Sets the value of the 'datatype' field.
-   * @param value the value to set.
+   * 
+   * @param value is the value to set.
    */
   public void setDatatype(java.lang.CharSequence value) {
     this.datatype = value;
     setDirty(2);
   }
-  
+
   /**
-   * Checks the dirty status of the 'datatype' field. A field is dirty if it represents a change that has not yet been written to the database.
-   * @param value the value to set.
+   * Checks the dirty status of the 'datatype' field. A field is dirty if it
+   * represents a change that has not yet been written to the database.
+   * 
+   * @return true if datatype field has not been written to database
    */
   public boolean isDatatypeDirty() {
     return isDirty(2);
@@ -196,6 +253,8 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
 
   /**
    * Gets the value of the 'sequenceID' field.
+   * 
+   * @return sequenceID
    */
   public java.lang.Long getSequenceID() {
     return sequenceID;
@@ -203,16 +262,19 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
 
   /**
    * Sets the value of the 'sequenceID' field.
-   * @param value the value to set.
+   * 
+   * @param value is the value to set.
    */
   public void setSequenceID(java.lang.Long value) {
     this.sequenceID = value;
     setDirty(3);
   }
-  
+
   /**
-   * Checks the dirty status of the 'sequenceID' field. A field is dirty if it represents a change that has not yet been written to the database.
-   * @param value the value to set.
+   * Checks the dirty status of the 'sequenceID' field. A field is dirty if it
+   * represents a change that has not yet been written to the database.
+   * 
+   * @return true if sequenceID has not been commit to database
    */
   public boolean isSequenceIDDirty() {
     return isDirty(3);
@@ -220,6 +282,8 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
 
   /**
    * Gets the value of the 'name' field.
+   * 
+   * @return name
    */
   public java.lang.CharSequence getName() {
     return name;
@@ -227,16 +291,19 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
 
   /**
    * Sets the value of the 'name' field.
-   * @param value the value to set.
+   * 
+   * @param value is the value to set.
    */
   public void setName(java.lang.CharSequence value) {
     this.name = value;
     setDirty(4);
   }
-  
+
   /**
-   * Checks the dirty status of the 'name' field. A field is dirty if it represents a change that has not yet been written to the database.
-   * @param value the value to set.
+   * Checks the dirty status of the 'name' field. A field is dirty if it
+   * represents a change that has not yet been written to the database.
+   * 
+   * @return true if name has not been committed to database
    */
   public boolean isNameDirty() {
     return isDirty(4);
@@ -244,6 +311,8 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
 
   /**
    * Gets the value of the 'data' field.
+   * 
+   * @return data field
    */
   public java.nio.ByteBuffer getData() {
     return data;
@@ -251,36 +320,59 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
 
   /**
    * Sets the value of the 'data' field.
-   * @param value the value to set.
+   * 
+   * @param value is a string
+   *          the value to set.
    */
   public void setData(java.nio.ByteBuffer value) {
     this.data = value;
     setDirty(5);
   }
-  
+
   /**
-   * Checks the dirty status of the 'data' field. A field is dirty if it represents a change that has not yet been written to the database.
-   * @param value the value to set.
+   * Checks the dirty status of the 'data' field. A field is dirty if it
+   * represents a change that has not yet been written to the database.
+   * 
+   * @return true if data field has not been committed to database
    */
   public boolean isDataDirty() {
     return isDirty(5);
   }
 
-  /** Creates a new ChukwaChunk RecordBuilder */
+  /**
+   * Creates a new ChukwaChunk RecordBuilder
+   * 
+   * @return RecordBuilder
+   */
   public static org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder newBuilder() {
     return new org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder();
   }
-  
-  /** Creates a new ChukwaChunk RecordBuilder by copying an existing Builder */
-  public static org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder newBuilder(org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder other) {
-    return new org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder(other);
+
+  /**
+   * Creates a new ChukwaChunk RecordBuilder by copying an existing Builder
+   * 
+   * @param other is Chukwa chunk
+   * @return RecordBuilder
+   */
+  public static org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder newBuilder(
+      org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder other) {
+    return new org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder(
+        other);
   }
-  
-  /** Creates a new ChukwaChunk RecordBuilder by copying an existing ChukwaChunk instance */
-  public static org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder newBuilder(org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk other) {
-    return new org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder(other);
+
+  /**
+   * Creates a new ChukwaChunk RecordBuilder by copying an existing ChukwaChunk
+   * instance
+   * 
+   * @param other is Chukwa chunk
+   * @return RecordBuilder
+   */
+  public static org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder newBuilder(
+      org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk other) {
+    return new org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder(
+        other);
   }
-  
+
   private static java.nio.ByteBuffer deepCopyToReadOnlyBuffer(
       java.nio.ByteBuffer input) {
     java.nio.ByteBuffer copy = java.nio.ByteBuffer.allocate(input.capacity());
@@ -303,12 +395,13 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
     copy.limit(limit);
     return copy.asReadOnlyBuffer();
   }
-  
+
   /**
    * RecordBuilder for ChukwaChunk instances.
    */
-  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<ChukwaChunk>
-    implements org.apache.avro.data.RecordBuilder<ChukwaChunk> {
+  public static class Builder
+      extends org.apache.avro.specific.SpecificRecordBuilderBase<ChukwaChunk>
+      implements org.apache.avro.data.RecordBuilder<ChukwaChunk> {
 
     private java.lang.CharSequence source;
     private java.lang.CharSequence tags;
@@ -319,364 +412,518 @@ public class ChukwaChunk extends org.apache.gora.persistency.impl.PersistentBase
 
     /** Creates a new Builder */
     private Builder() {
-      super(org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.SCHEMA$);
+      super(
+          org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.SCHEMA$);
     }
-    
+
     /** Creates a Builder by copying an existing Builder */
-    private Builder(org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder other) {
+    private Builder(
+        org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder other) {
       super(other);
     }
-    
+
     /** Creates a Builder by copying an existing ChukwaChunk instance */
-    private Builder(org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk other) {
-            super(org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.SCHEMA$);
+    private Builder(
+        org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk other) {
+      super(
+          org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.SCHEMA$);
       if (isValidValue(fields()[0], other.source)) {
-        this.source = (java.lang.CharSequence) data().deepCopy(fields()[0].schema(), other.source);
+        this.source = (java.lang.CharSequence) data()
+            .deepCopy(fields()[0].schema(), other.source);
         fieldSetFlags()[0] = true;
       }
       if (isValidValue(fields()[1], other.tags)) {
-        this.tags = (java.lang.CharSequence) data().deepCopy(fields()[1].schema(), other.tags);
+        this.tags = (java.lang.CharSequence) data()
+            .deepCopy(fields()[1].schema(), other.tags);
         fieldSetFlags()[1] = true;
       }
       if (isValidValue(fields()[2], other.datatype)) {
-        this.datatype = (java.lang.CharSequence) data().deepCopy(fields()[2].schema(), other.datatype);
+        this.datatype = (java.lang.CharSequence) data()
+            .deepCopy(fields()[2].schema(), other.datatype);
         fieldSetFlags()[2] = true;
       }
       if (isValidValue(fields()[3], other.sequenceID)) {
-        this.sequenceID = (java.lang.Long) data().deepCopy(fields()[3].schema(), other.sequenceID);
+        this.sequenceID = (java.lang.Long) data().deepCopy(fields()[3].schema(),
+            other.sequenceID);
         fieldSetFlags()[3] = true;
       }
       if (isValidValue(fields()[4], other.name)) {
-        this.name = (java.lang.CharSequence) data().deepCopy(fields()[4].schema(), other.name);
+        this.name = (java.lang.CharSequence) data()
+            .deepCopy(fields()[4].schema(), other.name);
         fieldSetFlags()[4] = true;
       }
       if (isValidValue(fields()[5], other.data)) {
-        this.data = (java.nio.ByteBuffer) data().deepCopy(fields()[5].schema(), other.data);
+        this.data = (java.nio.ByteBuffer) data().deepCopy(fields()[5].schema(),
+            other.data);
         fieldSetFlags()[5] = true;
       }
     }
 
-    /** Gets the value of the 'source' field */
+    /**
+     * Gets the value of the 'source' field
+     * 
+     * @return source field
+     */
     public java.lang.CharSequence getSource() {
       return source;
     }
-    
-    /** Sets the value of the 'source' field */
-    public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder setSource(java.lang.CharSequence value) {
+
+    /**
+     * Sets the value of the 'source' field
+     * 
+     * @param value is a string
+     * @return RecordBuilder
+     */
+    public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder setSource(
+        java.lang.CharSequence value) {
       validate(fields()[0], value);
       this.source = value;
       fieldSetFlags()[0] = true;
-      return this; 
+      return this;
     }
-    
-    /** Checks whether the 'source' field has been set */
+
+    /**
+     * Checks whether the 'source' field has been set
+     * 
+     * @return true if source field has been set
+     */
     public boolean hasSource() {
       return fieldSetFlags()[0];
     }
-    
-    /** Clears the value of the 'source' field */
+
+    /**
+     * Clears the value of the 'source' field
+     * 
+     * @return RecordBuilder
+     */
     public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder clearSource() {
       source = null;
       fieldSetFlags()[0] = false;
       return this;
     }
-    
-    /** Gets the value of the 'tags' field */
+
+    /**
+     * Gets the value of the 'tags' field
+     * 
+     * @return tags field
+     */
     public java.lang.CharSequence getTags() {
       return tags;
     }
-    
-    /** Sets the value of the 'tags' field */
-    public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder setTags(java.lang.CharSequence value) {
+
+    /**
+     * Sets the value of the 'tags' field
+     * 
+     * @param value is a string
+     * @return RecordBuilder
+     */
+    public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder setTags(
+        java.lang.CharSequence value) {
       validate(fields()[1], value);
       this.tags = value;
       fieldSetFlags()[1] = true;
-      return this; 
+      return this;
     }
-    
-    /** Checks whether the 'tags' field has been set */
+
+    /**
+     * Checks whether the 'tags' field has been set
+     * 
+     * @return true if tags has been set
+     */
     public boolean hasTags() {
       return fieldSetFlags()[1];
     }
-    
-    /** Clears the value of the 'tags' field */
+
+    /**
+     * Clears the value of the 'tags' field
+     * 
+     * @return RecordBuilder
+     */
     public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder clearTags() {
       tags = null;
       fieldSetFlags()[1] = false;
       return this;
     }
-    
-    /** Gets the value of the 'datatype' field */
+
+    /**
+     * Gets the value of the 'datatype' field
+     * 
+     * @return datatype field
+     */
     public java.lang.CharSequence getDatatype() {
       return datatype;
     }
-    
-    /** Sets the value of the 'datatype' field */
-    public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder setDatatype(java.lang.CharSequence value) {
+
+    /**
+     * Sets the value of the 'datatype' field
+     * 
+     * @param value is a string
+     * @return RecordBuilder
+     */
+    public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder setDatatype(
+        java.lang.CharSequence value) {
       validate(fields()[2], value);
       this.datatype = value;
       fieldSetFlags()[2] = true;
-      return this; 
+      return this;
     }
-    
-    /** Checks whether the 'datatype' field has been set */
+
+    /**
+     * Checks whether the 'datatype' field has been set
+     * 
+     * @return true if datatype field has been set
+     */
     public boolean hasDatatype() {
       return fieldSetFlags()[2];
     }
-    
-    /** Clears the value of the 'datatype' field */
+
+    /**
+     * Clears the value of the 'datatype' field
+     * 
+     * @return RecordBuilder
+     */
     public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder clearDatatype() {
       datatype = null;
       fieldSetFlags()[2] = false;
       return this;
     }
-    
-    /** Gets the value of the 'sequenceID' field */
+
+    /**
+     * Gets the value of the 'sequenceID' field
+     * 
+     * @return sequenceID
+     */
     public java.lang.Long getSequenceID() {
       return sequenceID;
     }
-    
-    /** Sets the value of the 'sequenceID' field */
-    public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder setSequenceID(java.lang.Long value) {
+
+    /**
+     * Sets the value of the 'sequenceID' field
+     * 
+     * @param value is a string
+     * @return RecordBuilder
+     */
+    public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder setSequenceID(
+        java.lang.Long value) {
       validate(fields()[3], value);
       this.sequenceID = value;
       fieldSetFlags()[3] = true;
-      return this; 
+      return this;
     }
-    
-    /** Checks whether the 'sequenceID' field has been set */
+
+    /**
+     * Checks whether the 'sequenceID' field has been set
+     * 
+     * @return true if sequenceID has been set
+     */
     public boolean hasSequenceID() {
       return fieldSetFlags()[3];
     }
-    
-    /** Clears the value of the 'sequenceID' field */
+
+    /**
+     * Clears the value of the 'sequenceID' field
+     * 
+     * @return RecordBuilder
+     */
     public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder clearSequenceID() {
       sequenceID = null;
       fieldSetFlags()[3] = false;
       return this;
     }
-    
-    /** Gets the value of the 'name' field */
+
+    /**
+     * Gets the value of the 'name' field
+     * 
+     * @return name
+     */
     public java.lang.CharSequence getName() {
       return name;
     }
-    
-    /** Sets the value of the 'name' field */
-    public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder setName(java.lang.CharSequence value) {
+
+    /**
+     * Sets the value of the 'name' field
+     * 
+     * @param value is a string
+     * @return RecordBuilder
+     */
+    public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder setName(
+        java.lang.CharSequence value) {
       validate(fields()[4], value);
       this.name = value;
       fieldSetFlags()[4] = true;
-      return this; 
+      return this;
     }
-    
-    /** Checks whether the 'name' field has been set */
+
+    /**
+     * Checks whether the 'name' field has been set
+     * 
+     * @return true if name field has been set
+     */
     public boolean hasName() {
       return fieldSetFlags()[4];
     }
-    
-    /** Clears the value of the 'name' field */
+
+    /**
+     * Clears the value of the 'name' field
+     * 
+     * @return RecordBuilder
+     */
     public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder clearName() {
       name = null;
       fieldSetFlags()[4] = false;
       return this;
     }
-    
-    /** Gets the value of the 'data' field */
+
+    /**
+     * Gets the value of the 'data' field
+     * 
+     * @return data
+     */
     public java.nio.ByteBuffer getData() {
       return data;
     }
-    
-    /** Sets the value of the 'data' field */
-    public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder setData(java.nio.ByteBuffer value) {
+
+    /**
+     * Sets the value of the 'data' field
+     * 
+     * @param value is a string
+     * @return RecordBudiler
+     */
+    public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder setData(
+        java.nio.ByteBuffer value) {
       validate(fields()[5], value);
       this.data = value;
       fieldSetFlags()[5] = true;
-      return this; 
+      return this;
     }
-    
-    /** Checks whether the 'data' field has been set */
+
+    /**
+     * Checks whether the 'data' field has been set
+     * 
+     * @return true if data field has been set
+     */
     public boolean hasData() {
       return fieldSetFlags()[5];
     }
-    
-    /** Clears the value of the 'data' field */
+
+    /**
+     * Clears the value of the 'data' field
+     * 
+     * @return RecordBuilder
+     */
     public org.apache.hadoop.chukwa.datacollection.writer.gora.ChukwaChunk.Builder clearData() {
       data = null;
       fieldSetFlags()[5] = false;
       return this;
     }
-    
+
     @Override
     public ChukwaChunk build() {
       try {
         ChukwaChunk record = new ChukwaChunk();
-        record.source = fieldSetFlags()[0] ? this.source : (java.lang.CharSequence) defaultValue(fields()[0]);
-        record.tags = fieldSetFlags()[1] ? this.tags : (java.lang.CharSequence) defaultValue(fields()[1]);
-        record.datatype = fieldSetFlags()[2] ? this.datatype : (java.lang.CharSequence) defaultValue(fields()[2]);
-        record.sequenceID = fieldSetFlags()[3] ? this.sequenceID : (java.lang.Long) defaultValue(fields()[3]);
-        record.name = fieldSetFlags()[4] ? this.name : (java.lang.CharSequence) defaultValue(fields()[4]);
-        record.data = fieldSetFlags()[5] ? this.data : (java.nio.ByteBuffer) defaultValue(fields()[5]);
+        record.source = fieldSetFlags()[0] ? this.source
+            : (java.lang.CharSequence) defaultValue(fields()[0]);
+        record.tags = fieldSetFlags()[1] ? this.tags
+            : (java.lang.CharSequence) defaultValue(fields()[1]);
+        record.datatype = fieldSetFlags()[2] ? this.datatype
+            : (java.lang.CharSequence) defaultValue(fields()[2]);
+        record.sequenceID = fieldSetFlags()[3] ? this.sequenceID
+            : (java.lang.Long) defaultValue(fields()[3]);
+        record.name = fieldSetFlags()[4] ? this.name
+            : (java.lang.CharSequence) defaultValue(fields()[4]);
+        record.data = fieldSetFlags()[5] ? this.data
+            : (java.nio.ByteBuffer) defaultValue(fields()[5]);
         return record;
       } catch (Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);
       }
     }
   }
-  
-  public ChukwaChunk.Tombstone getTombstone(){
-  	return TOMBSTONE;
+
+  public ChukwaChunk.Tombstone getTombstone() {
+    return TOMBSTONE;
   }
 
-  public ChukwaChunk newInstance(){
+  public ChukwaChunk newInstance() {
     return newBuilder().build();
   }
 
   private static final Tombstone TOMBSTONE = new Tombstone();
-  
-  public static final class Tombstone extends ChukwaChunk implements org.apache.gora.persistency.Tombstone {
-  
-      private Tombstone() { }
-  
-	  		  /**
-	   * Gets the value of the 'source' field.
-		   */
-	  public java.lang.CharSequence getSource() {
-	    throw new java.lang.UnsupportedOperationException("Get is not supported on tombstones");
-	  }
-	
-	  /**
-	   * Sets the value of the 'source' field.
-		   * @param value the value to set.
-	   */
-	  public void setSource(java.lang.CharSequence value) {
-	    throw new java.lang.UnsupportedOperationException("Set is not supported on tombstones");
-	  }
-	  
-	  /**
-	   * Checks the dirty status of the 'source' field. A field is dirty if it represents a change that has not yet been written to the database.
-		   * @param value the value to set.
-	   */
-	  public boolean isSourceDirty() {
-	    throw new java.lang.UnsupportedOperationException("IsDirty is not supported on tombstones");
-	  }
-	
-				  /**
-	   * Gets the value of the 'tags' field.
-		   */
-	  public java.lang.CharSequence getTags() {
-	    throw new java.lang.UnsupportedOperationException("Get is not supported on tombstones");
-	  }
-	
-	  /**
-	   * Sets the value of the 'tags' field.
-		   * @param value the value to set.
-	   */
-	  public void setTags(java.lang.CharSequence value) {
-	    throw new java.lang.UnsupportedOperationException("Set is not supported on tombstones");
-	  }
-	  
-	  /**
-	   * Checks the dirty status of the 'tags' field. A field is dirty if it represents a change that has not yet been written to the database.
-		   * @param value the value to set.
-	   */
-	  public boolean isTagsDirty() {
-	    throw new java.lang.UnsupportedOperationException("IsDirty is not supported on tombstones");
-	  }
-	
-				  /**
-	   * Gets the value of the 'datatype' field.
-		   */
-	  public java.lang.CharSequence getDatatype() {
-	    throw new java.lang.UnsupportedOperationException("Get is not supported on tombstones");
-	  }
-	
-	  /**
-	   * Sets the value of the 'datatype' field.
-		   * @param value the value to set.
-	   */
-	  public void setDatatype(java.lang.CharSequence value) {
-	    throw new java.lang.UnsupportedOperationException("Set is not supported on tombstones");
-	  }
-	  
-	  /**
-	   * Checks the dirty status of the 'datatype' field. A field is dirty if it represents a change that has not yet been written to the database.
-		   * @param value the value to set.
-	   */
-	  public boolean isDatatypeDirty() {
-	    throw new java.lang.UnsupportedOperationException("IsDirty is not supported on tombstones");
-	  }
-	
-				  /**
-	   * Gets the value of the 'sequenceID' field.
-		   */
-	  public java.lang.Long getSequenceID() {
-	    throw new java.lang.UnsupportedOperationException("Get is not supported on tombstones");
-	  }
-	
-	  /**
-	   * Sets the value of the 'sequenceID' field.
-		   * @param value the value to set.
-	   */
-	  public void setSequenceID(java.lang.Long value) {
-	    throw new java.lang.UnsupportedOperationException("Set is not supported on tombstones");
-	  }
-	  
-	  /**
-	   * Checks the dirty status of the 'sequenceID' field. A field is dirty if it represents a change that has not yet been written to the database.
-		   * @param value the value to set.
-	   */
-	  public boolean isSequenceIDDirty() {
-	    throw new java.lang.UnsupportedOperationException("IsDirty is not supported on tombstones");
-	  }
-	
-				  /**
-	   * Gets the value of the 'name' field.
-		   */
-	  public java.lang.CharSequence getName() {
-	    throw new java.lang.UnsupportedOperationException("Get is not supported on tombstones");
-	  }
-	
-	  /**
-	   * Sets the value of the 'name' field.
-		   * @param value the value to set.
-	   */
-	  public void setName(java.lang.CharSequence value) {
-	    throw new java.lang.UnsupportedOperationException("Set is not supported on tombstones");
-	  }
-	  
-	  /**
-	   * Checks the dirty status of the 'name' field. A field is dirty if it represents a change that has not yet been written to the database.
-		   * @param value the value to set.
-	   */
-	  public boolean isNameDirty() {
-	    throw new java.lang.UnsupportedOperationException("IsDirty is not supported on tombstones");
-	  }
-	
-				  /**
-	   * Gets the value of the 'data' field.
-		   */
-	  public java.nio.ByteBuffer getData() {
-	    throw new java.lang.UnsupportedOperationException("Get is not supported on tombstones");
-	  }
-	
-	  /**
-	   * Sets the value of the 'data' field.
-		   * @param value the value to set.
-	   */
-	  public void setData(java.nio.ByteBuffer value) {
-	    throw new java.lang.UnsupportedOperationException("Set is not supported on tombstones");
-	  }
-	  
-	  /**
-	   * Checks the dirty status of the 'data' field. A field is dirty if it represents a change that has not yet been written to the database.
-		   * @param value the value to set.
-	   */
-	  public boolean isDataDirty() {
-	    throw new java.lang.UnsupportedOperationException("IsDirty is not supported on tombstones");
-	  }
-	
-		  
-  }
-  
-}
 
+  public static final class Tombstone extends ChukwaChunk
+      implements org.apache.gora.persistency.Tombstone {
+
+    private Tombstone() {
+    }
+
+    /**
+     * Gets the value of the 'source' field.
+     */
+    public java.lang.CharSequence getSource() {
+      throw new java.lang.UnsupportedOperationException(
+          "Get is not supported on tombstones");
+    }
+
+    /**
+     * Sets the value of the 'source' field.
+     * 
+     * @param value
+     *          the value to set.
+     */
+    public void setSource(java.lang.CharSequence value) {
+      throw new java.lang.UnsupportedOperationException(
+          "Set is not supported on tombstones");
+    }
+
+    /**
+     * Checks the dirty status of the 'source' field. A field is dirty if it
+     * represents a change that has not yet been written to the database.
+     */
+    public boolean isSourceDirty() {
+      throw new java.lang.UnsupportedOperationException(
+          "IsDirty is not supported on tombstones");
+    }
+
+    /**
+     * Gets the value of the 'tags' field.
+     */
+    public java.lang.CharSequence getTags() {
+      throw new java.lang.UnsupportedOperationException(
+          "Get is not supported on tombstones");
+    }
+
+    /**
+     * Sets the value of the 'tags' field.
+     * 
+     * @param value
+     *          the value to set.
+     */
+    public void setTags(java.lang.CharSequence value) {
+      throw new java.lang.UnsupportedOperationException(
+          "Set is not supported on tombstones");
+    }
+
+    /**
+     * Checks the dirty status of the 'tags' field. A field is dirty if it
+     * represents a change that has not yet been written to the database.
+     */
+    public boolean isTagsDirty() {
+      throw new java.lang.UnsupportedOperationException(
+          "IsDirty is not supported on tombstones");
+    }
+
+    /**
+     * Gets the value of the 'datatype' field.
+     */
+    public java.lang.CharSequence getDatatype() {
+      throw new java.lang.UnsupportedOperationException(
+          "Get is not supported on tombstones");
+    }
+
+    /**
+     * Sets the value of the 'datatype' field.
+     * 
+     * @param value
+     *          the value to set.
+     */
+    public void setDatatype(java.lang.CharSequence value) {
+      throw new java.lang.UnsupportedOperationException(
+          "Set is not supported on tombstones");
+    }
+
+    /**
+     * Checks the dirty status of the 'datatype' field. A field is dirty if it
+     * represents a change that has not yet been written to the database.
+     */
+    public boolean isDatatypeDirty() {
+      throw new java.lang.UnsupportedOperationException(
+          "IsDirty is not supported on tombstones");
+    }
+
+    /**
+     * Gets the value of the 'sequenceID' field.
+     */
+    public java.lang.Long getSequenceID() {
+      throw new java.lang.UnsupportedOperationException(
+          "Get is not supported on tombstones");
+    }
+
+    /**
+     * Sets the value of the 'sequenceID' field.
+     * 
+     * @param value
+     *          the value to set.
+     */
+    public void setSequenceID(java.lang.Long value) {
+      throw new java.lang.UnsupportedOperationException(
+          "Set is not supported on tombstones");
+    }
+
+    /**
+     * Checks the dirty status of the 'sequenceID' field. A field is dirty if it
+     * represents a change that has not yet been written to the database.
+     */
+    public boolean isSequenceIDDirty() {
+      throw new java.lang.UnsupportedOperationException(
+          "IsDirty is not supported on tombstones");
+    }
+
+    /**
+     * Gets the value of the 'name' field.
+     */
+    public java.lang.CharSequence getName() {
+      throw new java.lang.UnsupportedOperationException(
+          "Get is not supported on tombstones");
+    }
+
+    /**
+     * Sets the value of the 'name' field.
+     * 
+     * @param value
+     *          the value to set.
+     */
+    public void setName(java.lang.CharSequence value) {
+      throw new java.lang.UnsupportedOperationException(
+          "Set is not supported on tombstones");
+    }
+
+    /**
+     * Checks the dirty status of the 'name' field. A field is dirty if it
+     * represents a change that has not yet been written to the database.
+     */
+    public boolean isNameDirty() {
+      throw new java.lang.UnsupportedOperationException(
+          "IsDirty is not supported on tombstones");
+    }
+
+    /**
+     * Gets the value of the 'data' field.
+     */
+    public java.nio.ByteBuffer getData() {
+      throw new java.lang.UnsupportedOperationException(
+          "Get is not supported on tombstones");
+    }
+
+    /**
+     * Sets the value of the 'data' field.
+     * 
+     * @param value
+     *          the value to set.
+     */
+    public void setData(java.nio.ByteBuffer value) {
+      throw new java.lang.UnsupportedOperationException(
+          "Set is not supported on tombstones");
+    }
+
+    /**
+     * Checks the dirty status of the 'data' field. A field is dirty if it
+     * represents a change that has not yet been written to the database.
+     */
+    public boolean isDataDirty() {
+      throw new java.lang.UnsupportedOperationException(
+          "IsDirty is not supported on tombstones");
+    }
+
+  }
+
+}

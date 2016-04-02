@@ -73,7 +73,7 @@ public class FileTailerStressTest {
   static int FILES_TO_USE = 100;
 
   /**
-   * @param args
+   * @param args is command line parameters
    */
   public static void main(String[] args) {
     try {

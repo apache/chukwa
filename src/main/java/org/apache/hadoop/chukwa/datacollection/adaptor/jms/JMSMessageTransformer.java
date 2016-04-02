@@ -33,7 +33,7 @@ public interface JMSMessageTransformer {
    * passed. If they weren't, this method will never be called.
    *
    * @param args Arguments needed to configur the transformer.
-   * @return
+   * @return adaptor id
    */
   public String parseArgs(String args);
 
@@ -43,7 +43,7 @@ public interface JMSMessageTransformer {
    *
    * @param message JMS message received by a JMS Adaptor.
    * @return the bytes that should be bound to the Chukwa chunk.
-   * @throws JMSException
+   * @throws JMSException if there is problem process message
    */
   public byte[] transform(Message message) throws JMSException;
 }

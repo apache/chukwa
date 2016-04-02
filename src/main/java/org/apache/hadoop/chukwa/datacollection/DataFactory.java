@@ -107,6 +107,8 @@ public class DataFactory {
   }
   
   /**
+   * @param conf is Chukwa configuration
+   * @param filename is collector list
    * @return empty list if file does not exist
    * @throws IOException on other error
    */

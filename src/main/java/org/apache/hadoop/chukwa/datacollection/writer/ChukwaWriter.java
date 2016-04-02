@@ -35,9 +35,9 @@ public interface ChukwaWriter {
    * COMMIT_PENDING should be returned if a writer has written data, but
    * this data may ultimately disappear. Contains a list of strings, format
    * unspecified, that agents can use to find out, eventually, if their data 
-   * has committed.  String <n> corresponds to the nth chunk passed to add().
+   * has committed.  String &lt;n&gt; corresponds to the nth chunk passed to add().
    * 
-   *  At present, the format is <sinkfilename> <offset>, 
+   *  At present, the format is &lt;sinkfilename&gt; &lt;offset&gt;, 
    *  where sinkfilename is the name of a sinkfile, without directory but with
    *  .done suffix, and offset is the last byte of the associated chunk.
    */
@@ -56,8 +56,8 @@ public interface ChukwaWriter {
   /**
    * Called once to initialize this writer.
    * 
-   * @param c
-   * @throws WriterException
+   * @param c is Chukwa configuration
+   * @throws WriterException if error writing data
    */
   public void init(Configuration c) throws WriterException;
 
@@ -67,16 +67,16 @@ public interface ChukwaWriter {
    * Subclasses may assume that init() will be called before any calls to
    * add(), and that add() won't be called after close().
    * 
-   * @param chunks
-   * @return
-   * @throws WriterException
+   * @param chunks is a list of data to send
+   * @return CommitStatus
+   * @throws WriterException if error writing data
    */
   public CommitStatus add(List<Chunk> chunks) throws WriterException;
 
   /**
    * Called once, indicating that the writer should close files and prepare
    * to exit.
-   * @throws WriterException
+   * @throws WriterException if error writing data
    */
   public void close() throws WriterException;
 

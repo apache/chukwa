@@ -47,7 +47,10 @@ public class HttpSenderMetrics implements Updater {
   public MetricsTimeVaryingInt httpTimeOutException =
     new MetricsTimeVaryingInt("httpTimeOutException", registry,"number of HTTP TimeOutException");
   
-  /** Creates a new instance of HttpSenderMetrics */
+  /** Creates a new instance of HttpSenderMetrics 
+   * @param processName is jvm process name
+   * @param recordName is Hadoop metrics data type
+   * */
   public HttpSenderMetrics(String processName, String recordName) {
       MetricsContext context = MetricsUtil.getContext(processName);
       metricsRecord = MetricsUtil.createRecord(context, recordName);

@@ -130,10 +130,11 @@ public class Heatmap {
   }
   
   /**
-   * @brief Constructor for Swimlanes visualization object
+   * Constructor for Swimlanes visualization object
    * @param timezone Timezone string from environment
    * @param cluster Cluster name from environment
    * @param event_type Whether to display shuffles or not
+   * @param query_stat_type Query state type
    * @param valmap HashMap of key/value pairs simulating parameters from a HttpRequest
    */
   public Heatmap
@@ -227,6 +228,8 @@ public class Heatmap {
   /**
    * Set dimensions of image to be generated
    * Call before calling @see #run
+   * @param width Image width in pixels
+   * @param height Image height in pixels
    */
   public void setDimensions(int width, int height) {
     this.SIZE_X=width;
@@ -236,6 +239,7 @@ public class Heatmap {
   /**
    * Specify whether to print labels of hosts along axes
    * Call before calling @see #run
+   * @param legendopt Flag to control plot legends
    */
   public void setLegend(boolean legendopt) {
     if (legendopt) {
@@ -249,6 +253,10 @@ public class Heatmap {
   /**
    * Generates image in specified format, and writes image as binary
    * output to supplied output stream 
+   * @param output Image output stream
+   * @param img_fmt Image format
+   * @param scale Image scale
+   * @return true if image is saved
    */
   public boolean getImage(java.io.OutputStream output, String img_fmt, double scale) {
     dis = new Display(this.viz);
@@ -526,6 +534,7 @@ public class Heatmap {
   /**
    * Interfaces with database to get data and 
    * populate data structures for rendering
+   * @return heat map data JSON
    */
   @edu.umd.cs.findbugs.annotations.SuppressWarnings(value =
       "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE", 

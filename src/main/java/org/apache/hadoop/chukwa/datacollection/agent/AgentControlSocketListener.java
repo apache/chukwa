@@ -205,8 +205,7 @@ public class AgentControlSocketListener extends Thread {
 
   /**
    * Initializes listener, but does not bind to socket.
-   * 
-   * @param a the agent to control
+   * @param agent the agent to control
    */
   public AgentControlSocketListener(ChukwaAgent agent) {
 

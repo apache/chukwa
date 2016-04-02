@@ -62,7 +62,7 @@ public class InMemoryWriter implements ChukwaWriter {
    * @param bytes amount to try to read
    * @param ms time to wait
    * @return a newly read-in chunk
-   * @throws IOException
+   * @throws IOException if error reading data
    */
   public Chunk readOutChunk(int bytes, int ms) throws IOException {
 

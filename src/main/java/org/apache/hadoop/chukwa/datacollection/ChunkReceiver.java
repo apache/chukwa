@@ -25,7 +25,7 @@ public interface ChunkReceiver {
   /**
    * Add a chunk to the queue, potentially blocking.
    * 
-   * @param event
+   * @param event is a Chukwa Chunk
    * @throws InterruptedException if thread is interrupted while blocking
    */
   public void add(Chunk event) throws java.lang.InterruptedException;

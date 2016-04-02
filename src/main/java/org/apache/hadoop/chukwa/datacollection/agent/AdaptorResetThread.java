@@ -63,7 +63,7 @@ public class AdaptorResetThread extends Thread {
   
   /**
    * Resets all adaptors with outstanding data more than timeSinceLastCommit old.
-   * @param timeSinceLastCommit
+   * @param timeSinceLastCommit is millisecond since last check point
    * @return the number of reset adaptors
    */
   public int resetTimedOutAdaptors(int timeSinceLastCommit) {

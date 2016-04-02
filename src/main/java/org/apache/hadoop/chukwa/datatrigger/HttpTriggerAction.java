@@ -78,11 +78,11 @@ public class HttpTriggerAction implements TriggerAction {
    * Iterates over each URL found, fetched other settings and fires and HTTP
    * request.
    *
-   * @param conf
-   * @param fs
-   * @param src
-   * @param triggerEvent
-   * @throws IOException
+   * @param conf is Chukwa configuration
+   * @param fs is HDFS File System
+   * @param src is list of sources to look for data
+   * @param triggerEvent is type of processing to happen
+   * @throws IOException if error in process triggers
    */
   public void execute(Configuration conf, FileSystem fs,
                       FileStatus[] src, TriggerEvent triggerEvent) throws IOException {

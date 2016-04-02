@@ -292,8 +292,8 @@ public class MoveToRepository {
   }
 
   /**
-   * @param args
-   * @throws Exception
+   * @param args is command line parameter
+   * @throws Exception if error in processing data
    */
   public static void main(String[] args) throws Exception {
 

@@ -64,7 +64,7 @@ import org.apache.log4j.spi.LoggingEvent;
     option. This pattern should follow the {@link SimpleDateFormat}
     conventions. In particular, you <em>must</em> escape literal text
     within a pair of single quotes. A formatted version of the date
-    pattern is used as the suffix for the rolled file name.
+    pattern is used as the suffix for the rolled file name.</p>
 
     <p>For example, if the <b>File</b> option is set to
     <code>/foo/bar.log</code> and the <b>DatePattern</b> set to
@@ -72,16 +72,16 @@ import org.apache.log4j.spi.LoggingEvent;
     file <code>/foo/bar.log</code> will be copied to
     <code>/foo/bar.log.2001-02-16</code> and logging for 2001-02-17
     will continue in <code>/foo/bar.log</code> until it rolls over
-    the next day.
+    the next day.</p>
 
     <p>Is is possible to specify monthly, weekly, half-daily, daily,
-    hourly, or minutely rollover schedules.
+    hourly, or minutely rollover schedules.</p>
 
-    <p><table border="1" cellpadding="2">
+    <table border="1" cellpadding="2" summary="">
     <tr>
     <th>DatePattern</th>
     <th>Rollover schedule</th>
-    <th>Example</th>
+    <th>Example</th></tr>
 
     <tr>
     <td><code>'.'yyyy-MM</code>
@@ -90,7 +90,7 @@ import org.apache.log4j.spi.LoggingEvent;
     <td>At midnight of May 31st, 2002 <code>/foo/bar.log</code> will be
     copied to <code>/foo/bar.log.2002-05</code>. Logging for the month
     of June will be output to <code>/foo/bar.log</code> until it is
-    also rolled over the next month.
+    also rolled over the next month.</td></tr>
 
     <tr>
     <td><code>'.'yyyy-ww</code>
@@ -102,7 +102,7 @@ import org.apache.log4j.spi.LoggingEvent;
     midnight, June 9th 2002, the file <i>/foo/bar.log</i> will be
     copied to <i>/foo/bar.log.2002-23</i>.  Logging for the 24th week
     of 2002 will be output to <code>/foo/bar.log</code> until it is
-    rolled over the next week.
+    rolled over the next week.</td></tr>
 
     <tr>
     <td><code>'.'yyyy-MM-dd</code>
@@ -112,7 +112,7 @@ import org.apache.log4j.spi.LoggingEvent;
     <td>At midnight, on March 8th, 2002, <code>/foo/bar.log</code> will
     be copied to <code>/foo/bar.log.2002-03-08</code>. Logging for the
     9th day of March will be output to <code>/foo/bar.log</code> until
-    it is rolled over the next day.
+    it is rolled over the next day.</td></tr>
 
     <tr>
     <td><code>'.'yyyy-MM-dd-a</code>
@@ -122,7 +122,7 @@ import org.apache.log4j.spi.LoggingEvent;
     <td>At noon, on March 9th, 2002, <code>/foo/bar.log</code> will be
     copied to <code>/foo/bar.log.2002-03-09-AM</code>. Logging for the
     afternoon of the 9th will be output to <code>/foo/bar.log</code>
-    until it is rolled over at midnight.
+    until it is rolled over at midnight.</td></tr>
 
     <tr>
     <td><code>'.'yyyy-MM-dd-HH</code>
@@ -133,11 +133,11 @@ import org.apache.log4j.spi.LoggingEvent;
     <code>/foo/bar.log</code> will be copied to
     <code>/foo/bar.log.2002-03-09-10</code>. Logging for the 11th hour
     of the 9th of March will be output to <code>/foo/bar.log</code>
-    until it is rolled over at the beginning of the next hour.
+    until it is rolled over at the beginning of the next hour.</td></tr>
 
 
     <tr>
-    <td><code>'.'yyyy-MM-dd-HH-mm</code>
+    <td><code>'.'yyyy-MM-dd-HH-mm</code></td>
 
     <td>Rollover at the beginning of every minute.</td>
 
@@ -145,14 +145,13 @@ import org.apache.log4j.spi.LoggingEvent;
     <code>/foo/bar.log</code> will be copied to
     <code>/foo/bar.log.2001-03-09-10-22</code>. Logging for the minute
     of 11:23 (9th of March) will be output to
-    <code>/foo/bar.log</code> until it is rolled over the next minute.
-
+    <code>/foo/bar.log</code> until it is rolled over the next minute.</td></tr>
     </table>
 
     <p>Do not use the colon ":" character in anywhere in the
     <b>DatePattern</b> option. The text before the colon is interpeted
     as the protocol specificaion of a URL which is probably not what
-    you want. */
+    you want.</p> */
 
 public class ChukwaDailyRollingFileAppender extends FileAppender {
 
@@ -230,6 +229,7 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
 
   /**
    * The default constructor does nothing.
+   * @throws IOException if constructor initialization error
    */
   public ChukwaDailyRollingFileAppender() throws IOException {
     super();
@@ -239,6 +239,10 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
      Instantiate a <code>DailyRollingFileAppender</code> and open the
      file designated by <code>filename</code>. The opened filename will
      become the output destination for this appender.
+ * @param layout is logging layout
+ * @param filename is the filename to write logs
+ * @param datePattern is the date pattern of log suffix
+ * @throws IOException if constructor initialization error
 
    */
   public ChukwaDailyRollingFileAppender(Layout layout, String filename,
@@ -253,12 +257,15 @@ public class ChukwaDailyRollingFileAppender extends FileAppender {
   /**
    * The <b>DatePattern</b> takes a string in the same format as expected by
    * {@link SimpleDateFormat}. This options determines the rollover schedule.
+   * @param pattern is date formatting pattern
    */
   public void setDatePattern(String pattern) {
     datePattern = pattern;
   }
 
-  /** Returns the value of the <b>DatePattern</b> option. */
+  /** Returns the value of the <b>DatePattern</b> option. 
+   * @return date pattern
+   */
   public String getDatePattern() {
     return datePattern;
   }

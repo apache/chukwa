@@ -48,9 +48,9 @@ public class DumpArchive {
   
   static HashMap<String, Integer> counts  = new LinkedHashMap<String, Integer>();
   /**
-   * @param args
-   * @throws URISyntaxException
-   * @throws IOException
+   * @param args is command line parameters
+   * @throws URISyntaxException if problem parsing HDFS URL
+   * @throws IOException if problem access HDFS
    */
   public static void main(String[] args) throws IOException, URISyntaxException {
 

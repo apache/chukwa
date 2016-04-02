@@ -58,11 +58,11 @@ public abstract class AbstractProcessor {
    * Generic metric function to add a metric to HBase with full primary key and
    * source computed.
    * 
-   * @param time
-   * @param metric
-   * @param source
-   * @param value
-   * @param output
+   * @param time is timestamp in epoch
+   * @param metric is metric name
+   * @param source is data source name
+   * @param value is metric value in bytes
+   * @param output is an array list of Put operations
    */
   public void addRecord(long time, String metric, String source, byte[] value,
       ArrayList<Put> output) {
@@ -86,10 +86,8 @@ public abstract class AbstractProcessor {
    * assumes "time" and "source" have been defined and will construct primaryKey
    * only, without recompute time and source md5.
    * 
-   * @param time
-   * @param primaryKey
-   * @param value
-   * @param output
+   * @param metric is metric name
+   * @param value is metric value in bytes
    */
   public void addRecord(String metric, byte[] value) {
     String primaryKey = new StringBuilder(primaryKeyHelper).append(".")
@@ -105,10 +103,10 @@ public abstract class AbstractProcessor {
   /**
    * Process a chunk to store in HBase.
    * 
-   * @param chunk
-   * @param output
-   * @param reporter
-   * @throws Throwable
+   * @param chunk is a Chukwa chunk
+   * @param output is an array of Put operations
+   * @param reporter is a reporter to track progress
+   * @throws Throwable if there is problem parsing data
    */
   public void process(Chunk chunk, ArrayList<Put> output, Reporter reporter)
       throws Throwable {

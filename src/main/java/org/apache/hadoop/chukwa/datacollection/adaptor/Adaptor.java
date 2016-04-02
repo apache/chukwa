@@ -34,7 +34,7 @@ import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
  * offset in the stream.
  * 
  * If an adaptor crashes at byte offset n, and is restarted at byte offset k,
- * with k < n, it is allowed to send different values for bytes k through n the
+ * with k &lt; n, it is allowed to send different values for bytes k through n the
  * second time around. However, the stream must still be parseable, assuming
  * that bytes 0-k come from the first run,and bytes k - n come from the second.
  * 
@@ -48,11 +48,12 @@ import org.apache.hadoop.chukwa.datacollection.agent.AdaptorManager;
 public interface Adaptor {
   /**
    * Start this adaptor
+   * @param adaptorID Adaptor ID
    * 
    * @param type the application type, who is starting this adaptor
-   * @param status the status string to use for configuration.
    * @param offset the stream offset of the first byte sent by this adaptor
-   * @throws AdaptorException
+   * @param dest Chunk receiving destination
+   * @throws AdaptorException if adaptor can not be started
    */
   public void start(String adaptorID, String type, long offset,
       ChunkReceiver dest) throws AdaptorException;
@@ -74,50 +75,22 @@ public interface Adaptor {
    * Return the stream name, given params.
    * The stream name is the part of the Adaptor status that's used to 
    * determine uniqueness. 
+   * @param datatype Data type
+   * @param params Adaptor parameters
+   * @param c Adaptor Manager
    * 
    * @return Stream name as a string, null if params are malformed
    */
   public String parseArgs(String datatype, String params, AdaptorManager c);
   
- 
-  
   /**
    * Signals this adaptor to come to an orderly stop. The adaptor ought to push
    * out all the data it can before exiting depending of the shutdown policy
+   * @param shutdownPolicy is defined as forcefully or gracefully
    * 
    * @return the logical offset at which the adaptor was when the method return
-   * @throws AdaptorException
+   * @throws AdaptorException Exception on shutdown
    */
   public long shutdown(AdaptorShutdownPolicy shutdownPolicy) throws AdaptorException;
-  
-  /**
-   * Signals this adaptor to come to an orderly stop. The adaptor ought to push
-   * out all the data it can before exiting.
-   * 
-   * This method is synchronous up to 60 seconds
-   * 
-   * @return the logical offset at which the adaptor stops
-   * @throws AdaptorException
-   */
-//  @Deprecated
-//  public long shutdown() throws AdaptorException;
-
-  
-  /**
-   * Signals this adaptor to come to an abrupt stop, as quickly as it can. The
-   * use case here is "Whups, I didn't mean to start that adaptor tailing a
-   * gigabyte file, stop it now".
-   * 
-   * Adaptors might need to do something nontrivial here, e.g., in the case in
-   * which they have registered periodic timer interrupts, or use a shared
-   * worker thread from which they need to disengage.
-   * 
-   * This method is synchronous: In other words, after shutdown() returns, no
-   * new data should be written.
-   * 
-   * @throws AdaptorException
-   */
-//  @Deprecated
-//  public void hardStop() throws AdaptorException;
 
 }

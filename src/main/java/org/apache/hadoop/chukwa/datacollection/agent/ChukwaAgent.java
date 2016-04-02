@@ -256,8 +256,8 @@ public class ChukwaAgent implements AdaptorManager {
   }
 
   /**
-   * @param args
-   * @throws AdaptorException
+   * @param args is command line arguements
+   * @throws AdaptorException if error registering adaptors
    */
   public static void main(String[] args) throws AdaptorException {
 
@@ -604,7 +604,7 @@ public class ChukwaAgent implements AdaptorManager {
 /**
  * Expose the adaptor list.  Keys are adaptor ID numbers, values are the 
  * adaptor status strings.
- * @return
+ * @return adaptor list
  */
   public Map<String, String> getAdaptorList() {
     Map<String, String> adaptors = new HashMap<String, String>(adaptorsByName.size());
@@ -700,8 +700,9 @@ public class ChukwaAgent implements AdaptorManager {
   /**
    * Triggers agent shutdown. For now, this method doesn't shut down adaptors
    * explicitly. It probably should.
+   * @param force sets flag to exit forcefully
    */
-  public void shutdown(boolean exit) {
+  public void shutdown(boolean force) {
     controlSock.shutdown(); // make sure we don't get new requests
 
     if (statsCollector != null) {
@@ -739,7 +740,7 @@ public class ChukwaAgent implements AdaptorManager {
     adaptorPositions.clear();
     adaptorStatsManager.clear();
     agent.stop();
-    if (exit)
+    if (force)
       return;
   }
 

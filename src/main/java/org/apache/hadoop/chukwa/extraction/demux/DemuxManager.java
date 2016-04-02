@@ -98,7 +98,7 @@ public class DemuxManager implements CHUKWA_CONSTANT {
 
   /**
    * Start the Demux Manager daemon
-   * @throws Exception
+   * @throws Exception if error in processing data
    */
   public void start() throws Exception {
 

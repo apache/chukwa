@@ -85,8 +85,8 @@ public class BackfillingLoader {
   }
   
   /**
-   * @param args
-   * @throws Exception 
+   * @param args is command line parameters
+   * @throws Exception if problem loading data to HDFS
    */
   public static void main(String[] args) throws Exception {
 

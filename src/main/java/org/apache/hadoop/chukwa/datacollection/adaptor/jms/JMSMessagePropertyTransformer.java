@@ -35,7 +35,7 @@ import java.util.ArrayList;
  * To configure this transformer, set the -p field of the adaptor to the
  * following (surrounded with double quotes):
  * <code>
- * <propertyNames> [-d <delimiter>] [-r <requiredPropertyNames>]
+ * &lt;propertyNames&gt; [-d &lt;delimiter&gt;] [-r &lt;requiredPropertyNames&gt;]
  * </code>
  * <ul>
  * <li><code>propertyNames</code> - Comma-separated list of JMS properties.</li>
@@ -107,9 +107,9 @@ public class JMSMessagePropertyTransformer implements JMSMessageTransformer {
    * all of the configured message properties are not found, returns null.
    * <P>
    * The could be enhanced to support the concept of optional/required properties.
-   * @param message
-   * @return
-   * @throws JMSException
+   * @param message is data to be transported
+   * @return byte array
+   * @throws JMSException if problem transforming data
    */
   public byte[] transform(Message message) throws JMSException {
 

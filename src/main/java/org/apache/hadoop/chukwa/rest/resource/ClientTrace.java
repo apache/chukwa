@@ -50,11 +50,7 @@ public class ClientTrace {
    * Get a list of the most recent client trace activities.
    * The extracted elements are:
    * 
-   * date   - Timestamp of the activity happened.
-   * action - Operation type: HDFS_READ, HDFS_WRITE, or MAPRED_SHUFFLE.
-   * src    - Source IP address
-   * dest   - Destination IP address
-   * size   - Size of the data payload.
+   * @return list of client trace objects
    * 
    */
   @GET

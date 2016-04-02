@@ -65,6 +65,8 @@ public class ProcessorFactory {
 
   /**
    * Register a specific parser for a {@link ChunkProcessor} implementation.
+   * @param recordType is data type assigned during adaptor creation
+   * @param processor is parser class to process data
    */
   public static synchronized void register(String recordType,
       ChunkProcessor processor) {

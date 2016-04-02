@@ -60,7 +60,7 @@ public class ChartController {
    * Render chart using flot.js
    * 
    * @param id Reference ID of Chart stored in HBase chukwa_meta table.
-   * @return html chart widget
+   * @return chart widget
    */
   @GET
   @Path("draw/{id}")
@@ -88,6 +88,8 @@ public class ChartController {
 
   /**
    * Describe chart meta data
+   * @param id Chart ID
+   * @return chart meta data
    */
   @GET
   @Path("describe/{id}")
@@ -102,8 +104,8 @@ public class ChartController {
   /**
    * Create a new chart meta data
    * 
-   * @param chart
-   * @return
+   * @param buffer holds incoming JSON of Chart object
+   * @return Web response code
    */
   @POST
   @Path("save")
@@ -121,8 +123,9 @@ public class ChartController {
   /**
    * Save chart meta data
    * 
-   * @param chart
-   * @return
+   * @param id is unique identifier of Chart object
+   * @param buffer holds incoming JSON of Chart object
+   * @return Web response code
    */
   @PUT
   @Path("save/{id}")
@@ -137,6 +140,8 @@ public class ChartController {
 
   /**
    * Preview a chart
+   * @param buffer holds incoming JSON of Chart object
+   * @return segment of chart HTML output
    */
   @PUT
   @Path("preview")

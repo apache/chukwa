@@ -36,10 +36,10 @@ public class ChukwaMetricsProcessor extends HadoopMetricsProcessor {
   /**
    * Process cluster name and store in HBase.
    * 
-   * @param chunk
-   * @param output
-   * @param reporter
-   * @throws Throwable
+   * @param chunk is a Chukwa data chunk
+   * @param output is a list of Put operations
+   * @param reporter is progress reporter
+   * @throws Throwable if unable to send data
    */
   @Override
   public void process(Chunk chunk, ArrayList<Put> output, Reporter reporter)

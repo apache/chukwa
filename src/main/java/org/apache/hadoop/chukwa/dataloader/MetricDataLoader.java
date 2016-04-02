@@ -72,7 +72,10 @@ public class MetricDataLoader implements Callable {
     fs = FileSystem.get(conf);
   }
 
-  /** Creates a new instance of DBWriter */
+  /** Creates a new instance of DBWriter 
+   * @param conf Chukwa Configuration
+   * @param fs Hadoop File System
+   * @param fileName Chukwa Sequence file */
   public MetricDataLoader(ChukwaConfiguration conf, FileSystem fs, String fileName) {
     source = new Path(fileName);
     this.conf = conf;

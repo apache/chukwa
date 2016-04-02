@@ -35,8 +35,10 @@ public abstract class DataLoaderFactory {
   }
 
   /**
-   * @param args
-   * @throws IOException
+   * @param conf Chukwa Configuration
+   * @param fs Hadoop File System
+   * @param src List of files to load
+   * @throws IOException if error loading files
    */
   public void load(ChukwaConfiguration conf, FileSystem fs, FileStatus[] src) throws IOException {
     this.source=src.clone();

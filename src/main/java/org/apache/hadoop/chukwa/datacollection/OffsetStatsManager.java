@@ -23,20 +23,20 @@ import java.util.Map;
 import java.util.LinkedList;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Manages stats for multiple objects of type T. T can be any class that is used
  * as a key for offset statistics (i.e. Agent, Collector, etc.). A client would
- * create an instance of this class and call <code>addOffsetDataPoint<code>
+ * create an instance of this class and call <code>addOffsetDataPoint</code>
  * repeatedly over time. Then <code>calcAverageRate</code> can be called to
  * retrieve the average offset-unit per second over a given time interval.
  * <P>
  * For a given object T that is actively adding data points, stats are kept for
- * up to 20 minutes.
+ * up to 20 minutes.</p>
  * <P>
  * Care should be taken to always call <code>remove()</code> when old T objects
- * should no longer be tracked.
+ * should no longer be tracked.</p>
+ * @param <T> is object type
  */
 public class OffsetStatsManager<T> {
   protected Logger log = Logger.getLogger(getClass());

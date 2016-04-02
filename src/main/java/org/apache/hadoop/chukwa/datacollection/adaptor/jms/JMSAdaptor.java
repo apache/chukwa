@@ -49,8 +49,8 @@ import javax.jms.MessageConsumer;
  * <P>
  * This adaptor is added to an Agent like so:
  * <code>
- * add JMSAdaptor <dataType> <brokerURL> <-t <topicName>|-q <queueName>> [-s <JMSSelector>]
- *  [-x <transformerName>] [-p <transformerConfigs>] <offset>
+ * add JMSAdaptor &lt;dataType&gt; &lt;brokerURL&gt; &lt;-t &lt;topicName&gt; |-q &lt;queueName&gt; [-s &lt;JMSSelector&gt;]
+ *  [-x &lt;transformerName&gt;] [-p &lt;transformerConfigs&gt;] &lt;offset&gt;
  * </code>
  * <ul>
  * <li><code>dataType</code> - The chukwa data type.</li>
@@ -119,11 +119,11 @@ public class JMSAdaptor extends AbstractAdaptor {
 
   /**
    * This adaptor received configuration like this:
-   * <brokerURL> <-t <topicName>|-q <queueName>> [-s <JMSSelector>] [-x <transformerName>]
-   * [-p <transformerProperties>]
+   * &lt;brokerURL&gt; &lt;-t &lt;topicName&gt;|-q &lt;queueName&gt;&gt; [-s &lt;JMSSelector&gt;] [-x &lt;transformerName&gt;]
+   * [-p &lt;transformerProperties&gt;]
    *
-   * @param s
-   * @return
+   * @param s is a list of parameters
+   * @return Adaptor ID
    */
   @Override
   public String parseArgs(String s) {
@@ -273,17 +273,17 @@ public class JMSAdaptor extends AbstractAdaptor {
 
   /**
    * Status is used to write checkpoints. Checkpoints are written as:
-   * ADD <adaptorKey> = <adaptorClass> <currentStatus> <offset>
+   * ADD &lt;adaptorKey&gt; = &lt;adaptorClass&gt; &lt;currentStatus&gt; &lt;offset&gt;
    *
    * Once they're reloaded, adaptors are re-initialized with
-   * <adaptorClass> <currentStatus> <offset>
+   * &lt;adaptorClass&gt; &lt;currentStatus&gt; &lt;offset&gt;
    *
    * While doing so, this gets passed by to the parseArgs method:
-   * <currentStatus>
+   * &lt;currentStatus&gt;
    *
-   * Without the first token in <currentStatus>, which is expected to be <dataType>.
+   * Without the first token in &lt;currentStatus&gt;, which is expected to be &lt;dataType&gt;.
    *
-   * @return
+   * @return Adaptor status
    */
   @Override
   public String getCurrentStatus() {

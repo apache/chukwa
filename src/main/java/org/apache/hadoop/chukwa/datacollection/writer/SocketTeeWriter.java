@@ -40,16 +40,16 @@ import org.apache.hadoop.chukwa.util.ExceptionUtil;
  * Defaults to 9094
  * 
  * Protocol is as follows:
- * Client ---> TeeWriter   "RAW | WRITABLE <filter>" 
+ * Client ---&gt; TeeWriter   "RAW | WRITABLE &lt;filter&gt;" 
  *                  as per DumpChunks.
  *                  
- * TeeWriter ---> Client "OK\n"                 
+ * TeeWriter ---&gt; Client "OK\n"                 
  *   In RAW mode               
- * TeeWriter ---> Client (length(int)  byte[length])*
+ * TeeWriter ---&gt; Client (length(int)  byte[length])*
  *              An indefinite sequence of length, followed by byte array.
  *              
  *  In Writable mode
- * TeeWriter ---> Client    (Chunk serialized as Writable)*
+ * TeeWriter ---&gt; Client    (Chunk serialized as Writable)*
  *              An indefinite sequence of serialized chunks
  *              
  *  In English: clients should connect and say either "RAW " or "WRITABLE " 

@@ -43,8 +43,10 @@ public class RecordUtil {
     return "undefined";
   }
   /**
-   * Uses a precompiled pattern, so theoretically faster than
+   * Uses a compiled pattern, so theoretically faster than
    * Chunk.getTag().
+   * @param chunk - a chunk of binary blob
+   * @return cluster name
    * 
    */
   public static String getClusterName(Chunk chunk) {

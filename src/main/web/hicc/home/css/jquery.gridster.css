@@ -52,6 +52,15 @@ body {
     width: 99%;
 }
 
+ul.gridster {
+    white-space: nowrap;
+}
+
+ul.gridster li[class*="span"] {
+    display: inline-block;
+    float: none;
+}
+
 .gridster > * {
     -webkit-transition: height .4s, width .4s;
     -moz-transition: height .4s, width .4s;

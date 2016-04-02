@@ -44,6 +44,8 @@ public class ReduceProcessorFactory {
 
   /**
    * Register a specific parser for a {@link ReduceProcessor} implementation.
+   * @param reduceType is data type assigned by mapper
+   * @param processor is parser class for reducer
    */
   public static synchronized void register(String reduceType,
                                            ReduceProcessor processor) {

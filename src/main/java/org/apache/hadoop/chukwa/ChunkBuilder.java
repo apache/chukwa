@@ -36,7 +36,7 @@ public class ChunkBuilder {
   /**
    * Adds the data in rec to an internal buffer; rec can be reused immediately.
    * 
-   * @param rec
+   * @param rec is byte array of data
    */
   public void addRecord(byte[] rec) {
     lastRecOffset = lastRecOffset + rec.length;

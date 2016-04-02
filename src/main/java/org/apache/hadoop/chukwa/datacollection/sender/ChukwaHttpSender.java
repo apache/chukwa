@@ -193,7 +193,7 @@ public class ChukwaHttpSender implements ChukwaSender {
   /**
    * Set up a list of connectors for this client to send {@link Chunk}s to
    * 
-   * @param collectors
+   * @param collectors is a list of collectors
    */
   public void setCollectors(Iterator<String> collectors) {
     this.collectors = collectors;
@@ -268,8 +268,8 @@ public class ChukwaHttpSender implements ChukwaSender {
    * @param method the data to push
    * @param expectedCommitResults the list
    * @return the list of committed chunks
-   * @throws IOException
-   * @throws InterruptedException
+   * @throws IOException if error writing
+   * @throws InterruptedException if shutdown has been initiated
    */
   public List<CommitListEntry> postAndParseResponse(PostMethod method, 
         List<CommitListEntry> expectedCommitResults)
@@ -280,9 +280,9 @@ public class ChukwaHttpSender implements ChukwaSender {
 
   /**
    *  Responsible for executing the supplied method on at least one collector
-   * @param method
-   * @return
-   * @throws InterruptedException
+   * @param method is HTTP method
+   * @return the list of commited status
+   * @throws InterruptedException if shutdown has been initiated
    * @throws IOException if no collector responds with an OK
    */
   protected List<String> reliablySend(HttpMethodBase method, String pathSuffix) throws InterruptedException, IOException {

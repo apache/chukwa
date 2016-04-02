@@ -140,8 +140,8 @@ public class MoveOrMergeRecordFile extends Configured implements Tool {
   }
 
   /**
-   * @param args
-   * @throws Exception
+   * @param args is command line parameters
+   * @throws Exception if unable to process data
    */
   public static void main(String[] args) throws Exception {
     conf = new ChukwaConfiguration();

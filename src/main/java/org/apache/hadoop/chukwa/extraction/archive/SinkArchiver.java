@@ -148,7 +148,7 @@ public class SinkArchiver implements CHUKWA_CONSTANT {
    * @param fs the filesystem in question
    * @param src a file or directory to merge into dest
    * @param dest a directory to merge into
-   * @throws IOException
+   * @throws IOException if error in promote and merge
    */
   public void promoteAndMerge(FileSystem fs, Path src, Path dest) 
   throws IOException {

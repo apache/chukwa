@@ -50,7 +50,10 @@ public class ChunkQueueMetrics implements Updater {
     new MetricsIntValue("fullQueue", registry,"Queue is full");
   
   
-  /** Creates a new instance of QueueMetrics */
+  /** Creates a new instance of QueueMetrics 
+   * @param processName is jvm process of Agent process
+   * @param recordName is mbean record name
+   * */
   public ChunkQueueMetrics(String processName, String recordName) {
       MetricsContext context = MetricsUtil.getContext(processName);
       metricsRecord = MetricsUtil.createRecord(context, recordName);
