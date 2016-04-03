@@ -17,7 +17,6 @@
  */
 package org.apache.hadoop.chukwa.datacollection.writer.solr;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,14 +33,12 @@ import org.apache.hadoop.chukwa.datacollection.writer.WriterException;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.CloudSolrServer;
-import org.apache.solr.common.SolrException;
+import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.common.SolrInputDocument;
 
 public class SolrWriter extends PipelineableWriter {
   private static Logger log = Logger.getLogger(SolrWriter.class);
-  private CloudSolrServer server;
+  private CloudSolrClient client;
   private final static String ID = "id";
   private final static String SEQ_ID = "seqId";
   private final static String DATA_TYPE = "type";
@@ -66,9 +63,9 @@ public class SolrWriter extends PipelineableWriter {
       throw new WriterException("Solr server address is not defined.");
     }
     String collection = c.get("solr.collection", "logs");
-    if(server == null) {
-      server = new CloudSolrServer(serverName);
-      server.setDefaultCollection(collection);
+    if(client == null) {
+      client = new CloudSolrClient(serverName);
+      client.setDefaultCollection(collection);
     }
   }
 
@@ -78,7 +75,7 @@ public class SolrWriter extends PipelineableWriter {
 
   @Override
   public CommitStatus add(List<Chunk> chunks) throws WriterException {
-    if(server == null) {
+    if(client == null) {
       init(ChukwaAgent.getStaticConfiguration());
     }
     CommitStatus rv = ChukwaWriter.COMMIT_OK;
@@ -118,16 +115,16 @@ public class SolrWriter extends PipelineableWriter {
         } catch(ParseException e) {
           
         }
-        server.add(doc);
+        client.add(doc);
       } catch (Exception e) {
         log.warn("Failed to store data to Solr Cloud.");
         log.warn(ExceptionUtil.getStackTrace(e));
-        server = null;
+        client = null;
       }
     }
     try {
-      if(server != null) {
-        server.commit();
+      if(client != null) {
+        client.commit();
       }
     } catch (Exception e) {
       log.warn("Failed to store data to Solr Cloud.");
