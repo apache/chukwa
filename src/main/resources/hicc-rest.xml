@@ -1,0 +1,54 @@
+<!--
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+
+<applicationDocs targetNamespace="http://research.sun.com/wadl/2006/10">
+
+<doc xml:lang="en" title="Chukwa HICC REST API">
+
+<p>
+   Chukwa HICC  provides REST interfaces for dashboard rendering.
+   The primary resources are:
+
+   <ul>
+     <li>Dashboard resource - the configuration of dashboard.</li>
+     <li>Widget resource - the configuration of widgets.</li>
+   </ul>
+   
+</p><br/>
+<p>
+   The resources and the entities that are passed to them are defined
+   using JAXB and are represented in either XML or JSON formats
+   depending on the ContentType and Accept HTTP headers. The definition
+   of the types is given in the 
+   <a href="org/apache/hadoop/chukwa/hicc/rest/package-summary.html">JavaDoc</a>.
+</p><br/>
+<p>
+   The typical usage are:
+
+   <ul>
+     <li>Create a chart</li>
+     <li>Create a widget, register chart with widget</li>
+     <li>Create a dashboard, register widget with dashboard</li>
+   </ul>
+
+</p>
+</doc>
+
+</applicationDocs>

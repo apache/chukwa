@@ -57,7 +57,7 @@ HBase Schema
 
 * Metrics
 
-  Chukwa table stores time series data.
+  <chukwa> table stores time series data.
 
 ** Row Key
 
@@ -89,9 +89,9 @@ for the same source.
 
 * Metadata
 
-  Metadata is designed to store point lookup data.  For example, small amount of 
-data to describe the metric name mapping for chukwa table.  It is also used to store
-JSON blob of dashboard data.
+  <chukwa_metadata> table is designed to store point lookup data.  For example, small 
+amount of data to describe the metric name mapping for chukwa table.  It is also used to 
+store JSON blob of dashboard data.
 
 ** Row Key
 

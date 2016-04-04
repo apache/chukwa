@@ -6,6 +6,8 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+    CHUKWA-804.  Update user documents to match current code base. (Eric Yang)
+
     CHUKWA-802. Updated Javadoc for Java 8 support.  (Eric Yang)
 
   BUGS

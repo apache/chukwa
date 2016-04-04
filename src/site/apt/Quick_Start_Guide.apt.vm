@@ -100,34 +100,11 @@ sbin/chukwa-daemon.sh start agent
 
 * Setup Solr to index Service log files
 
-  [[1]] Start Solr with Chukwa Solr configuration:
+  [[1]] Start Solr ${solrVersion} with Chukwa Solr configuration:
 
 ---
-java -Dbootstrap_confdir=$CHUKWA_HOME/etc/solr/logs/conf -Dcollection.configName=myconf -Djetty.port=7574 -DzkHost=localhost:2181 -jar start
----
-
-* Setup Cluster Aggregation Script
-
-  For data analytics with Apache Pig, there are some additional environment setup. Apache Pig does not use the same environment variable name as Hadoop, therefore make sure the following environment are setup correctly:
-
-  [[1]] Download and setup Apache Pig 0.9.1.
-
-  [[2]] Define Apache Pig class path:
-
----
-export PIG_CLASSPATH=$HADOOP_CONF_DIR:$HBASE_CONF_DIR
----
-
-  [[3]] Create a jar file of HBASE_CONF_DIR, run:
-
----
-jar cf $CHUKWA_HOME/hbase-env.jar $HBASE_CONF_DIR
----
-
-  [[4]] Setup a cron job or Hudson job for analytics script to run periodically:
-
----
-pig -Dpig.additional.jars=${HBASE_HOME}/hbase-${hbaseVersion}.jar:${HBASE_HOME}/lib/zookeeper-${zookeeperVersion}.jar:${PIG_PATH}/pig.jar:${CHUKWA_HOME}/hbase-env.jar ${CHUKWA_HOME}/script/pig/ClusterSummary.pig
+bin/solr start -cloud -z localhost:2181
+./bin/solr create_collection -c chukwa -n chukwa
 ---
 
 * Start HICC

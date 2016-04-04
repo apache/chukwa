@@ -35,6 +35,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import org.apache.hadoop.chukwa.datacollection.agent.rest.Examples;
 import org.apache.hadoop.chukwa.datastore.ChukwaHBaseStore;
 import org.apache.hadoop.chukwa.hicc.TimeHandler;
 import org.apache.hadoop.chukwa.hicc.bean.Series;
@@ -45,6 +46,17 @@ import com.google.gson.reflect.TypeToken;
 @Path("/metrics")
 public class MetricsController {
 
+  /**
+   * Query metrics stored in HBase table
+   * 
+   * @param request is HTTP request object
+   * @param metric is metric name
+   * @param source is data source
+   * @param start is start time
+   * @param end is end time
+   * @return Metrics JSON
+   * 
+   */
   @GET
   @Path("series/{metric}/{source}")
   @Produces("application/json")

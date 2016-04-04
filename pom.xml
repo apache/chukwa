@@ -50,6 +50,7 @@
         <hbaseVersion>1.2.0</hbaseVersion>
         <hadoopVersion>2.7.2</hadoopVersion>
         <solrVersion>5.5.0</solrVersion>
+        <javaVersion>1.8</javaVersion>
         <!-- <JAVA_HOME>${java.home}</JAVA_HOME> -->
         <gora.version>0.6</gora.version>
     </properties>
@@ -514,9 +515,9 @@
                       <goals>
                         <goal>testCompile</goal>
                       </goals>
-                      <compilerVersion>1.8</compilerVersion>
-                      <source>1.8</source>
-                      <target>1.8</target>
+                      <compilerVersion>${javaVersion}</compilerVersion>
+                      <source>${javaVersion}</source>
+                      <target>${javaVersion}</target>
                       <testExcludes>
                         <exclude>**/ChukwaJobTrackerInstrumentation.java</exclude>
                         <exclude>**/TestDemuxManager.java</exclude>
@@ -1331,6 +1332,36 @@
                       <additionalparam>-output ${project.build.outputDirectory}/agent-rest.xml</additionalparam>
                     </configuration>
                   </execution>
+                  <execution>
+                    <id>hicc-public-api</id>
+                    <goals>
+                      <goal>javadoc</goal>
+                    </goals>
+                    <phase>compile</phase>
+                    <configuration>
+                      <encoding>UTF-8</encoding>
+                      <verbose>false</verbose>
+                      <show>public</show>
+                      <failOnError>false</failOnError>
+                      <subpackages>org.apache.hadoop.chukwa.hicc.rest</subpackages>
+                      <doclet>com.sun.jersey.wadl.resourcedoc.ResourceDocletJSON</doclet>
+                      <docletPath>${path.separator}${project.build.outputDirectory}</docletPath>
+                      <docletArtifacts>
+                        <docletArtifact>
+                          <groupId>com.atlassian.plugins.rest</groupId>
+                          <artifactId>atlassian-rest-doclet</artifactId>
+                          <version>2.8.0-m3</version>
+                        </docletArtifact>
+                        <docletArtifact>
+                          <groupId>xerces</groupId>
+                          <artifactId>xercesImpl</artifactId>
+                          <version>2.11.0</version>
+                        </docletArtifact>
+                      </docletArtifacts>
+                      <useStandardDocletOptions>false</useStandardDocletOptions>
+                      <additionalparam>-output ${project.build.outputDirectory}/hicc-rest.xml</additionalparam>
+                    </configuration>
+                  </execution>
                 </executions>
               </plugin>
               <plugin>
@@ -1339,50 +1370,94 @@
                 <version>1.8</version>
                 <executions>
                   <execution>
-                    <id>generate</id>
+                    <id>agent-rest</id>
                     <goals>
                       <goal>generate</goal>
                     </goals>
                     <phase>compile</phase>
+                    <configuration>
+                      <wadlFile>${project.build.outputDirectory}/application.wadl</wadlFile>
+                      <formatWadlFile>true</formatWadlFile>
+                      <baseUri>http://[host]:[port]/rest/v2</baseUri>
+                      <packagesResourceConfig>
+                        <param>org.apache.hadoop.chukwa.datacollection.agent.rest</param>
+                      </packagesResourceConfig>
+                      <wadlGenerators>
+                        <wadlGeneratorDescription>
+                          <className>com.sun.jersey.server.wadl.generators.WadlGeneratorApplicationDoc</className>
+                          <properties>
+                            <property>
+                              <name>applicationDocsFile</name>
+                              <value>${basedir}/src/main/resources/agent-rest.xml</value>
+                            </property>
+                          </properties>
+                        </wadlGeneratorDescription>
+                        <wadlGeneratorDescription>
+                          <className>com.sun.jersey.server.wadl.generators.WadlGeneratorGrammarsSupport</className>
+                          <properties>
+                            <property>
+                              <name>grammarsFile</name>
+                              <value>${basedir}/src/main/resources/application-grammars.xml</value>
+                            </property>
+                          </properties>
+                        </wadlGeneratorDescription>
+                        <wadlGeneratorDescription>
+                          <className>com.sun.jersey.server.wadl.generators.resourcedoc.WadlGeneratorResourceDocSupport</className>
+                          <properties>
+                            <property>
+                              <name>resourceDocFile</name>
+                              <value>${project.build.outputDirectory}/agent-rest.xml</value>
+                            </property>
+                          </properties>
+                        </wadlGeneratorDescription>
+                      </wadlGenerators>
+                    </configuration>
+                  </execution>
+                  <execution>
+                    <id>hicc-rest</id>
+                    <goals>
+                      <goal>generate</goal>
+                    </goals>
+                    <phase>compile</phase>
+                    <configuration>
+                      <wadlFile>${project.build.outputDirectory}/hicc-application.wadl</wadlFile>
+                      <formatWadlFile>true</formatWadlFile>
+                      <baseUri>http://[host]:[port]/hicc/v1</baseUri>
+                      <packagesResourceConfig>
+                        <param>org.apache.hadoop.chukwa.hicc.rest</param>
+                      </packagesResourceConfig>
+                      <wadlGenerators>
+                        <wadlGeneratorDescription>
+                          <className>com.sun.jersey.server.wadl.generators.WadlGeneratorApplicationDoc</className>
+                          <properties>
+                            <property>
+                              <name>applicationDocsFile</name>
+                              <value>${basedir}/src/main/resources/hicc-rest.xml</value>
+                            </property>
+                          </properties>
+                        </wadlGeneratorDescription>
+                        <wadlGeneratorDescription>
+                          <className>com.sun.jersey.server.wadl.generators.WadlGeneratorGrammarsSupport</className>
+                          <properties>
+                            <property>
+                              <name>grammarsFile</name>
+                              <value>${basedir}/src/main/resources/application-grammars.xml</value>
+                            </property>
+                          </properties>
+                        </wadlGeneratorDescription>
+                        <wadlGeneratorDescription>
+                          <className>com.sun.jersey.server.wadl.generators.resourcedoc.WadlGeneratorResourceDocSupport</className>
+                          <properties>
+                            <property>
+                              <name>resourceDocFile</name>
+                              <value>${project.build.outputDirectory}/hicc-rest.xml</value>
+                            </property>
+                          </properties>
+                        </wadlGeneratorDescription>
+                      </wadlGenerators>
+                    </configuration>
                   </execution>
                 </executions>
-                <configuration>
-                  <wadlFile>${project.build.outputDirectory}/application.wadl</wadlFile>
-                  <formatWadlFile>true</formatWadlFile>
-                  <baseUri>http://[host]:[port]/rest/v2</baseUri>
-                  <packagesResourceConfig>
-                    <param>org.apache.hadoop.chukwa.datacollection.agent.rest</param>
-                  </packagesResourceConfig>
-                  <wadlGenerators>
-                    <wadlGeneratorDescription>
-                      <className>com.sun.jersey.server.wadl.generators.WadlGeneratorApplicationDoc</className>
-                      <properties>
-                        <property>
-                          <name>applicationDocsFile</name>
-                          <value>${basedir}/src/main/resources/agent-rest.xml</value>
-                        </property>
-                      </properties>
-                    </wadlGeneratorDescription>
-                    <wadlGeneratorDescription>
-                      <className>com.sun.jersey.server.wadl.generators.WadlGeneratorGrammarsSupport</className>
-                      <properties>
-                        <property>
-                          <name>grammarsFile</name>
-                          <value>${basedir}/src/main/resources/application-grammars.xml</value>
-                        </property>
-                      </properties>
-                    </wadlGeneratorDescription>
-                    <wadlGeneratorDescription>
-                      <className>com.sun.jersey.server.wadl.generators.resourcedoc.WadlGeneratorResourceDocSupport</className>
-                      <properties>
-                        <property>
-                          <name>resourceDocFile</name>
-                          <value>${project.build.outputDirectory}/agent-rest.xml</value>
-                        </property>
-                      </properties>
-                    </wadlGeneratorDescription>
-                  </wadlGenerators>
-                </configuration>
                 <dependencies>
                   <dependency>
                     <groupId>javax.servlet</groupId>
@@ -1410,6 +1485,17 @@
                     <configuration>
                       <executable>xsltproc</executable>
                       <commandlineArgs>-o ${project.build.directory}/site/apidocs/agent-rest.html src/main/webapps/wadl.xsl target/classes/application.wadl</commandlineArgs>
+                    </configuration>
+                  </execution>
+                  <execution>
+                    <id>exec-xsltproc: target/hicc-application.html</id>
+                    <goals>
+                      <goal>exec</goal>
+                    </goals>
+                    <phase>package</phase>
+                    <configuration>
+                      <executable>xsltproc</executable>
+                      <commandlineArgs>-o ${project.build.directory}/site/apidocs/hicc-rest.html src/main/webapps/wadl.xsl target/hicc/WEB-INF/classes/hicc-application.wadl</commandlineArgs>
                     </configuration>
                   </execution>
                 </executions>

@@ -49,6 +49,7 @@
       </item>
       <item name="Programming Guide" href="programming.html">
         <item name="Agent REST API" href="apidocs/agent-rest.html"/>
+        <item name="HICC REST API" href="apidocs/hicc-rest.html"/>
         <item name="Javadocs" href="apidocs/index.html"/>
       </item>
       <item name="Architecture" href="design.html">

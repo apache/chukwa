@@ -14,7 +14,7 @@
 ~~ limitations under the License.
 ~~
 
-Chukwa User and Programming Guide
+Chukwa Programmers Guide
 
   At the core of Chukwa is a flexible system for collecting and processing
 monitoring data, particularly log files. This document describes how to use the
@@ -24,197 +24,23 @@ pipeline, see the {{{./design.html}Design Guide}}.)
   In particular, this document discusses the Chukwa archive file formats, the
 demux and archiving mapreduce jobs, and  the layout of the Chukwa storage directories.
 
-Reading data from the sink or the archive
+Agent REST API
 
-  Chukwa gives you several ways of inspecting or processing collected data.
-
-* Dumping some data
-
-  It very often happens that you want to retrieve one or more files that have been
-collected with Chukwa. If the total volume of data to be recovered is not too
-great, you can use <bin/chukwa dumpArchive>, a command-line tool that does the job.
-The <dump> tool does an in-memory sort of the data, so you'll be 
-constrained by the Java heap size (typically a few hundred MB).
-
-  The <dump> tool takes a search pattern as its first argument, followed
-by a list of files or file-globs.  It will then print the contents of every data
-stream in those files that matches the pattern. (A data stream is a sequence of
-chunks with the same host, source, and datatype.)  Data is printed in order,
-with duplicates removed.  No metadata is printed.  Separate streams are 
-separated by a row of dashes.  
-
-  For example, the following command will dump all data from every file that
-matches the glob pattern.  Note the use of single quotes to pass glob patterns
-through to the application, preventing the shell from expanding them.
-
----
-$CHUKWA_HOME/bin/chukwa dumpArchive 'datatype=.*' 'hdfs://host:9000/chukwa/archive/*.arc'
----
-
-  The patterns used by <dump> are based on normal regular 
-expressions. They are of the form <field1=regex&field2=regex>.
-That is, they are a sequence of rules, separated by ampersand signs. Each rule
-is of the form <metadatafield=regex>, where 
-<metadatafield> is one of the Chukwa metadata fields, and 
-<regex> is a regular expression.  The valid metadata field names are:
-<datatype>, <host>, <cluster>, 
-<content>, <name>.  Note that the <name> field matches the stream name -- often the filename
-that the data was extracted from.
-
-  In addition, you can match arbitrary tags via <tags.tagname>.
-So for instance, to match chunks with tag <foo="bar"> you could say
-<tags.foo=bar>. Note that quotes are present in the tag, but not
-in the filter rule.
-
-  A stream matches the search pattern only if every rule matches. So to 
-retrieve HadoopLog data from cluster foo, you might search for 
-<cluster=foo&datatype=HadoopLog>.
-
-* Exploring the Sink or Archive
-
-  Another common task is finding out what data has been collected. Chukwa offers
-a specialized tool for this purpose: <DumpArchive>. This tool has
-two modes: summarize and verbose, with the latter being the default.
-
-  In summarize mode, <DumpArchive> prints a count of chunks in each
-data stream.  In verbose mode, the chunks themselves are dumped.
-
-  You can invoke the tool by running <$CHUKWA_HOME/bin/dumpArchive.sh>.
-To specify summarize mode, pass <--summarize> as the first argument.
-
----
-bin/chukwa dumpArchive --summarize 'hdfs://host:9000/chukwa/logs/*.done'
----
-
-* Using MapReduce
-
-  A key goal of Chukwa was to facilitate MapReduce processing of collected data.
-The next section discusses the file formats.  An understanding of MapReduce
-and SequenceFiles is helpful in understanding the material.
-
-Sink File Format
-
-  As data is collected, Chukwa dumps it into <sink files> in HDFS. By
-default, these are located in <hdfs:///chukwa/logs>.  If the file name 
-ends in .chukwa, that means the file is still being written to. Every few minutes, 
-the agent will close the file, and rename the file to '*.done'.  This 
-marks the file as available for processing.
-
-  Each sink file is a Hadoop sequence file, containing a succession of 
-key-value pairs, and periodic synch markers to facilitate MapReduce access. 
-They key type is <ChukwaArchiveKey>; the value type is 
-<ChunkImpl>. See the Chukwa Javadoc for details about these classes.
-
-  Data in the sink may include duplicate and omitted chunks.
-
-Demux and Archiving
-
-  It's possible to write MapReduce jobs that directly examine the data sink, 
-but it's not extremely convenient. Data is not organized in a useful way, so 
-jobs will likely discard most of their input. Data quality is imperfect, since 
-duplicates and omissions may exist.  And MapReduce and HDFS are optimized to 
-deal with a modest number of large files, not many small ones.
-
-  Chukwa therefore supplies several MapReduce jobs for organizing collected 
-data and putting it into a more useful form; these jobs are typically run 
-regularly from cron.  Knowing how to use Chukwa-collected data requires 
-understanding how these jobs lay out storage. For now, this document only 
-discusses one such job: the Simple Archiver.
-
-Simple Archiver
-
-  The simple archiver is designed to consolidate a large number of data sink 
-files into a small number of archive files, with the contents grouped in a 
-useful way.  Archive files, like raw sink files, are in Hadoop sequence file 
-format. Unlike the data sink, however, duplicates have been removed.  (Future 
-versions of the Simple Archiver will indicate the presence of gaps.)
-
-  The simple archiver moves every <.done> file out of the sink, and 
-then runs a MapReduce job to group the data. Output Chunks will be placed into 
-files with names of the form 
-<hdfs:///chukwa/archive/clustername/Datatype_date.arc>.  
-Date corresponds to when the data was collected; Datatype is the datatype of 
-each Chunk. 
-
-  If archived data corresponds to an existing filename, a new file will be 
-created with a disambiguating suffix.
+  Chukwa Agent offers programmable API to control Agent adaptors for collecting data from
+remote sources, or setup a listening port for incoming data stream.  Usage guide and
+examples are documented in {{{./apidocs/agent-rest.html} Agent REST API doc}}.
 
 Demux
 
-  A key use for Chukwa is processing arriving data, in parallel, using MapReduce.
+  A key use for Chukwa is processing arriving data, in parallel, using Chukwa Demux.
 The most common way to do this is using the Chukwa demux framework.
-As {{{./dataflow.html}data flows through Chukwa}}, the demux job is often the
-first job that runs.
+As {{{./design.html}data flows through Chukwa}}, the demux parsers are often the
+first user defined function to process data.
 
   By default, Chukwa will use the default TsProcessor. This parser will try to
 extract the real log statement from the log entry using the ISO8601 date 
 format. If it fails, it will use the time at which the chunk was written to
 disk (agent timestamp).
-
-* Writing a custom demux Mapper
-
-  If you want to extract some specific information and perform more processing you
-need to write your own parser. Like any M/R program, your have to write at least
-the Map side for your parser. The reduce side is Identity by default.
-
-  On the Map side,you can write your own parser from scratch or extend the AbstractProcessor class
-that hides all the low level action on the chunk. See
-<org.apache.hadoop.chukwa.extraction.demux.processor.mapper.Df> for an example
-of a Map class for use with Demux.
- 
-  For Chukwa to invoke your Mapper code, you have
-to specify which data types it should run on.
-Edit <${CHUKWA_HOME}/etc/chukwa/chukwa-demux-conf.xml> and add the following lines:
-
----
-<property>
-    <name>MyDataType</name>
-    <value>org.apache.hadoop.chukwa.extraction.demux.processor.mapper.MyParser</value>
-    <description>Parser class for MyDataType.</description>
-</property>
----
-
-  You can use the same parser for several different recordTypes.
-
-* Writing a custom reduce
-
-  You only need to implement a reduce side if you need to group records together. 
-The interface that your need to implement is <ReduceProcessor>:
-
----
-public interface ReduceProcessor
-{
-           public String getDataType();
-           public void process(ChukwaRecordKey key,Iterator<ChukwaRecord> values,
-                               OutputCollector<ChukwaRecordKey, ChukwaRecord> output, 
-                               Reporter reporter);
-}
----
-
-  The link between the Map side and the reduce is done by setting your reduce class
-into the reduce type: <key.setReduceType("MyReduceClass");>
-Note that in the current version of Chukwa, your class needs to be in the package
-<org.apache.hadoop.chukwa.extraction.demux.processor>
-See <org.apache.hadoop.chukwa.extraction.demux.processor.reducer.SystemMetrics>
-for an example of a Demux reducer.
-
-* Output
-
-  Your data is going to be sorted by RecordType then by the key field. The default
-implementation use the following grouping for all records:
-
-  * Time partition (Time up to the hour)
-
-  * Machine name (physical input source)
-
-  * Record timestamp
-
-  The demux process will use the recordType to save similar records together 
-(same recordType) to the same directory: 
-
----
-<cluster name>/<record type>/
----
 
 * Demux Data To HBase
 
@@ -254,204 +80,11 @@ public class SystemMetrics extends AbstractProcessor {
   In this example, the data collected by SystemMetrics parser is stored into <"SystemMetrics">
 HBase table, and column family is stored to <"cpu"> column family.
 
+HICC REST API
 
-Create a new HICC widget
+  HICC visualization API offers simple API to compose dashboard, and charting widgets.
+Data visualization API offers features for end user to interact with data in the 
+final product format.  They are designed to display and summarize data for human
+interaction.  HICC usage guide and examples are documented in 
+{{{./apidocs/hicc-rest.html} HICC REST API doc}}.
 
-  HICC Widget is composed of a JSON data model.  Examples of widget descriptor 
-is located at <src/main/web/hicc/descriptors>.  The data structure looks like
-this:
-
----
-{
-  "id":"debug",
-  "title":"Session Debugger",
-  "version":"0.1",
-  "categories":"Developer,Utilities",
-  "url":"jsp/debug.jsp",
-  "description":"Display session stats",
-  "refresh":"15",
-  "parameters":[
-    {"name":"height","type":"string","value":"0","edit":"0"}
-  ]
-}
----
-
-  * <<id>> - Unique identifier of HICC widget.
-
-  * <<title>> - Human readable string for display on widget border.
-
-  * <<version>> - Version number of the widget, used for updating dashboard
-    with new version of the widget.
-
-  * <<categories>> - Category to organize the widget.  The categories hierarchy
-    is separated by comma.
-
-  * <<url>> - The URL to fetch widget content.  Use /iframe/ as prefix to
-    sandbox output of the URL in a iframe.
-
-  * <<description>> - Description of the widget to display on widget browser.
-
-  * <<refresh>> - Predefined interval to refresh widget in minutes, set refresh 
-    to 0 to disable periodical refresh.
-
-  * <<parameters>> - A list of Key Value parameters to pass to <<url>>.
-    Parameters can be constructed from the follow datatype.
-
-    [[1]] <<string>> - A text field for entering string. <edit> set the text 
-          field to be hidden and value is constant.  Example:
-
----
-{
-  "name":"height",
-  "type":"string",
-  "value":"0",
-  "edit":"0"
-}
----
-
-    [[2]] <<select>> - A drop down list for making single item selection. 
-          <label> is text string next to the drop down box.  Example:
-
----
-{
-  "name":"width",
-  "type":"select",
-  "value":"300",
-  "label":"Width",
-  "options":[
-    {"label":"300","value":"300"},
-      ...
-    {"label":"1200","value":"1200"}
-  ]
-}
----
-
-    [[3]] <<select_callback>> - Single item selection box with data source
-          provided from the <callback> url.  Example:
-
----
-{
-  "name":"time_zone",
-  "type":"select_callback",
-  "value":"UTC",
-  "label":"Time Zone",
-  "callback":"/hicc/jsp/get_timezone_list.jsp"
-}
----
-
-    [[4]] <<select_multiple>> - Multiple item selection box.
-
----
-{
-  "name":"data",
-  "type":"select_multiple",
-  "value":"default",
-  "label":"Metric",
-  "options":[
-    {"label":"Selection 1","value":"1"},
-    {"label":"Selection 2","value":"2"}
-  ]
-}
----
-
-    [[5]] <<radio>> - Radio button for making boolean selection.
-
----
-{
-  "name":"legend",
-  "type":"radio",
-  "value":"on",
-  "label":"Show Legends",
-  "options":[
-    {"label":"On","value":"on"},
-    {"label":"Off","value":"off"}
-  ]
-}
----
-
-    [[6]] <<custom>> - Custom Javascript control.  <control> is a javascript
-          function defined in <src/main/web/hicc/js/workspace/custom_edits.js>.
-
----
-{
-  "name":"period",
-  "type":"custom",
-  "control":"period_control",
-  "value":"",
-  "label":"Period"
-}
----
-
-HICC Metrics REST API
-
-  HICC metrics API is designed to run HBase scan function.  One thing to
-keep in mind that the down sampling framework has not been built.  Therefore,
-scanning large number of metrics on HBase may take a long time.
-
-  * Retrieve a time series metrics for a given column and use session key
-    as row key.
-
----
-/hicc/v1/metrics/series/{table}/{column}/session/{sessionKey}?start={long}&end
-={long}&fullScan={boolean}
----
-
-  * Retrieve a time series metrics for a given column and given row key.
-
----
-/hicc/v1/metrics/series/{table}/{family}/{column}/rowkey/{rkey}?start={long}&end={long}&fullScan={boolean}
----
-
-  * Scan for column names with in a column family.
-
----
-/hicc/v1/metrics/schema{table}/{family}?start={long}&end={long}&fullScan={boolean}
----
-
-  * Scan table for unique row names.
-
----
-/hicc/v1/metrics/rowkey/{table}/{family}/{column}?start={long}&end={long}&fullScan={boolean}
----
-
-HICC Charting API
-
-  HICC Chart.jsp is the generic interface for piping HICC metrics REST API
-JSON to javascript rendered charting library.  The supported options are:
-
-  * <<title>> - Display a title string on chart.
-
-  * <<width>> - Width of the chart in pixels.
-
-  * <<height>> - Height of the chart in pixels.
-
-  * <<render>> - Type of graph to display.  Available options are:
-    <line>, <bar>, <point>, <area>, <stack-area>.
-
-  * <<series_name>> - Label for series name.
-
-  * <<data>> - URL to retrieve series of JSON data.
-
-  * <<x_label>> - Toggle to display X axis label (<on> or <off>).
-
-  * <<x_axis_label>> - A string to display on X axis of the chart.
-
-  * <<y_label>> - Toggle to display Y axis label (<on> or <off>).
-
-  * <<ymin>> - Y axis minimum value.
-
-  * <<ymax>> or <<y_axis_max>> - Y axis maximum value.
-
-  * <<legend>> - Toggle to display legend for the chart (<on> or <off>).
-
-[]
-
-  Example of using Charting API in combination with HICC Metrics REST API:
-
----
-http://localhost:4080/hicc/jsp/chart.jsp?width=300&height=200&data=/hicc/v1/metrics/series/ClusterSummary/memory:UsedPercent/session/cluster,/hicc/v1/metrics/series/ClusterSummary/memory:FreePercent/session/cluster&title=Memory%20Utilization
----
-
-  In this example, the width of the chart is set to 300, and height set to 200.  The chart has a 
-title of <Memory Utilization>, and streaming data from <ClusterSummary> table for column family
-<memory> with <UsedPercent> and <FreePercent> metrics using session key <cluster> as the row key.

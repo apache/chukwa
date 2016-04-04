@@ -119,6 +119,26 @@ key value pairs to HBase table.  HBaseWriter has the following configuration:
 </property>
 ---
 
+SolrWriter
+
+  <SolrWriter> writes chunks of data to SolrCloud server.  This writer is 
+designed to write log entries to Solr for full text indexing.  
+SolrWriter can be enabled by <chukwa.pipline> property in chukwa-agent-conf.xml.
+Solr specific settings are pointer to zookeeper location to find SolrCloud
+leader and solr collection to store indexed data.
+
+---
+<property>
+  <name>solr.cloud.address</name>
+  <value>localhost:2181</value>
+</property>
+
+<property>
+  <name>solr.collection</name>
+  <value>chukwa</value>
+</property>
+---
+
 LocalWriter
 
   <LocalWriter> writes chunks of data to local disk then upload file to HDFS 
