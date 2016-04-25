@@ -61,6 +61,7 @@ public class ChartController {
    * 
    * @param id Reference ID of Chart stored in HBase chukwa_meta table.
    * @return chart widget
+   * 
    */
   @GET
   @Path("draw/{id}")
@@ -88,8 +89,14 @@ public class ChartController {
 
   /**
    * Describe chart meta data
+   * 
    * @param id Chart ID
    * @return chart meta data
+   * 
+   * @response.representation.200.doc Display chart configuration options
+   * @response.representation.200.mediaType application/json
+   * @response.representation.200.example {@link Examples#CPU_UTILIZATION}
+   * 
    */
   @GET
   @Path("describe/{id}")
@@ -106,6 +113,9 @@ public class ChartController {
    * 
    * @param buffer holds incoming JSON of Chart object
    * @return Web response code
+   * 
+   * @request.representation.example {@link Examples#MEMORY_UTILIZATION}
+   * 
    */
   @POST
   @Path("save")
@@ -126,6 +136,9 @@ public class ChartController {
    * @param id is unique identifier of Chart object
    * @param buffer holds incoming JSON of Chart object
    * @return Web response code
+   * 
+   * @request.representation.example {@link Examples#DISK_UTILIZATION}
+   * 
    */
   @PUT
   @Path("save/{id}")
@@ -139,12 +152,18 @@ public class ChartController {
   }
 
   /**
-   * Preview a chart
+   * Display a chart base on chart configuration from REST API input
+   * 
    * @param buffer holds incoming JSON of Chart object
    * @return segment of chart HTML output
+   * 
+   * @request.representation.example {@link Examples#NETWORK_UTILIZATION}
+   *
    */
   @PUT
   @Path("preview")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.TEXT_HTML)
   public String preview(String buffer) {
     VelocityContext context = new VelocityContext();
     StringWriter sw = null;
@@ -166,8 +185,21 @@ public class ChartController {
     return sw.toString();
   }
 
+  /**
+   * Display metrics series in JSON
+   * 
+   * @param request HTTP request object
+   * @param buffer list of SeriesMetaData
+   * @return metrics JSON
+   * 
+   * @request.representation.example {@link Examples#CPU_SERIES_METADATA}
+   * @response.representation.200.doc Display series data in JSON
+   * @response.representation.200.mediaType application/json
+   * 
+   */
   @PUT
   @Path("preview/series")
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces("application/json")
   public String previewSeries(@Context HttpServletRequest request, String buffer) {
     Type listType = new TypeToken<ArrayList<SeriesMetaData>>() {

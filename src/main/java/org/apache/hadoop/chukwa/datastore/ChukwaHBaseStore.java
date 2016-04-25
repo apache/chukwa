@@ -18,7 +18,6 @@
 package org.apache.hadoop.chukwa.datastore;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
@@ -43,6 +42,7 @@ import org.apache.hadoop.chukwa.hicc.bean.LineOptions;
 import org.apache.hadoop.chukwa.hicc.bean.Series;
 import org.apache.hadoop.chukwa.hicc.bean.SeriesMetaData;
 import org.apache.hadoop.chukwa.hicc.bean.Widget;
+import org.apache.hadoop.chukwa.hicc.rest.Examples;
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
 import org.apache.hadoop.chukwa.util.HBaseUtil;
 import org.apache.hadoop.hbase.Cell;
@@ -917,480 +917,85 @@ public class ChukwaHBaseStore {
       if(defaultExists) {
         return;
       }
-      String hostname = InetAddress.getLocalHost().getHostName().toLowerCase();
       // Populate example chart widgets
-      String[] metrics = { "SystemMetrics.LoadAverage.1" };
-      createChart("1", "System Load Average", metrics, hostname, "");
-      String[] cpuMetrics = { "SystemMetrics.cpu.combined", "SystemMetrics.cpu.sys", "SystemMetrics.cpu.user" };
-      createChart("2", "CPU Utilization", cpuMetrics, hostname, "percent");
-      String[] memMetrics = { "SystemMetrics.memory.FreePercent", "SystemMetrics.memory.UsedPercent"};
-      createChart("3", "Memory Utilization", memMetrics, hostname, "percent");
-      String[] diskMetrics = { "SystemMetrics.disk.ReadBytes", "SystemMetrics.disk.WriteBytes" };
-      createChart("4", "Disk Utilization", diskMetrics, hostname, "bytes-decimal");
-      String[] netMetrics = { "SystemMetrics.network.TxBytes", "SystemMetrics.network.RxBytes" };
-      createChart("5", "Network Utilization", netMetrics, hostname, "bytes");
-      String[] swapMetrics = { "SystemMetrics.swap.Total", "SystemMetrics.swap.Used", "SystemMetrics.swap.Free" };
-      createChart("6", "Swap Utilization", swapMetrics, hostname, "bytes-decimal");
+      createChart(Examples.SYSTEM_LOAD_AVERAGE);
+      createChart(Examples.CPU_UTILIZATION);
+      createChart(Examples.MEMORY_UTILIZATION);
+      createChart(Examples.DISK_UTILIZATION);
+      createChart(Examples.NETWORK_UTILIZATION);
+      createChart(Examples.SWAP_UTILIZATION);
       
       // Namenode heap usage
-      StringBuilder namenode = new StringBuilder();
-      namenode.append(hostname);
-      namenode.append(":NameNode");
-      String[] namenodeHeap = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
-      createCircle("7", "Namenode Memory", namenodeHeap, namenode.toString(), "%", "up");
+      createChart(Examples.NAMENODE_MEMORY);
       
       // HDFS Usage
-      String[] hdfsUsage = { "HadoopMetrics.dfs.FSNamesystem.CapacityRemainingGB", "HadoopMetrics.dfs.FSNamesystem.CapacityTotalGB" };
-      createCircle("8", "HDFS Remaining", hdfsUsage, hostname, "%", "down");
+      createChart(Examples.HDFS_USAGE);
 
       // Resource Manager Memory
-      StringBuilder rmnode = new StringBuilder();
-      rmnode.append(hostname);
-      rmnode.append(":ResourceManager");
-      String[] rmHeap = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
-      createCircle("9", "Resource Manager Memory", rmHeap, rmnode.toString(), "%", "up");
+      createChart(Examples.RESOURCE_MANAGER_MEMORY);
 
       // Node Managers Health
-      String[] nmh = { "HadoopMetrics.yarn.ClusterMetrics.NumActiveNMs", "HadoopMetrics.yarn.ClusterMetrics.NumLostNMs" };
-      createTile("10", "Node Managers Health", "Node Managers", "Active/Lost", nmh, hostname, "glyphicon-th");
+      createChart(Examples.NODE_MANAGER_HEALTH);
 
       // High Availability State
-      String[] ha = { "HadoopMetrics.dfs.FSNamesystem.HAState" };
-      createTile("11", "HDFS High Availability State", "HDFS High Availability", "", ha, hostname, "glyphicon-random");
+      createChart(Examples.HDFS_HA);
 
       // HDFS Load
-      String[] hdfsLoad = { "HadoopMetrics.dfs.FSNamesystem.TotalLoad" };
-      createTile("12", "HDFS Load Average", "HDFS Load", "", hdfsLoad, hostname, "glyphicon-signal");
+      createChart(Examples.HDFS_LOAD);
 
       // Namenode RPC Latency
-      String[] nnLatency = { "HadoopMetrics.rpc.rpc.RpcProcessingTimeAvgTime" };
-      createTile("13", "NameNode Latency", "NameNode RPC Latency", "Milliseconds", nnLatency, hostname, "glyphicon-tasks");
+      createChart(Examples.NAMENODE_RPC_LATENCY);
 
       // Datanode Health
-      String[] dnHealth = { "HadoopMetrics.dfs.FSNamesystem.StaleDataNodes" };
-      createTile("14", "Datanodes Health", "Datanodes", "Dead", dnHealth, hostname, "glyphicon-hdd");
+      createChart(Examples.DATANODES);
 
       // HBase Master Memory
-      StringBuilder hbaseMaster = new StringBuilder();
-      hbaseMaster.append(hostname);
-      hbaseMaster.append(":Master");
-      String[] hbm = { "HBaseMetrics.jvm.JvmMetrics.MemHeapUsedM", "HBaseMetrics.jvm.JvmMetrics.MemHeapMaxM" };
-      createCircle("15", "HBase Master Memory", hbm, hbaseMaster.toString(), "%", "up");
+      createChart(Examples.HBASE_MASTER_MEMORY);
 
-      // Demo metrics
-//      String[] trialAbandonRate = { "HadoopMetrics.jvm.JvmMetrics.MemHeapUsedM", "HadoopMetrics.jvm.JvmMetrics.MemHeapMaxM" };
-//      createChart("T1", "Trial Abandon Rate", trialAbandonRate, namenode.toString(), "percent");
-//      createChart("T2", "Unhealthy Clusters", hdfsUsage, hostname, "percent");
-      
       // Populate default widgets
-      Widget widget = new Widget();
-      widget.setTitle("System Load Average");
-      widget.setSrc(new URI("/hicc/v1/chart/draw/1"));
-      widget.setCol(1);
-      widget.setRow(1);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
+      createWidget(Examples.SYSTEM_LOAD_AVERAGE_WIDGET);
+      createWidget(Examples.WELCOME_PAGE_WIDGET);
+      createWidget(Examples.TRIAL_DOWNLOAD_WIDGET);
+      createWidget(Examples.CLUSTER_RUNNING_WIDGET);
+      createWidget(Examples.USER_WORKING_WIDGET);
+      createWidget(Examples.APP_RUNNING_WIDGET);
+      createWidget(Examples.TRIAL_ABANDON_RATE_WIDGET);
+      createWidget(Examples.CLUSTERS_HEALTH_WIDGET);
+      createWidget(Examples.TOP_ACTIVE_CLUSTERS_WIDGET);
+      createWidget(Examples.TOP_APP_WIDGET);
+      
+      // User widgets
+      createWidget(Examples.APP_USAGE_WIDGET);
+      createWidget(Examples.QUICK_LINKS_WIDGET);
+      createWidget(Examples.LOG_SEARCH_WIDGET);
+      createWidget(Examples.YARN_APP_WIDGET);
+      createWidget(Examples.HDFS_WIDGET);
+      createWidget(Examples.HBASE_TABLE_WIDGET);
+      createWidget(Examples.TOP_USER_WIDGET);
 
+      // System widgets
+      createWidget(Examples.HDFS_HA_STATE_WIDGET);
+      createWidget(Examples.HDFS_LOAD_WIDGET);
+      createWidget(Examples.HDFS_NAMENODE_LATENCY_WIDGET);
+      createWidget(Examples.DATANODES_HEALTH_WIDGET);
+      createWidget(Examples.NODE_MANAGERS_HEALTH_WIDGET);
+      createWidget(Examples.HDFS_REMAINING_WIDGET);
+      createWidget(Examples.NAMENODE_MEMORY_WIDGET);
+      createWidget(Examples.RESOURCE_MANAGER_MEMORY_WIDGET);
+      createWidget(Examples.HBASE_MASTER_MOMORY_WIDGET);
+      createWidget(Examples.CPU_UTILIZATION_WIDGET);
+      createWidget(Examples.MEMORY_UTILIZATION_WIDGET);
+      createWidget(Examples.SWAP_UTILIZATION_WIDGET);
+      createWidget(Examples.DISK_UTILIZATION_WIDGET);
+      createWidget(Examples.NETWORK_UTILIZATION_WIDGET);
+      createWidget(Examples.CPU_HEAPMAP_WIDGET);
+      createWidget(Examples.HDFS_UI_WIDGET);
+      createWidget(Examples.HBASE_MASTER_UI_WIDGET);
+      
       // Populate default dashboard
-      Dashboard dashboard = new Dashboard();
-
-      widget = new Widget();
-      widget.setTitle("Welcome Page");
-      widget.setSrc(new URI("/hicc/welcome.html"));
-      widget.setCol(1);
-      widget.setRow(1);
-      widget.setSize_x(10);
-      widget.setSize_y(5);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("Trial Downloading");
-      widget.setSrc(new URI("/hicc/home/downloads.html"));
-      widget.setCol(1);
-      widget.setRow(1);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
-
-      widget = new Widget();
-      widget.setTitle("Cluster Running");
-      widget.setSrc(new URI("/hicc/home/clusters.html"));
-      widget.setCol(3);
-      widget.setRow(1);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
-
-      widget = new Widget();
-      widget.setTitle("Users Working");
-      widget.setSrc(new URI("/hicc/home/users.html"));
-      widget.setCol(5);
-      widget.setRow(1);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
-
-      widget = new Widget();
-      widget.setTitle("Applications Running");
-      widget.setSrc(new URI("/hicc/home/apps.html"));
-      widget.setCol(7);
-      widget.setRow(1);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
-
-      widget = new Widget();
-      widget.setTitle("Trial Abandon Rate");
-      widget.setSrc(new URI("/hicc/v1/circles/draw/11"));
-      widget.setCol(1);
-      widget.setRow(2);
-      widget.setSize_x(2);
-      widget.setSize_y(2);
-      createWidget(widget);
-
-      widget = new Widget();
-      widget.setTitle("Clusters Health");
-      widget.setSrc(new URI("/hicc/v1/circles/draw/12"));
-      widget.setCol(3);
-      widget.setRow(2);
-      widget.setSize_x(2);
-      widget.setSize_y(2);
-      createWidget(widget);
-
-      widget = new Widget();
-      widget.setTitle("Top Active Clusters");
-      widget.setSrc(new URI("/hicc/clusters/"));
-      widget.setCol(5);
-      widget.setRow(2);
-      widget.setSize_x(2);
-      widget.setSize_y(2);
-      createWidget(widget);
-
-      widget = new Widget();
-      widget.setTitle("Top Applications");
-      widget.setSrc(new URI("/hicc/apps/"));
-      widget.setCol(7);
-      widget.setRow(2);
-      widget.setSize_x(2);
-      widget.setSize_y(2);
-      createWidget(widget);
-
-      widget = new Widget();
-      widget.setTitle("Applications Usage");
-      widget.setSrc(new URI("/hicc/apps/apps-usage.html"));
-      widget.setCol(7);
-      widget.setRow(2);
-      widget.setSize_x(2);
-      widget.setSize_y(2);
-      createWidget(widget);
-
-      updateDashboard("default", "", dashboard);
-
-      // Populate user dashboards
-      dashboard = new Dashboard();
-
-      widget = new Widget();
-      widget.setTitle("Quick Links");
-      widget.setSrc(new URI("/hicc/v1/dashboard/quicklinks"));
-      widget.setCol(1);
-      widget.setRow(1);
-      widget.setSize_x(10);
-      widget.setSize_y(5);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      // Log Search widget
-      widget = new Widget();
-      widget.setTitle("Log Search");
-      widget.setSrc(new URI("/hicc/ajax-solr/chukwa"));
-      widget.setCol(1);
-      widget.setRow(1);
-      widget.setSize_x(6);
-      widget.setSize_y(6);
-      createWidget(widget);
-
-      // Applications
-      widget = new Widget();
-      widget.setTitle("YARN Applications");
-      widget.setSrc(new URI("http://localhost:8088/"));
-      widget.setCol(1);
-      widget.setRow(7);
-      widget.setSize_x(6);
-      widget.setSize_y(6);
-      createWidget(widget);
-
-      // Hadoop Distributed File System
-      widget = new Widget();
-      widget.setTitle("HDFS");
-      widget.setSrc(new URI("http://localhost:50070/explorer.html#/"));
-      widget.setCol(1);
-      widget.setRow(7);
-      widget.setSize_x(6);
-      widget.setSize_y(6);
-      createWidget(widget);
-
-      // HBase Tables
-      widget = new Widget();
-      widget.setTitle("HBase Tables");
-      widget.setSrc(new URI("http://localhost:50654/tablesDetailed.jsp"));
-      widget.setCol(1);
-      widget.setRow(14);
-      widget.setSize_x(6);
-      widget.setSize_y(6);
-      createWidget(widget);
-
-      widget = new Widget();
-      widget.setTitle("Top Applications");
-      widget.setSrc(new URI("/hicc/apps/"));
-      widget.setCol(1);
-      widget.setRow(1);
-      widget.setSize_x(2);
-      widget.setSize_y(2);
-      createWidget(widget);
-
-      widget = new Widget();
-      widget.setTitle("Top Users");
-      widget.setSrc(new URI("/hicc/users/"));
-      widget.setCol(1);
-      widget.setRow(3);
-      widget.setSize_x(2);
-      widget.setSize_y(2);
-      createWidget(widget);
-      updateDashboard("user", "", dashboard);
-
-      // Populate system dashboards
-      dashboard = new Dashboard();
-      widget = new Widget();
-      widget.setTitle("HDFS High Availability State");
-      widget.setSrc(new URI("/hicc/v1/tile/draw/11"));
-      widget.setCol(1);
-      widget.setRow(1);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("HDFS Load");
-      widget.setSrc(new URI("/hicc/v1/tile/draw/12"));
-      widget.setCol(3);
-      widget.setRow(1);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("HDFS Namenode Latency");
-      widget.setSrc(new URI("/hicc/v1/tile/draw/13"));
-      widget.setCol(5);
-      widget.setRow(1);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("Datanodes Health");
-      widget.setSrc(new URI("/hicc/v1/tile/draw/14"));
-      widget.setCol(7);
-      widget.setRow(1);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
-      dashboard.add(widget);
-      
-      widget = new Widget();
-      widget.setTitle("Node Managers Health");
-      widget.setSrc(new URI("/hicc/v1/tile/draw/10"));
-      widget.setCol(9);
-      widget.setRow(1);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("HDFS Remaining");
-      widget.setSrc(new URI("/hicc/v1/circles/draw/8"));
-      widget.setCol(1);
-      widget.setRow(2);
-      widget.setSize_x(2);
-      widget.setSize_y(2);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("Namenode Memory");
-      widget.setSrc(new URI("/hicc/v1/circles/draw/7"));
-      widget.setCol(3);
-      widget.setRow(2);
-      widget.setSize_x(2);
-      widget.setSize_y(2);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("Resource Manager Memory");
-      widget.setSrc(new URI("/hicc/v1/circles/draw/9"));
-      widget.setCol(5);
-      widget.setRow(2);
-      widget.setSize_x(2);
-      widget.setSize_y(2);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("HBase Master Memory");
-      widget.setSrc(new URI("/hicc/v1/circles/draw/15"));
-      widget.setCol(7);
-      widget.setRow(2);
-      widget.setSize_x(2);
-      widget.setSize_y(2);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("System Load Average");
-      widget.setSrc(new URI("/hicc/v1/chart/draw/1"));
-      widget.setCol(9);
-      widget.setRow(2);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("CPU Utilization");
-      widget.setSrc(new URI("/hicc/v1/chart/draw/2"));
-      widget.setCol(9);
-      widget.setRow(3);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("Memory Utilization");
-      widget.setSrc(new URI("/hicc/v1/chart/draw/3"));
-      widget.setCol(9);
-      widget.setRow(4);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("Swap Utilization");
-      widget.setSrc(new URI("/hicc/v1/chart/draw/6"));
-      widget.setCol(9);
-      widget.setRow(5);
-      widget.setSize_x(2);
-      widget.setSize_y(1);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("Disk Utilization");
-      widget.setSrc(new URI("/hicc/v1/chart/draw/4"));
-      widget.setCol(1);
-      widget.setRow(4);
-      widget.setSize_x(4);
-      widget.setSize_y(2);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      widget = new Widget();
-      widget.setTitle("Network Utilization");
-      widget.setSrc(new URI("/hicc/v1/chart/draw/5"));
-      widget.setCol(5);
-      widget.setRow(4);
-      widget.setSize_x(4);
-      widget.setSize_y(2);
-      createWidget(widget);
-      dashboard.add(widget);
-
-      // CPU heatmap
-      widget = new Widget();
-      widget.setTitle("CPU Heatmap");
-      widget.setSrc(new URI("/hicc/v1/heatmap/render/SystemMetrics/cpu.combined."));
-      widget.setCol(1);
-      widget.setRow(5);
-      widget.setSize_x(6);
-      widget.setSize_y(5);
-      createWidget(widget);
-
-      // HDFS Namenode
-      widget = new Widget();
-      widget.setTitle("HDFS UI");
-      widget.setSrc(new URI("http://localhost:50070/"));
-      widget.setCol(1);
-      widget.setRow(11);
-      widget.setSize_x(6);
-      widget.setSize_y(6);
-      createWidget(widget);
-
-      // HBase Master
-      widget = new Widget();
-      widget.setTitle("HBase Master UI");
-      widget.setSrc(new URI("http://localhost:16010/"));
-      widget.setCol(1);
-      widget.setRow(18);
-      widget.setSize_x(6);
-      widget.setSize_y(6);
-      createWidget(widget);
-
-//    widget = new Widget();
-//    widget.setTitle("Services Running");
-//    widget.setSrc(new URI("/hicc/services/services.html"));
-//    widget.setCol(1);
-//    widget.setRow(1);
-//    widget.setSize_x(2);
-//    widget.setSize_y(1);
-//    createWidget(widget);
-//    dashboard.add(widget);
-//    
-//    widget = new Widget();
-//    widget.setTitle("Applications Running");
-//    widget.setSrc(new URI("/hicc/home/apps.html"));
-//    widget.setCol(3);
-//    widget.setRow(1);
-//    widget.setSize_x(2);
-//    widget.setSize_y(1);
-//    dashboard.add(widget);
-
-//    widget = new Widget();
-//    widget.setTitle("Timeline");
-//    widget.setSrc(new URI("/hicc/timeline/"));
-//    widget.setCol(7);
-//    widget.setRow(2);
-//    widget.setSize_x(4);
-//    widget.setSize_y(6);
-//    createWidget(widget);
-//    dashboard.add(widget);
-
-//      widget = new Widget();
-//      widget.setTitle("Alerts");
-//      widget.setSrc(new URI("/hicc/alerts/"));
-//      widget.setCol(1);
-//      widget.setRow(5);
-//      widget.setSize_x(6);
-//      widget.setSize_y(5);
-//      createWidget(widget);
-//
-//      widget = new Widget();
-//      widget.setTitle("Log Errors");
-//      widget.setSrc(new URI("/hicc/logs/"));
-//      widget.setCol(1);
-//      widget.setRow(5);
-//      widget.setSize_x(6);
-//      widget.setSize_y(5);
-//      createWidget(widget);
-
-      updateDashboard("system", "", dashboard);
-      
+      updateDashboard("default", "", Examples.DEFAULT_DASHBOARD);
+      updateDashboard("user", "", Examples.USER_DASHBOARD);
+      updateDashboard("system", "", Examples.SYSTEM_DASHBOARD);
     } catch (Throwable ex) {
       LOG.error(ExceptionUtil.getStackTrace(ex));
     }

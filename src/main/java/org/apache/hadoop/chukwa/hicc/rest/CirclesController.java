@@ -22,9 +22,9 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -62,6 +62,10 @@ public class CirclesController {
    * @param id Title of the tile.
    * @param invert Toggle to display warning, error color by upper bound or lower bound.
    * @return html circle widget.
+   * 
+   * @response.representation.200.doc Render circleful chart
+   * @response.representation.200.mediaType text/html
+   * @response.representation.200.example Example is availabe on HICC UI
    */
   @GET
   @Path("draw/{id}")
@@ -87,7 +91,17 @@ public class CirclesController {
     return sw.toString();
   }
 
+  /**
+   * Preview circle graph with a set of chart configuration
+   * 
+   * @param buffer is chart object
+   * @return html text of circle graph
+   * 
+   * @request.representation.example {@link Examples#NAMENODE_MEMORY}
+   */
   @PUT
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.TEXT_HTML)
   @Path("preview")
   public String preview(String buffer) {
     VelocityContext context = new VelocityContext();
@@ -109,7 +123,20 @@ public class CirclesController {
     return sw.toString();
   }
   
+  /**
+   * Circle graph data can be calculated based on either a ratio of two metrics or
+   * the selected metric is a percentage metric for rendering circle graph.
+   * 
+   * @param request is HTTP request object
+   * @param buffer is list of SeriesMetaData for fetching series data
+   * @return JSON output series data
+   * 
+   * @request.representation.example {@link Examples#HDFS_USAGE_SERIES_METADATA}
+   * @response.representation.200.doc Display series data in JSON
+   * @response.representation.200.mediaType application/json
+   */
   @PUT
+  @Consumes(MediaType.APPLICATION_JSON)
   @Path("preview/series")
   @Produces("application/json")
   public String previewSeries(@Context HttpServletRequest request, String buffer) {

@@ -44,6 +44,16 @@ public class LoginController {
     ChukwaHBaseStore.populateDefaults();
   }
 
+  /**
+   * Password verification login screen
+   * 
+   * @param buffer holds any user input
+   * @return html page of login screen
+   * 
+   * @response.representation.200.doc Login screen
+   * @response.representation.200.mediaType text/html
+   * @response.representation.200.example Example available in HICC UI
+   */
   @GET
   @Path("check")
   public String login(String buffer) {
@@ -60,6 +70,19 @@ public class LoginController {
     return sw.toString();
   }
 
+  /**
+   * Password verification REST API
+   * 
+   * @param request is HTTP request object
+   * @return login status code
+   * 
+   * @response.representation.200.doc User login successful
+   * @response.representation.200.mediaType text/plain
+   * @response.representation.200.example 200 OK
+   * @response.representation.403.doc Login denied
+   * @response.representation.403.mediaType text/plain
+   * @response.representation.403.example 403 FORBIDDEN
+   */
   @POST
   @Path("check")
   public Response check(@Context HttpServletRequest request) {

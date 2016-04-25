@@ -1639,6 +1639,21 @@
                     <head>response.representation.400.example</head>
                   </tag>
                   <tag>
+                    <name>response.representation.403.doc</name>
+                    <placement>a</placement>
+                    <head>response.representation.403.doc</head>
+                  </tag>
+                  <tag>
+                    <name>response.representation.403.mediaType</name>
+                    <placement>a</placement>
+                    <head>response.representation.403.mediaType</head>
+                  </tag>
+                  <tag>
+                    <name>response.representation.403.example</name>
+                    <placement>a</placement>
+                    <head>response.representation.403.example</head>
+                  </tag>
+                  <tag>
                     <name>request.representation.example</name>
                     <placement>a</placement>
                     <head>request.representation.example</head>

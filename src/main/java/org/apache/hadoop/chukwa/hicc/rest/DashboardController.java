@@ -57,8 +57,19 @@ public class DashboardController {
   @Context
   VelocityEngine velocity;
 
-  
+  /**
+   * Load a dashboard view
+   * 
+   * @param request HTTP request object
+   * @param id is dashboard unique identifier
+   * @return Dashboard view in JSON structure
+   * 
+   * @response.representation.200.doc Display dashboard JSON structure
+   * @response.representation.200.mediaType application/json
+   * @response.representation.200.example {@link Examples#SYSTEM_DASHBOARD}
+   */
   @GET
+  @Produces(MediaType.APPLICATION_JSON)
   @Path("load/{id}")
   public String load(@Context HttpServletRequest request, @PathParam("id") String id) {
     Gson gson = new Gson();
@@ -67,6 +78,18 @@ public class DashboardController {
     return json;
   }
   
+  /**
+   * Save a dashboard view
+   * 
+   * @param request HTTP request object
+   * @param id is dashboard unique identifier
+   * @param buffer is JSON structure of dashboard view
+   * @return Status of the dashboard save
+   * 
+   * @request.representation.example {@link Examples#USER_DASHBOARD}
+   * @response.representation.200.doc Display save status code
+   * @response.representation.200.mediaType text/plain
+   */
   @PUT
   @Path("save/{id}")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -80,12 +103,32 @@ public class DashboardController {
     return Response.ok().build();
   }
   
+  /**
+   * Return HTTP request connection user name
+   * 
+   * @param request HTTP request object
+   * @return username
+   * 
+   * @response.representation.200.doc Username
+   * @response.representation.200.mediaType text/plain
+   * @response.representation.200.example admin
+   */
   @GET
   @Path("whoami")
+  @Produces(MediaType.TEXT_PLAIN)
   public String whoami(@Context HttpServletRequest request) {
     return request.getRemoteUser();
   }
   
+  /**
+   * Render Quick links to various services web portals
+   * 
+   * @return HTML page of quick links
+   * 
+   * @response.representation.200.doc Display quick link widget
+   * @response.representation.200.mediaType text/html
+   * @response.representation.200.example Example is availabe on HICC UI
+   */
   @GET
   @Path("quicklinks")
   @Produces(MediaType.TEXT_HTML)

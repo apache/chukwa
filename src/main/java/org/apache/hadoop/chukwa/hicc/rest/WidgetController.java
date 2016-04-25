@@ -30,6 +30,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -55,8 +56,20 @@ public class WidgetController {
   public void init() {
   }
 
+  /**
+   * List widgets
+   * 
+   * @param limit is number of widgets to return
+   * @param offset is position in the widget list
+   * @return list of widgets in HBase database
+   * 
+   * @response.representation.200.doc Display list of HICC supported widgets
+   * @response.representation.200.mediaType application/json
+   * @response.representation.200.example {@link Examples#WIDGET_LIST}
+   */
   @GET
   @Path("list")
+  @Produces(MediaType.APPLICATION_JSON)
   public String listWidget(@DefaultValue("1000") @QueryParam("limit") int limit, 
       @DefaultValue("0") @QueryParam("offset") int offset) {
     List<Widget> widgets = ChukwaHBaseStore.listWidget(limit, offset);
@@ -65,6 +78,15 @@ public class WidgetController {
     return json;
   }
 
+  /**
+   * Search for widget base on widget title
+   * @param query is search critieria
+   * @return list of widgets matched search critieria
+   * 
+   * @response.representation.200.doc Display list of HICC widget that matches query
+   * @response.representation.200.mediaType application/json
+   * @response.representation.200.example {@link Examples#WIDGET_LIST}
+   */
   @GET
   @Path("search/{query}")
   public String searchWidget(@PathParam("query") String query) {
@@ -74,6 +96,15 @@ public class WidgetController {
     return json;
   }
 
+  /**
+   * View widget details
+   * @param title is title of the widget
+   * @return widget configuration
+   * 
+   * @response.representation.200.doc View widget details
+   * @response.representation.200.mediaType application/json
+   * @response.representation.200.example {@link Examples#SYSTEM_LOAD_AVERAGE_WIDGET}
+   */
   @GET
   @Path("view/{title}")
   public String viewWidget(@PathParam("title") String title) {
@@ -83,6 +114,19 @@ public class WidgetController {
     return json;
   }
 
+  /**
+   * Create a widget
+   * @param buffer is widget configuration
+   * @return Creation status code
+   * 
+   * @request.representation.example {@link Examples#WELCOME_PAGE_WIDGET}
+   * @response.representation.200.doc Widget creation successful
+   * @response.representation.200.mediaType text/plain
+   * @response.representation.200.example 200 OK
+   * @response.representation.400.doc Widget creation unsuccessful
+   * @response.representation.400.mediaType text/plain
+   * @response.representation.400.example 400 Bad Request
+   */
   @POST
   @Path("create")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -96,6 +140,20 @@ public class WidgetController {
     return Response.ok().build();
   }
 
+  /**
+   * Update a widget
+   * @param title is widget title
+   * @param buffer is widget object in JSON
+   * @return Update status code
+   * 
+   * @request.representation.example {@link Examples#WELCOME_PAGE_WIDGET}
+   * @response.representation.200.doc Widget update is successful
+   * @response.representation.200.mediaType text/plain
+   * @response.representation.200.example 200 OK
+   * @response.representation.400.doc Widget update unsuccessful
+   * @response.representation.400.mediaType text/plain
+   * @response.representation.400.example 400 Bad Request
+   */
   @PUT
   @Path("update/{title}")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -109,6 +167,18 @@ public class WidgetController {
     return Response.ok().build();
   }
 
+  /**
+   * Delete a widget
+   * @param title is widget title
+   * @return Widget delete status code
+   * 
+   * @response.representation.200.doc Widget deletion successful
+   * @response.representation.200.mediaType text/plain
+   * @response.representation.200.example 200 OK
+   * @response.representation.400.doc Widget deletion unsuccessful
+   * @response.representation.400.mediaType text/plain
+   * @response.representation.400.example 400 Bad Request
+   */
   @DELETE
   @Path("delete/{title}")
   public Response deleteWidget(@PathParam("title") String title) {

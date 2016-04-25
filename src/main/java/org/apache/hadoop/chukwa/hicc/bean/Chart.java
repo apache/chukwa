@@ -19,9 +19,18 @@
 package org.apache.hadoop.chukwa.hicc.bean;
 
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 public class Chart {
   private String id;
   private ChartType type;
@@ -241,5 +250,95 @@ public class Chart {
   
   public String getThreshold() {
     return this.threshold;
+  }
+
+  /**
+   * Create a chart object.
+   * @param id is unique chart identifier
+   * @param title is searchable name of the chart
+   * @param metrics is list of metric names to render chart
+   * @param source is data source name
+   * @param yunitType is y axis unit type
+   * @return Chart object
+   * @throws URISyntaxException if metrics name can not compose valid URL syntax
+   */
+  public static synchronized Chart createChart(String id,
+      String title, String[] metrics, String source, String yunitType) throws URISyntaxException {
+    Chart chart = new Chart(id);
+    chart.setYUnitType(yunitType);
+    chart.setTitle(title);
+    ArrayList<SeriesMetaData> series = new ArrayList<SeriesMetaData>();
+    for(String metric : metrics) {
+      SeriesMetaData s = new SeriesMetaData();
+      s.setLabel(metric + "/" + source);
+      s.setUrl(new URI("/hicc/v1/metrics/series/" + metric + "/"
+        + source));
+      LineOptions l = new LineOptions();
+      s.setLineOptions(l);
+      series.add(s);
+    }
+    chart.setSeries(series);
+    return chart;
+    
+  }
+  
+  /**
+   * Create a chart in HBase by specifying parameters.
+   * @param id is unique chart identifier
+   * @param title is searchable name of the chart
+   * @param metrics is list of metric names to render ring chart
+   * @param source is data source name
+   * @param suffixLabel is text label to append to metric values
+   * @param direction sets the threshold to have either upper limit or lower limit
+   * @return Chart object
+   * @throws URISyntaxException if metrics name can not compose valid URL syntax
+   */
+  public static synchronized Chart createCircle(String id,
+      String title, String[] metrics, String source, String suffixLabel, String direction) throws URISyntaxException {
+    Chart chart = new Chart(id);
+    chart.setSuffixText(suffixLabel);
+    chart.setTitle(title);
+    chart.setThreshold(direction);
+    ArrayList<SeriesMetaData> series = new ArrayList<SeriesMetaData>();
+    for(String metric : metrics) {
+      SeriesMetaData s = new SeriesMetaData();
+      s.setLabel(metric + "/" + source);
+      s.setUrl(new URI("/hicc/v1/metrics/series/" + metric + "/"
+        + source));
+      series.add(s);
+    }
+    chart.setSeries(series);
+    return chart;
+    
+  }
+  
+  /**
+   * Create a tile in HBase by specifying parameters.
+   * @param id is unique tile identifier
+   * @param title is searchable name of the tile widget
+   * @param bannerText is description of the tile widget
+   * @param suffixLabel is text label to append to metric values
+   * @param metrics is list of metric names to render tile widget
+   * @param source is data source name
+   * @param icon is emoji symbol to render beside tile widget
+   * @return Chart object
+   * @throws URISyntaxException if metrics name can not compose valid URL syntax
+   */
+  public static synchronized Chart createTile(String id, String title, 
+      String bannerText, String suffixLabel, String[] metrics, String source, 
+      String icon) throws URISyntaxException {
+    Chart chart = new Chart(id);
+    chart.setTitle(title);
+    chart.setBannerText(bannerText);
+    chart.setSuffixText(suffixLabel);
+    chart.setIcon(icon);
+    List<SeriesMetaData> smd = new ArrayList<SeriesMetaData>();
+    for (String metric : metrics) {
+      SeriesMetaData series = new SeriesMetaData();
+      series.setUrl(new URI("/hicc/v1/metrics/series/" + metric + "/" + source));
+      smd.add(series);
+    }
+    chart.setSeries(smd);
+    return chart;
   }
 }

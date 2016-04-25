@@ -379,8 +379,64 @@
           </xsl:choose>
       </xsl:for-each>
     </xsl:when>
+    <xsl:when test="@mediaType = 'text/html'">
+      <xsl:for-each select="wadl:doc">
+        <xsl:sort select="position()" data-type="number" order="descending"/>
+          <xsl:if test="position() > 1"><br/></xsl:if>
+          <xsl:if test="@title and local-name(..) != 'application'">
+              <xsl:value-of select="@title"/>:
+          </xsl:if>
+          <xsl:choose>
+            <xsl:when test="@title = 'Example'">
+              <xsl:variable name="url">
+                <xsl:choose>
+                  <xsl:when test="string-length($base) > 0">
+                    <xsl:call-template name="getFullResourcePath">
+                      <xsl:with-param name="base" select="$base"/>                
+                      <xsl:with-param name="path" select="text()"/>
+                    </xsl:call-template>
+                  </xsl:when>
+                  <xsl:otherwise><xsl:value-of select="text()"/></xsl:otherwise>
+                </xsl:choose>
+              </xsl:variable>
+              <a href="{$url}"><xsl:value-of select="$url"/></a>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:apply-templates select="node()" mode="copy"/>
+            </xsl:otherwise>
+          </xsl:choose>
+      </xsl:for-each>
+    </xsl:when>
+    <xsl:when test="@mediaType = 'text/plain'">
+      <xsl:for-each select="wadl:doc">
+        <xsl:sort select="position()" data-type="number" order="descending"/>
+          <xsl:if test="position() > 1"><br/></xsl:if>
+          <xsl:if test="@title and local-name(..) != 'application'">
+              <xsl:value-of select="@title"/>:
+          </xsl:if>
+          <xsl:choose>
+            <xsl:when test="@title = 'Example'">
+              <xsl:variable name="url">
+                <xsl:choose>
+                  <xsl:when test="string-length($base) > 0">
+                    <xsl:call-template name="getFullResourcePath">
+                      <xsl:with-param name="base" select="$base"/>                
+                      <xsl:with-param name="path" select="text()"/>
+                    </xsl:call-template>
+                  </xsl:when>
+                  <xsl:otherwise><xsl:value-of select="text()"/></xsl:otherwise>
+                </xsl:choose>
+              </xsl:variable>
+              <a href="{$url}"><xsl:value-of select="$url"/></a>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:apply-templates select="node()" mode="copy"/>
+            </xsl:otherwise>
+          </xsl:choose>
+      </xsl:for-each>
+    </xsl:when>
     <xsl:otherwise>
-      Example for <xsl:value-of select="@mediaType"/> is available in /rest/v2/application.wadl
+      Example for <xsl:value-of select="@mediaType"/> is available in REST API.
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>

@@ -46,6 +46,24 @@ public class HeatmapController {
   @Context
   VelocityEngine velocity;
 
+  /**
+   * Render a heatmap
+   * @param request is HTTP request object
+   * @param metricGroup is metric group name
+   * @param metric is metric name
+   * @param start is start time in yyyyMMddHHmmss format
+   * @param end is end time in yyyyMMddHHmmss format
+   * @param max is maximum possible value of the heatmap
+   * @param scale is the range of possible values
+   * @param width is width of the image
+   * @param height is height of the image
+   * @return html page of login screen
+   * 
+   * @response.representation.200.doc Login screen
+   * @response.representation.200.mediaType text/html
+   * @response.representation.200.example Example available in HICC UI
+   */
+
   @GET
   @Path("{metricGroup}/{metric}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -81,6 +99,17 @@ public class HeatmapController {
     return heatmap;
   }
   
+  /**
+   * Render a heatmap from HBase series
+   * 
+   * @param metricGroup is metric group name
+   * @param metric is metric name
+   * @param width is width of the image
+   * @param height is height of the image
+   * @param title is title of the heatmap
+   * @param yLabel is y axis label for the heatmap
+   * @return heatmap chart in html
+   */
   @GET
   @Path("render/{metricGroup}/{metric}")
   @Produces(MediaType.TEXT_HTML)

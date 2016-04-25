@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -58,6 +59,10 @@ public class PieChartController extends ChartController{
    * 
    * @param id Reference ID of Chart stored in HBase chukwa_meta table.
    * @return html chart widget
+   * 
+   * @response.representation.200.doc Preview a pie chart
+   * @response.representation.200.mediaType text/html
+   * @response.representation.200.example Example available in HICC UI
    */
   @GET
   @Path("draw/{id}")
@@ -86,9 +91,17 @@ public class PieChartController extends ChartController{
 
   /**
    * Preview a pie chart
+   * 
+   * @param buffer is pie chart object
+   * 
+   * @response.representation.200.doc Preview a pie chart
+   * @response.representation.200.mediaType text/html
+   * @response.representation.200.example Example available in HICC UI
    */
   @PUT
   @Path("preview")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.TEXT_HTML)
   public String preview(String buffer) {
     VelocityContext context = new VelocityContext();
     StringWriter sw = null;
@@ -111,8 +124,20 @@ public class PieChartController extends ChartController{
     return sw.toString();
   }
 
+  /**
+   * Preview a series JSON for pie chart
+   * 
+   * @param request HTTP request object
+   * @param buffer is pie chart configuration
+   * 
+   * @request.representation.example {@link Examples#CPU_SERIES_METADATA}
+   * @response.representation.200.doc Preview a pie chart series
+   * @response.representation.200.mediaType application/json
+   * @response.representation.200.example Example available in REST API
+   */
   @PUT
   @Path("preview/series")
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces("application/json")
   public String previewSeries(@Context HttpServletRequest request, String buffer) {
     Type listType = new TypeToken<ArrayList<SeriesMetaData>>() {

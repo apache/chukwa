@@ -87,6 +87,18 @@ public class MetricsController {
     return buffer;
   }
 
+  /**
+   * Query metric series by session key, this is useful to query same metric from
+   * multiple data sources, such as multiple hosts
+   * 
+   * @param request is HTTP request object
+   * @param metricGroup is metric group name
+   * @param metric is metric name
+   * @param skey is session key which maps to multiple data sources
+   * @param start is start time
+   * @param end is end time
+   * @return List of metric series
+   */
   @GET
   @Path("series/{metricGroup}/{metric}/session/{sessionKey}")
   @Produces("application/json")
@@ -131,6 +143,11 @@ public class MetricsController {
     return buffer;
   }
 
+  /**
+   * Query all metric group names in HBase
+   * 
+   * @return a list of metric groups
+   */
   @GET
   @Path("schema")
   @Produces("application/json")
@@ -141,6 +158,13 @@ public class MetricsController {
     return groups;
   }
   
+  /**
+   * Query metric names by metric group
+   * 
+   * @param metricGroup is name of metric group
+   * @return a list of metric names
+   * 
+   */
   @GET
   @Path("schema/{metricGroup}")
   @Produces("application/json")
@@ -151,6 +175,14 @@ public class MetricsController {
     return metrics;
   }
 
+  /**
+   * Query metrics source names by metric group
+   * 
+   * @param request HTTP Request object
+   * @param metricGroup is name of metric group
+   * @return a list of metric source names
+   * 
+   */
   @GET
   @Path("source/{metricGroup}")
   @Produces("application/json")

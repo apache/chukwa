@@ -18,9 +18,14 @@
 package org.apache.hadoop.chukwa.hicc.bean;
 
 import java.util.ArrayList;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 public class Dashboard {
-  ArrayList<Widget> grid = null;
+  public ArrayList<Widget> grid = null;
 
   public void add(Widget widget) {
     if(grid==null) {
