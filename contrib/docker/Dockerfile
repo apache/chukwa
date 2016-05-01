@@ -17,14 +17,14 @@ MAINTAINER Apache
 RUN yum install -y tar wget bind-utils ntpd java-1.7.0-openjdk which openssh-server openssh-clients
 RUN mkdir -p /opt/apache
 RUN wget https://www.apache.org/dist/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz
-RUN wget https://www.apache.org/dist/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz 
-RUN wget https://www.apache.org/dist/hbase/1.1.1/hbase-1.1.1-bin.tar.gz
-RUN wget https://www.apache.org/dist/lucene/solr/4.10.4/solr-4.10.4.tgz
-ADD chukwa-0.7.0.tar.gz /opt/apache/
+RUN wget https://www.apache.org/dist/hadoop/common/hadoop-2.7.2/hadoop-2.7.2.tar.gz 
+RUN wget https://www.apache.org/dist/hbase/1.2.1/hbase-1.2.1-bin.tar.gz
+RUN wget https://www.apache.org/dist/lucene/solr/5.5.0/solr-5.5.0.tgz
+ADD chukwa-0.8.0.tar.gz /opt/apache/
 RUN tar xf zookeeper-3.4.6.tar.gz -C /opt/apache
-RUN tar xf hadoop-2.7.1.tar.gz -C /opt/apache
-RUN tar xf hbase-1.1.1-bin.tar.gz -C /opt/apache
-RUN tar xf solr-4.10.4.tgz -C /opt/apache
+RUN tar xf hadoop-2.7.2.tar.gz -C /opt/apache
+RUN tar xf hbase-1.2.1-bin.tar.gz -C /opt/apache
+RUN tar xf solr-5.5.0.tgz -C /opt/apache
 RUN rm -f zookeeper-*.tar.gz hadoop-*.tar.gz hbase-*.tar.gz solr-*.tgz
 RUN ln -s /opt/apache/zookeeper-* /opt/apache/zookeeper
 RUN ln -s /opt/apache/hadoop-* /opt/apache/hadoop

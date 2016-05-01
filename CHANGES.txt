@@ -16,6 +16,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-807. Update Docker support to current.  (Eric Yang)
+
     CHUKWA-803. Update Solr API to version 5 API.  (Eric Yang)
 
     CHUKWA-801. Increase measurement timeout for TestFailTailer. (Eric Yang)
