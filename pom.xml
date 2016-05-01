@@ -911,6 +911,9 @@
                     <exclude>src/main/web/hicc/home/js/select2.min.js</exclude>
                     <exclude>src/main/web/hicc/css/font-awesome.min.css</exclude>
                     <exclude>src/main/web/hicc/fonts/glyphicons-halflings-regular.*</exclude>
+                    <exclude>src/main/web/hicc/home/css/gridstack.min.css</exclude>
+                    <exclude>src/main/web/hicc/home/js/gridstack.min.*</exclude>
+                    <exclude>src/main/web/hicc/home/js/jquery-ui.js</exclude>
 
   			            <!-- Creative Commons licensed files -->
   			            <exclude>src/main/web/hicc/js/autoHeight.js</exclude>
@@ -921,6 +924,7 @@
   			            <exclude>src/main/web/hicc/js/json.js</exclude>
   			            <exclude>src/main/web/hicc/home/fonts/codropsicons/*</exclude>
   			            <exclude>src/main/web/hicc/home/fonts/ecoicons/*</exclude>
+                                    <exclude>src/main/web/hicc/home/js/lodash.min.js</exclude>
 
                     <!-- DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 -->
                     <exclude>src/main/web/hicc/css/chartist.css</exclude>
