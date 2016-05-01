@@ -186,8 +186,8 @@ public class Examples {
       widget.setSrc(new URI("/hicc/welcome.html"));
       widget.setCol(1);
       widget.setRow(1);
-      widget.setSize_x(10);
-      widget.setSize_y(5);
+      widget.setSize_x(12);
+      widget.setSize_y(7);
       WELCOME_PAGE_WIDGET = widget;
       dashboard.add(WELCOME_PAGE_WIDGET);
       DEFAULT_DASHBOARD = dashboard;
@@ -281,8 +281,8 @@ public class Examples {
       widget.setSrc(new URI("/hicc/v1/dashboard/quicklinks"));
       widget.setCol(1);
       widget.setRow(1);
-      widget.setSize_x(10);
-      widget.setSize_y(5);
+      widget.setSize_x(12);
+      widget.setSize_y(7);
       QUICK_LINKS_WIDGET = widget;
       dashboard.add(QUICK_LINKS_WIDGET);
 

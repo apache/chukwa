@@ -27,11 +27,14 @@
     <title>Chukwa</title>
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" type="text/css" href="css/normalize.css" />
-    <link rel="stylesheet" type="text/css" href="css/jquery.gridster.css" />
+    <!-- link rel="stylesheet" type="text/css" href="css/jquery.gridster.css" / -->
+    <link rel="stylesheet" type="text/css" href="css/gridstack.min.css" />
     <link rel="stylesheet" type="text/css" href="css/component.css" />
     <script src="js/modernizr.custom.js"></script>
     <script src="js/jquery.js" type="text/javascript"></script>
-    <script src="js/jquery.gridster.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="js/lodash.min.js" type="text/javascript"></script>
+    <script src="js/gridstack.min.js" type="text/javascript"></script>
     <script src="js/typeahead.bundle.js" type="text/javascript"></script>
   </head>
   <body>
@@ -75,9 +78,8 @@
         <li><a class="gn-icon-fullscreen" onclick="toggleFullScreen()"><span> </span></a></li>
       </ul>
     </div><!-- /container -->
-    <div class="gridster">
-      <ul/>
-    </div>
+
+    <div class="grid-stack"></div>
 
     <script src="js/classie.js"></script>
     <script src="js/gnmenu.js"></script>
@@ -142,48 +144,73 @@ function toggleGlass() {
   $('#glass').toggle();
 }
 
+function buildWidget(src) {
+  var html = '<div class="grid-stack-item-content">' +
+             '<div class="widget-header">' +
+             '<span class="gs-icon gs-close-handle" onClick="remove_widget(this);"></span>' +
+             '<span class="gs-icon gs-zoom-handle" onClick="zoom_widget(this);"></span>' +
+             '</div>' +
+             '<iframe src="'+src+'"></iframe>' +
+             '<div class="overlay_fix" style="display: none"></div></div>';
+  return html
+}
+
+function remove_widget(target) {
+  el = $(target).closest('.grid-stack-item')
+  var gridstack = $(".grid-stack").data('gridstack');
+  gridstack.removeWidget(el);
+  save();
+}
+
+function zoom_widget(button) {
+  var url = $(button).parent().parent().find('iframe').contents().get(0).location.href;
+  window.location.href = url;
+}
+
 // Load dashboard
 function load() {
   $.getJSON('/hicc/v1/dashboard/load/'+dashboard,
     function(data) {
       grid_data = data.grid;
-      grid_data = Gridster.sort_by_row_and_col_asc(grid_data);
-      var overlay_fix_start = function() {
-        $('.overlay_fix').show();
-      }
 
-      var overlay_fix_stop = function() {
-        $('.overlay_fix').hide();
-        save();
+      var options = {
+        cellHeight: 110,
+        verticalMargin: 10,
+        handle: '.widget-header'
       };
-      var gridster = $(".gridster ul").gridster({
-        widget_margins: [0, 0],
-        widget_base_dimensions: [140, 140],
-        autogrow_cols: true,
-	max_cols: 10,
-        limit: true,
-        draggable: {
-          handle: 'header',
-          start: overlay_fix_start,
-          stop: overlay_fix_stop
-        },
-        resize: {
-          enabled: true,
-          start: overlay_fix_start,
-          stop: overlay_fix_stop
-        },
-        header: {
-          enabled: true
-        }
-      });
+      $('.grid-stack').gridstack(options);
+      var gridstack = $(".grid-stack").data('gridstack');
+      gridstack.removeAll();
 
+      $('.grid-stack').on('dragstart', function(event, ui) {
+        var grid = this;
+        var element = event.target;
+        $('.overlay_fix').show();
+      });
+      $('.grid-stack').on('dragstop', function(event, ui) {
+        var grid = this;
+        var element = event.target;
+        $('.overlay_fix').hide();
+      });
+      $('.grid-stack').on('resizestart', function(event, ui) {
+        var grid = this;
+        var element = event.target;
+        $('.overlay_fix').show();
+      });
+      $('.grid-stack').on('resizestop', function(event, ui) {
+        var grid = this;
+        var element = event.target;
+        $('.overlay_fix').hide();
+      });
       $.each(grid_data, function() {
-        var gridster = $(".gridster ul").gridster().data('gridster');
-        gridster.add_widget(this.src,
-          this.size_x,
-          this.size_y,
-          this.col,
-          this.row);
+        var gridstack = $(".grid-stack").data('gridstack');
+        gridstack.addWidget(buildWidget(this.src), this.col, this.row, this.size_x, this.size_y);
+
+      });
+      // Bind save operation only after load operation has been
+      // completed to avoid race conditions.
+      $('.grid-stack').on('change', function(event, ui) {
+        save();
       });
     }
   );
@@ -214,9 +241,20 @@ function load() {
 
 // Save Dashboard
 function save() {
-  var gridster = $(".gridster ul").gridster().data('gridster');
-  var s = gridster.serialize();
-  var data = { "grid" : s };
+  var items = [];
+  $('.grid-stack-item.ui-draggable').each(function () {
+        var $this = $(this);
+        var iframe = $this.find('iframe')[0];
+        items.push({
+            col: parseInt($this.attr('data-gs-x')),
+            row: parseInt($this.attr('data-gs-y')),
+            size_x: parseInt($this.attr('data-gs-width')),
+            size_y: parseInt($this.attr('data-gs-height')),
+            src: iframe.src,
+        });
+    });
+
+  var data = { "grid" : items };
   $.ajax({
     url: '/hicc/v1/dashboard/save/'+dashboard,
     type: 'PUT',
@@ -234,21 +272,19 @@ function setDashboard(value) {
     contentType: 'application/json',
     data: JSON.stringify(data)
   });
-  var gridster = $(".gridster ul").gridster().data('gridster');
-  gridster.remove_all_widgets();
   load();
   showGrid();
 }
 
 function showGrid() {
   $(".frame").hide();
-  $(".gridster ul").show();
+  $(".grid-stack").show();
 }
 
 function showFrame(target) {
   $("#frame").attr("src", target);
   $(".frame").show();
-  $(".gridster ul").hide();
+  $(".grid-stack").hide();
   gnMenu._closeMenu();
 }
 
@@ -284,9 +320,8 @@ $(function(){ //DOM Ready
       var title = $('#url').val();
       if(title in widgetsToUrl) {
         var url = widgetsToUrl[title];
-        var gridster = $(".gridster ul").gridster().data('gridster');
-        gridster.add_widget(url, 1, 1, 1, 1);
-        setTimeout(function(){ save(); }, 3000);
+        var gridstack = $(".grid-stack").data('gridstack');
+        gridstack.addWidget(buildWidget(url), 0, 0, 1, 1);
       }
     }
   });
@@ -313,7 +348,6 @@ $(function(){ //DOM Ready
 function setTime() {
   var data = {};
   data['period'] = $('input[name=period]:checked').val();
-  console.log(data);
   $.ajax({
     url: '/hicc/v1/session/save',
     type: 'PUT',

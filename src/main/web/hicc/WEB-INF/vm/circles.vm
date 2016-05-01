@@ -103,7 +103,7 @@ function render(result) {
         color = "#f7d254";
       }
     #end
-    if(radius < 200) {
+    if(radius < 180) {
       width=10;
       fontsize = 12;
     }
