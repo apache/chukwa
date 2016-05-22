@@ -6,6 +6,12 @@ Trunk (unreleased changes)
 
   IMPROVEMENTS
 
+  BUGS
+
+Release 0.8 - 05/22/2016
+
+  IMPROVEMENTS
+
     CHUKWA-806. Replace gridster with gridstack.  (Eric Yang)
 
     CHUKWA-805. Added examples to HICC rest api.  (Eric Yang)
