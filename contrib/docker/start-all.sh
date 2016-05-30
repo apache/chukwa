@@ -21,8 +21,8 @@ export HBASE_CONF_DIR=/opt/apache/hbase/conf
 export CHUKWA_CONF_DIR=/opt/apache/chukwa/etc/chukwa
 service sshd start
 su - zookeeper -c '/opt/apache/zookeeper/bin/zkServer.sh start'
-su - solr -c 'cd /opt/apache/solr; ./bin/solr start -cloud -z localhost:2181 >/dev/null 2>&1 &'
-su - solr -c 'cd /opt/apache/solr; ./bin/solr create_collection -c chukwa -n chukwa >/dev/null 2>&1 &'
+su - solr -c 'cd /opt/apache/solr; ./bin/solr start -cloud -z localhost:2181'
+su - solr -c 'cd /opt/apache/solr; ./bin/solr create_collection -c chukwa -n chukwa'
 su - hdfs -c '/opt/apache/hadoop/sbin/start-dfs.sh >/dev/null 2>&1'
 su - yarn -c '/opt/apache/hadoop/sbin/start-yarn.sh >/dev/null 2>&1'
 SAFE_MODE=`su - hdfs -c '/opt/apache/hadoop/bin/hadoop dfsadmin -safemode get 2>/dev/null'`
