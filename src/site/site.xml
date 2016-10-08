@@ -17,12 +17,17 @@
    limitations under the License.
 -->
 
-<project name="Chukwa">
+<project name="Apache Chukwa">
   <bannerLeft>
+    <name>Apache</name>
+    <src>images/asf_logo.png</src>
+    <href>http://www.apache.org/</href>
+  </bannerLeft>
+  <bannerRight>
     <name>Chukwa</name>
     <src>images/chukwa_logo_small.jpg</src>
     <href>http://chukwa.apache.org/</href>
-  </bannerLeft>
+  </bannerRight>
   <skin>
     <groupId>org.apache.maven.skins</groupId>
     <artifactId>maven-fluido-skin</artifactId>

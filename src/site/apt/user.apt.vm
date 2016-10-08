@@ -14,69 +14,69 @@
 ~~ limitations under the License.
 ~~
 
-Chukwa User Guide
+Apache Chukwa User Guide
 
-  This chapter is the detailed configuration guide to Chukwa configuration.
+  This chapter is the detailed configuration guide to Apache Chukwa configuration.
 
   Please read this chapter carefully and ensure that all requirements have 
 been satisfied. Failure to do so will cause you (and us) grief debugging 
 strange errors and/or data loss.
 
-  Chukwa uses the same configuration system as Hadoop. To configure a deploy, 
+  Apache Chukwa uses the same configuration system as Apache Hadoop. To configure a deploy, 
 edit a file of environment variables in etc/chukwa/chukwa-env.sh -- this 
 configuration is used mostly by the launcher shell scripts getting the 
 cluster off the ground -- and then add configuration to an XML file to do 
-things like override Chukwa defaults, tell Chukwa what Filesystem to use, 
+things like override Apache Chukwa defaults, tell Apache Chukwa what Filesystem to use, 
 or the location of the HBase configuration.
 
-  When running in distributed mode, after you make an edit to an Chukwa 
+  When running in distributed mode, after you make an edit to an Apache Chukwa 
 configuration, make sure you copy the content of the conf directory to all 
-nodes of the cluster. Chukwa will not do this for you. Use rsync.
+nodes of the cluster. Apache Chukwa will not do this for you. Use rsync.
 
 Pre-requisites
 
-  Chukwa should work on any POSIX platform, but GNU/Linux is the only
-production platform that has been tested extensively. Chukwa has also been used
-successfully on Mac OS X, which several members of the Chukwa team use for 
+  Apache Chukwa should work on any POSIX platform, but GNU/Linux is the only
+production platform that has been tested extensively. Apache Chukwa has also been used
+successfully on Mac OS X, which several members of Apache Chukwa team use for 
 development.
 
   The only absolute software requirements are Java 1.6 or better,
-ZooKeeper {{${zookeeperVersion}}}, HBase {{${hbaseVersion}}} and Hadoop {{${hadoopVersion}}}.
+Apache ZooKeeper {{${zookeeperVersion}}}, Apache HBase {{${hbaseVersion}}} and Apache Hadoop {{${hadoopVersion}}}.
   
-  The Chukwa cluster management scripts rely on <ssh>; these scripts, however,
+  Apache Chukwa cluster management scripts rely on <ssh>; these scripts, however,
 are not required if you have some alternate mechanism for starting and stopping
 daemons.
 
-Installing Chukwa
+Installing Apache Chukwa
 
-  A minimal Chukwa deployment has five components:
+  A minimal Apache Chukwa deployment has five components:
 
-  * A Hadoop and HBase cluster on which Chukwa will process data (referred to as the Chukwa cluster).
+  * A Apache Hadoop and Apache HBase cluster on which Apache Chukwa will process data (referred to as Apache  Chukwa cluster).
 
   * One or more agent processes, that send monitoring data to HBase.
     The nodes with active agent processes are referred to as the monitored 
     source nodes.
 
-  * Data analytics script, summarize Hadoop Cluster Health.
+  * Data analytics script, summarize Apache Hadoop Cluster Health.
 
-  * HICC, the Chukwa visualization tool.
+  * HICC, Apache Chukwa visualization tool.
 
 []
 
-[./images/chukwa_architecture.png] Chukwa Components
+[./images/chukwa_architecture.png] Apache Chukwa Components
 
 * First Steps
 
-  * Obtain a copy of Chukwa. You can find the latest release on the 
-    {{{http://hadoop.apache.org/chukwa/releases.html} Chukwa release page}}.
+  * Obtain a copy of Apache Chukwa. You can find the latest release on the 
+    {{{http://hadoop.apache.org/chukwa/releases.html} Apache Chukwa release page}}.
 
   * Un-tar the release, via <tar xzf>.
 
-  * Make sure a copy of Chukwa is available on each node being monitored.
+  * Make sure a copy of Apache Chukwa is available on each node being monitored.
 
-  * We refer to the directory containing Chukwa as <CHUKWA_HOME>. It may
+  * We refer to the directory containing Apache Chukwa as <CHUKWA_HOME>. It may
 be helpful to set <CHUKWA_HOME> explicitly in your environment,
-but Chukwa does not require that you do so.
+but Apache Chukwa does not require that you do so.
 
 * General Configuration
 
@@ -84,16 +84,16 @@ but Chukwa does not require that you do so.
 It's generally best to set this in <CHUKWA_HOME/etc/chukwa/chukwa-env.sh>.
 
   * In <CHUKWA_HOME/etc/chukwa/chukwa-env.sh>, set <CHUKWA_LOG_DIR> and
-<CHUKWA_PID_DIR> to the directories where Chukwa should store its
+<CHUKWA_PID_DIR> to the directories where Apache Chukwa should store its
 console logs and pid files.  The pid directory must not be shared between
-different Chukwa instances: it should be local, not NFS-mounted.
+different Apache Chukwa instances: it should be local, not NFS-mounted.
 
   * Optionally, set CHUKWA_IDENT_STRING. This string is
- used to name Chukwa's own console log files.
+ used to name Apache Chukwa's own console log files.
 
 Agents
 
-  Agents are the Chukwa processes that actually produce data. This section
+  Agents are the Apache Chukwa processes that actually produce data. This section
 describes how to configure and run them. More details are available in the
 {{{./agent.html} Agent configuration guide}}.
 
@@ -101,12 +101,12 @@ describes how to configure and run them. More details are available in the
 
   First, edit <$CHUKWA_HOME/etc/chukwa/chukwa-env.sh> In addition to 
 the general directions given above, you should set <HADOOP_CONF_DIR> and
-<HBASE_CONF_DIR>.  This should be the Hadoop deployment Chukwa will use to 
+<HBASE_CONF_DIR>.  This should be Apache Hadoop deployment Apache Chukwa will use to 
 store collected data.  You will get a version mismatch error if this is 
 configured incorrectly.
 
   Edit the <CHUKWA_HOME/etc/chukwa/initial_adaptors> configuration file. 
-This is where you tell Chukwa what log files to monitor. See
+This is where you tell Apache Chukwa what log files to monitor. See
 {{{./agent.html#Adaptors} the adaptor configuration guide}} for
 a list of available adaptors.
 
@@ -127,7 +127,7 @@ machines.
 ---
 
   * Another important option is <chukwaAgent.checkpoint.dir>.
-This is the directory Chukwa will use for its periodic checkpoints of 
+This is the directory Apache Chukwa will use for its periodic checkpoints of 
 running adaptors.  It <<must not>> be a shared directory; use a local, 
 not NFS-mount, directory.
 
@@ -154,7 +154,7 @@ connections to the agent control socket.
 ** Use HDFS For Data Storage
 
   The one mandatory configuration parameter is <writer.hdfs.filesystem>.
-This should be set to the HDFS root URL on which Chukwa will store data.
+This should be set to the HDFS root URL on which Apache Chukwa will store data.
 Various optional configuration options are described in 
 {{{./pipeline.html} the pipeline configuration guide}}.
 
@@ -173,23 +173,23 @@ does the reverse.
 
   You can, of course, use any other daemon-management system you like. 
 For instance, <tools/init.d> includes init scripts for running
-Chukwa agents.
+Apache Chukwa agents.
 
   To check if an agent is working properly, you can telnet to the control
 port (9093 by default) and hit "enter". You will get a status message if
 the agent is running normally.
 
-Configuring Hadoop For Monitoring
+Configuring Apache Hadoop For Monitoring
 
-  One of the key goals for Chukwa is to collect logs from Hadoop clusters. 
-This section describes how to configure Hadoop to send its logs to Chukwa. 
-Note that these directions require Hadoop 0.205.0+.  Earlier versions of 
-Hadoop do not have the hooks that Chukwa requires in order to grab 
+  One of the key goals for Apache Chukwa is to collect logs from Apache Hadoop clusters. 
+This section describes how to configure Apache Hadoop to send its logs to Apache Chukwa. 
+Note that these directions require Apache Hadoop 0.205.0+.  Earlier versions of 
+Apache Hadoop do not have the hooks that Apache Chukwa requires in order to grab 
 MapReduce job logs.
 
-  The Hadoop configuration files are located in <HADOOP_HOME/etc/hadoop>.
-To setup Chukwa to collect logs from Hadoop, you need to change some of the 
-Hadoop configuration files.
+  Apache  Hadoop configuration files are located in <HADOOP_HOME/etc/hadoop>.
+To setup Apache Chukwa to collect logs from Apache Hadoop, you need to change some of 
+Apache Hadoop configuration files.
 
   * Copy CHUKWA_HOME/etc/chukwa/hadoop-log4j.properties file to HADOOP_CONF_DIR/log4j.properties
 
@@ -199,7 +199,7 @@ Hadoop configuration files.
 
 Setup HBase Table
 
-  Chukwa is moving towards a model of using HBase to store metrics data to 
+  Apache Chukwa is moving towards a model of using HBase to store metrics data to 
 allow real-time charting. This section describes how to configure HBase and 
 HICC to work together.
 
@@ -220,7 +220,7 @@ HICC
 
 * Starting, Stopping, And Monitoring
 
-  The Hadoop Infrastructure Care Center (HICC) is the Chukwa web user interface.
+  Hadoop Infrastructure Care Center (HICC) is Apache Chukwa web user interface.
 HICC is started by invoking
 
 ---
@@ -236,9 +236,9 @@ browser to:
 
 Troubleshooting Tips
 
-* UNIX Processes For Chukwa Data Processes
+* UNIX Processes For Apache Chukwa Data Processes
 
-  Chukwa Data Processors are identified by:
+  Apache Chukwa Data Processors are identified by:
 
 ---
   org.apache.hadoop.chukwa.datacollection.agent.ChukwaAgent

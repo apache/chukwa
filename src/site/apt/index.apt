@@ -16,40 +16,40 @@
 Overview
 
   Log processing was one of the original purposes of MapReduce. Unfortunately,
-using Hadoop MapReduce to monitor Hadoop can be inefficient.  Batch
-processing nature of Hadoop MapReduce prevents the system to provide real time
+using Apache Hadoop MapReduce to monitor Apache Hadoop can be inefficient.  Batch
+processing nature of Apache Hadoop MapReduce prevents the system to provide real time
 status of the cluster.
 
-  We started this journey at beginning of 2008, and a lot of Hadoop components
+  We started this journey at beginning of 2008, and a lot of Apache Hadoop components
 have been built to improve overall reliability of the system and 
 improve realtimeness of monitoring. We have adopted HBase to facilitate lower 
 latency of random reads and using in memory updates and write ahead logs to 
 improve the reliability for root cause analysis.
 
-  Logs are generated incrementally across many machines, but Hadoop MapReduce
+  Logs are generated incrementally across many machines, but Apache Hadoop MapReduce
 works best on a small number of large files. Merging the reduced output
 of multiple runs may require additional mapreduce jobs.  This creates some 
-overhead for data management on Hadoop.
+overhead for data management on Apache Hadoop.
 
-  Chukwa is a Hadoop subproject devoted to bridging that gap between logs
-processing and Hadoop ecosystem.  Chukwa is a scalable distributed monitoring 
-and analysis system, particularly logs from Hadoop and other distributed systems.
+  Apache Chukwa is a Apache Hadoop subproject devoted to bridging that gap between logs
+processing and Hadoop ecosystem.  Apache Chukwa is a scalable distributed monitoring 
+and analysis system, particularly logs from Apache Hadoop and other distributed systems.
 
-  The Chukwa Documentation provides the information you need to get
-started using Chukwa. {{{./design.html} Architecture and Design document}}
-provides high level view of Chukwa design.
+  Apache Chukwa Documentation provides the information you need to get
+started using Apache Chukwa. {{{./design.html} Architecture and Design document}}
+provides high level view of Apache Chukwa design.
 
-  If you're trying to set up a Chukwa cluster from scratch, 
+  If you're trying to set up a Apache Chukwa cluster from scratch, 
 {{{./user.html} User Guide}} describes the setup and deploy procedure.
 
-  If you want to configure the Chukwa agent process, to control what's
+  If you want to configure Apache Chukwa agent process, to control what's
 collected, you should read the {{{./agent.html} Agent Guide}}. There is
 also a  {{{./pipeline.html} Pipeline Guide}} describing configuration
 parameters for ETL processes for the data pipeline.
      
-  And if you want to develop Chukwa to monitor other data source,
+  And if you want to develop Apache Chukwa to monitor other data source,
 {{{./programming.html} Programming Guide}} maybe handy to learn
-about Chukwa programming API.
+about Apache Chukwa programming API.
 
   If you have more questions, you can ask on the
-{{{mailto:user@chukwa.apache.org}Chukwa mailing lists}}
+{{{mailto:user@chukwa.apache.org}Apache Chukwa mailing lists}}

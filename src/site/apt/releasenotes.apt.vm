@@ -13,22 +13,23 @@
 ~~ See the License for the specific language governing permissions and
 ~~ limitations under the License.
 ~~
-Release Notes - Hadoop Chukwa - Version ${VERSION}
+Release Notes - Apache  Chukwa - Version ${VERSION}
 
 Overall Status
 
-  This is the fifth public release of Chukwa, a log analysis framework on top of Hadoop 
-and HBase.  Chukwa has been tested at scale and used in some production settings, and 
-is reasonably robust and well behaved. For instructions on setting up Chukwa, see the 
-administration guide and the rest of the Chukwa documentation.
+  This is the fifth public release of Apache Chukwa, a log analysis framework on top of 
+Apache Hadoop and Apache HBase.  Apache Chukwa has been tested at scale and used in some 
+production settings, and is reasonably robust and well behaved. For instructions on 
+setting up Apache Chukwa, see the administration guide and the rest of Apache Chukwa 
+documentation.
 
 Important Changes Since Last Release
 
   * New dashboard design.
 
-  * New Chukwa Parquet file format.
+  * New Apache Chukwa Parquet file format.
 
-  * New HBase schema for improved low latency read performance.
+  * New Apache HBase schema for improved low latency read performance.
 
   * New Solr log indexing support.
 
@@ -37,8 +38,9 @@ Important Changes Since Last Release
 
 Requirements
 
-  Chukwa relies on Java 1.6, and requires maven 3.0.3 to build.
-The back-end processing requires Hadoop ${hadoopVersion}, HBase ${hbaseVersion}+, and Solr ${solrVersion}+.
+  Apache Chukwa relies on Java 1.6, and requires maven 3.0.3 to build.
+The back-end processing requires Apache Hadoop ${hadoopVersion}, 
+Apache HBase ${hbaseVersion}+, and Apache Solr ${solrVersion}+.
 
 Known Limitations
 

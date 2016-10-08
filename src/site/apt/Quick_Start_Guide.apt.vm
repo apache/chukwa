@@ -13,55 +13,55 @@
 ~~ See the License for the specific language governing permissions and
 ~~ limitations under the License.
 ~~
-Chukwa Quick Start Guide
+Apache Chukwa Quick Start Guide
 
 Purpose
 
-  Chukwa is a system for large-scale reliable log collection and processing with Hadoop. The Chukwa design overview discusses the overall architecture of Chukwa. You should read that document before this one. The purpose of this document is to help you install and configure Chukwa.
+  Apache Chukwa is a system for large-scale reliable log collection and processing with Hadoop. Apache Chukwa design overview discusses the overall architecture of Apache Chukwa. You should read that document before this one. The purpose of this document is to help you install and configure Apache Chukwa.
 
 
 Pre-requisites
 
-  Chukwa should work on any POSIX platform, but GNU/Linux is the only production platform that has been tested extensively. Chukwa has also been used successfully on Mac OS X, which several members of the Chukwa team use for development.
+  Apache Chukwa should work on any POSIX platform, but GNU/Linux is the only production platform that has been tested extensively. Apache Chukwa has also been used successfully on Mac OS X, which several members of the Apache Chukwa team use for development.
 
   Software requirements are Java 1.6 or better, ZooKeeper {{${zookeeperVersion}}}, HBase {{${hbaseVersion}}} and Hadoop {{${hadoopVersion}}}.
 
-  The Chukwa cluster management scripts rely on ssh; these scripts, however, are not required if you have some alternate mechanism for starting and stopping daemons.
+  Apache Chukwa cluster management scripts rely on ssh; these scripts, however, are not required if you have some alternate mechanism for starting and stopping daemons.
 
 
-Installing Chukwa
+Installing Apache Chukwa
 
-  A minimal Chukwa deployment has five components:
+  A minimal Apache Chukwa deployment has five components:
 
-  * A Hadoop and HBase cluster on which Chukwa will process data (referred to as the Chukwa cluster). 
+  * A Apache Hadoop and Apache HBase cluster on which Apache Chukwa will process data (referred to as the Chukwa cluster). 
   
-  * One or more agent processes, that send monitoring data to HBase. The nodes with active agent processes are referred to as the monitored source nodes.
+  * One or more agent processes, that send monitoring data to Apache HBase. The nodes with active agent processes are referred to as the monitored source nodes.
   
-  * Solr Cloud cluster which Chukwa will store indexed log files.
+  * Solr Cloud cluster which Apache Chukwa will store indexed log files.
 
   * Data analytics script, summarize Hadoop Cluster Health.
 
-  * HICC, the Chukwa visualization tool.
+  * HICC, Apache Chukwa visualization tool.
 
 []
 
-[./images/chukwa_architecture.png] Chukwa ${VERSION} Architecture 
+[./images/chukwa_architecture.png] Apache Chukwa ${VERSION} Architecture 
 
 First Steps
 
-  * Obtain a copy of Chukwa. You can find the latest release on the Chukwa {{{http://www.apache.org/dyn/closer.cgi/chukwa/}release page}} (or alternatively check the source code out from SCM).
+  * Obtain a copy of Apache Chukwa. You can find the latest release on the Apache Chukwa {{{http://www.apache.org/dyn/closer.cgi/chukwa/}release page}} (or alternatively check the source code out from SCM).
 
   * Un-tar the release, via tar xzf.
 
-  * Make sure a copy of Chukwa is available on each node being monitored.
+  * Make sure a copy of Apache Chukwa is available on each node being monitored.
 
-  * We refer to the directory containing Chukwa as CHUKWA_HOME. It may be useful to set CHUKWA_HOME explicitly in your environment for ease of use.
+  * We refer to the directory containing Apache Chukwa as CHUKWA_HOME. It may be useful to set CHUKWA_HOME explicitly in your environment for ease of use.
 
-Setting Up Chukwa Cluster
+Setting Up Apache Chukwa Cluster
 
 * Configure Hadoop and HBase
 
-  [[1]] Copy Chukwa files to Hadoop and HBase directories:
+  [[1]] Copy Apache Chukwa files to Hadoop and HBase directories:
 
 ---
 cp $CHUKWA_HOME/etc/chukwa/hadoop-log4j.properties $HADOOP_CONF_DIR/log4j.properties
@@ -74,7 +74,7 @@ cp $CHUKWA_HOME/share/chukwa/chukwa-${VERSION}-client.jar $HBASE_HOME/lib
 cp $CHUKWA_HOME/share/chukwa/lib/json-simple-${json-simpleVersion}.jar $HBASE_HOME/lib
 ---  
 
-  [[2]] Restart your Hadoop Cluster. General Hadoop configuration is available at: {{{http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html}Hadoop Configuration}}. <<N.B.>> You may see some additional logging messages at this stage which looks as if error(s) are present. These messages are showing up because the log4j socket appender writes to stderr for warn messages when it is unable to stream logs to a log4j socket server. If the Chukwa agent is started with socket adaptors prior to Hadoop and HBase, those messages will not show up. For the time being do not worry about these messages, they will disappear once Chukwa agent is started with socket adaptors.
+  [[2]] Restart your Hadoop Cluster. General Hadoop configuration is available at: {{{http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html}Hadoop Configuration}}. <<N.B.>> You may see some additional logging messages at this stage which looks as if error(s) are present. These messages are showing up because the log4j socket appender writes to stderr for warn messages when it is unable to stream logs to a log4j socket server. If Apache Chukwa agent is started with socket adaptors prior to Hadoop and HBase, those messages will not show up. For the time being do not worry about these messages, they will disappear once Apache Chukwa agent is started with socket adaptors.
   
   [[3]] Make sure HBase is started. General HBASE configuration is available at: {{{http://hbase.apache.org/book.html#configuration}HBase Configuration}}
   
@@ -84,9 +84,9 @@ cp $CHUKWA_HOME/share/chukwa/lib/json-simple-${json-simpleVersion}.jar $HBASE_HO
 bin/hbase shell < $CHUKWA_HOME/etc/chukwa/hbase.schema
 ---
 
-  This procedure initializes the default Chukwa HBase schema.
+  This procedure initializes the default Apache Chukwa HBase schema.
 
-* Configuring And Starting Chukwa Agent
+* Configuring And Starting Apache Chukwa Agent
 
   [[1]] Edit CHUKWA_HOME/etc/chukwa/chukwa-env.sh. Make sure that JAVA_HOME, HADOOP_CONF_DIR, and HBASE_CONF_DIR are set correctly.
 
@@ -100,7 +100,7 @@ sbin/chukwa-daemon.sh start agent
 
 * Setup Solr to index Service log files
 
-  [[1]] Start Solr ${solrVersion} with Chukwa Solr configuration:
+  [[1]] Start Solr ${solrVersion} with Apache Chukwa Solr configuration:
 
 ---
 bin/solr start -cloud -z localhost:2181
@@ -109,7 +109,7 @@ bin/solr start -cloud -z localhost:2181
 
 * Start HICC
 
-  The Hadoop Infrastructure Care Center (HICC) is the Chukwa web user interface. 
+  The Hadoop Infrastructure Care Center (HICC) is Apache Chukwa web user interface. 
 
   [[1]] To start HICC, do the following:
 
@@ -127,4 +127,4 @@ http://<server>:4080/hicc/
   
   [[2]] The default user name and password is "admin" without quotes.
   
-  [[3]] Metrics data collected by Chukwa Agent will be browsable through Graph Explorer widget.
+  [[3]] Metrics data collected by Apache Chukwa Agent will be browsable through Graph Explorer widget.

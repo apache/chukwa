@@ -14,30 +14,30 @@
 ~~ limitations under the License.
 ~~
 
-Chukwa Programmers Guide
+Apache Chukwa Programmers Guide
 
-  At the core of Chukwa is a flexible system for collecting and processing
+  At the core of Apache Chukwa is a flexible system for collecting and processing
 monitoring data, particularly log files. This document describes how to use the
-collected data.  (For an overview of the Chukwa data model and collection 
+collected data.  (For an overview of Apache Chukwa data model and collection 
 pipeline, see the {{{./design.html}Design Guide}}.)  
 
-  In particular, this document discusses the Chukwa archive file formats, the
-demux and archiving mapreduce jobs, and  the layout of the Chukwa storage directories.
+  In particular, this document discusses the Apache Chukwa archive file formats, the
+demux and archiving mapreduce jobs, and  the layout of Apache Chukwa storage directories.
 
 Agent REST API
 
-  Chukwa Agent offers programmable API to control Agent adaptors for collecting data from
+  Apache Chukwa Agent offers programmable API to control Agent adaptors for collecting data from
 remote sources, or setup a listening port for incoming data stream.  Usage guide and
 examples are documented in {{{./apidocs/agent-rest.html} Agent REST API doc}}.
 
 Demux
 
-  A key use for Chukwa is processing arriving data, in parallel, using Chukwa Demux.
-The most common way to do this is using the Chukwa demux framework.
+  A key use for Apache Chukwa is processing arriving data, in parallel, using Apache Chukwa Demux.
+The most common way to do this is using Apache Chukwa demux framework.
 As {{{./design.html}data flows through Chukwa}}, the demux parsers are often the
 first user defined function to process data.
 
-  By default, Chukwa will use the default TsProcessor. This parser will try to
+  By default, Apache Chukwa will use the default TsProcessor. This parser will try to
 extract the real log statement from the log entry using the ISO8601 date 
 format. If it fails, it will use the time at which the chunk was written to
 disk (agent timestamp).
