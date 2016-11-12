@@ -32,6 +32,7 @@
     <link rel="stylesheet" type="text/css" href="css/component.css" />
     <script src="js/modernizr.custom.js"></script>
     <script src="js/jquery.js" type="text/javascript"></script>
+    <script src="js/throttle.js" type="text/javascript"></script>
     <script src="js/jquery-ui.js"></script>
     <script src="js/lodash.min.js" type="text/javascript"></script>
     <script src="js/gridstack.min.js" type="text/javascript"></script>
@@ -207,11 +208,6 @@ function load() {
         gridstack.addWidget(buildWidget(this.src), this.col, this.row, this.size_x, this.size_y);
 
       });
-      // Bind save operation only after load operation has been
-      // completed to avoid race conditions.
-      $('.grid-stack').on('change', function(event, ui) {
-        save();
-      });
     }
   );
 
@@ -342,6 +338,10 @@ $(function(){ //DOM Ready
       load();
     }
   );
+
+  $('.grid-stack').on('change', throttle(function(event, ui) {
+    save();
+  }, 250));
 
 });
 
