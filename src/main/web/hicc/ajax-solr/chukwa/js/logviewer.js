@@ -52,7 +52,7 @@ function getLog(type, startDate, direction) {
     data: {
       q: q,
       wt: "json",
-      sort: "date asc",
+      sort: "_version_ asc",
       start: 0,
       rows: 1000
     },
