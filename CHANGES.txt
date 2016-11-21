@@ -5,6 +5,7 @@ Trunk (unreleased changes)
   NEW FEATURES
 
   IMPROVEMENTS
+    CHUKWA-814. Update HBase and Solr support for Docker demo. (Eric Yang)
 
   BUGS
 

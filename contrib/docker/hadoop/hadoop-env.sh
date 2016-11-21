@@ -24,7 +24,7 @@
 # The java implementation to use.
 export JAVA_HOME=/usr/lib/jvm/jre
 
-export HADOOP_LOG_DIR=/var/log/hadoop
+export HADOOP_LOG_DIR=/var/log/hadoop/hdfs
 export HADOOP_PID_DIR=/var/run/hadoop
 
 # The jsvc implementation to use. Jsvc is required to run secure datanodes
