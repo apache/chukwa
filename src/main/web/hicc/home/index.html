@@ -175,7 +175,7 @@ function load() {
       grid_data = data.grid;
 
       var options = {
-        cellHeight: 110,
+        cellHeight: 130,
         verticalMargin: 10,
         handle: '.widget-header'
       };
@@ -315,10 +315,17 @@ $(function(){ //DOM Ready
       event.preventDefault();
       var title = $('#url').val();
       if(title in widgetsToUrl) {
+        $("html, body").animate({ scrollTop: $(document).height() }, "slow");
         var url = widgetsToUrl[title];
         var gridstack = $(".grid-stack").data('gridstack');
-        gridstack.addWidget(buildWidget(url), 0, 0, 1, 1);
+        gridstack.addWidget(buildWidget(url), 1, 100, 5, 3);
       }
+    }
+  });
+
+  $( "#url" ).keyup(function( event ) {
+    if ( event.which == 13 ) {
+        $('#url').val('');
     }
   });
 

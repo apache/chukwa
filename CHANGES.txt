@@ -7,6 +7,8 @@ Trunk (unreleased changes)
   IMPROVEMENTS
     CHUKWA-814. Update HBase and Solr support for Docker demo. (Eric Yang)
 
+    CHUKWA-815. Refine add widget, and chart hovering interactions. (Eric Yang)
+
   BUGS
 
     CHUKWA-813.  Fix logviewer for sorting log entries. (Eric Yang)

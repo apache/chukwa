@@ -73,6 +73,7 @@ var _options={
       #if ( $chart.getYMax()!=0 )
         max: $chart.getYMax(),
       #end
+      labelWidth: 60,
       tickFormatter: function(val, axis) {
         #if ( $chart.getYUnitType().equals('bytes') )
           #parse("unit-bytes-binary.vm")
