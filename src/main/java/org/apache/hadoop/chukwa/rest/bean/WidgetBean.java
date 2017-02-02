@@ -167,7 +167,7 @@ public class WidgetBean {
           for(int i=0;i<this.parameters.length;i++) {
             Collection<String> value = this.parameters[i].getValue();
             for(int j=0;j<plist.length;j++) {
-              if(plist[i].getName().intern()==this.parameters[j].getName().intern()) {
+              if(plist[j].getName().intern()==this.parameters[i].getName().intern()) {
                 plist[j].setValue(value);
               }
             }
