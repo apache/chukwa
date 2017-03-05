@@ -29,6 +29,8 @@ Release 0.8 - 05/22/2016
 
   BUGS
 
+    CHUKWA-818. Convert Solr client to singleton to prevent connection leaks.  (Eric Yang)
+
     CHUKWA-808. Fix solr startup for Docker support.  (Eric Yang)
 
     CHUKWA-807. Update Docker support to current.  (Eric Yang)
