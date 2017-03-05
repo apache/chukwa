@@ -132,9 +132,18 @@ public class HBaseWriter extends PipelineableWriter {
   @Override
   public CommitStatus add(List<Chunk> chunks) throws WriterException {
     CommitStatus rv = ChukwaWriter.COMMIT_OK;
+    Table hbase;
+    Table meta;
     try {
-      Table hbase = connection.getTable(TableName.valueOf(CHUKWA_TABLE));
-      Table meta = connection.getTable(TableName.valueOf(CHUKWA_META_TABLE));
+      if (connection == null || connection.isClosed()) {
+        try {
+          connection = ConnectionFactory.createConnection(hconf);
+        } catch (IOException e) {
+          throw new WriterException("HBase is offline, retry later...");
+        }
+      }
+      hbase = connection.getTable(TableName.valueOf(CHUKWA_TABLE));
+      meta = connection.getTable(TableName.valueOf(CHUKWA_META_TABLE));
       for(Chunk chunk : chunks) {
         synchronized (this) {
           try {
@@ -143,7 +152,8 @@ public class HBaseWriter extends PipelineableWriter {
             hbase.put(output);
             meta.put(reporter.getInfo());
           } catch (Throwable e) {
-            log.warn(output);
+            log.warn("Unable to process data:");
+            log.warn(new String(chunk.getData()));
             log.warn(ExceptionUtil.getStackTrace(e));
           }
           dataSize += chunk.getData().length;
@@ -155,8 +165,15 @@ public class HBaseWriter extends PipelineableWriter {
       meta.close();
     } catch (Exception e) {
       log.error(ExceptionUtil.getStackTrace(e));
-      throw new WriterException("Failed to store data to HBase.");
-    }    
+      if(connection != null) {
+        try {
+          connection.close();
+        } catch(IOException e2) {
+          connection = null;
+          throw new WriterException("HBase connection maybe leaking.");
+        }
+      }
+    } 
     if (next != null) {
       rv = next.add(chunks); //pass data through
     }

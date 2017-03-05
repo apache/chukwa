@@ -38,7 +38,7 @@ public class Log4jMetricsSink implements MetricsSink {
   protected String context = "HadoopMetrics";
   protected String host = "localhost";
   protected int port = 9095;
-  protected Logger out = null;
+  protected static Logger out = null;
 
   @Override
   public void init(SubsetConfiguration conf) {

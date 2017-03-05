@@ -92,7 +92,11 @@ public class PipelineStageWriter implements ChukwaWriter {
         // if authentication type is kerberos; login using the specified kerberos principal and keytab file
         for(int i=0; i<classes.length; i++) {
           if(classes[i].contains("HBaseWriter")) {
-            loginToKerberos (conf);
+            try {
+              loginToKerberos (conf);
+            } catch(IOException e) {
+              throw new WriterException("Unable to login to Kerberos.");
+            }
           }
         }
         
@@ -111,8 +115,7 @@ public class PipelineStageWriter implements ChukwaWriter {
             writer = (ChukwaWriter) st; // one stage pipeline
         }
         return;
-      } catch (IOException | 
-          WriterException | 
+      } catch (WriterException | 
           ClassNotFoundException | 
           IllegalAccessException | 
           InstantiationException e) {

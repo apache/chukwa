@@ -17,13 +17,14 @@
  */
 package org.apache.hadoop.chukwa.datacollection.writer;
 
+import java.io.IOException;
 
-public class WriterException extends Exception {
+public class WriterException extends IOException {
 
   /**
 	 * 
 	 */
-  private static final long serialVersionUID = -4207275200546397145L;
+  private static final long serialVersionUID = -4207275200546397146L;
 
   public WriterException() {
   }
