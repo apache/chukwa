@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+rm -f /run/nologin
+
 # Initialize Users
 groupadd -g 123 hadoop
 groupadd -g 201 hdfs
@@ -106,7 +108,7 @@ export JAVA_HOME=/usr/lib/jvm/jre
 export HADOOP_CONF_DIR=/opt/apache/hadoop/etc/hadoop
 export HBASE_CONF_DIR=/opt/apache/hbase/conf
 export CHUKWA_CONF_DIR=/opt/apache/chukwa/etc/chukwa
-service sshd start
+systemctl status sshd 
 su - hdfs -c '/opt/apache/hadoop/bin/hadoop namenode -format'
 su - hdfs -c '/opt/apache/hadoop/sbin/start-all.sh'
 su - zookeeper -c '/opt/apache/zookeeper/bin/zkServer.sh start'

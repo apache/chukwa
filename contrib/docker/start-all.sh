@@ -14,12 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+rm -f /run/nologin
 export PATH=${PATH}:/opt/apache/hadoop/bin:/opt/apache/hbase/bin
 export JAVA_HOME=/usr/lib/jvm/jre
 export HADOOP_CONF_DIR=/opt/apache/hadoop/etc/hadoop
 export HBASE_CONF_DIR=/opt/apache/hbase/conf
 export CHUKWA_CONF_DIR=/opt/apache/chukwa/etc/chukwa
-service sshd start
+systemctl status sshd 
 su - zookeeper -c '/opt/apache/zookeeper/bin/zkServer.sh start'
 su - solr -c 'cd /opt/apache/solr; ./bin/solr start -cloud -z localhost:2181'
 su - solr -c 'cd /opt/apache/solr; ./bin/solr create_collection -c chukwa -n chukwa'
