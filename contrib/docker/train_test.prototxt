@@ -13,7 +13,7 @@ layer {
     batch_size: 1
     channels: 1
     height: 200
-    width: 200
+    width: 1000
     share_in_parallel: false
   }
   transform_param {
@@ -35,7 +35,7 @@ layer {
     batch_size: 1
     channels: 1
     height: 200
-    width: 200
+    width: 1000
     share_in_parallel: false
   }
   transform_param {

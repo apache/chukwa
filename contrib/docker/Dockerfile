@@ -64,6 +64,9 @@ RUN wget http://www-eu.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven
 RUN git clone https://github.com/yahoo/CaffeOnSpark.git --recursive
 RUN bash /tmp/config-caffe.sh
 
+RUN chmod 755 /caffe-test/train/train.sh
+RUN chmod 755 /caffe-test/tera/tera.sh
+
 RUN wget https://www.apache.org/dist/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz
 RUN wget https://www.apache.org/dist/hadoop/common/hadoop-2.7.2/hadoop-2.7.2.tar.gz 
 RUN wget https://www.apache.org/dist/hbase/1.2.5/hbase-1.2.5-bin.tar.gz
