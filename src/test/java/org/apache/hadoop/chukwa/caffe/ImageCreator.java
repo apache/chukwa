@@ -120,7 +120,7 @@ public class ImageCreator
         long elapseTime = endTime - startTime;
         if (elapseTime > X_SIZE) {
           totalPoint = totalPoint + dataList.size ();
-          String imageFileName = dirName + "\\image" + imageId + ".png";
+          String imageFileName = "image" + imageId + ".png";
           System.out.println ("elapseTime: " + elapseTime + ", data size: " + dataList.size () + ", imageFileName: " + imageFileName);
           drawImage (dataList, imageFileName, X_SIZE, Y_SIZE);
           bufferedWriter.write (imageFileName + " 0\n");
@@ -131,9 +131,8 @@ public class ImageCreator
         }
       }
       bufferedReader.close ();
-      bufferedWriter.close ();
     }
-    //System.out.println ("Total points: " + totalPoint + ", lineNum: " + lineNum);
+    bufferedWriter.close ();
   }
   
   private static void drawImage (List <String []> dataList, String imageFileName, int x_size, int y_size) throws Exception

@@ -564,12 +564,13 @@
                                 <include>**/Test*.java</include>
                             </includes>
                             <excludes>
+							    <exclude>**/TestMemoryUsageDetection.java</exclude>
                                 <exclude>**/TestFSMBuilder.java</exclude>
                                 <exclude>**/TestDatabase*.java</exclude>
                                 <exclude>**/TestArchive.java</exclude>
                                 <exclude>**/TestJobLogEntry.java</exclude>
                                 <exclude>**/*$*</exclude>
-				<exclude>**/TestClientTrace.java</exclude>
+			   	<exclude>**/TestClientTrace.java</exclude>
                             </excludes>
                             <systemPropertyVariables>
                                 <test.build.dir>${project.build.directory}/test</test.build.dir>

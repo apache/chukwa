@@ -49,11 +49,11 @@ public class TestMemoryUsageDetection extends TestCase {
   public void tearDown() {}
 
   public void testMemoryDetection () {
-    String dirName = "/caffe-test/train/data";
+    String dirName = "/caffe-test/train";
     Thread teraSortThread = createTeraSortThread ();
     ExecutorService executor = Executors.newFixedThreadPool(1);
     Future<?> task = executor.submit(teraSortThread);
-    collectNodeManagerMetrics (dirName);
+    collectNodeManagerMetrics (dirName + "/data");
     task.cancel (true);
     executor.shutdown ();
     caffeTrain (dirName);
@@ -104,7 +104,7 @@ public class TestMemoryUsageDetection extends TestCase {
       
     // draw images of size 1000 * 200 from the collected csv files
     try {
-      ImageCreator generator = new ImageCreator ("/caffe-test/train/data");
+      ImageCreator generator = new ImageCreator (dirName);
       generator.drawImages ();
     } catch (Exception e) {
       fail(ExceptionUtil.getStackTrace(e));
@@ -116,10 +116,10 @@ public class TestMemoryUsageDetection extends TestCase {
    */
   private void caffeTrain (String dirName) {
     try {
-      String target = new String(dirName);
+      String target = new String(dirName + "/train.sh");
       Runtime rt = Runtime.getRuntime();
       Process proc = rt.exec(target);
-      proc.waitFor();
+      //proc.waitFor();
       BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
       String line = "";                       
       while ((line = reader.readLine())!= null) {
