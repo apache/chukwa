@@ -19,18 +19,20 @@ import org.json.simple.JSONObject;
 public class MetricsCollector
 {
   private Timer getMetricSnapshotTimer = null;
-  private long intervalInMin;
+  private long intervalInMilli;
   private String hostname;
+  private String dirName;
   
-  public MetricsCollector (long intervalInMin, String hostname) {
-    this.intervalInMin = intervalInMin;
+  public MetricsCollector (long intervalInMilli, String hostname, String dirName) {
+    this.intervalInMilli = intervalInMilli;
     this.hostname = hostname;
+    this.dirName = dirName;
     getMetricSnapshotTimer = new Timer ("GetMetricSnapshot", true);
   }
   
   public void start () {
     if (getMetricSnapshotTimer != null)
-      getMetricSnapshotTimer.schedule (new GetMetricSnapshotTimerTask (hostname, intervalInMin), 0, intervalInMin);    
+      getMetricSnapshotTimer.schedule (new GetMetricSnapshotTimerTask (hostname, intervalInMilli, dirName), 0, intervalInMilli);    
   }
   
   public void cancel ()
@@ -44,16 +46,18 @@ public class MetricsCollector
     private String hostname = null;
     private BufferedWriter bufferedWriter = null;
     private long intervalInMilli;
+    private String dirName;
 
     /**
      * Normalize the timestamp in time series data to use seconds
      */
     private final static int XSCALE = 1000;
 
-    GetMetricSnapshotTimerTask (String hostname, long intervalInMin)
+    GetMetricSnapshotTimerTask (String hostname, long intervalInMilli, String dirName)
     {
       this.hostname = hostname;
-      this.intervalInMilli = intervalInMin * 60 * 1000;
+      this.intervalInMilli = intervalInMilli;
+      this.dirName = dirName;
     }
 
     public void run () 
@@ -102,7 +106,7 @@ public class MetricsCollector
 
     private void generateCsv (List list, String name, long startTime, BufferedWriter bufferedWriter) throws Exception
     {
-      String fileName = name + "_" + startTime;
+      String fileName = dirName + "/" + name + "_" + startTime;
       PrintWriter writer = new PrintWriter(fileName + ".csv", "UTF-8");
       int size = list.size ();
       for (int i = 0; i < size; i++) {

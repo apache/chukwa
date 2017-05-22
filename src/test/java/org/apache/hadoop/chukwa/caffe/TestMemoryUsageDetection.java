@@ -21,10 +21,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import junit.framework.TestCase;
 
 import org.apache.hadoop.chukwa.util.ExceptionUtil;
+
 
 /**
  * (1) Run non-stop terasort and teragen  
@@ -40,14 +44,28 @@ public class TestMemoryUsageDetection extends TestCase {
   /**
    * Run non-stop terasort and teragen to force memory leak
    */
-  public void setUp() {
-    new Thread(new Runnable() {
+  public void setUp() {}
+
+  public void tearDown() {}
+
+  public void testMemoryDetection () {
+    String dirName = "/caffe-test/train/data";
+    Thread teraSortThread = createTeraSortThread ();
+    ExecutorService executor = Executors.newFixedThreadPool(1);
+    Future<?> task = executor.submit(teraSortThread);
+    collectNodeManagerMetrics (dirName);
+    task.cancel (true);
+    executor.shutdown ();
+    caffeTrain (dirName);
+  }
+  
+  private Thread createTeraSortThread () {
+    Thread teraSortThread = new Thread(new Runnable() {
       public void run(){
         try {
           String target = new String("/caffe-test/tera/tera.sh");
           Runtime rt = Runtime.getRuntime();
           Process proc = rt.exec(target);
-          proc.waitFor();
           BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
           String line = "";                       
           while ((line = reader.readLine())!= null) {
@@ -57,19 +75,18 @@ public class TestMemoryUsageDetection extends TestCase {
           fail(ExceptionUtil.getStackTrace(e));
         }
       }
-    }).start();
+    });
+    return teraSortThread;
   }
-
-  public void tearDown() {
-  }
-
+  
+  
   /**
    * Collect memory usage data every 15 min.
    * Stop the timer after 10 hours
    */
-  public void testCollectNodeManagerMetrics() {
-    int intervalInMin = 15;
-    long timerElapseTime = 10 * 60 * 60 * 1000;
+  private void collectNodeManagerMetrics(String dirName) {
+    int intervalInMilli = 15 * 60 * 1000;
+    long timerDurationTime = 10 * 60 * 60 * 1000;
     String hostname = "";
     try {
       hostname = InetAddress.getLocalHost().getHostName();
@@ -77,10 +94,10 @@ public class TestMemoryUsageDetection extends TestCase {
     } catch (IOException e) {
       fail(ExceptionUtil.getStackTrace(e));
     }
-    MetricsCollector collector = new MetricsCollector (intervalInMin, hostname);
+    MetricsCollector collector = new MetricsCollector (intervalInMilli, hostname, dirName);
     collector.start ();
     try {
-      Thread.sleep (timerElapseTime);
+      Thread.sleep (timerDurationTime);
     } catch (InterruptedException e) {
     }
     collector.cancel ();
@@ -97,9 +114,9 @@ public class TestMemoryUsageDetection extends TestCase {
   /**
    * Train the images
    */
-  public void testCaffeTrain () {
+  private void caffeTrain (String dirName) {
     try {
-      String target = new String("/caffe-test/train/train.sh");
+      String target = new String(dirName);
       Runtime rt = Runtime.getRuntime();
       Process proc = rt.exec(target);
       proc.waitFor();
