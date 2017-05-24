@@ -11,4 +11,4 @@ This file contains instruction on how to build docker image for Chukwa
 
 - Chukwa image can be launched using:
 
-  docker run -itP -p 4080:4080 -p 50070:50070 -p 8088:8088 -p 60010:60010 chukwa/chukwa
+  docker run -itP -p 4080:4080 --privileged -p 50070:50070 -p 8088:8088 -p 60010:60010 chukwa/chukwa

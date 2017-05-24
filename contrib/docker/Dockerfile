@@ -50,8 +50,6 @@ RUN mkdir -p /caffe-test/chukwa
 RUN mkdir -p /caffe-test/tera
 
 ADD tera.sh /caffe-test/tera/tera.sh
-ADD MetricsCollector.java /caffe-test/chukwa/MetricsCollector.java
-ADD caffe-testdata.tar.gz /caffe-test/train/data/
 
 ADD makeImage.sh /caffe-test/train/makeImage.sh
 ADD test_solver.prototxt /caffe-test/train/test_solver.prototxt
