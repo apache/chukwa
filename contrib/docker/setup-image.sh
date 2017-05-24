@@ -88,13 +88,15 @@ mkdir -p /var/run/hbase
 mkdir -p /var/run/chukwa
 mkdir -p /var/run/solr
 mkdir -p /var/log/hadoop
+mkdir -p /var/log/hadoop/hdfs
+mkdir -p /var/log/hadoop/yarn
 mkdir -p /var/log/hbase
 mkdir -p /var/log/chukwa
 
 chown -R zookeeper:hadoop /opt/apache/zookeeper* /var/lib/zookeeper
 chmod 775 /var/run/hadoop
-chmod 775 /var/log/hadoop
 chown -R hdfs:hadoop /opt/apache/hadoop* /var/lib/hdfs /var/run/hadoop /var/log/hadoop
+chown -R yarn:hadoop /var/log/hadoop/yarn
 chown -R hbase:hadoop /opt/apache/hbase* /var/run/hbase /var/log/hbase
 chown -R solr:hadoop /opt/apache/solr* /var/run/solr
 chown -R chukwa:hadoop /opt/apache/chukwa* /var/lib/chukwa /var/run/chukwa /var/log/chukwa

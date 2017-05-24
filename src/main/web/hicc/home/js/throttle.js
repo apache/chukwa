@@ -15,30 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.chukwa.datacollection.writer;
 
-import java.io.IOException;
+function throttle(fn, threshhold, scope) {
+  threshhold || (threshhold = 250);
+  var last,
+      deferTimer;
+  return function () {
+    var context = scope || this;
 
-public class WriterException extends IOException {
-
-  /**
-	 * 
-	 */
-  private static final long serialVersionUID = -4207275200546397146L;
-
-  public WriterException() {
-  }
-
-  public WriterException(String message) {
-    super(message);
-  }
-
-  public WriterException(Throwable cause) {
-    super(cause);
-  }
-
-  public WriterException(String message, Throwable cause) {
-    super(message, cause);
-  }
-
+    var now = +new Date,
+        args = arguments;
+    if (last && now < last + threshhold) {
+      // hold on to it
+      clearTimeout(deferTimer);
+      deferTimer = setTimeout(function () {
+        last = now;
+        fn.apply(context, args);
+      }, threshhold);
+    } else {
+      last = now;
+      fn.apply(context, args);
+    }
+  };
 }

@@ -34,7 +34,7 @@ su - hbase -c '/opt/apache/hbase/bin/start-hbase.sh >/dev/null 2>&1'
 su - chukwa -c '/opt/apache/chukwa/sbin/start-chukwa.sh'
 echo
 echo "Chukwa Docker container is ready."
-echo "Use web browser to visit http://`hostname -f`:4080/ for demo."
+echo "Use web browser to visit port 4080 for demo."
 echo "Username: admin, password: admin"
 echo
 echo "Enjoy!"

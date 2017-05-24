@@ -18,7 +18,7 @@ Pipeline Configuration Guide
 
 Basic Options
 
-  Chukwa pipeline are responsible for accepting incoming data from Agents,
+  Apache Chukwa pipeline are responsible for accepting incoming data from Agents,
 and extract, transform and load data to destination storage.  Most commonly, 
 pipeline simply write all received to HBase or HDFS.  
 
@@ -36,7 +36,7 @@ be configured in <chukwa-agent-conf.xml>.
 
   In this mode, HBase configuration is configured in <chukwa-env.sh>.
 HBASE_CONF_DIR should reference to HBae configuration directory to enable
-Chukwa agent to load <hbase-site.xml> from class path.
+Apache Chukwa agent to load <hbase-site.xml> from class path.
 
 * HDFS
 
@@ -59,8 +59,8 @@ pipeline.
 Advanced Options
 
   There are some advanced options, not necessarily documented in the
-agent conf file, that are helpful in using Chukwa in nonstandard ways.
-While normally Chukwa writes sequence files to HDFS, it's possible to
+agent conf file, that are helpful in using Apache Chukwa in nonstandard ways.
+While normally Apache Chukwa writes sequence files to HDFS, it's possible to
 specify an alternate pipe class. The option <chukwa.pipeline> specifies 
 a Java class to instantiate and use as a writer. See the <ChukwaWriter> 
 javadoc for details.
@@ -69,7 +69,7 @@ javadoc for details.
 lets you string together a series of <PipelineableWriters>
 for pre-processing or post-processing incoming data.
 As an example, the SocketTeeWriter class allows other programs to get 
-incoming chunks fed to them over a socket by Chukwa agent.
+incoming chunks fed to them over a socket by Apache Chukwa agent.
 	  	
   Stages in the pipeline should be listed, comma-separated, in option 
 <chukwa.pipeline>
@@ -184,7 +184,7 @@ SocketTeeWriter
 
   The <SocketTeeWriter> allows external processes to watch
 the stream of chunks passing through the agent. This allows certain kinds
-of real-time monitoring to be done on-top of Chukwa.
+of real-time monitoring to be done on-top of Apache Chukwa.
 	  	
   SocketTeeWriter listens on a port (specified by conf option
 <chukwaCollector.tee.port>, defaulting to 9094.)  Applications

@@ -32,6 +32,7 @@
     <link rel="stylesheet" type="text/css" href="css/component.css" />
     <script src="js/modernizr.custom.js"></script>
     <script src="js/jquery.js" type="text/javascript"></script>
+    <script src="js/throttle.js" type="text/javascript"></script>
     <script src="js/jquery-ui.js"></script>
     <script src="js/lodash.min.js" type="text/javascript"></script>
     <script src="js/gridstack.min.js" type="text/javascript"></script>
@@ -174,7 +175,7 @@ function load() {
       grid_data = data.grid;
 
       var options = {
-        cellHeight: 110,
+        cellHeight: 130,
         verticalMargin: 10,
         handle: '.widget-header'
       };
@@ -206,11 +207,6 @@ function load() {
         var gridstack = $(".grid-stack").data('gridstack');
         gridstack.addWidget(buildWidget(this.src), this.col, this.row, this.size_x, this.size_y);
 
-      });
-      // Bind save operation only after load operation has been
-      // completed to avoid race conditions.
-      $('.grid-stack').on('change', function(event, ui) {
-        save();
       });
     }
   );
@@ -319,10 +315,17 @@ $(function(){ //DOM Ready
       event.preventDefault();
       var title = $('#url').val();
       if(title in widgetsToUrl) {
+        $("html, body").animate({ scrollTop: $(document).height() }, "slow");
         var url = widgetsToUrl[title];
         var gridstack = $(".grid-stack").data('gridstack');
-        gridstack.addWidget(buildWidget(url), 0, 0, 1, 1);
+        gridstack.addWidget(buildWidget(url), 1, 100, 5, 3);
       }
+    }
+  });
+
+  $( "#url" ).keyup(function( event ) {
+    if ( event.which == 13 ) {
+        $('#url').val('');
     }
   });
 
@@ -342,6 +345,10 @@ $(function(){ //DOM Ready
       load();
     }
   );
+
+  $('.grid-stack').on('change', throttle(function(event, ui) {
+    save();
+  }, 250));
 
 });
 

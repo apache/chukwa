@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.apache.hadoop.chukwa.util.ExceptionUtil;
 
 public class HadoopMetricsProcessor extends AbstractProcessor {
   
@@ -44,38 +45,53 @@ public class HadoopMetricsProcessor extends AbstractProcessor {
 
   @Override
   protected void parse(byte[] recordEntry) throws Throwable {
-      String body = new String(recordEntry, Charset.forName("UTF-8"));
-      int start = body.indexOf('{');
-      JSONObject json = (JSONObject) JSONValue.parse(body.substring(start));
+    String body = new String(recordEntry, Charset.forName("UTF-8"));
+    int start = 0;
+    int end = 0;
+    try {
+      while(true) {
+        start = body.indexOf('{', end);
+        end = body.indexOf('}', start)+1;
+        if (start == -1)
+          break;
 
-      time = ((Long) json.get(timestampField)).longValue();
-      String contextName = (String) json.get(contextNameField);
-      String recordName = (String) json.get(recordNameField);
-      String src = ((String) json.get(hostName)).toLowerCase();
-      if(json.get(processName)!=null) {
-        src = new StringBuilder(src).append(":").append(json.get(processName)).toString();
-      }
-      for(Entry<String, Object> entry : (Set<Map.Entry>) json.entrySet()) {
-        String keyName = entry.getKey();
-        if (timestampField.intern() == keyName.intern()) {
-          continue;
-        } else if (contextNameField.intern() == keyName.intern()) {
-          continue;
-        } else if (recordNameField.intern() == keyName.intern()) {
-          continue;
-        } else if (hostName.intern() == keyName.intern()) {
-          continue;
-        } else if (processName.intern() == keyName.intern()) {
-          continue;
-        } else {
-          if(json.get(keyName)!=null) {
-            String v = entry.getValue().toString();
-            String primaryKey = new StringBuilder(contextName).append(".")
+        JSONObject json = (JSONObject) JSONValue.parse(body.substring(start,end));
+
+        time = ((Long) json.get(timestampField)).longValue();
+        String contextName = (String) json.get(contextNameField);
+        String recordName = (String) json.get(recordNameField);
+        String src = ((String) json.get(hostName)).toLowerCase();
+        if(json.get(processName)!=null) {
+          src = new StringBuilder(src).append(":").append(json.get(processName)).toString();
+        }
+        for(Entry<String, Object> entry : (Set<Map.Entry>) json.entrySet()) {
+          String keyName = entry.getKey();
+          if (timestampField.intern() == keyName.intern()) {
+            continue;
+          } else if (contextNameField.intern() == keyName.intern()) {
+            continue;
+          } else if (recordNameField.intern() == keyName.intern()) {
+            continue;
+          } else if (hostName.intern() == keyName.intern()) {
+            continue;
+          } else if (processName.intern() == keyName.intern()) {
+            continue;
+          } else {
+            if(json.get(keyName)!=null) {
+              String v = entry.getValue().toString();
+              String primaryKey = new StringBuilder(contextName).append(".")
                 .append(recordName).append(".").append(keyName).toString();
-            addRecord(time, primaryKey, src, v.getBytes(Charset.forName("UTF-8")), output);
+              addRecord(time, primaryKey, src, v.getBytes(Charset.forName("UTF-8")), output);
+            }
           }
         }
       }
+    } catch(Exception e) {
+      LOG.warn("Unparsable data:");
+      LOG.warn(body);
+      LOG.warn(ExceptionUtil.getStackTrace(e));
+      // Skip unparsable data.
+    }
   }
 
 }

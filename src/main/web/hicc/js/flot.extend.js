@@ -105,7 +105,7 @@ function calculateStatis() {
  */
 function showTooltip(x, y, contents) {
   if(x>document.body.clientWidth*.6) {
-    x=x-200;
+    x=x-50;
   }
   if(y>document.body.clientHeight*.7) {
     y=y-40;
@@ -116,7 +116,7 @@ function showTooltip(x, y, contents) {
     top: y + 5,
     left: x + 5,
     'border-radius': '5px',
-    border: '2px solid #aaa',
+    border: '2px solid #496274',
     padding: '2px',
     'color': '#fff',
     'background-color': '#496274',
@@ -154,7 +154,7 @@ options={
  },
  selection: { mode: "xy" },
  grid: {
-   hoverable: false,
+   hoverable: true,
    clickable: true,
    tickColor: "#C0C0C0",
    backgroundColor:"#FFFFFF"
@@ -166,36 +166,21 @@ options={
  * bind the function for the hightlight the point in the chart.
  */
 var previousPoint = null;
-$("#placeholder").bind("plotclick", function (event, pos, item) {
+$("#placeholder").bind("plothover", function (event, pos, item) {
     var leftPad = function(n) {
       n = "" + n;
       return n.length == 1 ? "0" + n : n;
     };
     if (item) {
+      var contents = "<div style='width:14px;height:10px;background-color:"+item.series.color+";overflow:hidden;display:inline-block;'></div>";
       if (previousPoint != item.datapoint) {
         previousPoint = item.datapoint;
         pause = true;
         $("#tooltip").remove();
-        if(xLabels.length==0) {
-          var x = item.datapoint[0],
-            y = item.stackValue.toFixed(2);
-          var dnow=new Date();
-          dnow.setTime(x);
-          var dita;
-          if(Cookies.get("tz")=="") {
-            dita=leftPad(dnow.getFullYear())+"/"+leftPad(dnow.getMonth()+1)+"/"+dnow.getDate()+" "+leftPad(dnow.getHours())+":"+leftPad(dnow.getMinutes())+":"+leftPad(dnow.getSeconds());
-          } else {
-            dita=leftPad(dnow.getUTCFullYear())+"/"+leftPad(dnow.getUTCMonth()+1)+"/"+dnow.getUTCDate()+" "+leftPad(dnow.getUTCHours())+":"+leftPad(dnow.getUTCMinutes())+":"+leftPad(dnow.getUTCSeconds());
-          }
-          showTooltip(item.pageX, item.pageY,
-            item.series.label + ": " + y + "<br>Time: " + dita);
-        } else {
-          var x = item.datapoint[0],
+        var x = item.datapoint[0],
           y = item.stackValue.toFixed(2);
-          xLabel = xLabels[x];
-          showTooltip(item.pageX, item.pageY,
-            item.series.label + ": " + y + "<br>" + xLabel);
-        }
+        showTooltip(item.pageX, item.pageY,
+          contents + " " + y);
       }
     } else {
       $("#tooltip").remove();

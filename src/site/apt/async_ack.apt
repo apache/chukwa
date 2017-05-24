@@ -16,13 +16,13 @@
 
 Overview
 
-  Chukwa supports two different reliability strategies.
+  Apache Chukwa supports two different reliability strategies.
 The first, default strategy, is as follows: collectors write data to HDFS, and
 as soon as the HDFS write call returns success, report success to the agent, 
 which advances its checkpoint state.
 
   This is potentially a problem if HDFS (or some other storage tier) has 
-non-durable or asynchronous writes. As a result, Chukwa offers a mechanism, 
+non-durable or asynchronous writes. As a result, Apache Chukwa offers a mechanism, 
 asynchronous acknowledgement, for coping with this case.
 
   This mechanism can be enabled by setting option <httpConnector.asyncAcks>.
@@ -36,7 +36,7 @@ answer questions about the state of the filesystem.
 Theory
 
   In this approach, rather than try to build a fault tolerant collector, 
-Chukwa agents look <<through>> the collectors to the underlying state of the 
+Apache Chukwa agents look <<through>> the collectors to the underlying state of the 
 filesystem. This filesystem state is what is used to detect and recover from 
 failure. Recovery is handled entirely by the agent, without requiring anything 
 at all from the failed collector.
@@ -71,7 +71,7 @@ the period between collector file rotations.
   The solution is end-to-end. Authoritative copies of data can only exist in 
 two places: the nodes where data was originally produced, and the HDFS file 
 system where it will ultimately be stored. Collectors only hold soft state;  
-the only ``hard'' state stored by Chukwa is the agent checkpoints. Below is a 
+the only ``hard'' state stored by Apache Chukwa is the agent checkpoints. Below is a 
 diagram of the flow of messages in this protocol.
 
 Configuration

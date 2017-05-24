@@ -5,8 +5,19 @@ Trunk (unreleased changes)
   NEW FEATURES
 
   IMPROVEMENTS
+    CHUKWA-814. Update HBase and Solr support for Docker demo. (Eric Yang)
+
+    CHUKWA-815. Refine add widget, and chart hovering interactions. (Eric Yang)
 
   BUGS
+
+    CHUKWA-818. Convert Solr client to singleton to prevent connection leaks.  (Eric Yang)
+
+    CHUKWA-817.  Prevent connections leaks when HBaseWriter or parser generate errors.  (Eric Yang)
+
+    CHUKWA-813.  Fix logviewer for sorting log entries. (Eric Yang)
+
+    CHUKWA-812.  Added throttle to dashboard save. (Eric Yang)
 
 Release 0.8 - 05/22/2016
 

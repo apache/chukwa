@@ -18,11 +18,11 @@ HDFS Storage Layout
 
 Overview
 
-  This document describes how Chukwa data is stored in HDFS and the processes that act on it.
+  This document describes how Apache Chukwa data is stored in HDFS and the processes that act on it.
 
 HDFS File System Structure
 
-  The general layout of the Chukwa filesystem is as follows.
+  The general layout of Apache Chukwa filesystem is as follows.
 
 ---
 /chukwa/
@@ -39,7 +39,7 @@ HDFS File System Structure
 
 Raw Log Collection and Aggregation Workflow
 
-  What data is stored where is best described by stepping through the Chukwa workflow.
+  What data is stored where is best described by stepping through Apache Chukwa workflow.
 
   [[1]] Agents write chunks to <logs/*.chukwa> files until a 64MB chunk size is reached or a given time interval has passed.
 

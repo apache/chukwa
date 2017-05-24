@@ -38,7 +38,7 @@ import org.apache.solr.common.SolrInputDocument;
 
 public class SolrWriter extends PipelineableWriter {
   private static Logger log = Logger.getLogger(SolrWriter.class);
-  private CloudSolrClient client;
+  private static CloudSolrClient client;
   private final static String ID = "id";
   private final static String SEQ_ID = "seqId";
   private final static String DATA_TYPE = "type";
@@ -119,7 +119,6 @@ public class SolrWriter extends PipelineableWriter {
       } catch (Exception e) {
         log.warn("Failed to store data to Solr Cloud.");
         log.warn(ExceptionUtil.getStackTrace(e));
-        client = null;
       }
     }
     try {

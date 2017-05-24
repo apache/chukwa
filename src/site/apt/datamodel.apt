@@ -16,7 +16,7 @@
 
 Data Model
 
-  Chukwa Adaptors emit data in <Chunks>. A Chunk is a sequence of bytes,
+  Apache Chukwa Adaptors emit data in <Chunks>. A Chunk is a sequence of bytes,
 with some metadata. Several of these are set automatically by the Agent or 
 Adaptors. Two of them require user intervention: <cluster name> and 
 <datatype>.  Cluster name is specified in <conf/chukwa-agent-conf.xml>,
@@ -69,7 +69,7 @@ HBase Schema
 
   Row key is composed of 14 bytes data.  First 2 bytes are day of the year.
 The next 6 bytes are md5 signature of metrics name.  The last 6 bytes are
-md5 signature of data source.  This arrangement helps Chukwa to partition
+md5 signature of data source.  This arrangement helps Apache Chukwa to partition
 data evenly across regions base on time.
 
   This arrangement provides a good condensed store for data of the same day
@@ -77,7 +77,7 @@ for the same source.
 
 ** Column Family
 
-  The column family format for Chukwa table are:
+  The column family format for Apache Chukwa table are:
 
 *---------------*-----------------------------------------------------------------:
 | Column Family | Description                                                     |

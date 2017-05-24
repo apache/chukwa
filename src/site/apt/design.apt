@@ -16,15 +16,15 @@
 
 Introduction
 
-  Chukwa aims to provide a flexible and powerful platform for distributed
+  Apache Chukwa aims to provide a flexible and powerful platform for distributed
 data collection and rapid data processing. Our goal is to produce a system
 that's usable today, but that can be modified to take advantage of newer
 storage technologies (HDFS appends, HBase, etc) as they mature. In order
-to maintain this flexibility, Chukwa is structured as a pipeline of
+to maintain this flexibility, Apache Chukwa is structured as a pipeline of
 collection and processing stages, with clean and narrow interfaces between
 stages. This will facilitate future innovation without breaking existing code.
 
-Chukwa has five primary components:
+Apache Chukwa has five primary components:
 
   * <<Adaptors>> that collect data from various data source.
 
@@ -37,7 +37,7 @@ Chukwa has five primary components:
   * <<HICC>>, the Hadoop Infrastructure Care Center; a web-portal
     style interface for displaying data.
   	  
-  Below is a figure showing the Chukwa data pipeline, annotated with data
+  Below is a figure showing Apache Chukwa data pipeline, annotated with data
 dwell times at each stage. A more detailed figure is available at the end
 of this document.
 
@@ -45,14 +45,14 @@ of this document.
 	  
 Agents and Adaptors
 
-  Chukwa agents do not collect some particular fixed set of data. Rather, they
+  Apache Chukwa agents do not collect some particular fixed set of data. Rather, they
 support dynamically starting and stopping <Adaptors>, which small
 dynamically-controllable modules that run inside the Agent process and are
 responsible for the actual collection of data.
 
   These dynamically controllable data sources are called 
 adaptors, since they generally are wrapping some other data source, 
-such as a file or a Unix command-line tool.  The Chukwa 
+such as a file or a Unix command-line tool.  Apache Chukwa 
 {{{./agent.html}agent guide}} includes an up-to-date list of available Adaptors.
 
   Data sources need to be dynamically controllable because the particular data
@@ -64,7 +64,7 @@ metrics on an NFS server.
 
 ETL Processes
 
-  Chukwa Agents can write data directly to HBase or sequence files. 
+  Apache Chukwa Agents can write data directly to HBase or sequence files. 
 This is convenient for rapidly getting data committed to stable storage. 
 
   HBase provides index by primary key, and manage data compaction.  It is
@@ -73,7 +73,7 @@ reports.
 
   HDFS provides better throughput for working with large volume of data.  
 It is more suitable for one time research analysis job .  But it's less 
-convenient for finding particular data items. As a result, Chukwa has a 
+convenient for finding particular data items. As a result, Apache Chukwa has a 
 toolbox of MapReduce jobs for organizing and processing incoming data. 
 		
   These jobs come in two kinds: <Archiving> and <Demux>.
@@ -107,9 +107,9 @@ which in turn is populated by collector or data analytic scripts
 that runs on the collected data, after Demux. The  
 {{{./admin.html}Administration guide}} has details on setting up HICC.
 
-HBase Integration
+Apache HBase Integration
 
-  Chukwa has adopted to use HBase to ensure data arrival in milli-seconds and
+  Apache Chukwa has adopted to use HBase to ensure data arrival in milli-seconds and
 also make data available to down steam application at the same time.  This
 will enable monitoring application to have near realtime view as soon as
 data are arriving in the system.  The file rolling, archiving are replaced
