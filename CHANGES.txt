@@ -11,6 +11,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-821. Remove broken dependencies.  (Eric Yang)
+
     CHUKWA-818. Convert Solr client to singleton to prevent connection leaks.  (Eric Yang)
 
     CHUKWA-817.  Prevent connections leaks when HBaseWriter or parser generate errors.  (Eric Yang)
