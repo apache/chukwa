@@ -11,6 +11,8 @@ Trunk (unreleased changes)
 
   BUGS
 
+    CHUKWA-822. Remove Apache Struts from dependencies. (Eric Yang)
+
     CHUKWA-821. Remove broken dependencies.  (Eric Yang)
 
     CHUKWA-818. Convert Solr client to singleton to prevent connection leaks.  (Eric Yang)
