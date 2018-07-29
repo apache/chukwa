@@ -63,7 +63,7 @@ tests should take and run successfully after roughly fifteen minutes.
 
 ##Running Cukwa
 
-Users should definately begin with the 
+Users should definitely begin with the 
 <a href="http://chukwa.apache.org/docs/r0.6.0/Quick_Start_Guide.html">
 Chukwa Quick Start Guide</a>
 
