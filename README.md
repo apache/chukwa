@@ -1,4 +1,4 @@
-#Apache Chukwa Project
+# Apache Chukwa Project
 
 <img src="http://chukwa.apache.org/images/chukwa_logo_small.jpg" align="right" width="300" />
 
@@ -8,7 +8,7 @@ framework and inherits Hadoop’s scalability and robustness. Chukwa also includ
 ﬂexible and powerful toolkit for displaying, monitoring and analyzing results to 
 make the best use of the collected data. 
 
-##Overview
+## Overview
 
 Log processing was one of the original purposes of MapReduce. Unfortunately, using 
 Hadoop MapReduce to monitor Hadoop can be inefficient. Batch processing nature of 
@@ -49,7 +49,7 @@ maybe handy to learn about Chukwa programming API.
 If you have more questions, you can ask on the 
 <a href="http://chukwa.apache.org/mail-lists.html">Chukwa mailing lists</a>
 
-##Bulding Chukwa
+## Bulding Chukwa
 
 To build Chukwa from source you require <a href="http://maven.apache.org">Apache Maven</a>:
 ```
@@ -61,7 +61,7 @@ mvn test
 ```
 tests should take and run successfully after roughly fifteen minutes.
 
-##Running Cukwa
+## Running Cukwa
 
 Users should definitely begin with the 
 <a href="http://chukwa.apache.org/docs/r0.6.0/Quick_Start_Guide.html">
