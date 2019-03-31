@@ -12,6 +12,6 @@ Building Chukwa distribution:
 
 $ mvn clean package
 
-Run Chukwa
+Run Chukwa:
 
-docker run -it -p 4080:4080 chukwa/chukwa
+$ docker run -it -p 4080:4080 chukwa/chukwa
