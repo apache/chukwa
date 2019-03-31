@@ -1,0 +1,17 @@
+Build instructions for Chukwa
+-----------------------------
+
+Requirements:
+
+Unix System
+JDK 1.8 or later
+Maven 3.3 or later
+Docker 1.8 or later
+
+Building Chukwa distribution:
+
+$ mvn clean package
+
+Run Chukwa
+
+docker run -it -p 4080:4080 chukwa/chukwa

@@ -39,4 +39,4 @@ echo "Use web browser to visit port 4080 for demo."
 echo "Username: admin, password: admin"
 echo
 echo "Enjoy!"
-bash
+chukwa --config /etc/chukwa hicc

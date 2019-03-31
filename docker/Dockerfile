@@ -38,47 +38,21 @@ RUN yum install -y gcc gcc-c++ numpy scipy cmake git python-devel
 RUN yum install -y openblas openblas-devel atlas-devel
 
 RUN mkdir -p /opt/apache
-RUN wget https://archive.apache.org/dist/spark/spark-1.6.0/spark-1.6.0-bin-hadoop2.6.tgz
-RUN tar xf spark-1.6.0-bin-hadoop2.6.tgz -C /opt/apache
-RUN ln -s /opt/apache/spark-* /opt/apache/spark
 
-ADD Makefile.config /tmp/Makefile.config
-ADD config-caffe.sh /tmp/config-caffe.sh
-RUN mkdir -p /caffe-test/train
-RUN mkdir -p /caffe-test/train/data
-RUN mkdir -p /caffe-test/chukwa
-RUN mkdir -p /caffe-test/tera
-
-ADD tera.sh /caffe-test/tera/tera.sh
-
-ADD makeImage.sh /caffe-test/train/makeImage.sh
-ADD test_solver.prototxt /caffe-test/train/test_solver.prototxt
-ADD train_test.prototxt /caffe-test/train/train_test.prototxt
-ADD train.sh /caffe-test/train/train.sh
-RUN wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/google-glog/glog-0.3.3.tar.gz
-RUN wget https://github.com/schuhschuh/gflags/archive/master.zip
-RUN git clone https://github.com/LMDB/lmdb
-RUN wget http://www-eu.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
-RUN git clone https://github.com/yahoo/CaffeOnSpark.git --recursive
-RUN bash /tmp/config-caffe.sh
-
-RUN chmod 755 /caffe-test/train/train.sh
-RUN chmod 755 /caffe-test/tera/tera.sh
-
-RUN wget https://www.apache.org/dist/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz
-RUN wget https://www.apache.org/dist/hadoop/common/hadoop-2.7.2/hadoop-2.7.2.tar.gz 
-RUN wget https://www.apache.org/dist/hbase/1.2.5/hbase-1.2.5-bin.tar.gz
-RUN wget https://www.apache.org/dist/lucene/solr/5.5.4/solr-5.5.4.tgz
-ADD chukwa-0.8.0.tar.gz /opt/apache/
-RUN tar xf zookeeper-3.4.6.tar.gz -C /opt/apache
-RUN tar xf hadoop-2.7.2.tar.gz -C /opt/apache
-RUN tar xf hbase-1.2.5-bin.tar.gz -C /opt/apache
-RUN tar xf solr-5.5.4.tgz -C /opt/apache
-RUN rm -f zookeeper-*.tar.gz hadoop-*.tar.gz hbase-*.tar.gz solr-*.tgz
-RUN ln -s /opt/apache/zookeeper-* /opt/apache/zookeeper
-RUN ln -s /opt/apache/hadoop-* /opt/apache/hadoop
-RUN ln -s /opt/apache/hbase-* /opt/apache/hbase
-RUN ln -s /opt/apache/solr-* /opt/apache/solr
+RUN mkdir -p /opt/apache/zookeeper && \
+    curl -SL https://www.apache.org/dist/zookeeper/zookeeper-3.4.13/zookeeper-3.4.13.tar.gz | \
+    tar -xzC /opt/apache/zookeeper --strip 1
+RUN mkdir -p /opt/apache/hadoop && \
+    curl -SL https://www.apache.org/dist/hadoop/common/hadoop-3.1.1/hadoop-3.1.1.tar.gz | \
+    tar -xzC /opt/apache/hadoop --strip 1
+RUN mkdir -p /opt/apache/hbase && \
+    curl -SL https://www.apache.org/dist/hbase/1.4.9/hbase-1.4.9-bin.tar.gz | \
+    tar -xzC /opt/apache/hbase --strip 1
+RUN mkdir -p /opt/apache/solr && \
+    curl -SL https://www.apache.org/dist/lucene/solr/5.5.5/solr-5.5.5.tgz | \
+    tar -xzC /opt/apache/solr --strip 1
+ADD target/chukwa-core-0.8.0.tar.gz /opt/apache
+RUN rm -f chukwa-core*.tar.gz
 RUN ln -s /opt/apache/chukwa-* /opt/apache/chukwa
 RUN cp -f /opt/apache/chukwa/etc/chukwa/hadoop-log4j.properties /opt/apache/hadoop/etc/hadoop/log4j.properties
 RUN cp -f /opt/apache/chukwa/etc/chukwa/hadoop-metrics2.properties /opt/apache/hadoop/etc/hadoop/hadoop-metrics2.properties

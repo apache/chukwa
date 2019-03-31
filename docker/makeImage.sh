@@ -14,12 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/apache/hadoop/bin:/opt/apache/hbase/bin
-su hdfs -c "hadoop dfs -mkdir -p /user/hdfs"
-while :
-do
-  su hdfs -c "hadoop jar /opt/apache/hadoop-2.7.2/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.2.jar teragen 100 /user/hdfs/terasort-input"
-  su hdfs -c "hadoop jar /opt/apache/hadoop-2.7.2/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.2.jar terasort /user/hdfs/terasort-input /user/hdfs/terasort-output"
-  su hdfs -c "hadoop dfs -rmr  -skipTrash /user/hdfs/terasort-input/"
-  su hdfs -c "hadoop dfs -rmr  -skipTrash /user/hdfs/terasort-output/"
-done
+GLOG_logtostderr=1 /CaffeOnSpark/caffe-public/.build_release/tools/convert_imageset \
+   --resize_height=200 --resize_width=1000 --shuffle --encoded \
+   /caffe-test/train/data/ \
+   /caffe-test/train/data/labels.txt \
+   /caffe-test/train/lmdb
