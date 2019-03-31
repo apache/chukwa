@@ -72,7 +72,7 @@
 
     <groupId>org.apache.chukwa</groupId>
     <artifactId>chukwa-core</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <issueManagement>
         <system>Chukwa JIRA</system>
