@@ -43,7 +43,7 @@ There is also a <a href="http://chukwa.apache.org/docs/r0.6.0/pipeline.html">Pip
 describing configuration parameters for ETL processes for the data pipeline.
 
 And if you want to develop Chukwa to monitor other data sources, 
-<a href="http://chukwa.apache.org/docs/r0.6.0/programming.html"Programming Guide</a> 
+<a href="http://chukwa.apache.org/docs/r0.6.0/programming.html">Programming Guide</a> 
 maybe handy to learn about Chukwa programming API.
 
 If you have more questions, you can ask on the 
